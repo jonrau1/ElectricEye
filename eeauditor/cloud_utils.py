@@ -33,24 +33,24 @@ class CloudConfig(object):
         if data["global"]["aws_multi_account_target_type"] not in AWS_MULTI_ACCOUNT_TARGET_TYPE_CHOICES:
             print("Invalid option for [global.aws_multi_account_target_type].")
             sys.exit(2)
-        self.aws_multi_account_target_type = data["global"]["aws_multi_account_target_type"]
+        self.awsMultiAccountTargetType = data["global"]["aws_multi_account_target_type"]
 
         if data["global"]["credentials_location"] not in CREDENTIALS_LOCATION_CHOICES:
             print(f"Invalid option for [global.credentials_location]. Must be one of {str(CREDENTIALS_LOCATION_CHOICES)}.")
             sys.exit(2)
-        self.credentials_location = data["global"]["credentials_location"]
+        self.credentialsLocation = data["global"]["credentials_location"]
 
         
         # AWS
         if assessmentTarget == "AWS":
             # Process ["aws_account_targets"] 
             awsAccountTargets = data["regions_and_accounts"]["aws"]["aws_account_targets"]
-            if self.aws_multi_account_target_type == "Accounts":
+            if self.awsMultiAccountTargetType == "Accounts":
                 if not awsAccountTargets:
-                    self.aws_account_targets = [sts.get_caller_identity()["Account"]]
+                    self.awsAccountTargets = [sts.get_caller_identity()["Account"]]
                 else:
-                    self.aws_account_targets = awsAccountTargets
-            elif self.aws_multi_account_target_type == "OU":
+                    self.awsAccountTargets = awsAccountTargets
+            elif self.awsMultiAccountTargetType == "OU":
                 if not awsAccountTargets:
                     print("OU was specified but targets were not specified.")
                     sys.exit(2)
@@ -60,21 +60,21 @@ class CloudConfig(object):
                     if not ouIdRegex.match(ou):
                         print(f"Invalid Organizational Unit ID {ou}.")
                         sys.exit(2)
-                self.aws_account_targets = self.get_aws_accounts_from_organizational_units(awsAccountTargets)
-            elif self.aws_multi_account_target_type == "Organization":
-                self.aws_account_targets = self.get_aws_accounts_from_organization()
+                self.awsAccountTargets = self.get_aws_accounts_from_organizational_units(awsAccountTargets)
+            elif self.awsMultiAccountTargetType == "Organization":
+                self.awsAccountTargets = self.get_aws_accounts_from_organization()
             
             # Process ["aws_regions_selection"]
             awsRegions = self.get_aws_regions()
             if not data["regions_and_accounts"]["aws"]["aws_regions_selection"]:
-                self.aws_regions_selection = [boto3.Session().region_name]
+                self.awsRegionsSelection = [boto3.Session().region_name]
             else:
                 tomlRegions = data["regions_and_accounts"]["aws"]["aws_regions_selection"]
                 if "All" in tomlRegions:
-                    self.aws_regions_selection = awsRegions
+                    self.awsRegionsSelection = awsRegions
                 else:
                     # Validation check
-                    self.aws_regions_selection = [a for a in tomlRegions if a in awsRegions]
+                    self.awsRegionsSelection = [a for a in tomlRegions if a in awsRegions]
             
             # Process ["aws_electric_eye_iam_role_name"]
             electricEyeRoleName = data["regions_and_accounts"]["aws"]["aws_electric_eye_iam_role_name"]
@@ -91,23 +91,23 @@ class CloudConfig(object):
                 print("No GCP Projects were provided in [regions_and_accounts.gcp.gcp_project_ids].")
                 sys.exit(2)
             else:
-                self.gcp_project_ids = gcpProjects
+                self.gcpProjectIds = gcpProjects
             
             # Process ["gcp_service_account_json_payload_value"]
             gcpCred = data["credentials"]["gcp"]["gcp_service_account_json_payload_value"]
-            if self.credentials_location == "CONFIG_FILE":
-                self.gcp_service_account_json_payload_value = gcpCred
-            elif self.credentials_location == "AWS_SSM":
-                self.gcp_service_account_json_payload_value = self.get_credential_from_aws_ssm(
+            if self.credentialsLocation == "CONFIG_FILE":
+                self.gcpServiceAccountJsonPayloadValue = gcpCred
+            elif self.credentialsLocation == "AWS_SSM":
+                self.gcpServiceAccountJsonPayloadValue = self.get_credential_from_aws_ssm(
                     gcpCred,
                     "gcp_service_account_json_payload_value"
                 )
-            elif self.credentials_location == "AWS_SECRETS_MANAGER":
-                self.gcp_service_account_json_payload_value = self.get_credential_from_aws_secrets_manager(
+            elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
+                self.gcpServiceAccountJsonPayloadValue = self.get_credential_from_aws_secrets_manager(
                     gcpCred,
                     "gcp_service_account_json_payload_value"
                 )
-            self.setup_gcp_credentials(self.gcp_service_account_json_payload_value)
+            self.setup_gcp_credentials(self.gcpServiceAccountJsonPayloadValue)
         
         # ServiceNow
         elif assessmentTarget == "Servicenow":
@@ -116,14 +116,14 @@ class CloudConfig(object):
             
             # Retrieve ServiceNow ElectricEye user password
             serviceNowPwVal = serviceNowValues["servicenow_sspm_password_value"]
-            if self.credentials_location == "CONFIG_FILE":
+            if self.credentialsLocation == "CONFIG_FILE":
                 os.environ["SNOW_SSPM_PASSWORD"] = serviceNowPwVal
-            elif self.credentials_location == "AWS_SSM":
+            elif self.credentialsLocation == "AWS_SSM":
                 os.environ["SNOW_SSPM_PASSWORD"] = self.get_credential_from_aws_ssm(
                     serviceNowPwVal,
                     "servicenow_sspm_password_value"
                 )
-            elif self.credentials_location == "AWS_SECRETS_MANAGER":
+            elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
                 os.environ["SNOW_SSPM_PASSWORD"] = self.get_credential_from_aws_secrets_manager(
                     serviceNowPwVal,
                     "servicenow_sspm_password_value"
@@ -141,7 +141,17 @@ class CloudConfig(object):
         
         # Oracle Cloud Infrastructure (OCI)
         elif assessmentTarget == "OracleCloud":
-            print("Coming soon!")
+            ociValues = data["regions_and_accounts"]["oci"]
+
+            # Retrieve the OCIDs for Tenancy & User and the Region ID along with a list of Compartment OCIDs
+            ociTenancyId = ociValues["oci_tenancy_ocid"]
+            ociUserId = ociValues["oci_user_ocid"]
+            ociRegionName = ociValues["oci_region_name"]
+            ociCompartments = ociValues["oci_compartment_ocids"]
+
+            if any(ociTenancyId, ociUserId, ociRegionName, ociCompartments) is None:
+                print(f"One of your Oracle Cloud TOML entries in [regions_and_accounts.oci] is empty!")
+                sys.exit(2)
 
     def get_aws_regions(self):
         """
@@ -295,5 +305,18 @@ class CloudConfig(object):
             )
         # Set Cred global path
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = f"{here}/gcp_cred.json"
+
+    def setup_oci_credentials(self, credentialValue):
+        """
+        Oracle Cloud Python SDK Config object can be created and requires the path to a PEM file, we can save the PEM
+        contents to a file and save the location to an environment variable to be used
+        """
+        here = os.path.abspath(os.path.dirname(__file__))
+        # Write the result of ["oci_user_api_key_private_key_pem_contents_value"] to file
+        with open(f"{here}/oci_api_key.pem", "w") as f:
+            f.write(credentialValue)
+
+        # Set the location
+        os.environ["OCI_PEM_FILE_PATH"] = f"{here}/oci_api_key.pem"
         
 ## EOF

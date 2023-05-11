@@ -45,6 +45,25 @@ title = "ElectricEye Configuration"
         
         gcp_project_ids = []
 
+    [regions_and_accounts.oci]
+
+        # Provide your Oracle Cloud Infrastructure Tenancy OCID that is associated with your OCI credentials
+
+        oci_tenancy_ocid = ""
+
+        # Provide your Oracle Cloud Infrastructure User OCID that is associated with your OCI credentials within your provided tenancy
+
+        oci_user_ocid = ""
+
+        # Provide the subscribed Region for your Oracle Cloud Infrastructure Tenancy & User
+
+        oci_region_name = ""
+
+        # Provide a list of Compartment OCIDs that your User has access to, this requires Tenancy-scoped permissions 
+        # to be able to access all Compartments
+
+        oci_compartment_ocids = []
+
 [credentials]
 
     # ***IMPORTANT*** 
@@ -67,6 +86,19 @@ title = "ElectricEye Configuration"
         # be the name of the AWS Systems Manager Parameter Store SecureString Parameter
 
         gcp_service_account_json_payload_value = ""
+
+    [credentials.oci]
+
+        # The location (or actual contents) of your OCI User API Key Fingerprint this location must match the value 
+        # of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should 
+        # be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+
+        oci_user_api_key_fingerprint_value = ""
+
+        # The location (or actual contents) of your OCI User API Key Private Key PEM. This must be the CONTENTS not the file path
+        # this location must match the value  of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+
+        oci_user_api_key_private_key_pem_contents_value = ""
 
     [credentials.github]
 

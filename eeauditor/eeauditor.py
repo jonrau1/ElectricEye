@@ -49,8 +49,8 @@ class EEAuditor(object):
             searchPath = "./auditors/aws"
             utils = CloudConfig(assessmentTarget)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
-            self.aws_account_targets = utils.aws_account_targets
-            self.aws_regions_selection = utils.aws_regions_selection
+            self.awsAccountTargets = utils.aws_account_targets
+            self.awsRegionsSelection = utils.aws_regions_selection
             self.aws_electric_eye_iam_role_name = utils.aws_electric_eye_iam_role_name
         elif assessmentTarget == "Azure":
             searchPath = "./auditors/azure"
@@ -59,7 +59,7 @@ class EEAuditor(object):
             searchPath = "./auditors/gcp"
             utils = CloudConfig(assessmentTarget)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
-            self.gcp_project_ids = utils.gcp_project_ids
+            self.gcpProjectIds = utils.gcp_project_ids
         elif assessmentTarget == "OracleCloud":
             searchPath = "./auditors/oci"
             utils = CloudConfig(assessmentTarget)
@@ -150,8 +150,8 @@ class EEAuditor(object):
             requests.get(endpointUrl).text
         )
 
-        for account in self.aws_account_targets:
-            for region in self.aws_regions_selection:
+        for account in self.awsAccountTargets:
+            for region in self.awsRegionsSelection:
                 for serviceName, checkList in self.registry.checks.items():
                     # Setup Session & Partition
                     session = CloudConfig.create_aws_session(
@@ -224,7 +224,7 @@ class EEAuditor(object):
         else:
             partition = "aws"
 
-        for project in self.gcp_project_ids:
+        for project in self.gcpProjectIds:
             for serviceName, checkList in self.registry.checks.items():
                 for checkName, check in checkList.items():
                     # clearing cache for each control whithin a auditor
