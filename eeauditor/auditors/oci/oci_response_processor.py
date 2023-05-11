@@ -22,14 +22,15 @@ import json
 
 class OciResponseProcessor(object):
 
-    def __init__(self) -> None:
-        pass
+    def __init__(self, responseObject):
+        
+        self.responseObject = responseObject
 
-    def process_response(self, responseObject):
+    def process_response(self):
         """
         Receives an OCI Python SDK `Response` type (differs by service) and responds with a JSON object
         """
 
-        payload = json.loads(str(responseObject))
+        payload = json.loads(str(self.responseObject))
 
         return payload
