@@ -64,7 +64,7 @@ def get_oci_compute_instances(cache, ociTenancyId, ociUserId, ociRegionName, oci
             for instance in listInstances.data:
                 instancesList.append(
                     # transform into JSON
-                    instancePayload = process_response(instance)
+                    process_response(instance)
                 )
         else:
             return {}
