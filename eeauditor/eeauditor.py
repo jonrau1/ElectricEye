@@ -90,8 +90,9 @@ class EEAuditor(object):
                     self.source.load_plugin(auditorName)
                 except Exception as e:
                     print(f"Failed to load plugin {auditorName} with exception {e}")
-        
-    def check_service_endpoint_availability(self, awsPartition, service, awsRegion):
+
+    # Called within this class    
+    def check_service_endpoint_availability(self, endpointData, awsPartition, service, awsRegion):
         """
         This function downloads the latest version of botocore's endpoints.json file from GitHub and checks if a provided
         service within a specific AWS Partition and Region is available
@@ -100,13 +101,8 @@ class EEAuditor(object):
         # these are "endpoints" and not so much regions, since ElectricEye provides local overrides to the "global"
         # AWS region within each Auditor already as long as these are present for a specific service then we're good
         globalEndpointPseudoRegions = [
-            "aws-global", "fips-aws-global", "aws-cn-global", "aws-us-gov-global", "aws-us-gov-global-fips","iam-govcloud", "iam-govcloud-fips", "aws-iso-global", "aws-iso-b-global", "aws-iso-e-global"
+            "aws-global", "fips-aws-global", "aws-cn-global", "aws-us-gov-global", "aws-us-gov-global-fips", "iam-govcloud", "iam-govcloud-fips", "aws-iso-global", "aws-iso-b-global", "aws-iso-e-global"
         ]
-
-        endpointUrl = "https://raw.githubusercontent.com/boto/botocore/develop/botocore/data/endpoints.json"
-        endpointData = json.loads(
-            requests.get(endpointUrl).text
-        )
 
         # overrides
         if service == "globalaccelerator":
@@ -147,6 +143,12 @@ class EEAuditor(object):
         """
         Runs AWS Auditors across all TOML-specified Accounts and Regions in a specific Partition
         """
+        
+        # Retrieve the endpoints.json data to prevent multiple outbound calls
+        endpointUrl = "https://raw.githubusercontent.com/boto/botocore/develop/botocore/data/endpoints.json"
+        endpointData = json.loads(
+            requests.get(endpointUrl).text
+        )
 
         for account in self.aws_account_targets:
             for region in self.aws_regions_selection:
@@ -160,7 +162,7 @@ class EEAuditor(object):
                     partition = CloudConfig.check_aws_partition(region)
 
                     # Check service availability, not always accurate
-                    if self.check_service_endpoint_availability(partition, serviceName, region) == False:
+                    if self.check_service_endpoint_availability(endpointData, partition, serviceName, region) == False:
                         print(f"{serviceName} is not available in {region}")
                         continue
 

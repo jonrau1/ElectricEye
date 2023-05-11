@@ -69,7 +69,7 @@ Resources:
                 - elasticmapreduce:GetBlockPublicAccessConfiguration
                 - elasticmapreduce:ListClusters
                 - emr-serverless:GetApplication
-				        - emr-serverless:ListApplications
+                - emr-serverless:ListApplications
                 - firehose:DescribeDeliveryStream
                 - firehose:ListDeliveryStreams
                 - glue:GetSecurityConfiguration

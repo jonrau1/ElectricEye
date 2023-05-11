@@ -134,20 +134,20 @@ In total there are:
 
 > - **1** Supported SaaS Provider
 
-> - **693** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
+> - **701** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
 
-> - **105** Supported CSP & SaaS Resources / Asset Types
+> - **108** Supported CSP & SaaS Resources / Asset Types
 
-> - **89** Auditor Plugins
+> - **91** Auditor Plugins
 
 ### AWS Checks & Services
 ___
 
 These are the following services and checks perform by each Auditor, there are currently...
 
-- :boom: **554 Checks** :boom:
-- :exclamation: **102 supported AWS services/components** :exclamation:
-- :fire: **78 Auditors** :fire:
+- :boom: **556 Checks** :boom:
+- :exclamation: **103 supported AWS services/components** :exclamation:
+- :fire: **77 Auditors** :fire:
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service:** AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
@@ -324,6 +324,8 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_EMR_Auditor | EMR Cluster | Is cluster termination protection enabled |
 | Amazon_EMR_Auditor | EMR Cluster | Is cluster logging enabled |
 | Amazon_EMR_Auditor | AWS Account | Is EMR public SG block configured for the Account in the region |
+| Amazon_EMR_Serverless_Auditor | EMR Serverless Application | Is Application in a VPC |
+| Amazon_EMR_Serverless_Auditor | EMR Serverless Application | Does Application use custom container runtime |
 | Amazon_Kinesis_Analytics_Auditor | Kinesis analytics application | Does application log to CloudWatch |
 | Amazon_Kinesis_Data_Streams_Auditor | Kinesis data stream | Is stream encryption enabled |
 | Amazon_Kinesis_Data_Streams_Auditor | Kinesis data stream | Is enhanced monitoring enabled |
