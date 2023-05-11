@@ -59,7 +59,7 @@ def redshift_cluster_public_access_check(cache: dict, session, awsAccountId: str
         endpointPort = cluster["Endpoint"]["Port"]
         nodeType = cluster["NodeType"]
         vpcId = cluster["VpcId"]
-        if str(cluster["PubliclyAccessible"]) == "True":
+        if cluster["PubliclyAccessible"] == True:
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -250,7 +250,7 @@ def redshift_cluster_encryption_check(cache: dict, session, awsAccountId: str, a
         endpointPort = cluster["Endpoint"]["Port"]
         nodeType = cluster["NodeType"]
         vpcId = cluster["VpcId"]
-        if str(cluster["Encrypted"]) == "False":
+        if cluster["Encrypted"] == False:
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -429,7 +429,7 @@ def redshift_cluster_enhanced_vpc_routing_check(cache: dict, session, awsAccount
         endpointPort = cluster["Endpoint"]["Port"]
         nodeType = cluster["NodeType"]
         vpcId = cluster["VpcId"]
-        if str(cluster["EnhancedVpcRouting"]) == "False":
+        if cluster["EnhancedVpcRouting"] == False:
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -611,8 +611,7 @@ def redshift_cluster_logging_check(cache: dict, session, awsAccountId: str, awsR
         endpointPort = cluster["Endpoint"]["Port"]
         nodeType = cluster["NodeType"]
         vpcId = cluster["VpcId"]
-        response = redshift.describe_logging_status(ClusterIdentifier=clusterId)
-        if str(response["LoggingEnabled"]) == "False":
+        if redshift.describe_logging_status(ClusterIdentifier=clusterId)["LoggingEnabled"] == False:
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",

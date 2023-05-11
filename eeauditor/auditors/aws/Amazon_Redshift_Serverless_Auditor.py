@@ -480,4 +480,438 @@ def redshift_serverless_namespace_kms_cmk_check(cache: dict, session, awsAccount
             }
             yield finding
 
+@registry.register_check("redshift-serverless")
+def redshift_serverless_workgroup_enhanced_vpc_routing_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Redshift-Serverless.4] Redshift Serverless workgroups should enable VPC enhanced routing"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for workgroup in list_redshift_serverless_workgroups(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(workgroup,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        workgroupName = workgroup["workgroupName"]
+        workgroupArn = workgroup["workgroupArn"]
+        if workgroup["enhancedVpcRouting"] is False:
+            finding={
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{workgroupArn}/redshift-serverless-workgroup-vpc-enhanced-routing-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": workgroupArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[Redshift-Serverless.4] Redshift Serverless workgroups should enable VPC enhanced routing",
+                "Description": f"Redshift Serverless workgroup {workgroupName} does not use enhanced VPC routing. When you use Amazon Redshift enhanced VPC routing, Amazon Redshift forces all COPY and UNLOAD traffic between your cluster and your data repositories through your virtual private cloud (VPC) based on the Amazon VPC service. By using enhanced VPC routing, you can use standard VPC features, such as VPC security groups, network access control lists (ACLs), VPC endpoints, VPC endpoint policies, internet gateways, and Domain Name System (DNS) servers, as described in the Amazon VPC User Guide. You use these features to tightly manage the flow of data between your Amazon Redshift cluster and other resources. When you use enhanced VPC routing to route traffic through your VPC, you can also use VPC flow logs to monitor COPY and UNLOAD traffic. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on using enhanced VPC routing for Workgroups refer to the Enhanced VPC routing section of the Amazon Redshift Management Guide",
+                        "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/enhanced-vpc-enabling-cluster.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Redshift Serverless",
+                    "AssetComponent": "Workgroup"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsRedshiftServerlessWorkgroup",
+                        "Id": workgroupArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "WorkgroupName": workgroupName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": { 
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-5",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AC-10",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.1.3",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding={
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{workgroupArn}/redshift-serverless-workgroup-vpc-enhanced-routing-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": workgroupArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Redshift-Serverless.4] Redshift Serverless workgroups should enable VPC enhanced routing",
+                "Description": f"Redshift Serverless workgroup {workgroupName} does use enhanced VPC routing.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on using enhanced VPC routing for Workgroups refer to the Enhanced VPC routing section of the Amazon Redshift Management Guide",
+                        "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/enhanced-vpc-enabling-cluster.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Redshift Serverless",
+                    "AssetComponent": "Workgroup"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsRedshiftServerlessWorkgroup",
+                        "Id": workgroupArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "WorkgroupName": workgroupName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": { 
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-5",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AC-10",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.1.3",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("redshift-serverless")
+def redshift_serverless_workgroup_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Redshift-Serverless.5] Redshift Serverless workgroups should not be configured to be publicly accessible over the internet"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for workgroup in list_redshift_serverless_workgroups(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(workgroup,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        workgroupName = workgroup["workgroupName"]
+        workgroupArn = workgroup["workgroupArn"]
+        if workgroup["publiclyAccessible"] is True:
+            finding={
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{workgroupArn}/redshift-serverless-workgroup-public-access-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": workgroupArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[Redshift-Serverless.5] Redshift Serverless workgroups should not be configured to be publicly accessible over the internet",
+                "Description": f"Redshift Serverless workgroup {workgroupName} is configured to be publicly accessible over the internet. You can configure your Amazon Redshift Serverless instance so you can query it from a SQL client in the public internet, when you turn on the publicly accessible setting, Amazon Redshift Serverless creates an Elastic IP address - a static IP address that is associated with your AWS account. Your Workgroup will still require a Security Group that allows access to port 5439 and a route to the internet, however, with permissive network configurations and a lack of mitigating controls you can have your Workgroup unnecessarily exposed to unauthorized access. Redshift Serverless Workgroups should instead use VPC Endpoints to share with other Accounts, utilize Enhanced VPC routing, enforce SSL, and use IAM Roles for UNLOAD, LOAD and COPY between AWS services. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Workgroup public access refer to the Creating a publicly accessible Amazon Redshift Serverless instance and connecting to it section of the Amazon Redshift Management Guide",
+                        "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/serverless-connecting.html#serverless-publicly-accessible"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Redshift Serverless",
+                    "AssetComponent": "Workgroup"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsRedshiftServerlessWorkgroup",
+                        "Id": workgroupArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "WorkgroupName": workgroupName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": { 
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding={
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{workgroupArn}/redshift-serverless-workgroup-public-access-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": workgroupArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Redshift-Serverless.5] Redshift Serverless workgroups should not be configured to be publicly accessible over the internet",
+                "Description": f"Redshift Serverless workgroup {workgroupName} is not configured to be publicly accessible over the internet.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Workgroup public access refer to the Creating a publicly accessible Amazon Redshift Serverless instance and connecting to it section of the Amazon Redshift Management Guide",
+                        "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/serverless-connecting.html#serverless-publicly-accessible"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Redshift Serverless",
+                    "AssetComponent": "Workgroup"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsRedshiftServerlessWorkgroup",
+                        "Id": workgroupArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "WorkgroupName": workgroupName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": { 
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("redshift-serverless")
+def redshift_serverless_workgroup_user_activity_configuration_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Redshift-Serverless.6] Redshift Serverless workgroups should enable user activity logging"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for workgroup in list_redshift_serverless_workgroups(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(workgroup,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        workgroupName = workgroup["workgroupName"]
+        workgroupArn = workgroup["workgroupArn"]
+        # Check the status / existence of the "enable_user_activity_logging" parameter
+        userActivityLoggingParameter = [param for param in workgroup["configParameters"] if param["parameterKey"] == "enable_user_activity_logging"]
+        if userActivityLoggingParameter:
+            if userActivityLoggingParameter[0]["parameterKey"] == 'true':
+                enableUserActivityLogs = True
+            else:
+                enableUserActivityLogs = False
+        else:
+            enableUserActivityLogs = False
+
+        if enableUserActivityLogs is False:
+            finding={
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{workgroupArn}/redshift-serverless-workgroup-user-activity-configuration-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": workgroupArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[Redshift-Serverless.6] Redshift Serverless workgroups should enable user activity logging",
+                "Description": f"Redshift Serverless workgroup {workgroupName} does not enable user activity logging. For the user activity log, you must also enable the enable_user_activity_logging database parameter. If you enable only the audit logging feature, but not the associated parameter, the database audit logs log information for only the connection log and user log, but not for the user activity log. The enable_user_activity_logging parameter is not enabled (false) by default. You can set it to true to enable the user activity log. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on user activity logging parameter configuration refer to the Enabling logging section of the Amazon Redshift Management Guide",
+                        "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/db-auditing.html#db-auditing-enable-logging"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Redshift Serverless",
+                    "AssetComponent": "Workgroup"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsRedshiftServerlessWorkgroup",
+                        "Id": workgroupArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "WorkgroupName": workgroupName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": { 
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding={
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{workgroupArn}/redshift-serverless-workgroup-user-activity-configuration-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": workgroupArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Redshift-Serverless.6] Redshift Serverless workgroups should enable user activity logging",
+                "Description": f"Redshift Serverless workgroup {workgroupName} does enable user activity logging.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on user activity logging parameter configuration refer to the Enabling logging section of the Amazon Redshift Management Guide",
+                        "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/db-auditing.html#db-auditing-enable-logging"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Redshift Serverless",
+                    "AssetComponent": "Workgroup"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsRedshiftServerlessWorkgroup",
+                        "Id": workgroupArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "WorkgroupName": workgroupName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": { 
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
 ## END ??
