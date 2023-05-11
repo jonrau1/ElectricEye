@@ -68,6 +68,8 @@ Resources:
                 - elasticmapreduce:DescribeSecurityConfiguration
                 - elasticmapreduce:GetBlockPublicAccessConfiguration
                 - elasticmapreduce:ListClusters
+                - emr-serverless:GetApplication
+				        - emr-serverless:ListApplications
                 - firehose:DescribeDeliveryStream
                 - firehose:ListDeliveryStreams
                 - glue:GetSecurityConfiguration
@@ -79,19 +81,11 @@ Resources:
                 - appmesh:DescribeVirtualNode
                 - appmesh:ListMeshes
                 - appmesh:ListVirtualNodes
-                - support:DescribeTrustedAdvisorCheckResult
-                - support:DescribeTrustedAdvisorChecks
+                - support:DescribeTrustedAdvisor*
                 - health:DescribeEvents
                 - iam:GetAccountPasswordPolicy
-                - iam:ListUsers
-                - iam:ListAccessKeys
-                - iam:ListMfaDevices
-                - iam:ListUserPolicies
-                - iam:ListAttachedUserPolicies
-                - iam:ListServerCertificates
-                - rolesanywhere:ListProfiles
-                - rolesanywhere:ListTrustAnchors
-                - rolesanywhere:ListCrls
+                - iam:List*
+                - rolesanywhere:List*
                 - macie2:GetMacieSession
                 - managedblockchain:Get*
                 - managedblockchain:List*
@@ -180,9 +174,7 @@ Resources:
                 - ecr:GetRepositoryPolicy
                 - sqs:ListQueues
                 - sqs:GetQueueAttributes
-                - globalaccelerator:ListAccelerators
-                - globalaccelerator:ListListeners
-                - globalaccelerator:ListEndpointGroups
+                - globalaccelerator:List*
                 - xray:GetEncryptionConfig
                 - cloud9:DescribeEnvironments
                 - cloud9:ListEnvironments
@@ -193,8 +185,7 @@ Resources:
                 - lambda:GetLayerVersionPolicy
                 - lambda:GetPolicy
                 - lambda:ListFunctions
-                - lambda:ListLayerVersions
-                - lambda:ListLayers
+                - lambda:ListLayer*
                 - ecs:DescribeTaskDefinition
                 - ecs:ListTaskDefinitionFamilies
                 - ecs:ListTaskDefinitions
@@ -226,10 +217,8 @@ Resources:
                 - route53resolver:GetFirewallConfig
                 - route53resolver:ListResolverDnssecConfigs
                 - route53resolver:ListFirewallRuleGroupAssociations
-                - imagebuilder:ListImagePipelines
-                - imagebuilder:ListImageRecipes
-                - imagebuilder:GetImageRecipe
-                - imagebuilder:GetImagePipeline
+                - imagebuilder:ListImage*
+                - imagebuilder:GetImage*
                 - cloudfront:GetDistribution
               Resource: "*"
       AssumeRolePolicyDocument:

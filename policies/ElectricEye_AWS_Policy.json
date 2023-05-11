@@ -40,6 +40,8 @@
                 "elasticmapreduce:DescribeSecurityConfiguration",
                 "elasticmapreduce:GetBlockPublicAccessConfiguration",
                 "elasticmapreduce:ListClusters",
+                "emr-serverless:GetApplication",
+				"emr-serverless:ListApplications",
                 "firehose:DescribeDeliveryStream",
                 "firehose:ListDeliveryStreams",
                 "glue:GetSecurityConfiguration",
