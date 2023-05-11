@@ -96,8 +96,8 @@ def ecr_repo_vuln_scan_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "NIST CSF V1.1 DE.CM-8",
                         "NIST SP 800-53 Rev. 4 RA-5",
                         "AICPA TSC CC7.1",
-                        "ISO 27001:2013 A.12.6.1",
-                    ],
+                        "ISO 27001:2013 A.12.6.1"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
                 "RecordState": "ACTIVE",
@@ -152,8 +152,8 @@ def ecr_repo_vuln_scan_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "NIST CSF V1.1 DE.CM-8",
                         "NIST SP 800-53 Rev. 4 RA-5",
                         "AICPA TSC CC7.1",
-                        "ISO 27001:2013 A.12.6.1",
-                    ],
+                        "ISO 27001:2013 A.12.6.1"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED",

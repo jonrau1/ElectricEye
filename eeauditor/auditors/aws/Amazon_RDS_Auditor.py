@@ -1650,8 +1650,8 @@ def rds_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRe
                         "NIST SP 800-53 Rev. 4 SC-12",
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3",
-                    ],
+                        "ISO 27001:2013 A.8.2.3"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
                 "RecordState": "ACTIVE",
@@ -1709,8 +1709,8 @@ def rds_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRe
                         "NIST SP 800-53 Rev. 4 SC-12",
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3",
-                    ],
+                        "ISO 27001:2013 A.8.2.3"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED"
