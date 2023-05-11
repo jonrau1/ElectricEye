@@ -113,6 +113,20 @@ class CloudConfig(object):
         elif assessmentTarget == "Servicenow":
             # Process data["credentials"]["servicenow"] - nothing needs to be assigned to `self`
             serviceNowValues = data["credentials"]["servicenow"]
+
+            snowInstanceName = serviceNowValues["servicenow_instance_name"]
+            snowInstanceRegion = serviceNowValues["servicenow_instance_region"]
+            snowUserName = serviceNowValues["servicenow_sspm_username"]
+            snowUserLoginBreachRate = serviceNowValues["servicenow_failed_login_breaching_rate"]
+
+            if any(
+                # Check to make sure none of the variables pulled from TOML are emtpy
+                not var for var in [
+                    snowInstanceName, snowInstanceRegion, snowUserName, snowUserLoginBreachRate
+                    ]
+                ):
+                print(f"One of your ServiceNow TOML entries in [credentials.servicenow] is empty!")
+                sys.exit(2)
             
             # Retrieve ServiceNow ElectricEye user password
             serviceNowPwVal = serviceNowValues["servicenow_sspm_password_value"]
@@ -130,17 +144,17 @@ class CloudConfig(object):
                 )
             # All other ServiceNow Values are written as environment variables and either provided
             # to PySnow Clients or to ProductFields{} within the ASFF per Finding
-            os.environ["SNOW_INSTANCE_NAME"] = serviceNowValues["servicenow_instance_name"]
-            os.environ["SNOW_INSTANCE_REGION"] = serviceNowValues["servicenow_instance_region"]
-            os.environ["SNOW_SSPM_USERNAME"] = serviceNowValues["servicenow_sspm_username"]
-            os.environ["SNOW_FAILED_LOGIN_BREACHING_RATE"] = serviceNowValues["servicenow_failed_login_breaching_rate"]
+            os.environ["SNOW_INSTANCE_NAME"] = snowInstanceName
+            os.environ["SNOW_INSTANCE_REGION"] = snowInstanceRegion
+            os.environ["SNOW_SSPM_USERNAME"] = snowUserName
+            os.environ["SNOW_FAILED_LOGIN_BREACHING_RATE"] = snowUserLoginBreachRate
         
         # Azure
         elif assessmentTarget == "Azure":
             print("Coming soon!")
         
         # Oracle Cloud Infrastructure (OCI)
-        elif assessmentTarget == "OracleCloud":
+        elif assessmentTarget == "OCI":
             ociValues = data["regions_and_accounts"]["oci"]
 
             # Retrieve the OCIDs for Tenancy & User and the Region ID along with a list of Compartment OCIDs
@@ -148,10 +162,44 @@ class CloudConfig(object):
             ociUserId = ociValues["oci_user_ocid"]
             ociRegionName = ociValues["oci_region_name"]
             ociCompartments = ociValues["oci_compartment_ocids"]
+            # Process the [credentials.oci]
+            ociUserApiKeyFingerprint = data["credentials"]["oci"]["oci_user_api_key_fingerprint_value"]
+            ociUserApiKeyPemValue = data["credentials"]["oci"]["oci_user_api_key_private_key_pem_contents_value"]
 
-            if any(ociTenancyId, ociUserId, ociRegionName, ociCompartments) is None:
-                print(f"One of your Oracle Cloud TOML entries in [regions_and_accounts.oci] is empty!")
+            if any(
+                # Check to make sure none of the variables pulled from TOML are emtpy
+                not var for var in [
+                    ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint, ociUserApiKeyPemValue
+                    ]
+                ):
+                print(f"One of your Oracle Cloud TOML entries in [regions_and_accounts.oci] or [credentials.oci] is empty!")
                 sys.exit(2)
+
+            # Assign ["regions_and_accounts"]["oci"] values to `self`
+            self.ociTenancyId = ociTenancyId
+            self.ociUserId = ociUserId
+            self.ociRegionName = ociRegionName
+            self.ociCompartments = ociCompartments
+            self.ociUserApiKeyFingerprint = ociUserApiKeyFingerprint
+
+            # Process ["oci_user_api_key_private_key_pem_contents_value"]
+            ociUserApiKeyPemLocation = data["credentials"]["oci"]["oci_user_api_key_private_key_pem_contents_value"]
+            if self.credentialsLocation == "CONFIG_FILE":
+                ociUserApiKeyPemLocation = ociUserApiKeyPemLocation
+            elif self.credentialsLocation == "AWS_SSM":
+                ociUserApiKeyPemLocation = self.get_credential_from_aws_ssm(
+                    ociUserApiKeyPemLocation,
+                    "oci_user_api_key_private_key_pem_contents_value"
+                )
+            elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
+                ociUserApiKeyPemLocation = self.get_credential_from_aws_secrets_manager(
+                    ociUserApiKeyPemLocation,
+                    "oci_user_api_key_private_key_pem_contents_value"
+                )
+
+            # Create the PEM file and save the location of it to os.environ
+            self.setup_oci_credentials(ociUserApiKeyPemLocation)
+
 
     def get_aws_regions(self):
         """
@@ -304,6 +352,7 @@ class CloudConfig(object):
                 indent=2
             )
         # Set Cred global path
+        print(f"{here}/gcp_cred.json saved to environment variable")
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = f"{here}/gcp_cred.json"
 
     def setup_oci_credentials(self, credentialValue):
@@ -317,6 +366,7 @@ class CloudConfig(object):
             f.write(credentialValue)
 
         # Set the location
+        print(f"{here}/oci_api_key.pem saved to environment variable")
         os.environ["OCI_PEM_FILE_PATH"] = f"{here}/oci_api_key.pem"
         
 ## EOF

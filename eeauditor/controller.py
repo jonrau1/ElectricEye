@@ -71,7 +71,7 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
         [
             "AWS",
             "Azure",
-            "OracleCloud",
+            "OCI",
             "GCP",
             "Servicenow"
         ],

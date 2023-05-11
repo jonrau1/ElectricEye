@@ -60,9 +60,15 @@ class EEAuditor(object):
             utils = CloudConfig(assessmentTarget)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.gcpProjectIds = utils.gcp_project_ids
-        elif assessmentTarget == "OracleCloud":
+        elif assessmentTarget == "OCI":
             searchPath = "./auditors/oci"
             utils = CloudConfig(assessmentTarget)
+            # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
+            self.ociTenancyId = utils.ociTenancyId
+            self.ociUserId = utils.ociUserId
+            self.ociRegionName = utils.ociRegionName
+            self.ociCompartments = utils.ociCompartments
+            self.ociUserApiKeyFingerprint = utils.ociUserApiKeyFingerprint
         elif assessmentTarget == "GitHub":
             searchPath = "./auditors/github"
             utils = CloudConfig(assessmentTarget)
