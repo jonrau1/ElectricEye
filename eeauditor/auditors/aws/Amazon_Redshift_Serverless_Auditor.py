@@ -778,7 +778,7 @@ def redshift_serverless_workgroup_user_activity_configuration_check(cache: dict,
         # Check the status / existence of the "enable_user_activity_logging" parameter
         userActivityLoggingParameter = [param for param in workgroup["configParameters"] if param["parameterKey"] == "enable_user_activity_logging"]
         if userActivityLoggingParameter:
-            if userActivityLoggingParameter[0]["parameterKey"] == 'true':
+            if userActivityLoggingParameter[0]["parameterValue"] == 'true':
                 enableUserActivityLogs = True
             else:
                 enableUserActivityLogs = False

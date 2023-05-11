@@ -146,6 +146,8 @@ Resources:
                 - redshift:DescribeLoggingStatus
                 - redshift:DescribeClusters
                 - redshift:DescribeClusterParameters
+                - redshift-serverless:ListWorkgroups
+                - redshift-serverless:ListNamespaces
                 - appstream:DescribeFleets
                 - ecr:DescribeRepositories
                 - sagemaker:DescribeEndpoint

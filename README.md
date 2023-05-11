@@ -145,9 +145,9 @@ ___
 
 These are the following services and checks perform by each Auditor, there are currently...
 
-- :boom: **548 Checks** :boom:
-- :exclamation: **100 supported AWS services/components** :exclamation:
-- :fire: **77 Auditors** :fire:
+- :boom: **554 Checks** :boom:
+- :exclamation: **102 supported AWS services/components** :exclamation:
+- :fire: **78 Auditors** :fire:
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service:** AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
@@ -386,6 +386,12 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_Redshift_Auditor | Redshift cluster | Does the cluster enforce encrypted in transit |
 | Amazon_Redshift_Auditor | Redshift cluster | Does the cluster take automated snapshots |
 | Amazon_Redshift_Auditor | Redshift cluster | Is the cluster configured for automated major version upgrades |
+| Amazon_Redshift_Serverless_Auditor | Redshift Serverless namespace | Do namespaces use IAM Roles for cross-service access |
+| Amazon_Redshift_Serverless_Auditor | Redshift Serverless namespace | Do namespaces export all audit logs |
+| Amazon_Redshift_Serverless_Auditor | Redshift Serverless namespace | Do namespaces use KMS CMKs |
+| Amazon_Redshift_Serverless_Auditor | Redshift Serverless workgroup | Do workgroups use enhanced VPC routing |
+| Amazon_Redshift_Serverless_Auditor | Redshift Serverless workgroup | Are workgroups publicly accessible |
+| Amazon_Redshift_Serverless_Auditor | Redshift Serverless workgroup | Do workgroups enable user activity logging parameters |
 | Amazon_Route53_Auditor | Route53 Hosted Zone | Do Hosted Zones have Query Logging enabled |
 | Amazon_Route53_Auditor | Route53 Hosted Zone | Do Hosted Zones have traffic policies associated |
 | Amazon_Route53_Resolver_Auditor | VPC | Do VPCs have Query Logging enabled |
