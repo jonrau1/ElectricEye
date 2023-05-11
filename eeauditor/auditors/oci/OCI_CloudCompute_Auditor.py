@@ -60,14 +60,9 @@ def get_oci_compute_instances(cache, ociTenancyId, ociUserId, ociRegionName, oci
 
     for compartment in ociCompartments:
         listInstances = instanceClient.list_instances(compartment_id=compartment)
-        if listInstances.data:
-            for instance in listInstances.data:
-                instancesList.append(
-                    # transform into JSON
-                    process_response(instance)
-                )
-        else:
-            return {}
+        for instance in listInstances.data:
+            processedInstance = process_response(instance)
+            instancesList.append(processedInstance)
 
     cache["get_oci_compute_instances"] = instancesList
     return cache["get_oci_compute_instances"]
@@ -148,7 +143,7 @@ def cloudsql_instance_public_check(cache, awsAccountId, awsRegion, awsPartition,
                                 "CompartmentId": compartmentId,
                                 "Region": ociRegionName,
                                 "Name": instanceName,
-                                "Id": id,
+                                "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
                                 "LifecycleState": state
@@ -218,7 +213,7 @@ def cloudsql_instance_public_check(cache, awsAccountId, awsRegion, awsPartition,
                                 "CompartmentId": compartmentId,
                                 "Region": ociRegionName,
                                 "Name": instanceName,
-                                "Id": id,
+                                "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
                                 "LifecycleState": state
