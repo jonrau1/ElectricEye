@@ -97,13 +97,20 @@ def google_dns_resolver(target):
     if r.status_code != 200:
         return None
     else:
-        result = json.loads(r.text)["Answer"][0]["data"]
-        # make sure we didn't resolve to a private IP
-        ip = ipaddress.ip_address(result)
-        if not ip.is_private:
-            return result
-        else:
-            return None
+        for result in json.loads(r.text)["Answer"]:
+            try:
+                if not (
+                    ipaddress.IPv4Address(result["data"]).is_private
+                    or ipaddress.IPv4Address(result["data"]).is_loopback
+                    or ipaddress.IPv4Address(result["data"]).is_link_local
+                ):
+                    return result["data"]
+                else:
+                    return None
+            except ipaddress.AddressValueError:
+                continue
+        # if the loop terminates without any result return None
+        return None
 
 def describe_instances(cache, session):
     ec2 = session.client("ec2")
