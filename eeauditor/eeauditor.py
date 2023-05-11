@@ -288,29 +288,33 @@ class EEAuditor(object):
         else:
             partition = "aws"
 
-        for compartment in self.ociCompartments:
-            for serviceName, checkList in self.registry.checks.items():
-                for checkName, check in checkList.items():
-                    # clearing cache for each control whithin a auditor
-                    auditorCache = {}
-                    # if a specific check is requested, only run that one check
-                    if (
-                        not pluginName
-                        or pluginName
-                        and pluginName == checkName
-                    ):
-                        try:
-                            print(f"Executing Check: {checkName}")
-                            for finding in check(
-                                cache=auditorCache,
-                                awsAccountId=account,
-                                awsRegion=region,
-                                awsPartition=partition
-                            ):
-                                yield finding
-                        except Exception as e:
-                            print(traceback.format_exc())
-                            print(f"Failed to execute check {checkName} with exception {e}")
+        for serviceName, checkList in self.registry.checks.items():
+            for checkName, check in checkList.items():
+                # clearing cache for each control whithin a auditor
+                auditorCache = {}
+                # if a specific check is requested, only run that one check
+                if (
+                    not pluginName
+                    or pluginName
+                    and pluginName == checkName
+                ):
+                    try:
+                        print(f"Executing Check: {checkName}")
+                        for finding in check(
+                            cache=auditorCache,
+                            awsAccountId=account,
+                            awsRegion=region,
+                            awsPartition=partition,
+                            ociTenancyId=self.ociTenancyId,
+                            ociUserId=self.ociUserId,
+                            ociRegionName=self.ociRegionName,
+                            ociCompartments=self.ociCompartments,
+                            ociUserApiKeyFingerprint=self.ociUserApiKeyFingerprint
+                        ):
+                            yield finding
+                    except Exception as e:
+                        print(traceback.format_exc())
+                        print(f"Failed to execute check {checkName} with exception {e}")
             # optional sleep if specified - hardcode to 0 seconds
             sleep(delay)    
     
