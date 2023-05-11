@@ -26,7 +26,7 @@ import json
 
 registry = CheckRegister()
 
-def get_cloudsql_dbs(cache: dict, gcpProjectId: str):
+def get_cloudsql_dbs(cache, gcpProjectId):
     """
     AggregatedList result provides Zone information as well as every single Instance in a Project
     """
@@ -45,7 +45,7 @@ def get_cloudsql_dbs(cache: dict, gcpProjectId: str):
         return {}
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_public_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def cloudsql_instance_public_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
     """
     [GCP.CloudSQL.1] CloudSQL Instances should not be publicly reachable
     """
@@ -211,7 +211,7 @@ def cloudsql_instance_public_check(cache: dict, awsAccountId: str, awsRegion: st
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_standard_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def cloudsql_instance_standard_backup_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
     """
     [GCP.CloudSQL.2] CloudSQL Instances should have automated backups configured
     """
@@ -377,7 +377,7 @@ def cloudsql_instance_standard_backup_check(cache: dict, awsAccountId: str, awsR
             yield finding 
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_mysql_pitr_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def cloudsql_instance_mysql_pitr_backup_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
     """
     [GCP.CloudSQL.3] CloudSQL MySQL Instances with mission-critical workloads should have point-in-time recovery (PITR) configured
     """
@@ -548,7 +548,7 @@ def cloudsql_instance_mysql_pitr_backup_check(cache: dict, awsAccountId: str, aw
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_psql_pitr_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def cloudsql_instance_psql_pitr_backup_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
     """
     [GCP.CloudSQL.4] CloudSQL PostgreSQL Instances with mission-critical workloads should have point-in-time recovery (PITR) configured
     """
@@ -719,7 +719,7 @@ def cloudsql_instance_psql_pitr_backup_check(cache: dict, awsAccountId: str, aws
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_private_network_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def cloudsql_instance_private_network_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
     """
     [GCP.CloudSQL.5] CloudSQL Instances should use private networks
     """
@@ -885,7 +885,7 @@ def cloudsql_instance_private_network_check(cache: dict, awsAccountId: str, awsR
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_private_gcp_services_connection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def cloudsql_instance_private_gcp_services_connection_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
     """
     [GCP.CloudSQL.6] CloudSQL Instances using private networks should enable GCP private services access
     """
@@ -1047,7 +1047,7 @@ def cloudsql_instance_private_gcp_services_connection_check(cache: dict, awsAcco
                 yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_password_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def cloudsql_instance_password_policy_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
     """
     [GCP.CloudSQL.7] CloudSQL Instances should have a password policy enabled
     """
@@ -1236,7 +1236,7 @@ def cloudsql_instance_password_policy_check(cache: dict, awsAccountId: str, awsR
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_password_min_length_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def cloudsql_instance_password_min_length_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
     """
     [GCP.CloudSQL.8] CloudSQL Instances should have a password minimum length requirement defined
     """
@@ -1426,7 +1426,7 @@ def cloudsql_instance_password_min_length_check(cache: dict, awsAccountId: str, 
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_password_reuse_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def cloudsql_instance_password_reuse_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
     """
     [GCP.CloudSQL.9] CloudSQL Instances should have a password reuse interval defined
     """
@@ -1616,7 +1616,7 @@ def cloudsql_instance_password_reuse_check(cache: dict, awsAccountId: str, awsRe
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_password_username_block_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def cloudsql_instance_password_username_block_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
     """
     [GCP.CloudSQL.10] CloudSQL Instances should be configured to disallow the username from being part of the password
     """
@@ -1805,7 +1805,7 @@ def cloudsql_instance_password_username_block_check(cache: dict, awsAccountId: s
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_password_change_interval_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def cloudsql_instance_password_change_interval_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
     """
     [GCP.CloudSQL.11] CloudSQL Instances should have a password change interval defined
     """
@@ -1995,7 +1995,7 @@ def cloudsql_instance_password_change_interval_check(cache: dict, awsAccountId: 
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_storage_autoresize_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def cloudsql_instance_storage_autoresize_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
     """
     [GCP.CloudSQL.12] CloudSQL Instances should have automatic storage increase enabled
     """
@@ -2160,7 +2160,7 @@ def cloudsql_instance_storage_autoresize_check(cache: dict, awsAccountId: str, a
             yield finding 
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def cloudsql_instance_deletion_protection_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
     """
     [GCP.CloudSQL.13] CloudSQL Instances should have deletion protection enabled
     """
@@ -2325,7 +2325,7 @@ def cloudsql_instance_deletion_protection_check(cache: dict, awsAccountId: str, 
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_query_insights_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def cloudsql_instance_query_insights_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
     """
     [GCP.CloudSQL.14] CloudSQL Instances should have query insights enabled
     """
@@ -2495,7 +2495,7 @@ def cloudsql_instance_query_insights_check(cache: dict, awsAccountId: str, awsRe
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_tls_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def cloudsql_instance_tls_enforcement_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
     """
     [GCP.CloudSQL.15] CloudSQL Instances should enforce SSL/TLS connectivity
     """

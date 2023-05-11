@@ -804,7 +804,7 @@ def gce_instance_vtpm_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                         "ISO 27001:2013 A.12.5.1",
                         "ISO 27001:2013 A.14.1.2",
                         "ISO 27001:2013 A.14.1.3",
-                        "ISO 27001:2013 A.14.2.4",
+                        "ISO 27001:2013 A.14.2.4"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},

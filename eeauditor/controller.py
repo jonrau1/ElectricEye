@@ -49,6 +49,8 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
         findings = list(app.run_aws_checks(pluginName=pluginName, delay=delay))
     elif assessmentTarget == "GCP":
         findings = list(app.run_gcp_checks(pluginName=pluginName, delay=delay))
+    elif assessmentTarget == "OCI":
+        findings = list(app.run_oci_checks(pluginName=pluginName, delay=delay))
     else:
         findings = list(app.run_non_aws_checks(pluginName=pluginName, delay=delay))
 

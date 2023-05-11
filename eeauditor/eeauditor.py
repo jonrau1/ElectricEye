@@ -258,6 +258,63 @@ class EEAuditor(object):
                 sleep(delay)
 
     # Called from eeauditor/controller.py run_auditor()
+    def run_oci_checks(self, pluginName=None, delay=0):
+        """
+        Run OCI Auditors for all Compartments specified in the TOML for a Tenancy
+        """
+
+        import boto3
+
+        sts = boto3.client("sts")
+
+        region = boto3.Session().region_name
+        account = sts.get_caller_identity()["Account"]
+
+        # GovCloud partition override
+        if region in ["us-gov-east-1", "us-gov-west-1"]:
+            partition = "aws-us-gov"
+        # China partition override
+        elif region in ["cn-north-1", "cn-northwest-1"]:
+            partition = "aws-cn"
+        # AWS Secret Region override - sc2s.sgov.gov
+        elif region in ["us-isob-east-1", "us-isob-west-1"]:
+            partition = "aws-isob"
+        # AWS Top Secret Region override - c2s.ic.gov
+        elif region in ["us-iso-east-1", "us-iso-west-1"]:
+            partition = "aws-iso"
+        # UK GCHQ Classified Region override - cloud.adc-e.uk
+        elif region in ["eu-isoe-west-1", "eu-isoe-west-2"]:
+            partition = "aws-isoe"
+        else:
+            partition = "aws"
+
+        for compartment in self.ociCompartments:
+            for serviceName, checkList in self.registry.checks.items():
+                for checkName, check in checkList.items():
+                    # clearing cache for each control whithin a auditor
+                    auditorCache = {}
+                    # if a specific check is requested, only run that one check
+                    if (
+                        not pluginName
+                        or pluginName
+                        and pluginName == checkName
+                    ):
+                        try:
+                            print(f"Executing Check: {checkName}")
+                            for finding in check(
+                                cache=auditorCache,
+                                awsAccountId=account,
+                                awsRegion=region,
+                                awsPartition=partition
+                            ):
+                                yield finding
+                        except Exception as e:
+                            print(traceback.format_exc())
+                            print(f"Failed to execute check {checkName} with exception {e}")
+            # optional sleep if specified - hardcode to 0 seconds
+            sleep(delay)    
+    
+    # Called from eeauditor/controller.py run_auditor()
     def run_non_aws_checks(self, pluginName=None, delay=0):
         """
         Generic function to run Auditors, unless specialized logic is required, Assessment Target default to running here
