@@ -82,7 +82,7 @@ def oci_vcn_security_list_all_open_check(cache, awsAccountId, awsRegion, awsPart
     """"[OCI.SecurityList.1] Virtual Cloud Network Security Lists should not allow unrestricted access to all ports and protocols"""
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for seclist in get_oci_security_lists(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    for seclist in get_oci_security_lists(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(seclist, default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -251,7 +251,7 @@ def oci_vcn_security_list_all_open_check(cache, awsAccountId, awsRegion, awsPart
     with open(configFile, 'r') as jsonfile:
         auditRules = json.load(jsonfile)
     # Grab Sec Lists from Cache
-    for seclist in get_oci_security_lists(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    for seclist in get_oci_security_lists(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(seclist, default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
