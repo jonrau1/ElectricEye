@@ -1,0 +1,250 @@
+[
+    {
+        "ToPort": 20,
+        "FromPort": 21,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.2] Virtual Cloud Network Security Lists should not allow unrestricted File Transfer Protocol (FTP) access",
+        "CheckId": "oci-vcn-security-list-ftp-open-check",
+        "CheckDescriptor": "File Transfer Protocol (FTP)"
+    },
+    {
+        "ToPort": 23,
+        "FromPort": 23,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.3] Virtual Cloud Network Security Lists should not allow unrestricted TelNet access",
+        "CheckId": "oci-vcn-security-list-telnet-open-check",
+        "CheckDescriptor": "TelNet"
+    },
+    {
+        "ToPort": 135,
+        "FromPort": 135,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.4] Virtual Cloud Network Security Lists should not allow unrestricted Windows RPC DCOM access",
+        "CheckId": "oci-vcn-security-list-rpc-dcom-open-check",
+        "CheckDescriptor": "Windows RPC DCOM"
+    },
+    {
+        "ToPort": 445,
+        "FromPort": 445,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.5] Virtual Cloud Network Security Lists should not allow unrestricted Server Message Blocks (SMB) access",
+        "CheckId": "oci-vcn-security-list-smb-open-check",
+        "CheckDescriptor": "Server Message Blocks (SMB)"
+    },
+    {
+        "ToPort": 1433,
+        "FromPort": 1433,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.6] Virtual Cloud Network Security Lists should not allow unrestricted Microsoft SQL Server (MSSQL) access",
+        "CheckId": "oci-vcn-security-list-mssql-open-check",
+        "CheckDescriptor": "Microsoft SQL Server (MSSQL)"
+    },
+    {
+        "ToPort": 1521,
+        "FromPort": 1521,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.7] Virtual Cloud Network Security Lists should not allow unrestricted Oracle database (TCP 1521) access",
+        "CheckId": "oci-vcn-security-list-oracledb-open-check",
+        "CheckDescriptor": "Oracle database (TCP 1521)"
+    },
+    {
+        "ToPort": 3306,
+        "FromPort": 3306,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.8] Virtual Cloud Network Security Lists should not allow unrestricted MySQL or MariaDB database (TCP 3306) access",
+        "CheckId": "oci-vcn-security-list-mysql-mariadb-open-check",
+        "CheckDescriptor": "MySQL or MariaDB database (TCP 3306)"
+    },
+    {
+        "ToPort": 3389,
+        "FromPort": 3389,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.9] Virtual Cloud Network Security Lists should not allow unrestricted Remote Desktop Protocol (RDP) access",
+        "CheckId": "oci-vcn-security-list-rdp-open-check",
+        "CheckDescriptor": "Remote Desktop Protocol (RDP)"
+    },
+    {
+        "ToPort": 5432,
+        "FromPort": 5432,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.10] Virtual Cloud Network Security Lists should not allow unrestricted PostgreSQL datbase (TCP 5432) access",
+        "CheckId": "oci-vcn-security-list-postgresql-open-check",
+        "CheckDescriptor": "PostgreSQL datbase (TCP 5432)"
+    },
+    {
+        "ToPort": 5601,
+        "FromPort": 5601,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.11] Virtual Cloud Network Security Lists should not allow unrestricted access to Kibana (TCP 5601)",
+        "CheckId": "oci-vcn-security-list-kibana-open-check",
+        "CheckDescriptor": "Kibana (TCP 5601)"
+    },
+    {
+        "ToPort": 6379,
+        "FromPort": 6379,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.12] Virtual Cloud Network Security Lists should not allow unrestricted Redis (TCP 6379) access",
+        "CheckId": "oci-vcn-security-list-redis-open-check",
+        "CheckDescriptor": "Redis (TCP 6379)"
+    },
+    {
+        "ToPort": 8089,
+        "FromPort": 8089,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.13] Virtual Cloud Network Security Lists should not allow unrestricted Splunkd (TCP 8089) access",
+        "CheckId": "oci-vcn-security-list-splunkd-open-check",
+        "CheckDescriptor": "Splunkd (TCP 8089)"
+    },
+    {
+        "ToPort": 9200,
+        "FromPort": 9200,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.14] Virtual Cloud Network Security Lists should not allow unrestricted Elasticsearch (TCP 9200) access",
+        "CheckId": "oci-vcn-security-list-elasticsearch-9200-open-check",
+        "CheckDescriptor": "Elasticsearch (TCP 9200)"
+    },
+    {
+        "ToPort": 9300,
+        "FromPort": 9300,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.15] Virtual Cloud Network Security Lists should not allow unrestricted Elasticsearch (TCP 9300) access",
+        "CheckId": "oci-vcn-security-list-elasticsearch-9300-open-check",
+        "CheckDescriptor": "Elasticsearch (TCP 9300)"
+    },
+    {
+        "ToPort": 11211,
+        "FromPort": 11211,
+        "Protocol": "17",
+        "CheckTitle": "[OCI.SecurityList.16] Virtual Cloud Network Security Lists should not allow unrestricted Memcached (UDP 11211) access",
+        "CheckId": "oci-vcn-security-list-memcached-open-check",
+        "CheckDescriptor": "Memcached (UDP 11211)"
+    },
+    {
+        "ToPort": 5439,
+        "FromPort": 5439,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.17] Virtual Cloud Network Security Lists should not allow unrestricted Redshift (TCP 5439) access",
+        "CheckId": "oci-vcn-security-list-redshift-open-check",
+        "CheckDescriptor": "Redshift (TCP 5439)"
+    },
+    {
+        "ToPort": 27017,
+        "FromPort": 27017,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.18] Virtual Cloud Network Security Lists should not allow unrestricted MongoDB/DocumentDB (TCP 27017) access",
+        "CheckId": "oci-vcn-security-list-documentdb-open-check",
+        "CheckDescriptor": "DocumentDB / MongoDB (TCP 27017)"
+    },
+    {
+        "ToPort": 9142,
+        "FromPort": 9142,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.19] Virtual Cloud Network Security Lists should not allow unrestricted AWS Keyspaces/Cassandra (TCP 9142) access",
+        "CheckId": "oci-vcn-security-list-cassandra-open-check",
+        "CheckDescriptor": "Apache Cassandra / AWS Keyspaces (TCP 9142)"
+    },
+    {
+        "ToPort": 9092,
+        "FromPort": 9092,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.20] Virtual Cloud Network Security Lists should not allow unrestricted Kafka streams (TCP 9092) access",
+        "CheckId": "oci-vcn-security-list-kafka-open-check",
+        "CheckDescriptor": "Kafka streams (TCP 9092)"
+    },
+    {
+        "ToPort": 2049,
+        "FromPort": 2049,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.21] Virtual Cloud Network Security Lists should not allow unrestricted Amazon EFS/NFS (TCP 2049) access",
+        "CheckId": "oci-vcn-security-list-nfs-open-check",
+        "CheckDescriptor": "Amazon EFS / NFS (TCP 2049)"
+    },
+    {
+        "ToPort": 873,
+        "FromPort": 873,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.22] Virtual Cloud Network Security Lists should not allow unrestricted Rsync (TCP 873) access",
+        "CheckId": "oci-vcn-security-list-rsync-open-check",
+        "CheckDescriptor": "Rsync (TCP 873)"
+    },
+    {
+        "ToPort": 69,
+        "FromPort": 69,
+        "Protocol": "17",
+        "CheckTitle": "[OCI.SecurityList.23] Virtual Cloud Network Security Lists should not allow unrestricted TFTP (UDP 69) access",
+        "CheckId": "oci-vcn-security-list-tftp-open-check",
+        "CheckDescriptor": "TFTP (UDP 69)"
+    },
+    {
+        "ToPort": 2375,
+        "FromPort": 2375,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.24] Virtual Cloud Network Security Lists should not allow unrestricted Docker API (TCP 2375) access",
+        "CheckId": "oci-vcn-security-list-docker-open-check",
+        "CheckDescriptor": "Docker API (TCP 2375)"
+    },
+    {
+        "ToPort": 10250,
+        "FromPort": 10250,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.25] Virtual Cloud Network Security Lists should not allow unrestricted Kubernetes API (TCP 10250) access",
+        "CheckId": "oci-vcn-security-list-k8sapi-open-check",
+        "CheckDescriptor": "Kubernetes (TCP 10250)"
+    },
+    {
+        "ToPort": 137,
+        "FromPort": 139,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.26] Virtual Cloud Network Security Lists should not allow unrestricted Windows NetBIOS (TCP 137-139) access",
+        "CheckId": "oci-vcn-security-list-winnetbios-open-check",
+        "CheckDescriptor": "Windows NetBIOS (TCP 137-139)"
+    },
+    {
+        "ToPort": 25,
+        "FromPort": 25,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.27] Virtual Cloud Network Security Lists should not allow unrestricted SMTP (TCP 25) access",
+        "CheckId": "oci-vcn-security-list-smtp-open-check",
+        "CheckDescriptor": "Secure Mail Transfer Protocol (SMTP)"
+    },
+    {
+        "ToPort": 1194,
+        "FromPort": 1194,
+        "Protocol": "17",
+        "CheckTitle": "[OCI.SecurityList.28] Virtual Cloud Network Security Lists should not allow unrestricted OpenVPN (UDP 1194) access",
+        "CheckId": "oci-vcn-security-list-openvpn-open-check",
+        "CheckDescriptor": "OpenVPN (UDP 1194)"
+    },
+    {
+        "ToPort": 5672,
+        "FromPort": 5672,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.29] Virtual Cloud Network Security Lists should not allow unrestricted access to AmazonMQ/RabbitMQ (TCP 5672)",
+        "CheckId": "oci-vcn-security-list-rabbitmq-open-check",
+        "CheckDescriptor": "AmazonMQ / RabbitMQ / AMQP (TCP 5672)"
+    },
+    {
+        "ToPort": 4040,
+        "FromPort": 4040,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.30] Virtual Cloud Network Security Lists should not allow unrestricted access to Spark Web UI (TCP 4040)",
+        "CheckId": "oci-vcn-security-list-sparkui-open-check",
+        "CheckDescriptor": "Spark Web UI (TCP 4040)"
+    },
+    {
+        "ToPort": 110,
+        "FromPort": 110,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.31] Virtual Cloud Network Security Lists should not allow unrestricted POP3 access",
+        "CheckId": "oci-vcn-security-list-pop3-open-check",
+        "CheckDescriptor": "Post Office Protocol 3 (POP3)"
+    },
+    {
+        "ToPort": 8182,
+        "FromPort": 8182,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.SecurityList.32] Virtual Cloud Network Security Lists should not allow unrestricted VMWare ESXi access",
+        "CheckId": "oci-vcn-security-list-vmware-esxi-open-check",
+        "CheckDescriptor": "VMWare ESXi"
+    }
+]
