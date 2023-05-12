@@ -276,14 +276,22 @@ def oci_vcn_security_list_all_open_check(cache, awsAccountId, awsRegion, awsPart
                 continue
 
             # Create a list comprehension to scope down the amount of rules that need to be looked at
-            filteredRules = [
-                rule for rule in seclist["ingress_security_rules"] 
-                if rule.get("protocol") == targetProtocol 
-                and rule.get("source") == "0.0.0.0/0"
-                and rule[portFilterDict]["source_port_range"].get("max") == toPortTarget
-                and rule[portFilterDict]["source_port_range"].get("min") == fromPortTarget
-            ]
+            # as the list comprehension runs all of the conditional logic, there are times where the
+            # rules are DESTINATION PORT and not source port, so we cannot skip them but we'll need
+            # to bypass any AttributeError because of them
+            try:
+                filteredRules = [
+                    rule for rule in seclist["ingress_security_rules"] 
+                    if rule.get("protocol") == targetProtocol 
+                    and rule.get("source") == "0.0.0.0/0"
+                    and rule[portFilterDict]["source_port_range"].get("max") == toPortTarget
+                    and rule[portFilterDict]["source_port_range"].get("min") == fromPortTarget
+                ]
+            except AttributeError:
+                continue
 
+            if filteredRules:
+                print(f"{checkId} matches {str(filteredRules)}")
 
             """allowAllCheck = [rule for rule in seclist["ingress_security_rules"] if rule.get("protocol") == "all" and rule.get("source") == "0.0.0.0/0"]
             # If the list has an entry that means there is at least one rule that allows all ports & protocols
