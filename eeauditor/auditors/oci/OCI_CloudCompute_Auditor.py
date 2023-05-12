@@ -29,13 +29,17 @@ from check_register import CheckRegister
 registry = CheckRegister()
 
 def process_response(responseObject):
-        """
-        Receives an OCI Python SDK `Response` type (differs by service) and responds with a JSON object
-        """
+    """
+    Receives an OCI Python SDK `Response` type (differs by service) and returns a JSON object
+    """
 
-        payload = json.loads(str(responseObject))
+    payload = json.loads(
+        str(
+            responseObject
+        )
+    )
 
-        return payload
+    return payload
 
 def get_oci_compute_instances(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
     
@@ -66,6 +70,34 @@ def get_oci_compute_instances(cache, ociTenancyId, ociUserId, ociRegionName, oci
 
     cache["get_oci_compute_instances"] = instancesList
     return cache["get_oci_compute_instances"]
+
+def get_compute_instance_vnic(ociTenancyId, ociUserId, ociRegionName, ociUserApiKeyFingerprint, compartmentId, instanceId):
+    """
+    Helper function to retrieve the Virtual NIC & Network Security Group information for a Cloud Compute Instance.
+    OCI requires you to call ListVnicAttachments, derive the VNC OCID, and use that to call the GetVnic ID in another
+    client object. The response of GetVnic contains information on the public IP of an instance and the associated NSGs
+    """
+
+    # Create & Validate OCI Creds - do this after cache check to avoid doing it a lot
+    config = {
+        "tenancy": ociTenancyId,
+        "user": ociUserId,
+        "region": ociRegionName,
+        "fingerprint": ociUserApiKeyFingerprint,
+        "key_file": os.environ["OCI_PEM_FILE_PATH"],
+        
+    }
+    validate_config(config)
+
+    instanceClient = oci.core.ComputeClient(config)
+    vncClient = oci.core.VirtualNetworkClient(config)
+
+    vnics = instanceClient.list_vnic_attachments(compartment_id=compartmentId, instance_id=instanceId).data
+    vnicId = process_response(vnics)[0]["vnic_id"]
+    vnicData = vncClient.get_vnic(vnic_id=vnicId).data
+
+    return process_response(vnicData)
+
 
 @registry.register_check("oci.cloudcompute")
 def oci_cloud_compute_secure_boot_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
@@ -1075,7 +1107,6 @@ def oci_cloud_compute_imdsv1_disable_check(cache, awsAccountId, awsRegion, awsPa
             }
             yield finding
 
-# Instance management enabled ["agent_config"]["is_management_disabled"]
 @registry.register_check("oci.cloudcompute")
 def oci_cloud_compute_instance_mgmt_agent_enabled_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
     """
@@ -1233,8 +1264,327 @@ def oci_cloud_compute_instance_mgmt_agent_enabled_check(cache, awsAccountId, aws
             }
             yield finding
 
-# Instance monitoring enabled ["agent_config"]["is_monitoring_disabled"]
+@registry.register_check("oci.cloudcompute")
+def oci_cloud_compute_instance_monitoring_agent_enabled_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.CloudCompute.8] Cloud Compute instances should have the Monitoring Agent enabled
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for instance in get_oci_compute_instances(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(instance,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        instanceId = instance["id"]
+        instanceName = instance["display_name"]
+        compartmentId = instance["compartment_id"]
+        imageId = instance["image_id"]
+        shape = instance["shape"]
+        state = instance["lifecycle_state"]
+        # Begin finding evaluation
+        if instance["agent_config"]["is_monitoring_disabled"] is True:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{instanceId}/oci-instance-monitoring-agent-enabled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{instanceId}/oci-instance-monitoring-agent-enabled-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[OCI.CloudCompute.8] Cloud Compute instances should have the Monitoring Agent enabled",
+                "Description": f"Oracle Cloud Compute instance {instanceName} in Compartment {compartmentId} in {ociRegionName} does not have the Monitoring Agent enabled. Oracle Cloud Agent is a lightweight process that manages plugins running on compute instances. Plugins collect performance metrics, install OS updates, and perform other instance management tasks. To use plugins on an instance, the Oracle Cloud Agent software must be installed on the instance, the plugins must be enabled, and the plugins must be running. You might need to perform additional configuration tasks before you can use certain plugins. The Monitoring Agent emits metrics about the instance's health, capacity, and performance. These metrics are consumed by the Monitoring service. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your Oracle Cloud Compute instance should use the Monitoring Agent refer to the Enabling Monitoring for Compute Instances section of the Oracle Cloud Infrastructure Documentation for Management Agents.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Compute/Tasks/enablingmonitoring.htm#Enabling_Monitoring_for_Compute_Instances",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Oracle Cloud Compute",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciCloudComputeInstance",
+                        "Id": instanceId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": instanceName,
+                                "Id": instanceId,
+                                "ImageId": imageId,
+                                "Shape": shape,
+                                "LifecycleState": state
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{instanceId}/oci-instance-monitoring-agent-enabled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{instanceId}/oci-instance-monitoring-agent-enabled-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.CloudCompute.8] Cloud Compute instances should have the Monitoring Agent enabled",
+                "Description": f"Oracle Cloud Compute instance {instanceName} in Compartment {compartmentId} in {ociRegionName} does have the Monitoring Agent enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your Oracle Cloud Compute instance should use the Monitoring Agent refer to the Enabling Monitoring for Compute Instances section of the Oracle Cloud Infrastructure Documentation for Management Agents.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Compute/Tasks/enablingmonitoring.htm#Enabling_Monitoring_for_Compute_Instances",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Oracle Cloud Compute",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciCloudComputeInstance",
+                        "Id": instanceId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": instanceName,
+                                "Id": instanceId,
+                                "ImageId": imageId,
+                                "Shape": shape,
+                                "LifecycleState": state
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 # Instance vuln scanning ["agent_config"]["plugins_config"]
+@registry.register_check("oci.cloudcompute")
+def oci_cloud_compute_instance_vuln_scan_plugin_enabled_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.CloudCompute.9] Cloud Compute instances should have the Vulnerability Scanning plugin enabled
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for instance in get_oci_compute_instances(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(instance,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        instanceId = instance["id"]
+        instanceName = instance["display_name"]
+        compartmentId = instance["compartment_id"]
+        imageId = instance["image_id"]
+        shape = instance["shape"]
+        state = instance["lifecycle_state"]
+
+        plugins = instance["agent_config"]["plugins_config"]
+        # Check the status / existence of the "Vulnerability Scanning" plugin
+        vulnScanPlugin = [param for param in plugins if param["name"] == "Vulnerability Scanning"]
+        if vulnScanPlugin:
+            if vulnScanPlugin[0]["desired_state"] == "DISABLED":
+                vulnScanEnabled = False
+            else:
+                vulnScanEnabled = True
+        else:
+            vulnScanEnabled = False
+
+        # Begin finding evaluation
+        if vulnScanEnabled is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{instanceId}/oci-instance-vuln-scan-plugin-enabled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{instanceId}/oci-instance-vuln-scan-plugin-enabled-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[OCI.CloudCompute.9] Cloud Compute instances should have the Vulnerability Scanning plugin enabled",
+                "Description": f"Oracle Cloud Compute instance {instanceName} in Compartment {compartmentId} in {ociRegionName} does not have the Vulnerability Scanning plugin enabled. Oracle Cloud Infrastructure Vulnerability Scanning Service helps improve your security posture by routinely checking hosts and container images for potential vulnerabilities. The service gives developers, operations, and security administrators comprehensive visibility into misconfigured or vulnerable resources, and generates reports with metrics and details about these vulnerabilities including remediation information. All Scanning resources and reports are regional, but scan results are also visible as problems in your Cloud Guard global reporting region. Oracle Cloud Infrastructure Vulnerability Scanning Service can help you quickly correct vulnerabilities and exposures, but the service is not a Payment Card Industry (PCI) compliant scanner. Do not use the Scanning service to meet PCI compliance requirements. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your Oracle Cloud Compute instance should use the Vulnerability Scanning plugin refer to the Scanning Overview section of the Oracle Cloud Infrastructure Documentation for Management Agents.",
+                        "Url": "https://docs.oracle.com/iaas/scanning/using/overview.htm",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Oracle Cloud Compute",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciCloudComputeInstance",
+                        "Id": instanceId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": instanceName,
+                                "Id": instanceId,
+                                "ImageId": imageId,
+                                "Shape": shape,
+                                "LifecycleState": state
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.CM-8",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.6.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{instanceId}/oci-instance-vuln-scan-plugin-enabled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{instanceId}/oci-instance-vuln-scan-plugin-enabled-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.CloudCompute.9] Cloud Compute instances should have the Vulnerability Scanning plugin enabled",
+                "Description": f"Oracle Cloud Compute instance {instanceName} in Compartment {compartmentId} in {ociRegionName} does have the Vulnerability Scanning plugin enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your Oracle Cloud Compute instance should use the Vulnerability Scanning plugin refer to the Scanning Overview section of the Oracle Cloud Infrastructure Documentation for Management Agents.",
+                        "Url": "https://docs.oracle.com/iaas/scanning/using/overview.htm",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Oracle Cloud Compute",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciCloudComputeInstance",
+                        "Id": instanceId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": instanceName,
+                                "Id": instanceId,
+                                "ImageId": imageId,
+                                "Shape": shape,
+                                "LifecycleState": state
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.CM-8",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.6.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 # END ??
