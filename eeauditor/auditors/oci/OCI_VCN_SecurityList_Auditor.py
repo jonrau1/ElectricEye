@@ -261,7 +261,7 @@ def oci_vcn_security_list_all_open_check(cache, awsAccountId, awsRegion, awsPart
         vcnId = seclist["vcn_id"]
         lifecycleState = seclist["lifecycle_state"]
         createdAt = seclist["time_created"]
-        for x in json.load(auditRules):
+        for x in auditRules:
             toPortTarget = x["ToPort"]
             fromPortTarget = x["FromPort"]
             targetProtocol = x["Protocol"]
