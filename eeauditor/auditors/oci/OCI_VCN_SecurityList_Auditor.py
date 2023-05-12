@@ -98,9 +98,9 @@ def oci_vcn_security_list_all_open_check(cache, awsAccountId, awsRegion, awsPart
         if allowAllCheck:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{seclistId}/oci-load-balancer-nsg-assigned-check",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{seclistId}/oci-vcn-security-list-all-open-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{seclistId}/oci-load-balancer-nsg-assigned-check",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{seclistId}/oci-vcn-security-list-all-open-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -171,9 +171,9 @@ def oci_vcn_security_list_all_open_check(cache, awsAccountId, awsRegion, awsPart
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{seclistId}/oci-load-balancer-nsg-assigned-check",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{seclistId}/oci-vcn-security-list-all-open-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{seclistId}/oci-load-balancer-nsg-assigned-check",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{seclistId}/oci-vcn-security-list-all-open-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -243,7 +243,7 @@ def oci_vcn_security_list_all_open_check(cache, awsAccountId, awsRegion, awsPart
             yield finding
 
 @registry.register_check("oci.vcn.securitylist")
-def oci_vcn_security_list_all_open_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+def oci_vcn_security_master_auditor_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
     """"[OCI.SecurityList.{checkIdNumber}] Virtual Cloud Network Security Lists should not allow unrestricted {protocol} access"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -290,26 +290,23 @@ def oci_vcn_security_list_all_open_check(cache, awsAccountId, awsRegion, awsPart
             except AttributeError:
                 continue
 
+            # If the "filteredRules" list has at least one entry it means there is a rule that allows access to everyone (on CIDRs) for a specific rule
+            # that means there will always be a "counter" finding for it so the changes can be monitored over time
             if filteredRules:
-                print(f"{checkId} matches {str(filteredRules)}")
-
-            """allowAllCheck = [rule for rule in seclist["ingress_security_rules"] if rule.get("protocol") == "all" and rule.get("source") == "0.0.0.0/0"]
-            # If the list has an entry that means there is at least one rule that allows all ports & protocols
-            if allowAllCheck:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{seclistId}/oci-load-balancer-nsg-assigned-check",
+                    "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{seclistId}/{checkId}",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{seclistId}/oci-load-balancer-nsg-assigned-check",
+                    "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{seclistId}/{checkId}",
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "CRITICAL"},
+                    "Severity": {"Label": "HIGH"},
                     "Confidence": 99,
-                    "Title": "[OCI.SecurityList.1] Virtual Cloud Network Security Lists should not allow unrestricted access to all ports and protocols",
-                    "Description": f"Virtual Cloud Network Security Lists {seclistName} for VCN {vcnId} in Compartment {compartmentId} in {ociRegionName} contains a rule that allows unrestricted access to all ports and protocols. An Oracle Cloud Security List is a virtual firewall that acts as the first line of defense for networks in OCI. It is used to define network access rules that control inbound and outbound traffic to and from subnets, instances, and other resources in a virtual cloud network (VCN). Allowing unfettered access removes an important part of a cloud security defense-in-depth and makes it easier for adversaries to perform recon on your assets and potentially gain unauthorized access where no other network-based controls exist. Your security list should still be audited to ensure any other rules are compliant with organizational or regulatory requirements. Additionally, audit that other network security controls such as Network Security Groups, Web Application Firewalls, Network Firewalls, and other host- and network-based appliances and services are configured to mitigate the risk posed by this Security List. Refer to the remediation instructions if this configuration is not intended.",
+                    "Title": checkTitle,
+                    "Description": f"Virtual Cloud Network Security Lists {seclistName} for VCN {vcnId} in Compartment {compartmentId} in {ociRegionName} contains a rule that allows unrestricted {checkDescription} access. An Oracle Cloud Security List is a virtual firewall that acts as the first line of defense for networks in OCI. It is used to define network access rules that control inbound and outbound traffic to and from subnets, instances, and other resources in a virtual cloud network (VCN). Allowing unfettered access removes an important part of a cloud security defense-in-depth and makes it easier for adversaries to perform recon on your assets and potentially gain unauthorized access where no other network-based controls exist. Your security list should still be audited to ensure any other rules are compliant with organizational or regulatory requirements. Additionally, audit that other network security controls such as Network Security Groups, Web Application Firewalls, Network Firewalls, and other host- and network-based appliances and services are configured to mitigate the risk posed by this Security List. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For more information on building and modifying Security Rules (for NSGs and SLs) refer to the Security Rules section of the Oracle Cloud Infrastructure Documentation for Networks.",
@@ -371,9 +368,9 @@ def oci_vcn_security_list_all_open_check(cache, awsAccountId, awsRegion, awsPart
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{seclistId}/oci-load-balancer-nsg-assigned-check",
+                    "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{seclistId}/{checkId}",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{seclistId}/oci-load-balancer-nsg-assigned-check",
+                    "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{seclistId}/{checkId}",
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks"],
                     "FirstObservedAt": iso8601Time,
@@ -381,8 +378,8 @@ def oci_vcn_security_list_all_open_check(cache, awsAccountId, awsRegion, awsPart
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
-                    "Title": "[OCI.SecurityList.1] Virtual Cloud Network Security Lists should not allow unrestricted access to all ports and protocols",
-                    "Description": f"Virtual Cloud Network Security Lists {seclistName} for VCN {vcnId} in Compartment {compartmentId} in {ociRegionName} does not contain a rule that allows unrestricted access to all ports and protocols.",
+                    "Title": checkTitle,
+                    "Description": f"Virtual Cloud Network Security Lists {seclistName} for VCN {vcnId} in Compartment {compartmentId} in {ociRegionName} does not contain a rule that allows unrestricted {checkDescription} access. Your security list should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For more information on building and modifying Security Rules (for NSGs and SLs) refer to the Security Rules section of the Oracle Cloud Infrastructure Documentation for Networks.",
@@ -440,4 +437,6 @@ def oci_vcn_security_list_all_open_check(cache, awsAccountId, awsRegion, awsPart
                     "Workflow": {"Status": "RESOLVED"},
                     "RecordState": "ARCHIVED"
                 }
-                yield finding"""
+                yield finding
+
+## END ??
