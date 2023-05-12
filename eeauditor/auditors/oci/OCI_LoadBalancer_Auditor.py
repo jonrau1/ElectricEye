@@ -58,7 +58,7 @@ def get_oci_load_balancers(cache, ociTenancyId, ociUserId, ociRegionName, ociCom
     }
     validate_config(config)
 
-    lbClient = oci.core.LoadBalancerClient(config)
+    lbClient = oci.load_balancer.LoadBalancerClient(config)
 
     lbList = []
 
