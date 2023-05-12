@@ -215,8 +215,6 @@ def security_group_master_auditor_check(cache: dict, session, awsAccountId: str,
             checkId = x["CheckId"]
             checkDescription = x["CheckDescriptor"]
 
-            print(f"Auditing all Security Groups for unrestricted {checkDescription} access")
-
             for secgroup in describe_security_groups(cache, session)["SecurityGroups"]:
                 # B64 encode all of the details for the Asset
                 assetJson = json.dumps(secgroup,default=str).encode("utf-8")

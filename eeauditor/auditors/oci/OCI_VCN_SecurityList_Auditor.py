@@ -275,18 +275,21 @@ def oci_vcn_security_list_all_open_check(cache, awsAccountId, awsRegion, awsPart
             else:
                 continue
 
-            print(f"Auditing all OCI VCN Security List {seclistName} for unrestricted {checkDescription} access")
             # Create a list comprehension to scope down the amount of rules that need to be looked at
-            filteredRules = [
-                rule for rule in seclist["ingress_security_rules"] 
-                if rule.get("protocol") == targetProtocol 
-                and rule.get("source") == "0.0.0.0/0"
-                and rule[portFilterDict]["source_port_range"].get("max") == toPortTarget
-                and rule[portFilterDict]["source_port_range"].get("min") == fromPortTarget
-            ]
+            try:
+                filteredRules = [
+                    rule for rule in seclist["ingress_security_rules"] 
+                    if rule.get("protocol") == targetProtocol 
+                    and rule.get("source") == "0.0.0.0/0"
+                    and rule[portFilterDict]["source_port_range"].get("max") == toPortTarget
+                    and rule[portFilterDict]["source_port_range"].get("min") == fromPortTarget
+                ]
 
 
-            print(f"{checkId} {str(filteredRules)}")
+            except Exception as e:
+                print(e)
+                print(seclistName)
+                print(assetJson)
 
 
             """allowAllCheck = [rule for rule in seclist["ingress_security_rules"] if rule.get("protocol") == "all" and rule.get("source") == "0.0.0.0/0"]
