@@ -98,7 +98,6 @@ def get_compute_instance_vnic(ociTenancyId, ociUserId, ociRegionName, ociUserApi
 
     return process_response(vnicData)
 
-
 @registry.register_check("oci.cloudcompute")
 def oci_cloud_compute_secure_boot_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
     """
