@@ -408,7 +408,7 @@ def ec2_secure_enclave_check(cache: dict, session, awsAccountId: str, awsRegion:
 
 @registry.register_check("ec2")
 def ec2_public_facing_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EC2.3] EC2 Instances should not be internet-facing"""
+    """[EC2.3] EC2 Instances should not be publicly discoverable on the internet"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for i in describe_instances(cache, session):
@@ -444,7 +444,7 @@ def ec2_public_facing_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[EC2.3] EC2 Instances should not be internet-facing",
+                "Title": "[EC2.3] EC2 Instances should not be publicly discoverable on the internet",
                 "Description": "EC2 Instance "
                 + instanceId
                 + " is internet-facing (due to having a Public DNS), instances should be behind AWS Elastic Load Balancers, CloudFront Distributions, or a 3rd-party CDN/Load Balancer to avoid any vulnerabilities on the middleware or the operating system from being exploited directly. Additionally, load balancing can increase high availability and resilience of applications hosted on EC2. Refer to the remediation instructions if this configuration is not intended.",
@@ -520,7 +520,7 @@ def ec2_public_facing_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[EC2.3] EC2 Instances should not be internet-facing",
+                "Title": "[EC2.3] EC2 Instances should not be publicly discoverable on the internet",
                 "Description": "EC2 Instance "
                 + instanceId
                 + " is not internet-facing (due to not having a Public DNS).",
