@@ -281,6 +281,7 @@ def oci_vcn_security_list_all_open_check(cache, awsAccountId, awsRegion, awsPart
                     rule for rule in seclist["ingress_security_rules"] 
                     if rule.get("protocol") == targetProtocol 
                     and rule.get("source") == "0.0.0.0/0"
+                    and rule[portFilterDict]["source_port_range"] is not None
                     and rule[portFilterDict]["source_port_range"].get("max") == toPortTarget
                     and rule[portFilterDict]["source_port_range"].get("min") == fromPortTarget
                 ]
@@ -289,7 +290,6 @@ def oci_vcn_security_list_all_open_check(cache, awsAccountId, awsRegion, awsPart
             except Exception as e:
                 print(e)
                 print(seclistName)
-                print(assetJson)
 
 
             """allowAllCheck = [rule for rule in seclist["ingress_security_rules"] if rule.get("protocol") == "all" and rule.get("source") == "0.0.0.0/0"]
