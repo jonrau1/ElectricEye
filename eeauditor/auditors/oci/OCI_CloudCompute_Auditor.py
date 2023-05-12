@@ -440,8 +440,8 @@ def oci_cloud_compute_measured_boot_check(cache, awsAccountId, awsRegion, awsPar
                         "ISO 27001:2013 A.14.2.4"
                     ]
                 },
-                "Workflow": {"Status": "ARCHIVED"},
-                "RecordState": "RESOLVED"
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
             }
             yield finding
 
@@ -776,8 +776,8 @@ def oci_cloud_compute_volume_in_transit_encryption_check(cache, awsAccountId, aw
                         "ISO 27001:2013 A.14.1.3"
                     ]
                 },
-                "Workflow": {"Status": "ARCHIVED"},
-                "RecordState": "RESOLVED"
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
             }
             yield finding
 
@@ -1425,7 +1425,6 @@ def oci_cloud_compute_instance_monitoring_agent_enabled_check(cache, awsAccountI
             }
             yield finding
 
-# Instance vuln scanning ["agent_config"]["plugins_config"]
 @registry.register_check("oci.cloudcompute")
 def oci_cloud_compute_instance_vuln_scan_plugin_enabled_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
     """
@@ -1586,5 +1585,159 @@ def oci_cloud_compute_instance_vuln_scan_plugin_enabled_check(cache, awsAccountI
                 "RecordState": "ARCHIVED"
             }
             yield finding
+
+@registry.register_check("oci.cloudcompute")
+def oci_cloud_compute_instance_public_ip_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.CloudCompute.10] Cloud Compute instances should not be publicly discoverable on the internet
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for instance in get_oci_compute_instances(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(instance,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        instanceId = instance["id"]
+        instanceName = instance["display_name"]
+        compartmentId = instance["compartment_id"]
+        imageId = instance["image_id"]
+        shape = instance["shape"]
+        state = instance["lifecycle_state"]
+
+        instanceVnic = get_compute_instance_vnic(ociTenancyId, ociUserId, ociRegionName, ociUserApiKeyFingerprint, compartmentId, instanceId)
+
+        print(instanceVnic)
+
+        """# Begin finding evaluation
+        if vulnScanEnabled is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{instanceId}/oci-instance-public-ip-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{instanceId}/oci-instance-public-ip-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[OCI.CloudCompute.9] Cloud Compute instances should have the Vulnerability Scanning plugin enabled",
+                "Description": f"Oracle Cloud Compute instance {instanceName} in Compartment {compartmentId} in {ociRegionName} does not have the Vulnerability Scanning plugin enabled. Oracle Cloud Infrastructure Vulnerability Scanning Service helps improve your security posture by routinely checking hosts and container images for potential vulnerabilities. The service gives developers, operations, and security administrators comprehensive visibility into misconfigured or vulnerable resources, and generates reports with metrics and details about these vulnerabilities including remediation information. All Scanning resources and reports are regional, but scan results are also visible as problems in your Cloud Guard global reporting region. Oracle Cloud Infrastructure Vulnerability Scanning Service can help you quickly correct vulnerabilities and exposures, but the service is not a Payment Card Industry (PCI) compliant scanner. Do not use the Scanning service to meet PCI compliance requirements. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your Oracle Cloud Compute instance should use the Vulnerability Scanning plugin refer to the Scanning Overview section of the Oracle Cloud Infrastructure Documentation for Management Agents.",
+                        "Url": "https://docs.oracle.com/iaas/scanning/using/overview.htm",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Oracle Cloud Compute",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciCloudComputeInstance",
+                        "Id": instanceId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": instanceName,
+                                "Id": instanceId,
+                                "ImageId": imageId,
+                                "Shape": shape,
+                                "LifecycleState": state
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.CM-8",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.6.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{instanceId}/oci-instance-vuln-scan-plugin-enabled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{instanceId}/oci-instance-vuln-scan-plugin-enabled-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.CloudCompute.9] Cloud Compute instances should have the Vulnerability Scanning plugin enabled",
+                "Description": f"Oracle Cloud Compute instance {instanceName} in Compartment {compartmentId} in {ociRegionName} does have the Vulnerability Scanning plugin enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your Oracle Cloud Compute instance should use the Vulnerability Scanning plugin refer to the Scanning Overview section of the Oracle Cloud Infrastructure Documentation for Management Agents.",
+                        "Url": "https://docs.oracle.com/iaas/scanning/using/overview.htm",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Oracle Cloud Compute",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciCloudComputeInstance",
+                        "Id": instanceId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": instanceName,
+                                "Id": instanceId,
+                                "ImageId": imageId,
+                                "Shape": shape,
+                                "LifecycleState": state
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.CM-8",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.6.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding"""
 
 # END ??
