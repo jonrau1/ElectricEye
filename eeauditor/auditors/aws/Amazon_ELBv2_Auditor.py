@@ -430,11 +430,7 @@ def elbv2_internet_facing_secure_listeners_check(cache: dict, session, awsAccoun
                     "Severity": {"Label": "HIGH"},
                     "Confidence": 99,
                     "Title": "[ELBv2.3] Internet-facing Application and Network Load Balancers should have secure listeners configured",
-                    "Description": "ELB "
-                    + elbv2LbType
-                    + " load balancer "
-                    + elbv2Name
-                    + " does not have a secure listener configured. Refer to the remediation instructions to remediate this behavior",
+                    "Description": f"ELB {elbv2LbType} load balancer {elbv2Name} does not have a secure listener configured.  Refer to the remediation instructions to remediate this behavior",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For more information on ELBv2 Access Logging and how to configure it refer to the Create an HTTPS Listener for Your Application Load Balancer section of the Application Load Balancers User Guide. For Network Load Balancer logging please refer to the NLB User Guide",
@@ -503,11 +499,7 @@ def elbv2_internet_facing_secure_listeners_check(cache: dict, session, awsAccoun
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
                     "Title": "[ELBv2.3] Internet-facing Application and Network Load Balancers should have secure listeners configured",
-                    "Description": "ELB "
-                    + elbv2LbType
-                    + " load balancer "
-                    + elbv2Name
-                    + " has a secure listener configured.",
+                    "Description": f"ELB {elbv2LbType} load balancer {elbv2Name} does have a secure listener configured. Not using a secure listener (HTTPS/TLS) can lead to adversaries performing Man-in-the-Middle (MITM) attacks, eavesdropping on communications, or tampering with the availability or integirty of an application hosted behind the load balancer. Additionally, without an X.509 certificate for your domain or load balancer, adversaries can create fake websites with their own X.509 certificates and trick customers or other end-users into disclosing information. Refer to the remediation instructions to remediate this behavior",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For more information on ELBv2 Access Logging and how to configure it refer to the Create an HTTPS Listener for Your Application Load Balancer section of the Application Load Balancers User Guide. For Network Load Balancer logging please refer to the NLB User Guide",

@@ -1622,7 +1622,7 @@ def oci_cloud_compute_instance_public_ip_check(cache, awsAccountId, awsRegion, a
                 "Description": f"Oracle Cloud Compute instance {instanceName} in Compartment {compartmentId} in {ociRegionName} is publicly discoverable on the internet due to having a Public IP address. A public IP address is an IPv4 address that is reachable from the internet. If a resource in your tenancy needs to be directly reachable from the internet, it must have a public IP address. Depending on the type of resource, there might be other requirements You can assign a public IP address to an instance to enable communication with the internet. The instance is assigned a public IP address from the Oracle Cloud Infrastructure address pool. The assignment is actually to a private IP object on the instance. The VNIC that the private IP is assigned to must be in a public subnet. A given instance can have multiple secondary VNICs, and a given VNIC can have multiple secondary private IPs. So you can assign a given instance multiple public IPs across one or more VNICs if you like. While there are many legitimate use cases for having a publicly reachable instance, consider using VPNs, Load Balancers, and Reverse Proxies to protect your resources - without additional security controls adversaries can perform recon and follow-on nefarious actions on your cloud infrastructure. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "If your Oracle Cloud Compute instance should not have a Public IP assigned refer to the Public IP Addresses section of the Oracle Cloud Infrastructure Documentation for Management Agents.",
+                        "Text": "If your Oracle Cloud Compute instance should not have a Public IP assigned refer to the Public IP Addresses section of the Oracle Cloud Infrastructure Documentation for Networks.",
                         "Url": "https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/managingpublicIPs.htm#Public_IP_Addresses",
                     }
                 },
@@ -1695,7 +1695,7 @@ def oci_cloud_compute_instance_public_ip_check(cache, awsAccountId, awsRegion, a
                 "Description": f"Oracle Cloud Compute instance {instanceName} in Compartment {compartmentId} in {ociRegionName} is not publicly discoverable on the internet due to not having a Public IP address.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "If your Oracle Cloud Compute instance should not have a Public IP assigned refer to the Public IP Addresses section of the Oracle Cloud Infrastructure Documentation for Management Agents.",
+                        "Text": "If your Oracle Cloud Compute instance should not have a Public IP assigned refer to the Public IP Addresses section of the Oracle Cloud Infrastructure Documentation for Networks.",
                         "Url": "https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/managingpublicIPs.htm#Public_IP_Addresses",
                     }
                 },
@@ -1789,7 +1789,7 @@ def oci_cloud_compute_instance_nsg_assigned_check(cache, awsAccountId, awsRegion
                 "Description": f"Oracle Cloud Compute instance {instanceName} in Compartment {compartmentId} in {ociRegionName} does not have a Network Security Group (NSG) assigned. NSGs act as a virtual firewall for your compute instances and other kinds of resources. An NSG consists of a set of ingress and egress security rules that apply only to a set of VNICs of your choice in a single VCN (for example: all the compute instances that act as web servers in the web tier of a multi-tier application in your VCN). NSG security rules function the same as security list rules. However, for an NSG security rule's source (for ingress rules) or destination (for egress rules), you can specify an NSG instead of a CIDR. This means you can easily write security rules to control traffic between two NSGs in the same VCN, or traffic within a single NSG. See Parts of a Security Rule. Unlike with security lists, the VCN does not have a default NSG. Also, each NSG you create is initially empty. It has no default security rules. A network security group (NSG) provides a virtual firewall for a set of cloud resources that all have the same security posture. For example: a group of compute instances that all perform the same tasks and thus all need to use the same set of ports. If you have resources with different security postures in the same VCN, you can write NSG security rules to control traffic between the resources with one posture versus another. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "If your Oracle Cloud Compute instance should have a NSG assigned refer to the Network Security Groups section of the Oracle Cloud Infrastructure Documentation for Management Agents.",
+                        "Text": "If your Oracle Cloud Compute instance should have a NSG assigned refer to the Network Security Groups section of the Oracle Cloud Infrastructure Documentation for Networks.",
                         "Url": "https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/networksecuritygroups.htm#support",
                     }
                 },
@@ -1862,7 +1862,7 @@ def oci_cloud_compute_instance_nsg_assigned_check(cache, awsAccountId, awsRegion
                 "Description": f"Oracle Cloud Compute instance {instanceName} in Compartment {compartmentId} in {ociRegionName} does have at least one Network Security Group (NSG) assigned.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "If your Oracle Cloud Compute instance should have a NSG assigned refer to the Network Security Groups section of the Oracle Cloud Infrastructure Documentation for Management Agents.",
+                        "Text": "If your Oracle Cloud Compute instance should have a NSG assigned refer to the Network Security Groups section of the Oracle Cloud Infrastructure Documentation for Networks.",
                         "Url": "https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/networksecuritygroups.htm#support",
                     }
                 },
