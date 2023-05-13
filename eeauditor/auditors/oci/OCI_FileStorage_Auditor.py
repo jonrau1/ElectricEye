@@ -138,7 +138,7 @@ def oci_file_storage_file_system_cmk_mek_check(cache, awsAccountId, awsRegion, a
         assetB64 = base64.b64encode(assetJson)
         compartmentId = filesys["compartment_id"]
         filesysId = filesys["id"]
-        filesysName = filesys["name"]
+        filesysName = filesys["display_name"]
         availabilityDomain = filesys["availability_domain"]
         lifecycleState = filesys["lifecycle_state"]
         createdAt = str(filesys["time_created"])
@@ -146,9 +146,9 @@ def oci_file_storage_file_system_cmk_mek_check(cache, awsAccountId, awsRegion, a
         if not filesys["kms_key_id"]:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{filesysId}/oci-object-storage-filesys-cmk-mek-check",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{filesysId}/oci-file-storage-filesys-cmk-mek-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{filesysId}/oci-object-storage-filesys-cmk-mek-check",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{filesysId}/oci-file-storage-filesys-cmk-mek-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -160,8 +160,8 @@ def oci_file_storage_file_system_cmk_mek_check(cache, awsAccountId, awsRegion, a
                 "Description": f"Oracle File Storage file system {filesysName} in Compartment {compartmentId} in {ociRegionName} does not use a Customer-managed Master Encryption Key. File Storage file systems use Oracle-managed keys by default, which leaves all encryption-related matters to Oracle. Optionally, you can encrypt the data in a file system using your own Vault encryption key. Be sure to back up your vaults and keys. Deleting a vault and key otherwise means losing the ability to decrypt any resource or data that the key was used to encrypt. Using a Customer-managed MEK can help satisify regulatory or industry requirements that require you to have control of your own cryptographic material or where you want to ensure different customers or business units use different keys to limit 'data blast radius'. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For more information on using a customer-managed MEK for your filesyss refer to the Using Your Own Keys in Vault for Server-Side Encryption section of the Oracle Cloud Infrastructure Documentation for Object Storage.",
-                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Object/Tasks/encryption.htm#UsingYourKMSKeys",
+                        "Text": "For more information on using a customer-managed MEK for your file system refer to the Encrypting a File System section of the Oracle Cloud Infrastructure Documentation for File Storage.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/File/Tasks/encrypt-file-system.htm",
                     }
                 },
                 "ProductFields": {
@@ -213,9 +213,9 @@ def oci_file_storage_file_system_cmk_mek_check(cache, awsAccountId, awsRegion, a
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{filesysId}/oci-object-storage-filesys-cmk-mek-check",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{filesysId}/oci-file-storage-filesys-cmk-mek-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{filesysId}/oci-object-storage-filesys-cmk-mek-check",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{filesysId}/oci-file-storage-filesys-cmk-mek-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -227,8 +227,8 @@ def oci_file_storage_file_system_cmk_mek_check(cache, awsAccountId, awsRegion, a
                 "Description": f"Oracle File Storage file system {filesysName} in Compartment {compartmentId} in {ociRegionName} does use a Customer-managed Master Encryption Key.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For more information on using a customer-managed MEK for your filesyss refer to the Using Your Own Keys in Vault for Server-Side Encryption section of the Oracle Cloud Infrastructure Documentation for Object Storage.",
-                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Object/Tasks/encryption.htm#UsingYourKMSKeys",
+                        "Text": "For more information on using a customer-managed MEK for your file system refer to the Encrypting a File System section of the Oracle Cloud Infrastructure Documentation for File Storage.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/File/Tasks/encrypt-file-system.htm",
                     }
                 },
                 "ProductFields": {
@@ -281,6 +281,171 @@ def oci_file_storage_file_system_cmk_mek_check(cache, awsAccountId, awsRegion, a
 # Use Secure Export Options When selected, export options are applied to NFS clients requiring them to use privileged source ports. After creating exports, you can edit the NFS client export options to adjust security for any export.
 # https://docs.cloud.oracle.com/iaas/Content/File/Tasks/exportoptions.htm
 # for export in exports [] for exportOption in export require_privileged_source_port = True
+@registry.register_check("oci.filestorage")
+def oci_file_storage_file_system_secure_export_options_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.FileStorage.2] File Storage file systems should enforce secure export options by requiring that NFS clients use privileged source ports
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for filesys in get_file_storage_file_systems(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(filesys,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = filesys["compartment_id"]
+        filesysId = filesys["id"]
+        filesysName = filesys["display_name"]
+        availabilityDomain = filesys["availability_domain"]
+        lifecycleState = filesys["lifecycle_state"]
+        createdAt = str(filesys["time_created"])
+
+        # Begin evaluation using list comprehensions to see if File Systems actually have Export Sets & Export Options
+        # and if they do, ensure that each rule enforces Privileged NFS ports are used
+        if filesys["exports"]:
+            for export in filesys["exports"]:
+                if export["export_options"]:
+                    secureExportOption = any(d.get("require_privileged_source_port") == False for d in export["export_options"])
+                else:
+                    secureExportOption = False
+        else:
+            secureExportOption = False
+
+        print(f"{filesysName} secure options are {secureExportOption}")
+
+        """if not filesys["kms_key_id"]:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{filesysId}/oci-file-storage-filesys-cmk-mek-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{filesysId}/oci-file-storage-filesys-cmk-mek-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[OCI.FileStorage.2] File Storage file systems should enforce secure export options by requiring that NFS clients use privileged source ports",
+                "Description": f"Oracle File Storage file system {filesysName} in Compartment {compartmentId} in {ociRegionName} does not use a Customer-managed Master Encryption Key. File Storage file systems use Oracle-managed keys by default, which leaves all encryption-related matters to Oracle. Optionally, you can encrypt the data in a file system using your own Vault encryption key. Be sure to back up your vaults and keys. Deleting a vault and key otherwise means losing the ability to decrypt any resource or data that the key was used to encrypt. Using a Customer-managed MEK can help satisify regulatory or industry requirements that require you to have control of your own cryptographic material or where you want to ensure different customers or business units use different keys to limit 'data blast radius'. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on using a customer-managed MEK for your file system refer to the Encrypting a File System section of the Oracle Cloud Infrastructure Documentation for File Storage.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/File/Tasks/encrypt-file-system.htm",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Oracle File Storage",
+                    "AssetComponent": "File System"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciFileStorageFileSystem",
+                        "Id": filesysId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": filesysName,
+                                "Id": filesysId,
+                                "AvailabilityDomain": availabilityDomain,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{filesysId}/oci-file-storage-filesys-cmk-mek-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{filesysId}/oci-file-storage-filesys-cmk-mek-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.FileStorage.1] File Storage file systems should be encrypted with a Customer-managed Master Encryption Key",
+                "Description": f"Oracle File Storage file system {filesysName} in Compartment {compartmentId} in {ociRegionName} does use a Customer-managed Master Encryption Key.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on using a customer-managed MEK for your file system refer to the Encrypting a File System section of the Oracle Cloud Infrastructure Documentation for File Storage.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/File/Tasks/encrypt-file-system.htm",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Oracle File Storage",
+                    "AssetComponent": "File System"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciFileStorageFileSystem",
+                        "Id": filesysId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": filesysName,
+                                "Id": filesysId,
+                                "AvailabilityDomain": availabilityDomain,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding"""
 
 # All Export Options associated with file system export sets should configure NFS identity squash
 
