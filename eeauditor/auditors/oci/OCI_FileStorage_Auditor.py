@@ -304,13 +304,13 @@ def oci_file_storage_file_system_secure_export_options_check(cache, awsAccountId
         if filesys["exports"]:
             for export in filesys["exports"]:
                 if export["export_options"]:
-                    secureExportOption = any(d.get("require_privileged_source_port") == False for d in export["export_options"])
+                    insecureExportOptionConfigured = any(d.get("require_privileged_source_port") == False for d in export["export_options"])
                 else:
-                    secureExportOption = False
+                    insecureExportOptionConfigured = True
         else:
-            secureExportOption = False
+            insecureExportOptionConfigured = True
 
-        print(f"{filesysName} secure options are {secureExportOption}")
+        print(f"{filesysName} insecure export options are {insecureExportOptionConfigured}")
 
         """if not filesys["kms_key_id"]:
             finding = {
