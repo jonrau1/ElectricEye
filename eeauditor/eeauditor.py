@@ -52,14 +52,17 @@ class EEAuditor(object):
             self.awsAccountTargets = utils.awsAccountTargets
             self.awsRegionsSelection = utils.awsRegionsSelection
             self.aws_electric_eye_iam_role_name = utils.electricEyeRoleName
+
         elif assessmentTarget == "Azure":
             searchPath = "./auditors/azure"
             utils = CloudConfig(assessmentTarget)
+
         elif assessmentTarget == "GCP":
             searchPath = "./auditors/gcp"
             utils = CloudConfig(assessmentTarget)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.gcpProjectIds = utils.gcp_project_ids
+
         elif assessmentTarget == "OCI":
             searchPath = "./auditors/oci"
             utils = CloudConfig(assessmentTarget)
@@ -69,12 +72,15 @@ class EEAuditor(object):
             self.ociRegionName = utils.ociRegionName
             self.ociCompartments = utils.ociCompartments
             self.ociUserApiKeyFingerprint = utils.ociUserApiKeyFingerprint
+
         elif assessmentTarget == "GitHub":
             searchPath = "./auditors/github"
             utils = CloudConfig(assessmentTarget)
+
         elif assessmentTarget == "Servicenow":
             searchPath = "./auditors/servicenow"
             utils = CloudConfig(assessmentTarget)
+
         # Search path for Auditors
         self.source = self.plugin_base.make_plugin_source(
             searchpath=[getPath(searchPath)], identifier=self.name
@@ -104,13 +110,14 @@ class EEAuditor(object):
         service within a specific AWS Partition and Region is available
         """
 
-        # these are "endpoints" and not so much regions, since ElectricEye provides local overrides to the "global"
+        # these are "endpoints" and not real regions, since ElectricEye provides local overrides to the "global"
         # AWS region within each Auditor already as long as these are present for a specific service then we're good
         globalEndpointPseudoRegions = [
             "aws-global", "fips-aws-global", "aws-cn-global", "aws-us-gov-global", "aws-us-gov-global-fips", "iam-govcloud", "iam-govcloud-fips", "aws-iso-global", "aws-iso-b-global", "aws-iso-e-global"
         ]
 
-        # overrides
+        # overrides - some services fall under a service's "endpoint" and not so much a dedicated namespace from what I can tell??
+        # we're overriding these just to trick ElectricEye into *not* aborting for certain services
         if service == "globalaccelerator":
             service = "iam"
         elif service == "imagebuilder":
@@ -126,12 +133,15 @@ class EEAuditor(object):
                         serviceName = serviceName.split("api.")[1]
                     except IndexError:
                         serviceName = serviceName
+                    
+                    # Compare the provided service name (from ElectricEye Plugin name) to service derived from the endpoint data
                     if service == serviceName:
                         regions = list(serviceData['endpoints'].keys())
                         # Backcheck on the "global" services e.g., Support, Trustedadvisor, CloudFront, IAM
                         if any(item in globalEndpointPseudoRegions for item in regions):
                             serviceAvailable = True
                             break
+                        # Each service endpoint has a dict of Regions where the endpoint is available, at this point we have a valid service availability for the region + partition
                         if awsRegion in regions:
                             serviceAvailable = True
                             break
@@ -164,12 +174,14 @@ class EEAuditor(object):
 
             for region in self.awsRegionsSelection:
                 for serviceName, checkList in self.registry.checks.items():
-                    # Setup Session & Partition
+                    # Setup Boto3 Session with STS AssumeRole
                     session = CloudConfig.create_aws_session(
                         account,
                         region,
                         self.aws_electric_eye_iam_role_name
                     )
+
+                    # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
                     partition = CloudConfig.check_aws_partition(region)
 
                     # Check service availability, not always accurate
@@ -179,15 +191,19 @@ class EEAuditor(object):
 
                     # Check if a "global" service was already checked
                     if serviceName in globalServiceCompletedList:
-                        print(f"{serviceName.upper()} Auditor was already run for AWS Account {account}. Global Auditors only need to run once per Account.")
+                        print(f"{serviceName.capitalize()} Auditor was already run for AWS Account {account}. Global Auditors only need to run once per Account.")
                         continue
 
                     for checkName, check in checkList.items():
-                        # clearing cache for each control whithin a auditor
+                        # add the global services to the "globalServiceCompletedList" so they can be skipped after they run once
+                        # in the `session` for each of these, the Auditor will override with the "parent region" as some endpoints
+                        # are not smart enough to do that - for instance, CloudFront and Health won't respond outside of us-east-1 but IAM will
                         if serviceName == "cloudfront" or "globalaccelerator" or "iam" or "health" or "support":
                             globalServiceCompletedList.append(serviceName)
 
+                        # clearing cache for each control whithin a auditor
                         auditorCache = {}
+
                         # if a specific check is requested, only run that one check
                         if (
                             not pluginName
@@ -208,7 +224,7 @@ class EEAuditor(object):
                                 print(f"Failed to execute check {checkName}")
                                 print(traceback.format_exc())
                         
-            # optional sleep if specified - hardcode to 0 seconds
+            # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
 
     # Called from eeauditor/controller.py run_auditor()
@@ -267,7 +283,7 @@ class EEAuditor(object):
                         except Exception:
                             print(traceback.format_exc())
                             print(f"Failed to execute check {checkName}")
-                # optional sleep if specified - hardcode to 0 seconds
+                # optional sleep if specified - defaults to 0 seconds
                 sleep(delay)
 
     # Called from eeauditor/controller.py run_auditor()
@@ -328,7 +344,7 @@ class EEAuditor(object):
                     except Exception as e:
                         print(traceback.format_exc())
                         print(f"Failed to execute check {checkName} with exception {e}")
-            # optional sleep if specified - hardcode to 0 seconds
+            # optional sleep if specified - defaults to 0 seconds
             sleep(delay)    
     
     # Called from eeauditor/controller.py run_auditor()
@@ -384,7 +400,7 @@ class EEAuditor(object):
                     except Exception as e:
                         print(traceback.format_exc())
                         print(f"Failed to execute check {checkName} with exception {e}")
-            # optional sleep if specified - hardcode to 0 seconds
+            # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
 
     # Called from eeauditor/controller.py print_checks()
