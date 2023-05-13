@@ -63,10 +63,13 @@ def get_oci_compute_instances(cache, ociTenancyId, ociUserId, ociRegionName, oci
     instancesList = []
 
     for compartment in ociCompartments:
-        listInstances = instanceClient.list_instances(compartment_id=compartment)
-        for instance in listInstances.data:
-            processedInstance = process_response(instance)
-            instancesList.append(processedInstance)
+        listInstances = instanceClient.list_instances(compartment_id=compartment, lifecycle_state="RUNNING").data
+        if not listInstances:
+            return {}
+        else:
+            for instance in listInstances:
+                processedInstance = process_response(instance)
+                instancesList.append(processedInstance)
 
     cache["get_oci_compute_instances"] = instancesList
     return cache["get_oci_compute_instances"]
