@@ -179,7 +179,7 @@ class EEAuditor(object):
 
                     # Check if a "global" service was already checked
                     if serviceName in globalServiceCompletedList:
-                        print(f"{serviceName} Auditor was already run, global Auditors only need to be executed once.")
+                        print(f"{serviceName.upper()} Auditor was already run for AWS Account {account}. Global Auditors only need to run once per Account.")
                         continue
 
                     for checkName, check in checkList.items():
