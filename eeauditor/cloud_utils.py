@@ -101,7 +101,7 @@ class CloudConfig(object):
             if electricEyeRoleName == (None or ""):
                 print(f"A value for ['aws_electric_eye_iam_role_name'] was not provided. Fix the TOML file and run ElectricEye again.")
                 sys.exit(2)
-            self.aws_electric_eye_iam_role_name = electricEyeRoleName
+            self.electricEyeRoleName = electricEyeRoleName
         
         # GCP
         elif assessmentTarget == "GCP":

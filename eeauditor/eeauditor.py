@@ -49,9 +49,9 @@ class EEAuditor(object):
             searchPath = "./auditors/aws"
             utils = CloudConfig(assessmentTarget)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
-            self.awsAccountTargets = utils.aws_account_targets
-            self.awsRegionsSelection = utils.aws_regions_selection
-            self.aws_electric_eye_iam_role_name = utils.aws_electric_eye_iam_role_name
+            self.awsAccountTargets = utils.awsAccountTargets
+            self.awsRegionsSelection = utils.awsRegionsSelection
+            self.aws_electric_eye_iam_role_name = utils.electricEyeRoleName
         elif assessmentTarget == "Azure":
             searchPath = "./auditors/azure"
             utils = CloudConfig(assessmentTarget)
