@@ -102,7 +102,11 @@ def oci_vcn_security_list_all_open_check(cache, awsAccountId, awsRegion, awsPart
         lifecycleState = nsg["lifecycle_state"]
         createdAt = nsg["time_created"]
         # Create a list comprehension to scope down the amount of rules that need to be looked at
-        allowAllCheck = [rule for rule in nsg["network_security_group_security_rules"] if rule.get("protocol") == "all" and rule.get("source") == "0.0.0.0/0"]
+        allowAllCheck = [
+            rule for rule in nsg["network_security_group_security_rules"] 
+            if rule.get("protocol") == "all" 
+            and rule.get("source") == "0.0.0.0/0"
+        ]
         # If the list has an entry that means there is at least one rule that allows all ports & protocols
         if allowAllCheck:
             finding = {
@@ -290,7 +294,7 @@ def oci_vcn_security_master_auditor_check(cache, awsAccountId, awsRegion, awsPar
             # to bypass any AttributeError because of them
             try:
                 filteredRules = [
-                    rule for rule in nsg["ingress_security_rules"] 
+                    rule for rule in nsg["network_security_group_security_rules"] 
                     if rule.get("protocol") == targetProtocol 
                     and rule.get("source") == "0.0.0.0/0"
                     and rule[portFilterDict]["source_port_range"].get("max") == toPortTarget
