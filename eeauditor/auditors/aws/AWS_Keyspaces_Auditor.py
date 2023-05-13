@@ -62,7 +62,7 @@ def gather_keyspaces_tables(cache, session):
                             }
                             awsKeyspaceInfo.append(keyspacesDict)
     except botocore.exceptions.ClientError as error:
-        if error.response["Error"]["Code"] == "ResourceNotFoundException":
+        if error.response["Error"]["Code"] == "ResourceNotFoundException" or "ValidationException":
             cache["gather_keyspaces_tables"] = {}
             return cache["gather_keyspaces_tables"]
 

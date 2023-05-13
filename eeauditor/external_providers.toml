@@ -35,7 +35,7 @@ title = "ElectricEye Configuration"
         aws_regions_selection = [] # VALID CHOICES: [] | ["All"] | list of regions e.g., ["us-east-1", "us-east-2"]
 
         # The NAME of the AWS IAM Role deployed to aws_account_targets - must be the same for all Accounts
-        # does not need to be provided for your own Account
+        # THIS ALSO NEEDS TO BE SUPPLIED FOR YOUR OWN ACCOUNT
         
         aws_electric_eye_iam_role_name = ""
 

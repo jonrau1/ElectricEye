@@ -188,19 +188,18 @@ class EEAuditor(object):
                     if self.check_service_endpoint_availability(endpointData, partition, serviceName, region) == False:
                         print(f"{serviceName} is not available in {region}")
                         continue
-
-                    # Check if a "global" service was already checked
-                    if serviceName in globalServiceCompletedList:
-                        print(f"{serviceName.capitalize()} Auditor was already run for AWS Account {account}. Global Auditors only need to run once per Account.")
-                        continue
+                    
+                    # add the global services to the "globalServiceCompletedList" so they can be skipped after they run once
+                    # in the `session` for each of these, the Auditor will override with the "parent region" as some endpoints
+                    # are not smart enough to do that - for instance, CloudFront and Health won't respond outside of us-east-1 but IAM will
+                    if serviceName == ("cloudfront" or "globalaccelerator" or "iam" or "health" or "support"):
+                        if serviceName not in globalServiceCompletedList:
+                            globalServiceCompletedList.append(serviceName)
+                        else:
+                            print(f"{serviceName.capitalize()} Auditor was already run for AWS Account {account}. Global Auditors only need to run once per Account.")
+                            continue
 
                     for checkName, check in checkList.items():
-                        # add the global services to the "globalServiceCompletedList" so they can be skipped after they run once
-                        # in the `session` for each of these, the Auditor will override with the "parent region" as some endpoints
-                        # are not smart enough to do that - for instance, CloudFront and Health won't respond outside of us-east-1 but IAM will
-                        if serviceName == "cloudfront" or "globalaccelerator" or "iam" or "health" or "support":
-                            globalServiceCompletedList.append(serviceName)
-
                         # clearing cache for each control whithin a auditor
                         auditorCache = {}
 
