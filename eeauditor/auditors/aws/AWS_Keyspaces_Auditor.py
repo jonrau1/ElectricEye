@@ -88,10 +88,16 @@ def keyspaces_customer_managed_encryption(cache: dict, session, awsAccountId: st
         keyspaceName = x["KeyspaceName"]
         tableName = x["TableName"]
         # Retrieve information from `get_table()` API
-        t = keyspaces.get_table(
-            keyspaceName=keyspaceName,
-            tableName=tableName
-        )
+        try:
+            t = keyspaces.get_table(
+                keyspaceName=keyspaceName,
+                tableName=tableName
+            )
+        except botocore.exceptions.ClientError as error:
+            if error.response["Error"]["Code"] == "ResourceNotFoundException":
+                continue
+        except botocore.exceptions.ValidationException:
+            continue
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(t,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -239,10 +245,16 @@ def keyspaces_inaccessible_status_check(cache: dict, session, awsAccountId: str,
         keyspaceName = x["KeyspaceName"]
         tableName = x["TableName"]
         # Retrieve information from `get_table()` API
-        t = keyspaces.get_table(
-            keyspaceName=keyspaceName,
-            tableName=tableName
-        )
+        try:
+            t = keyspaces.get_table(
+                keyspaceName=keyspaceName,
+                tableName=tableName
+            )
+        except botocore.exceptions.ClientError as error:
+            if error.response["Error"]["Code"] == "ResourceNotFoundException":
+                continue
+        except botocore.exceptions.ValidationException:
+            continue
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(t,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -406,10 +418,16 @@ def keyspaces_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str
         keyspaceName = x["KeyspaceName"]
         tableName = x["TableName"]
         # Retrieve information from `get_table()` API
-        t = keyspaces.get_table(
-            keyspaceName=keyspaceName,
-            tableName=tableName
-        )
+        try:
+            t = keyspaces.get_table(
+                keyspaceName=keyspaceName,
+                tableName=tableName
+            )
+        except botocore.exceptions.ClientError as error:
+            if error.response["Error"]["Code"] == "ResourceNotFoundException":
+                continue
+        except botocore.exceptions.ValidationException:
+            continue
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(t,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
