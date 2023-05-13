@@ -139,7 +139,7 @@ def bucket_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: 
                     "Title": "[S3.1] S3 Buckets should be encrypted",
                     "Description": "S3 bucket "
                     + bucketName
-                    + " is not encrypted. Refer to the remediation instructions to remediate this behavior",
+                    + " is not encrypted. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For more information on Bucket Encryption and how to configure it refer to the Amazon S3 Default Encryption for S3 Buckets section of the Amazon Simple Storage Service Developer Guide",
@@ -252,14 +252,14 @@ def bucket_lifecycle_check(cache: dict, session, awsAccountId: str, awsRegion: s
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1",
-                    ],
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED",
@@ -285,9 +285,7 @@ def bucket_lifecycle_check(cache: dict, session, awsAccountId: str, awsRegion: s
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
                     "Title": "[S3.2] S3 Buckets should implement lifecycle policies for data archival and recovery operations",
-                    "Description": "S3 bucket "
-                    + bucketName
-                    + " does not have a lifecycle policy configured. Refer to the remediation instructions to remediate this behavior",
+                    "Description": f"S3 bucket {bucketName} does not have a lifecycle policy configured. S3 Lifecycle Policies can help lower data management tasks, lower storage costs, and get rid of corrupted or incomplete objects within your buckets. You can configure S3 to move objects to lower cost storage such as Infrequent Access or you can send objects to long-term storage in Amazon Glacier. If you have regulatory or industry compliance requirements to store certain types of data or logs, lifecycle policies is an automatable and auditable way to accomplish that. Likewise, if you have requirements to delete data after a certain amount of time a lifecycle policy can also accomodate that requirement. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For more information on Lifecycle policies and how to configure it refer to the How Do I Create a Lifecycle Policy for an S3 Bucket? section of the Amazon Simple Storage Service Developer Guide",
@@ -321,14 +319,14 @@ def bucket_lifecycle_check(cache: dict, session, awsAccountId: str, awsRegion: s
                             "NIST SP 800-53 Rev. 4 CP-2",
                             "NIST SP 800-53 Rev. 4 CP-11",
                             "NIST SP 800-53 Rev. 4 SA-13",
-                            "NIST SP 800-53 Rev. 4 SA14",
+                            "NIST SP 800-53 Rev. 4 SA-14",
                             "AICPA TSC CC3.1",
                             "AICPA TSC A1.2",
                             "ISO 27001:2013 A.11.1.4",
                             "ISO 27001:2013 A.17.1.1",
                             "ISO 27001:2013 A.17.1.2",
-                            "ISO 27001:2013 A.17.2.1",
-                        ],
+                            "ISO 27001:2013 A.17.2.1"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
                     "RecordState": "ACTIVE",
@@ -373,7 +371,7 @@ def bucket_versioning_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "Title": "[S3.3] S3 Buckets should have versioning enabled",
                 "Description": "S3 bucket "
                 + bucketName
-                + " has versioning enabled. Refer to the remediation instructions to remediate this behavior",
+                + " has versioning enabled. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Bucket Versioning and how to configure it refer to the Using Versioning section of the Amazon Simple Storage Service Developer Guide",
@@ -407,7 +405,7 @@ def bucket_versioning_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -439,7 +437,7 @@ def bucket_versioning_check(cache: dict, session, awsAccountId: str, awsRegion: 
                     "Title": "[S3.3] S3 Buckets should have versioning enabled",
                     "Description": "S3 bucket "
                     + bucketName
-                    + " does not have versioning enabled. Refer to the remediation instructions to remediate this behavior",
+                    + " does not have versioning enabled. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For more information on Bucket Versioning and how to configure it refer to the Using Versioning section of the Amazon Simple Storage Service Developer Guide",
@@ -473,7 +471,7 @@ def bucket_versioning_check(cache: dict, session, awsAccountId: str, awsRegion: 
                             "NIST SP 800-53 Rev. 4 CP-2",
                             "NIST SP 800-53 Rev. 4 CP-11",
                             "NIST SP 800-53 Rev. 4 SA-13",
-                            "NIST SP 800-53 Rev. 4 SA14",
+                            "NIST SP 800-53 Rev. 4 SA-14",
                             "AICPA TSC CC3.1",
                             "AICPA TSC A1.2",
                             "ISO 27001:2013 A.11.1.4",
@@ -528,7 +526,7 @@ def bucket_policy_allows_public_access_check(cache: dict, session, awsAccountId:
                         "Title": "[S3.4] S3 Bucket Policies should not allow public access to the bucket",
                         "Description": "S3 bucket "
                         + bucketName
-                        + " has a bucket policy attached that allows public access. Refer to the remediation instructions to remediate this behavior",
+                        + " has a bucket policy attached that allows public access. Refer to the remediation instructions if this configuration is not intended.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "For more information on Bucket Policies and how to configure it refer to the Bucket Policy Examples section of the Amazon Simple Storage Service Developer Guide",
@@ -752,7 +750,7 @@ def bucket_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                     "Title": "[S3.5] S3 Buckets should have a bucket policy configured",
                     "Description": "S3 bucket "
                     + bucketName
-                    + " does not have a bucket policy configured. Refer to the remediation instructions to remediate this behavior",
+                    + " does not have a bucket policy configured. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For more information on Bucket Policies and how to configure it refer to the Bucket Policy Examples section of the Amazon Simple Storage Service Developer Guide",
@@ -837,7 +835,7 @@ def bucket_access_logging_check(cache: dict, session, awsAccountId: str, awsRegi
                 "Title": "[S3.6] S3 Buckets should have server access logging enabled",
                 "Description": "S3 bucket "
                 + bucketName
-                + " does not have server access logging enabled. Refer to the remediation instructions to remediate this behavior",
+                + " does not have server access logging enabled. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Bucket Policies and how to configure it refer to the Amazon S3 Server Access Logging section of the Amazon Simple Storage Service Developer Guide",
@@ -901,7 +899,7 @@ def bucket_access_logging_check(cache: dict, session, awsAccountId: str, awsRegi
                     "Title": "[S3.6] S3 Buckets should have server access logging enabled",
                     "Description": "S3 bucket "
                     + bucketName
-                    + " does not have server access logging enabled. Refer to the remediation instructions to remediate this behavior",
+                    + " does not have server access logging enabled. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For more information on Bucket Policies and how to configure it refer to the Amazon S3 Server Access Logging section of the Amazon Simple Storage Service Developer Guide",
@@ -1059,7 +1057,7 @@ def s3_account_level_block(cache: dict, session, awsAccountId: str, awsRegion: s
                 "Title": "[S3.7] Account-level S3 public access block should be configured",
                 "Description": "Account-level S3 public access block for account "
                 + awsAccountId
-                + " is either inactive or is not block all possible scenarios. Refer to the remediation instructions to remediate this behavior",
+                + " is either inactive or is not block all possible scenarios. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Account level S3 public access block and how to configure it refer to the Using Amazon S3 Block Public Access section of the Amazon Simple Storage Service Developer Guide",
@@ -1126,7 +1124,7 @@ def s3_account_level_block(cache: dict, session, awsAccountId: str, awsRegion: s
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
                 "Title": "[S3.7] Account-level S3 public access block should be configured",
-                "Description": f"Account-level S3 public access block for account {awsAccountId} is not configured. Refer to the remediation instructions to remediate this behavior.",
+                "Description": f"Account-level S3 public access block for account {awsAccountId} is not configured. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Account level S3 public access block and how to configure it refer to the Using Amazon S3 Block Public Access section of the Amazon Simple Storage Service Developer Guide",
