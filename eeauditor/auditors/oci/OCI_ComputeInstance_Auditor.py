@@ -117,7 +117,7 @@ def oci_cloud_compute_secure_boot_check(cache, awsAccountId, awsRegion, awsParti
         compartmentId = instance["compartment_id"]
         imageId = instance["image_id"]
         shape = instance["shape"]
-        state = instance["lifecycle_state"]
+        lifecycleState = instance["lifecycle_state"]
         # Secure Boot is within "platform_config" which returns None if it's not present (something AWS could learn from)
         # if it is present, check if Confidential Computing ("is_memory_encryption_enabled") is enabled, which means
         # you cannot enable Secure Boot as it supersedes it
@@ -180,7 +180,7 @@ def oci_cloud_compute_secure_boot_check(cache, awsAccountId, awsRegion, awsParti
                                 "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
-                                "LifecycleState": state
+                                "LifecycleState": lifecycleState
                             }
                         },
                     }
@@ -250,7 +250,7 @@ def oci_cloud_compute_secure_boot_check(cache, awsAccountId, awsRegion, awsParti
                                 "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
-                                "LifecycleState": state
+                                "LifecycleState": lifecycleState
                             }
                         },
                     }
@@ -290,7 +290,7 @@ def oci_cloud_compute_measured_boot_check(cache, awsAccountId, awsRegion, awsPar
         compartmentId = instance["compartment_id"]
         imageId = instance["image_id"]
         shape = instance["shape"]
-        state = instance["lifecycle_state"]
+        lifecycleState = instance["lifecycle_state"]
         # Measured Boot is within "platform_config" which returns None if it's not present (something AWS could learn from)
         # if it is present, check if Confidential Computing ("is_memory_encryption_enabled") is enabled, which means
         # you cannot enable Measured Boot as it supersedes it
@@ -353,7 +353,7 @@ def oci_cloud_compute_measured_boot_check(cache, awsAccountId, awsRegion, awsPar
                                 "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
-                                "LifecycleState": state
+                                "LifecycleState": lifecycleState
                             }
                         },
                     }
@@ -423,7 +423,7 @@ def oci_cloud_compute_measured_boot_check(cache, awsAccountId, awsRegion, awsPar
                                 "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
-                                "LifecycleState": state
+                                "LifecycleState": lifecycleState
                             }
                         },
                     }
@@ -463,7 +463,7 @@ def oci_cloud_compute_tpm_check(cache, awsAccountId, awsRegion, awsPartition, oc
         compartmentId = instance["compartment_id"]
         imageId = instance["image_id"]
         shape = instance["shape"]
-        state = instance["lifecycle_state"]
+        lifecycleState = instance["lifecycle_state"]
         # Measured Boot is within "platform_config" which returns None if it's not present (something AWS could learn from)
         # if it is present, check if Confidential Computing ("is_memory_encryption_enabled") is enabled, which means
         # you cannot enable Measured Boot as it supersedes it
@@ -526,7 +526,7 @@ def oci_cloud_compute_tpm_check(cache, awsAccountId, awsRegion, awsPartition, oc
                                 "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
-                                "LifecycleState": state
+                                "LifecycleState": lifecycleState
                             }
                         },
                     }
@@ -596,7 +596,7 @@ def oci_cloud_compute_tpm_check(cache, awsAccountId, awsRegion, awsPartition, oc
                                 "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
-                                "LifecycleState": state
+                                "LifecycleState": lifecycleState
                             }
                         },
                     }
@@ -636,7 +636,7 @@ def oci_cloud_compute_volume_in_transit_encryption_check(cache, awsAccountId, aw
         compartmentId = instance["compartment_id"]
         imageId = instance["image_id"]
         shape = instance["shape"]
-        state = instance["lifecycle_state"]
+        lifecycleState = instance["lifecycle_state"]
         # Begin finding evaluation
         if instance["launch_options"]["is_pv_encryption_in_transit_enabled"] is False:
             finding = {
@@ -685,7 +685,7 @@ def oci_cloud_compute_volume_in_transit_encryption_check(cache, awsAccountId, aw
                                 "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
-                                "LifecycleState": state
+                                "LifecycleState": lifecycleState
                             }
                         },
                     }
@@ -757,7 +757,7 @@ def oci_cloud_compute_volume_in_transit_encryption_check(cache, awsAccountId, aw
                                 "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
-                                "LifecycleState": state
+                                "LifecycleState": lifecycleState
                             }
                         },
                     }
@@ -799,7 +799,7 @@ def oci_cloud_compute_volume_customer_mek_encryption_check(cache, awsAccountId, 
         compartmentId = instance["compartment_id"]
         imageId = instance["image_id"]
         shape = instance["shape"]
-        state = instance["lifecycle_state"]
+        lifecycleState = instance["lifecycle_state"]
         # Begin finding evaluation
         if instance["source_details"]["kms_key_id"] is None:
             finding = {
@@ -848,7 +848,7 @@ def oci_cloud_compute_volume_customer_mek_encryption_check(cache, awsAccountId, 
                                 "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
-                                "LifecycleState": state
+                                "LifecycleState": lifecycleState
                             }
                         },
                     }
@@ -915,7 +915,7 @@ def oci_cloud_compute_volume_customer_mek_encryption_check(cache, awsAccountId, 
                                 "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
-                                "LifecycleState": state
+                                "LifecycleState": lifecycleState
                             }
                         },
                     }
@@ -952,7 +952,7 @@ def oci_cloud_compute_imdsv1_disable_check(cache, awsAccountId, awsRegion, awsPa
         compartmentId = instance["compartment_id"]
         imageId = instance["image_id"]
         shape = instance["shape"]
-        state = instance["lifecycle_state"]
+        lifecycleState = instance["lifecycle_state"]
         # Begin finding evaluation
         if instance["instance_options"]["are_legacy_imds_endpoints_disabled"] is False:
             finding = {
@@ -1001,7 +1001,7 @@ def oci_cloud_compute_imdsv1_disable_check(cache, awsAccountId, awsRegion, awsPa
                                 "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
-                                "LifecycleState": state
+                                "LifecycleState": lifecycleState
                             }
                         },
                     }
@@ -1078,7 +1078,7 @@ def oci_cloud_compute_imdsv1_disable_check(cache, awsAccountId, awsRegion, awsPa
                                 "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
-                                "LifecycleState": state
+                                "LifecycleState": lifecycleState
                             }
                         },
                     }
@@ -1125,7 +1125,7 @@ def oci_cloud_compute_instance_mgmt_agent_enabled_check(cache, awsAccountId, aws
         compartmentId = instance["compartment_id"]
         imageId = instance["image_id"]
         shape = instance["shape"]
-        state = instance["lifecycle_state"]
+        lifecycleState = instance["lifecycle_state"]
         # Begin finding evaluation
         if instance["agent_config"]["is_management_disabled"] is True:
             finding = {
@@ -1174,7 +1174,7 @@ def oci_cloud_compute_instance_mgmt_agent_enabled_check(cache, awsAccountId, aws
                                 "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
-                                "LifecycleState": state
+                                "LifecycleState": lifecycleState
                             }
                         },
                     }
@@ -1243,7 +1243,7 @@ def oci_cloud_compute_instance_mgmt_agent_enabled_check(cache, awsAccountId, aws
                                 "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
-                                "LifecycleState": state
+                                "LifecycleState": lifecycleState
                             }
                         },
                     }
@@ -1282,7 +1282,7 @@ def oci_cloud_compute_instance_monitoring_agent_enabled_check(cache, awsAccountI
         compartmentId = instance["compartment_id"]
         imageId = instance["image_id"]
         shape = instance["shape"]
-        state = instance["lifecycle_state"]
+        lifecycleState = instance["lifecycle_state"]
         # Begin finding evaluation
         if instance["agent_config"]["is_monitoring_disabled"] is True:
             finding = {
@@ -1331,7 +1331,7 @@ def oci_cloud_compute_instance_monitoring_agent_enabled_check(cache, awsAccountI
                                 "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
-                                "LifecycleState": state
+                                "LifecycleState": lifecycleState
                             }
                         },
                     }
@@ -1402,7 +1402,7 @@ def oci_cloud_compute_instance_monitoring_agent_enabled_check(cache, awsAccountI
                                 "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
-                                "LifecycleState": state
+                                "LifecycleState": lifecycleState
                             }
                         }
                     }
@@ -1443,7 +1443,7 @@ def oci_cloud_compute_instance_vuln_scan_plugin_enabled_check(cache, awsAccountI
         compartmentId = instance["compartment_id"]
         imageId = instance["image_id"]
         shape = instance["shape"]
-        state = instance["lifecycle_state"]
+        lifecycleState = instance["lifecycle_state"]
 
         plugins = instance["agent_config"]["plugins_config"]
         # Check the status / existence of the "Vulnerability Scanning" plugin
@@ -1504,7 +1504,7 @@ def oci_cloud_compute_instance_vuln_scan_plugin_enabled_check(cache, awsAccountI
                                 "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
-                                "LifecycleState": state
+                                "LifecycleState": lifecycleState
                             }
                         }
                     }
@@ -1569,7 +1569,7 @@ def oci_cloud_compute_instance_vuln_scan_plugin_enabled_check(cache, awsAccountI
                                 "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
-                                "LifecycleState": state
+                                "LifecycleState": lifecycleState
                             }
                         }
                     }
@@ -1604,7 +1604,7 @@ def oci_cloud_compute_instance_public_ip_check(cache, awsAccountId, awsRegion, a
         compartmentId = instance["compartment_id"]
         imageId = instance["image_id"]
         shape = instance["shape"]
-        state = instance["lifecycle_state"]
+        lifecycleState = instance["lifecycle_state"]
         # Get the VNIC info
         instanceVnic = get_compute_instance_vnic(ociTenancyId, ociUserId, ociRegionName, ociUserApiKeyFingerprint, compartmentId, instanceId)
         # Begin finding evaluation - public IP is null if not there
@@ -1655,7 +1655,7 @@ def oci_cloud_compute_instance_public_ip_check(cache, awsAccountId, awsRegion, a
                                 "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
-                                "LifecycleState": state
+                                "LifecycleState": lifecycleState
                             }
                         }
                     }
@@ -1728,7 +1728,7 @@ def oci_cloud_compute_instance_public_ip_check(cache, awsAccountId, awsRegion, a
                                 "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
-                                "LifecycleState": state
+                                "LifecycleState": lifecycleState
                             }
                         }
                     }
@@ -1771,7 +1771,7 @@ def oci_cloud_compute_instance_nsg_assigned_check(cache, awsAccountId, awsRegion
         compartmentId = instance["compartment_id"]
         imageId = instance["image_id"]
         shape = instance["shape"]
-        state = instance["lifecycle_state"]
+        lifecycleState = instance["lifecycle_state"]
         # Get the VNIC info
         instanceVnic = get_compute_instance_vnic(ociTenancyId, ociUserId, ociRegionName, ociUserApiKeyFingerprint, compartmentId, instanceId)
         # Begin finding evaluation - public IP is null if not there
@@ -1822,7 +1822,7 @@ def oci_cloud_compute_instance_nsg_assigned_check(cache, awsAccountId, awsRegion
                                 "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
-                                "LifecycleState": state
+                                "LifecycleState": lifecycleState
                             }
                         }
                     }
@@ -1895,7 +1895,7 @@ def oci_cloud_compute_instance_nsg_assigned_check(cache, awsAccountId, awsRegion
                                 "Id": instanceId,
                                 "ImageId": imageId,
                                 "Shape": shape,
-                                "LifecycleState": state
+                                "LifecycleState": lifecycleState
                             }
                         }
                     }
