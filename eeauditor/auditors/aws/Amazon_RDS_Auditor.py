@@ -1457,10 +1457,10 @@ def rds_instance_cloudwatch_logging_check(cache: dict, session, awsAccountId: st
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Relational Database Service",
                     "AssetComponent": "Database Instance"
