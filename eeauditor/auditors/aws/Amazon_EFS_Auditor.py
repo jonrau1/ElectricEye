@@ -26,10 +26,13 @@ import json
 registry = CheckRegister()
 
 def describe_file_systems(cache, session):
-    efs = session.client("efs")
     response = cache.get("describe_file_systems")
+
     if response:
         return response
+    
+    efs = session.client("efs")
+
     cache["describe_file_systems"] = efs.describe_file_systems()
     return cache["describe_file_systems"]
 

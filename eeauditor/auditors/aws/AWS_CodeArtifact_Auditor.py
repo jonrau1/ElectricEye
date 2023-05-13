@@ -25,14 +25,34 @@ import json
 
 registry = CheckRegister()
 
+def get_codeartifact_repos(cache, session):
+    
+    response = cache.get("get_codeartifact_repos")
+    if response:
+        return response
+    
+    codeartifact = session.client("codeartifact")
+
+    cache["get_codeartifact_repos"] = codeartifact.list_repositories()["repositories"]
+    return cache["get_codeartifact_repos"]
+
+def get_codeartifact_domains(cache, session):
+
+    response = cache.get("get_codeartifact_domains")
+    if response:
+        return response
+    
+    codeartifact = session.client("codeartifact")
+
+    cache["get_codeartifact_domains"] = codeartifact.list_domains()["domains"]
+    return cache["get_codeartifact_domains"]
+
 @registry.register_check("codeartifact")
 def codeartifact_repo_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CodeArtifact.1] CodeArtifact repos should have a resource policy with least privilege applied"""
     codeartifact = session.client("codeartifact")
-    response = codeartifact.list_repositories()
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    
-    for repo in response["repositories"]:
+    for repo in get_codeartifact_repos(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(repo,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -118,18 +138,18 @@ def codeartifact_repo_policy_check(cache: dict, session, awsAccountId: str, awsR
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 PR.AC-3",
-                        "NIST SP 800-53 Rev. 4 AC-1",
-                        "NIST SP 800-53 Rev. 4 AC-17",
-                        "NIST SP 800-53 Rev. 4 AC-19",
-                        "NIST SP 800-53 Rev. 4 AC-20",
-                        "NIST SP 800-53 Rev. 4 SC-15",
-                        "AICPA TSC CC6.6",
-                        "ISO 27001:2013 A.6.2.1",
-                        "ISO 27001:2013 A.6.2.2",
-                        "ISO 27001:2013 A.11.2.6",
-                        "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1"
+                        "NIST CSF V1.1 PR.AC-4",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-5",
+                        "NIST SP 800-53 Rev. 4 AC-6",
+                        "NIST SP 800-53 Rev. 4 AC-16",
+                        "AICPA TSC CC6.3",
+                        "ISO 27001:2013 A.6.1.2",
+                        "ISO 27001:2013 A.9.1.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.4.1",
+                        "ISO 27001:2013 A.9.4.4"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -185,18 +205,18 @@ def codeartifact_repo_policy_check(cache: dict, session, awsAccountId: str, awsR
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 PR.AC-3",
-                        "NIST SP 800-53 Rev. 4 AC-1",
-                        "NIST SP 800-53 Rev. 4 AC-17",
-                        "NIST SP 800-53 Rev. 4 AC-19",
-                        "NIST SP 800-53 Rev. 4 AC-20",
-                        "NIST SP 800-53 Rev. 4 SC-15",
-                        "AICPA TSC CC6.6",
-                        "ISO 27001:2013 A.6.2.1",
-                        "ISO 27001:2013 A.6.2.2",
-                        "ISO 27001:2013 A.11.2.6",
-                        "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
+                        "NIST CSF V1.1 PR.AC-4",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-5",
+                        "NIST SP 800-53 Rev. 4 AC-6",
+                        "NIST SP 800-53 Rev. 4 AC-16",
+                        "AICPA TSC CC6.3",
+                        "ISO 27001:2013 A.6.1.2",
+                        "ISO 27001:2013 A.9.1.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.4.1",
+                        "ISO 27001:2013 A.9.4.4"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -208,10 +228,8 @@ def codeartifact_repo_policy_check(cache: dict, session, awsAccountId: str, awsR
 def codeartifact_domain_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CodeArtifact.2] CodeArtifact domains should have a resource policy with least privilege applied"""
     codeartifact = session.client("codeartifact")
-    response = codeartifact.list_domains()
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    
-    for domain in response["domains"]:
+    for domain in get_codeartifact_domains(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(domain,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -300,25 +318,24 @@ def codeartifact_domain_policy_check(cache: dict, session, awsAccountId: str, aw
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 PR.AC-3",
-                        "NIST SP 800-53 Rev. 4 AC-1",
-                        "NIST SP 800-53 Rev. 4 AC-17",
-                        "NIST SP 800-53 Rev. 4 AC-19",
-                        "NIST SP 800-53 Rev. 4 AC-20",
-                        "NIST SP 800-53 Rev. 4 SC-15",
-                        "AICPA TSC CC6.6",
-                        "ISO 27001:2013 A.6.2.1",
-                        "ISO 27001:2013 A.6.2.2",
-                        "ISO 27001:2013 A.11.2.6",
-                        "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1"
+                        "NIST CSF V1.1 PR.AC-4",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-5",
+                        "NIST SP 800-53 Rev. 4 AC-6",
+                        "NIST SP 800-53 Rev. 4 AC-16",
+                        "AICPA TSC CC6.3",
+                        "ISO 27001:2013 A.6.1.2",
+                        "ISO 27001:2013 A.9.1.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.4.1",
+                        "ISO 27001:2013 A.9.4.4"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED"
             }
-            yield finding
-        
+            yield finding      
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -368,18 +385,18 @@ def codeartifact_domain_policy_check(cache: dict, session, awsAccountId: str, aw
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 PR.AC-3",
-                        "NIST SP 800-53 Rev. 4 AC-1",
-                        "NIST SP 800-53 Rev. 4 AC-17",
-                        "NIST SP 800-53 Rev. 4 AC-19",
-                        "NIST SP 800-53 Rev. 4 AC-20",
-                        "NIST SP 800-53 Rev. 4 SC-15",
-                        "AICPA TSC CC6.6",
-                        "ISO 27001:2013 A.6.2.1",
-                        "ISO 27001:2013 A.6.2.2",
-                        "ISO 27001:2013 A.11.2.6",
-                        "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1"
+                        "NIST CSF V1.1 PR.AC-4",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-5",
+                        "NIST SP 800-53 Rev. 4 AC-6",
+                        "NIST SP 800-53 Rev. 4 AC-16",
+                        "AICPA TSC CC6.3",
+                        "ISO 27001:2013 A.6.1.2",
+                        "ISO 27001:2013 A.9.1.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.4.1",
+                        "ISO 27001:2013 A.9.4.4"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
