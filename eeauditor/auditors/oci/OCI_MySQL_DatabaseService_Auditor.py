@@ -58,12 +58,12 @@ def get_mysql_db_systems(cache, ociTenancyId, ociUserId, ociRegionName, ociCompa
     }
     validate_config(config)
 
-    mysqlDbsClient = oci.mysql.DbSystemClient
+    mysqlDbsClient = oci.mysql.DbSystemClient(config)
 
     mysqlDbSystems = []
 
     for compartment in ociCompartments:
-        for mysqldb in mysqlDbsClient.list_db_systems(compartment_id=compartment).data:
+        for mysqldb in mysqlDbsClient.list_db_systems(compartment_id=compartment, lifecycle_state="ACTIVE").data:
             mysqlDbSystems.append(
                 process_response(
                     mysqldb
