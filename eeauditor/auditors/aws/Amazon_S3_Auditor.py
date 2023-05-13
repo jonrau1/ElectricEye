@@ -503,11 +503,9 @@ def bucket_policy_allows_public_access_check(cache: dict, session, awsAccountId:
             datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         )
         try:
-            response = s3.get_bucket_policy(Bucket=bucketName)
+            s3.get_bucket_policy(Bucket=bucketName)
             try:
-                response = s3.get_bucket_policy_status(Bucket=bucketName)
-                publicBucketPolicyCheck = str(response["PolicyStatus"]["IsPublic"])
-                if publicBucketPolicyCheck != "False":
+                if s3.get_bucket_policy_status(Bucket=bucketName)["PolicyStatus"]["IsPublic"] is not False:
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": s3Arn + "/s3-bucket-policy-allows-public-access-check",
@@ -524,9 +522,7 @@ def bucket_policy_allows_public_access_check(cache: dict, session, awsAccountId:
                         "Severity": {"Label": "CRITICAL"},
                         "Confidence": 99,
                         "Title": "[S3.4] S3 Bucket Policies should not allow public access to the bucket",
-                        "Description": "S3 bucket "
-                        + bucketName
-                        + " has a bucket policy attached that allows public access. Refer to the remediation instructions if this configuration is not intended.",
+                        "Description": f"S3 bucket {bucketName} has a bucket policy attached that allows public access. When a Bucket Policy is assessed as being public it means that unauthenticated and anonymous users can access the objects within the bucket and download them. While there are some business use cases such as serving up static assets or public datasets, you should still use Amazon CloudFront (or another Content Delivery Network solution) and other safeguards to prevent abuse. Several large data breaches have been from the result of having a public bucket, this is a high priority finding to investigate! Refer to the remediation instructions if this configuration is not intended.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "For more information on Bucket Policies and how to configure it refer to the Bucket Policy Examples section of the Amazon Simple Storage Service Developer Guide",
@@ -566,8 +562,8 @@ def bucket_policy_allows_public_access_check(cache: dict, session, awsAccountId:
                                 "ISO 27001:2013 A.6.2.2",
                                 "ISO 27001:2013 A.11.2.6",
                                 "ISO 27001:2013 A.13.1.1",
-                                "ISO 27001:2013 A.13.2.1",
-                            ],
+                                "ISO 27001:2013 A.13.2.1"
+                            ]
                         },
                         "Workflow": {"Status": "NEW"},
                         "RecordState": "ACTIVE",

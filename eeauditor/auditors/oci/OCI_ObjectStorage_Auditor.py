@@ -405,7 +405,6 @@ def oci_object_storage_bucket_lifecycle_policy_defined_check(cache, awsAccountId
             }
             yield finding
 
-# Multipart failed item deletion policy - use get_object_lifecycle_policy and look for 'target': 'multipart-uploads' 'is_enabled': True
 @registry.register_check("oci.objectstorage")
 def oci_object_storage_bucket_multipart_delete_lifecycle_policy_defined_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
     """
@@ -426,17 +425,18 @@ def oci_object_storage_bucket_multipart_delete_lifecycle_policy_defined_check(ca
         # Logic to check for a failed multi-part deletion policy. If there are not any lifecycle policies this automatically fails
         if not bucket["object_lifecycle_policies"]:
             multiPartRulePresent = False
-        # Create a list comprehension
-        filteredRules = [rule for rule in bucket["object_lifecycle_policies"] if rule.get("target") == "multipart-upload" and rule.get("is_enabled") == True]
+        # Use any() to evaluate all of the rules within the list we created in the cache
+        if any(rule["target"] == "multipart-uploads" and rule["is_enabled"] for rule in bucket["object_lifecycle_policies"]):
+            multiPartRulePresent = True
+        else:
+            multiPartRulePresent = False
 
-        print(filteredRules)
-
-        """if bucket["object_lifecycle_policy_etag"] is None:
+        if multiPartRulePresent is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{bucketId}/oci-object-storage-bucket-lifecycle-policy-check",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{bucketId}/oci-object-storage-bucket-failed-multipart-delete-lifecycle-policy-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{bucketId}/oci-object-storage-bucket-lifecycle-policy-check",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{bucketId}/oci-object-storage-bucket-failed-multipart-delete-lifecycle-policy-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -444,8 +444,8 @@ def oci_object_storage_bucket_multipart_delete_lifecycle_policy_defined_check(ca
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[OCI.ObjectStorage.2] Object Storage buckets should have a lifecycle policy defined",
-                "Description": f"Oracle Object Storage bucket {bucketName} in Compartment {compartmentId} in {ociRegionName} does not have a lifecycle policy defined. By using Object Lifecycle Management to manage your Object Storage and Archive Storage data, you can reduce your storage costs and the amount of time you spend manually managing data. Object Lifecycle Management works by taking automated action based on rules that you define. These rules instruct Object Storage to delete uncommitted multipart uploads, move objects to a different storage tier, and delete supported resources on your behalf within a given bucket. A bucket's lifecycle rules are collectively known as an object lifecycle policy. The resources that Object Lifecycle Management supports include objects, object versions, and uncommitted or failed multipart uploads. Each Object Storage or Archive Storage bucket can have a single lifecycle policy consisting of up to 1,000 rules. Object-related rules can have object name prefix and pattern matching conditions. Uncommitted multipart upload rules do not support prefix and pattern matching conditions. Refer to the remediation instructions if this configuration is not intended.",
+                "Title": "[OCI.ObjectStorage.3] Object Storage buckets should define a lifecycle policy rule to delete failed multipart uploads",
+                "Description": f"Oracle Object Storage bucket {bucketName} in Compartment {compartmentId} in {ociRegionName} does not define a lifecycle policy rule to delete failed multipart uploads. Object Lifecycle Management works by taking automated action based on rules that you define. These rules instruct Object Storage to delete uncommitted multipart uploads, move objects to a different storage tier, and delete supported resources on your behalf within a given bucket. A bucket's lifecycle rules are collectively known as an object lifecycle policy. The resources that Object Lifecycle Management supports include objects, object versions, and uncommitted or failed multipart uploads. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on using a lifecycle policies for your buckets refer to the Using Object Lifecycle Management section of the Oracle Cloud Infrastructure Documentation for Object Storage.",
@@ -506,9 +506,9 @@ def oci_object_storage_bucket_multipart_delete_lifecycle_policy_defined_check(ca
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{bucketId}/oci-object-storage-bucket-lifecycle-policy-check",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{bucketId}/oci-object-storage-bucket-failed-multipart-delete-lifecycle-policy-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{bucketId}/oci-object-storage-bucket-lifecycle-policy-check",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{bucketId}/oci-object-storage-bucket-failed-multipart-delete-lifecycle-policy-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -516,8 +516,8 @@ def oci_object_storage_bucket_multipart_delete_lifecycle_policy_defined_check(ca
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[OCI.ObjectStorage.2] Object Storage buckets should have a lifecycle policy defined",
-                "Description": f"Oracle Object Storage bucket {bucketName} in Compartment {compartmentId} in {ociRegionName} does have a lifecycle policy defined.",
+                "Title": "[OCI.ObjectStorage.3] Object Storage buckets should define a lifecycle policy rule to delete failed multipart uploads",
+                "Description": f"Oracle Object Storage bucket {bucketName} in Compartment {compartmentId} in {ociRegionName} does define a lifecycle policy rule to delete failed multipart uploads.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on using a lifecycle policies for your buckets refer to the Using Object Lifecycle Management section of the Oracle Cloud Infrastructure Documentation for Object Storage.",
@@ -574,13 +574,492 @@ def oci_object_storage_bucket_multipart_delete_lifecycle_policy_defined_check(ca
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED"
             }
-            yield finding"""
+            yield finding
 
-# Public Access
+@registry.register_check("oci.objectstorage")
+def oci_object_storage_bucket_public_access_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.ObjectStorage.4] Object Storage buckets should not allow public access to objects
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for bucket in get_object_storage_buckets(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(bucket,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = bucket["compartment_id"]
+        bucketId = bucket["id"]
+        bucketName = bucket["name"]
+        namespaceName = bucket["namespace"]
+        createdAt = str(bucket["time_created"])
 
-# Replication
+        if bucket["public_access_type"] != "NoPublicAccess":
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{bucketId}/oci-object-storage-bucket-public-access-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{bucketId}/oci-object-storage-bucket-public-access-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "CRITICAL"},
+                "Confidence": 99,
+                "Title": "[OCI.ObjectStorage.4] Object Storage buckets should not allow public access to objects",
+                "Description": f"Oracle Object Storage bucket {bucketName} in Compartment {compartmentId} in {ociRegionName} does allow public access to objects. When you create a bucket, the bucket is considered a private bucket and the access to the bucket and bucket contents requires authentication and authorization. However, Object Storage supports anonymous, unauthenticated access to a bucket that is not in a security zone. You make a bucket public by enabling read access to the bucket. Carefully assess the business requirement for public access to a bucket, such as if your bucket serves static assets needed for websites or web applications. When you enable anonymous access to a bucket, any user can obtain object metadata, download bucket objects, and optionally list bucket contents. Oracle recommends using pre-authenticated requests instead of public buckets. Pre-authenticated requests support more authorization, expiry, and scoping capabilities not possible with public buckets. This is a high priority finding to investigate! Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on safe public access patterns for your buckets refer to the Public Buckets section of the Oracle Cloud Infrastructure Documentation for Object Storage.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Object/Tasks/managingbuckets.htm#publicbuckets",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Oracle Object Storage",
+                    "AssetComponent": "Bucket"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciObjectStorageBucket",
+                        "Id": bucketId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": bucketName,
+                                "Id": bucketId,
+                                "Namespace": namespaceName,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{bucketId}/oci-object-storage-bucket-public-access-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{bucketId}/oci-object-storage-bucket-public-access-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.ObjectStorage.4] Object Storage buckets should not allow public access to objects",
+                "Description": f"Oracle Object Storage bucket {bucketName} in Compartment {compartmentId} in {ociRegionName} does not allow public access to objects.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on safe public access patterns for your buckets refer to the Public Buckets section of the Oracle Cloud Infrastructure Documentation for Object Storage.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Object/Tasks/managingbuckets.htm#publicbuckets",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Oracle Object Storage",
+                    "AssetComponent": "Bucket"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciObjectStorageBucket",
+                        "Id": bucketId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": bucketName,
+                                "Id": bucketId,
+                                "Namespace": namespaceName,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
-# Versioning
+@registry.register_check("oci.objectstorage")
+def oci_object_storage_bucket_replication_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.ObjectStorage.5] Object Storage should be configured to use object replication to promote resilience and recovery
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for bucket in get_object_storage_buckets(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(bucket,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = bucket["compartment_id"]
+        bucketId = bucket["id"]
+        bucketName = bucket["name"]
+        namespaceName = bucket["namespace"]
+        createdAt = str(bucket["time_created"])
 
+        if bucket["replication_enabled"] is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{bucketId}/oci-object-storage-bucket-replication-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{bucketId}/oci-object-storage-bucket-replication-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[OCI.ObjectStorage.5] Object Storage should be configured to use object replication to promote resilience and recovery",
+                "Description": f"Oracle Object Storage bucket {bucketName} in Compartment {compartmentId} in {ociRegionName} is not configured to use object replication. Replication provides protection from regional outages, aids in disaster recovery efforts, and addresses data redundancy compliance requirements. Maintaining multiple copies of data in regional locations closer to user access can also reduce latency. Enabling Object Storage replication is as simple as creating a replication policy on the source bucket that identifies the region and the bucket to replicate to. After the replication policy is created, the destination bucket is read-only and updated only by replication from the source bucket. Objects uploaded to a source bucket after policy creation are asynchronously replicated to the destination bucket. Objects deleted from the source bucket after policy creation are automatically deleted from the destination bucket. Objects uploaded to a source bucket before policy creation are not replicated. Replication overwrites any object in the destination bucket that has the same name as an object in the source bucket. A replicated object has the same name, metadata, ETag, and MD5 value as the object in the source bucket. The creation timestamp, modified timestamp, and archival state can be different, so these attributes are not replicated from the source. If the data stored in your bucket is deemed business- or mission-critical or if the data stored there supports an application with stringent data recovery requirements, consider using a replication policy. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on using a replication policy for your buckets refer to the Using Replication section of the Oracle Cloud Infrastructure Documentation for Object Storage.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Object/Tasks/usingreplication.htm",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Oracle Object Storage",
+                    "AssetComponent": "Bucket"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciObjectStorageBucket",
+                        "Id": bucketId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": bucketName,
+                                "Id": bucketId,
+                                "Namespace": namespaceName,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{bucketId}/oci-object-storage-bucket-replication-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{bucketId}/oci-object-storage-bucket-replication-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.ObjectStorage.5] Object Storage should be configured to use object replication to promote resilience and recovery",
+                "Description": f"Oracle Object Storage bucket {bucketName} in Compartment {compartmentId} in {ociRegionName} is configured to use object replication.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on using a replication policy for your buckets refer to the Using Replication section of the Oracle Cloud Infrastructure Documentation for Object Storage.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Object/Tasks/usingreplication.htm",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Oracle Object Storage",
+                    "AssetComponent": "Bucket"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciObjectStorageBucket",
+                        "Id": bucketId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": bucketName,
+                                "Id": bucketId,
+                                "Namespace": namespaceName,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("oci.objectstorage")
+def oci_object_storage_bucket_versioning_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.ObjectStorage.6] Object Storage should be configured to use object versioning to promote resilience and recovery
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for bucket in get_object_storage_buckets(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(bucket,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = bucket["compartment_id"]
+        bucketId = bucket["id"]
+        bucketName = bucket["name"]
+        namespaceName = bucket["namespace"]
+        createdAt = str(bucket["time_created"])
+
+        if bucket["versioning"] == "Disabled":
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{bucketId}/oci-object-storage-bucket-versioning-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{bucketId}/oci-object-storage-bucket-versioning-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[OCI.ObjectStorage.6] Object Storage should be configured to use object versioning to promote resilience and recovery",
+                "Description": f"Oracle Object Storage bucket {bucketName} in Compartment {compartmentId} in {ociRegionName} is not configured to use object replication. Object versioning provides data protection against accidental or malicious object update, overwrite, or deletion. Standard Oracle Cloud Infrastructure pricing applies to each bucket that is enabled for versioning. You are charged for all latest object versions and previous object versions (including deleted versions) stored in the bucket. Previous object versions are retained until you explicitly delete them. Object versioning does increase your storage costs. Consider using Object Lifecycle Management to help you manage object versions automatically. Object versioning is enabled at the bucket level. Versioning directs Object Storage to automatically create an object version each time a new object is uploaded, an existing object is overwritten, or when an object is deleted. You can enable object versioning at bucket creation time or later. Consider using Versioning in conjunction with Lifecycle Policies and Replication Policies to support your business' disaster recovery and business continuity requirements. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on using object versioning for your buckets refer to the Using Object Versioning section of the Oracle Cloud Infrastructure Documentation for Object Storage.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Object/Tasks/usingversioning.htm",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Oracle Object Storage",
+                    "AssetComponent": "Bucket"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciObjectStorageBucket",
+                        "Id": bucketId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": bucketName,
+                                "Id": bucketId,
+                                "Namespace": namespaceName,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{bucketId}/oci-object-storage-bucket-versioning-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{bucketId}/oci-object-storage-bucket-versioning-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.ObjectStorage.6] Object Storage should be configured to use object versioning to promote resilience and recovery",
+                "Description": f"Oracle Object Storage bucket {bucketName} in Compartment {compartmentId} in {ociRegionName} is configured to use object replication.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on using object versioning for your buckets refer to the Using Object Versioning section of the Oracle Cloud Infrastructure Documentation for Object Storage.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Object/Tasks/usingversioning.htm",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Oracle Object Storage",
+                    "AssetComponent": "Bucket"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciObjectStorageBucket",
+                        "Id": bucketId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": bucketName,
+                                "Id": bucketId,
+                                "Namespace": namespaceName,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 ## END ??
