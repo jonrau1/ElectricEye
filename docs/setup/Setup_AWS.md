@@ -6,8 +6,8 @@ This documentation is dedicated to using ElectricEye for evaluation of AWS Envir
 
 - [Configuring TOML](#configuring-toml)
 - [Use ElectricEye for AWS](#use-electriceye-for-aws)
+- [Configuring the AWS Security Group Auditor](#configuring-the-aws-security-group-auditor)
 - [Building & Pushing ElectricEye Docker Image to ECR](#build-and-push-the-docker-image-to-ecr)
-- [AWS Multi-Account & Multi-Region Usage](#multi-account-usage)
 - [AWS EASM Reporting](#aws-external-attack-surface-reporting)
 
 ## Configuring TOML
@@ -30,7 +30,7 @@ If you are running this against your Organization **leave this option empty**. A
 
 - `aws_regions_selection`: This variable specifies the AWS regions that you want to scan. If left blank, the current AWS region is used. You can provide a list of AWS regions or simply use `["All"]` to scan all regions.
 
-- `aws_electric_eye_iam_role_name`: This variable specifies the ***Name*** of the AWS IAM role that ElectricEye will assume and utilize to execute its Checks. The role name must be the same for all accounts, including your current account. To facilitate this, use [this CloudFormation template](../../cloudformation/ElectricEye_Organizations_StackSet.yaml) and deploy it as an AWS CloudFormation StackSet.
+- `aws_electric_eye_iam_role_name`: This variable specifies the ***Name*** of the AWS IAM role that ElectricEye will assume and utilize to execute its Checks. The role name must be the same for all accounts, including your current account. To facilitate this, use [this CloudFormation template](../../cloudformation/ElectricEye_Organizations_StackSet.yaml) and deploy it as an AWS CloudFormation StackSet. This is done to keep the credentials used for **Auditors** separate from the credentials you use for Outputs and for retrieving Secrets, it also makes it easier to audit (via CloudTrail or otherwise) the usage of the ElectricEye role.
 
 By configuring these variables in the TOML file, you can customize ElectricEye's behavior to suit your specific AWS environments.
 
@@ -93,6 +93,57 @@ pip3 install --user -r requirements.txt
     ```bash
     python3 eeauditor/controller.py -t AWS -c athena_workgroup_encryption_check
     ```
+
+## Configuring the AWS Security Group Auditor
+
+The Auditor for Amazon EC2 Security Groups (the EC2-VPC Security Groups, not the EC2-Classic SGs some of us old dirty bastards used back in the day) is configured using a JSON [file](../../eeauditor/auditors/aws/electriceye_secgroup_auditor_config.json) which contains titles, check IDs, to-from IANA port numbers and protocols that map to high-danger services you should not leave open to the world such as SMB, Win NetBIOS, databases, caches, et al. While this is not the same as figuring out what your how your actual assets & services are configured (see the [EASM](#aws-external-attack-surface-reporting) section for that) this is a good hygeine check.
+
+The JSON file is already prefilled with several dozen checks, however you can easily append more to the list. Shown below are how `udp` and `tcp` rules are configured.
+
+```json
+[
+    {
+        "ToPort": 1194,
+        "FromPort": 1194,
+        "Protocol": "udp",
+        "CheckTitle": "[SecurityGroup.28] Security groups should not allow unrestricted OpenVPN (UDP 1194) access",
+        "CheckId": "security-group-openvpn-open-check",
+        "CheckDescriptor": "OpenVPN (UDP 1194)"
+    },
+    {
+        "ToPort": 5672,
+        "FromPort": 5672,
+        "Protocol": "tcp",
+        "CheckTitle": "[SecurityGroup.29] Security groups should not allow unrestricted access to AmazonMQ/RabbitMQ (TCP 5672)",
+        "CheckId": "security-group-rabbitmq-open-check",
+        "CheckDescriptor": "AmazonMQ / RabbitMQ / AMQP (TCP 5672)"
+    }
+]
+```
+
+#### `ToPort`
+
+The IANA Port number at the top of the range for whatever service needs internet access, e.g., if your service required ports 135-139, then 139 is the `ToPort`
+
+#### `FromPort`
+
+The IANA Port number at the bottom of the range for whatever service needs internet access, e.g., if your service required ports 135-139, then 135 is the `ToPort`
+
+#### `Protocol`
+
+A Protocol identifier that matches the Protocol within the [AWS `SecurityGroupRule` Data Schema](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_SecurityGroupRule.html) such as `tcp`, `udp`, or `icmp`. Ensure this matches the IANA ports, depending on the service you may need different protocols. Note that AWS Security Group Rules cannot have multiple Protocols defined (unless it is "all" (`-1`)) so if you wanted to write a rule to check for DNS you need both `tcp 53` and `udp 53` rules.
+
+#### `CheckTitle`
+
+The `Title` within the AWS Security Finding Format, aka the title of the finding, ensure you follow the rule number order and the guidelines - or choose your own.
+
+#### `CheckId`
+
+An all lowercase, dash-separated string that is appended to the `Id` and `GeneratorId` within the AWS Security Finding Format, this is the ensure uniqueness of the Check performed by the Auditor
+
+#### `CheckDescriptor`
+
+A descriptor of what the protocol & port service is, this is added into the `Description` field within the AWS Security Finding Format and can be anything you want as long as it does not contain double-quotes (`""`)
 
 ## Build and push the Docker image to ECR
 
