@@ -639,6 +639,169 @@ def oci_file_storage_file_system_export_options_identity_squashing_check(cache, 
             }
             yield finding
 
-# File System Mount Targets should have at least one Network Security Group (NSG) assigned
+@registry.register_check("oci.filestorage")
+def oci_file_storage_mount_target_use_nsgs_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.FileStorage.4] File Storage Mount Targets should have at least one Network Security Group (NSG) assigned
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for mtarget in get_file_storage_mount_targets(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(mtarget,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = mtarget["compartment_id"]
+        mtargetId = mtarget["id"]
+        mtargetName = mtarget["display_name"]
+        availabilityDomain = mtarget["availability_domain"]
+        lifecycleState = mtarget["lifecycle_state"]
+        createdAt = str(mtarget["time_created"])
+
+        if not mtarget["nsg_ids"]:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{mtargetId}/oci-file-storage-mount-target-nsgs-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{mtargetId}/oci-file-storage-mount-target-nsgs-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[OCI.FileStorage.4] File Storage Mount Targets should have at least one Network Security Group (NSG) assigned",
+                "Description": f"Oracle File Storage file system {mtargetName} in Compartment {compartmentId} in {ociRegionName} does not have at least one Network Security Group (NSG) assigned. You can add a File Storage mount target to one or more Network Security Groups (NSGs). File storage requires specific rules to be configured for NSGs that are associated with mount targets: Stateful ingress from ALL ports in the source instance CIDR block to TCP ports 111, 2048, 2049, and 2050, Stateful ingress from ALL ports in the source instance CIDR block to UDP ports 111 and 2048, Stateful egress from TCP ports 111, 2048, 2049, and 2050 to ALL ports in the destination instance CIDR block and Stateful egress from UDP port 111 ALL ports in the destination instance CIDR block. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on configuring NSG for your File Storage mount targets refer to the Configuring VCN Security Rules for File Storage section of the Oracle Cloud Infrastructure Documentation for File Storage.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/File/Tasks/securitylistsfilestorage.htm#Configuring_VCN_Security_Rules_for_File_Storage",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Oracle File Storage",
+                    "AssetComponent": "Mount Target"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciFileStorageMountTarget",
+                        "Id": mtargetId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": mtargetName,
+                                "Id": mtargetId,
+                                "AvailabilityDomain": availabilityDomain,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{mtargetId}/oci-file-storage-mount-target-nsgs-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{mtargetId}/oci-file-storage-mount-target-nsgs-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.FileStorage.4] File Storage Mount Targets should have at least one Network Security Group (NSG) assigned",
+                "Description": f"Oracle File Storage file system {mtargetName} in Compartment {compartmentId} in {ociRegionName} does have at least one Network Security Group (NSG) assigned.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on configuring NSG for your File Storage mount targets refer to the Configuring VCN Security Rules for File Storage section of the Oracle Cloud Infrastructure Documentation for File Storage.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/File/Tasks/securitylistsfilestorage.htm#Configuring_VCN_Security_Rules_for_File_Storage",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Oracle File Storage",
+                    "AssetComponent": "Mount Target"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciFileStorageMountTarget",
+                        "Id": mtargetId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": mtargetName,
+                                "Id": mtargetId,
+                                "AvailabilityDomain": availabilityDomain,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 ## END ??
