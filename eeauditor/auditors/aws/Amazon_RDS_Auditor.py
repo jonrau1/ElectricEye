@@ -50,10 +50,7 @@ def describe_db_instances(cache, session):
                         "sqlserver-ee",
                         "sqlserver-se",
                         "sqlserver-ex",
-                        "sqlserver-web",
-                        "custom-sqlserver-ee",
-                        "custom-sqlserver-se",
-                        "custom-sqlserver-web"
+                        "sqlserver-web"
                     ]
                 }
             ]
@@ -469,10 +466,10 @@ def rds_instance_storage_encryption_check(cache: dict, session, awsAccountId: st
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Relational Database Service",
                     "AssetComponent": "Database Instance"
