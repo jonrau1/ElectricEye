@@ -90,7 +90,7 @@ def describe_db_clusters(cache, session):
 
 @registry.register_check("rds")
 def rds_instance_ha_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[RDS.1] RDS instances should be configured for high availability"""
+    """[RDS.1] RDS instances should be configured for high availability (Multi-AZ deployment)"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for dbinstances in describe_db_instances(cache, session):
@@ -118,10 +118,8 @@ def rds_instance_ha_check(cache: dict, session, awsAccountId: str, awsRegion: st
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[RDS.1] RDS instances should be configured for high availability",
-                "Description": "RDS DB instance "
-                + instanceId
-                + " is not configured for high availability. Refer to the remediation instructions to remediate this behavior",
+                "Title": "[RDS.1] RDS instances should be configured for high availability (Multi-AZ deployment)",
+                "Description": f"RDS DB instance {instanceId} is not configured for high availability (Multi-AZ deployment). High availability (Multi-AZ) deployments can have one standby or two standby DB instances. When the deployment has one standby DB instance, it's called a Multi-AZ DB instance deployment. A Multi-AZ DB instance deployment has one standby DB instance that provides failover support, but doesn't serve read traffic. When the deployment has two standby DB instances, it's called a Multi-AZ DB cluster deployment. A Multi-AZ DB cluster deployment has standby DB instances that provide failover support and can also serve read traffic. While not having the same direct performance benefits as a read replica or cache, high availability configuration promotes extra resilience across Availability Zones in the event an AZ goes down, your database will failover to serve requests in another AZ. Refer to the remediation instructions if this configuration is not intended",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on RDS instance high availability and how to configure it refer to the High Availability (Multi-AZ) for Amazon RDS section of the Amazon Relational Database Service User Guide",
@@ -131,10 +129,10 @@ def rds_instance_ha_check(cache: dict, session, awsAccountId: str, awsRegion: st
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Relational Database Service",
                     "AssetComponent": "Database Instance"
@@ -164,7 +162,7 @@ def rds_instance_ha_check(cache: dict, session, awsAccountId: str, awsRegion: st
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -191,10 +189,8 @@ def rds_instance_ha_check(cache: dict, session, awsAccountId: str, awsRegion: st
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[RDS.1] RDS instances should be configured for high availability",
-                "Description": "RDS DB instance "
-                + instanceId
-                + " is configured for high availability.",
+                "Title": "[RDS.1] RDS instances should be configured for high availability (Multi-AZ deployment)",
+                "Description": f"RDS DB instance {instanceId} is configured for high availability (Multi-AZ deployment).",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on RDS instance high availability and how to configure it refer to the High Availability (Multi-AZ) for Amazon RDS section of the Amazon Relational Database Service User Guide",
@@ -204,10 +200,10 @@ def rds_instance_ha_check(cache: dict, session, awsAccountId: str, awsRegion: st
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Relational Database Service",
                     "AssetComponent": "Database Instance"
@@ -237,7 +233,7 @@ def rds_instance_ha_check(cache: dict, session, awsAccountId: str, awsRegion: st
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -266,8 +262,7 @@ def rds_instance_public_access_check(cache: dict, session, awsAccountId: str, aw
         instancePort = int(dbinstances["Endpoint"]["Port"])
         instanceEngine = str(dbinstances["Engine"])
         instanceEngineVersion = str(dbinstances["EngineVersion"])
-        publicAccessibleCheck = str(dbinstances["PubliclyAccessible"])
-        if publicAccessibleCheck == "True":
+        if dbinstances["PubliclyAccessible"] == True:
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -282,12 +277,10 @@ def rds_instance_public_access_check(cache: dict, session, awsAccountId: str, aw
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "CRITICAL"},
+                "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
                 "Title": "[RDS.2] RDS instances should not be publicly accessible",
-                "Description": "RDS DB instance "
-                + instanceId
-                + " is publicly accessible. Refer to the remediation instructions to remediate this behavior",
+                "Description": f"RDS DB instance {instanceId} is publicly accessible. Configuring your RDS / Aurora database to be publicly accessible allows your endpoint to receive traffic from the public internet, however, it does not remove other security controls you may have in place such as using IAM-based authentication, strong passwords, Kerberos authentication, network security (EC2 Security Groups, AWS Network Firewall, AWS Route 53 Resolver DNS Firewall), etc. Adversaries and other unauthorized personnel may still attempt to make connections with and consume the resources of your database instances. It is a best practice to only route requests to your RDS / Aurora instances within the boundaries of an Amazon Virtual Private Cloud (VPC). You can attach Site-to-Site VPNs, ClientVPNs (OpenVPN), and Direct Connection Virtual Gateways to support hybrid and remote connection use cases while preventing your database from being indexed on the internet. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on RDS instance publicly access and how to change it refer to the Hiding a DB Instance in a VPC from the Internet section of the Amazon Relational Database Service User Guide",
@@ -297,10 +290,10 @@ def rds_instance_public_access_check(cache: dict, session, awsAccountId: str, aw
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Relational Database Service",
                     "AssetComponent": "Database Instance"
@@ -361,9 +354,7 @@ def rds_instance_public_access_check(cache: dict, session, awsAccountId: str, aw
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[RDS.2] RDS instances should not be publicly accessible",
-                "Description": "RDS DB instance "
-                + instanceId
-                + " is not publicly accessible. Refer to the remediation instructions to remediate this behavior",
+                "Description": f"RDS DB instance {instanceId} is not publicly accessible. Refer to the remediation instructions if this configuration is not intended",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on RDS instance publicly access and how to change it refer to the Hiding a DB Instance in a VPC from the Internet section of the Amazon Relational Database Service User Guide",
@@ -373,10 +364,10 @@ def rds_instance_public_access_check(cache: dict, session, awsAccountId: str, aw
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Relational Database Service",
                     "AssetComponent": "Database Instance"
@@ -456,7 +447,7 @@ def rds_instance_storage_encryption_check(cache: dict, session, awsAccountId: st
                 "Title": "[RDS.3] RDS instances should have encrypted storage",
                 "Description": "RDS DB instance "
                 + instanceId
-                + " does not have encrypted storage. Refer to the remediation instructions to remediate this behavior",
+                + " does not have encrypted storage. Refer to the remediation instructions if this configuration is not intended",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on RDS storage encryption refer to the Enabling Amazon RDS Encryption for a DB Instance section of the Amazon Relational Database Service User Guide",
@@ -615,7 +606,7 @@ def rds_instance_iam_auth_check(cache: dict, session, awsAccountId: str, awsRegi
                     "Title": "[RDS.4] RDS instances that support IAM Authentication should use IAM Authentication",
                     "Description": "RDS DB instance "
                     + instanceId
-                    + " does not support IAM Authentication. Refer to the remediation instructions to remediate this behavior",
+                    + " does not support IAM Authentication. Refer to the remediation instructions if this configuration is not intended",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For more information on RDS IAM Database Authentication and how to configure it refer to the IAM Database Authentication for MySQL and PostgreSQL section of the Amazon Relational Database Service User Guide",
@@ -885,7 +876,7 @@ def rds_instance_domain_join_check(cache: dict, session, awsAccountId: str, awsR
                     "Title": "[RDS.5] RDS instances that support Kerberos Authentication should be joined to a domain",
                     "Description": "RDS DB instance "
                     + instanceId
-                    + " is not joined to a domain, and likely does not support Kerberos Authentication because of it. Refer to the remediation instructions to remediate this behavior",
+                    + " is not joined to a domain, and likely does not support Kerberos Authentication because of it. Refer to the remediation instructions if this configuration is not intended",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For more information on RDS instances that support Kerberos Authentication and how to configure it refer to the Kerberos Authentication section of the Amazon Relational Database Service User Guide",
@@ -1133,7 +1124,7 @@ def rds_instance_performance_insights_check(cache: dict, session, awsAccountId: 
                 "Title": "[RDS.6] RDS instances should have performance insights enabled",
                 "Description": "RDS DB instance "
                 + instanceId
-                + " does not have performance insights enabled. Refer to the remediation instructions to remediate this behavior",
+                + " does not have performance insights enabled. Refer to the remediation instructions if this configuration is not intended",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on RDS performance insights and how to configure it refer to the Using Amazon RDS Performance Insights section of the Amazon Relational Database Service User Guide",
@@ -1290,7 +1281,7 @@ def rds_instance_deletion_protection_check(cache: dict, session, awsAccountId: s
                 "Title": "[RDS.7] RDS instances should have deletion protection enabled",
                 "Description": "RDS DB instance "
                 + instanceId
-                + " does not have deletion protection enabled. Refer to the remediation instructions to remediate this behavior",
+                + " does not have deletion protection enabled. Refer to the remediation instructions if this configuration is not intended",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on RDS deletion protection and how to configure it refer to the Deletion Protection section of the Amazon Relational Database Service User Guide",
@@ -1323,7 +1314,7 @@ def rds_instance_deletion_protection_check(cache: dict, session, awsAccountId: s
                                 "Engine": instanceEngine,
                                 "EngineVersion": instanceEngineVersion,
                             }
-                        },
+                        }
                     }
                 ],
                 "Compliance": {
@@ -1334,17 +1325,17 @@ def rds_instance_deletion_protection_check(cache: dict, session, awsAccountId: s
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1",
-                    ],
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
         else:
@@ -1373,10 +1364,10 @@ def rds_instance_deletion_protection_check(cache: dict, session, awsAccountId: s
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Relational Database Service",
                     "AssetComponent": "Database Instance"
@@ -1407,17 +1398,17 @@ def rds_instance_deletion_protection_check(cache: dict, session, awsAccountId: s
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1",
-                    ],
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
 
@@ -1526,7 +1517,7 @@ def rds_instance_cloudwatch_logging_check(cache: dict, session, awsAccountId: st
                 "Title": "[RDS.8] RDS instances should publish database logs to CloudWatch Logs",
                 "Description": "RDS DB instance "
                 + instanceId
-                + " does not publish database logs to CloudWatch Logs. Refer to the remediation instructions to remediate this behavior",
+                + " does not publish database logs to CloudWatch Logs. Refer to the remediation instructions if this configuration is not intended",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on database logging with CloudWatch and how to configure it refer to the Publishing Database Logs to Amazon CloudWatch Logs section of the Amazon Relational Database Service User Guide. Aurora does support this but you will need to address another User Guide for information on Aurora database logging with CloudWatch",
@@ -1612,7 +1603,7 @@ def rds_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRe
                 "Title": "[RDS.9] RDS snapshots should be encrypted",
                 "Description": "RDS snapshot "
                 + snapshotId
-                + " is not encrypted. Refer to the remediation instructions to remediate this behavior",
+                + " is not encrypted. Refer to the remediation instructions if this configuration is not intended",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on encrypting RDS snapshots refer to the AWS Premium Support Knowledge Center Entry How do I encrypt Amazon RDS snapshots?",
@@ -1752,7 +1743,7 @@ def rds_snapshot_public_share_check(cache: dict, session, awsAccountId: str, aws
                         "Title": "[RDS.10] RDS snapshots should not be publicly shared",
                         "Description": "RDS snapshot "
                         + snapshotId
-                        + " is publicly shared. Refer to the remediation instructions to remediate this behavior",
+                        + " is publicly shared. Refer to the remediation instructions if this configuration is not intended",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "For more information on sharing RDS snapshots refer to the Sharing a Snapshot section of the Amazon Relational Database Service User Guide",
@@ -1904,7 +1895,7 @@ def rds_aurora_cluster_activity_streams_check(cache: dict, session, awsAccountId
                 "Title": "[RDS.11] RDS Aurora Clusters should use Database Activity Streams",
                 "Description": "RDS Aurora Cluster "
                 + dbcId
-                + " is not using Database Activity Streams. Database Activity Streams allow you to get real-time insights into security and operational behaviors in your DB Cluster so that you can interdict potentially malicious activity. Refer to the remediation instructions to remediate this behavior",
+                + " is not using Database Activity Streams. Database Activity Streams allow you to get real-time insights into security and operational behaviors in your DB Cluster so that you can interdict potentially malicious activity. Refer to the remediation instructions if this configuration is not intended",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Database Activity Streams refer to the Using Database Activity Streams with Amazon Aurora section of the Amazon Aurora User Guide for Aurora (yes it's called that)",
@@ -2069,7 +2060,7 @@ def rds_aurora_cluster_encryption_check(cache: dict, session, awsAccountId: str,
                 "Title": "[RDS.12] RDS Aurora Clusters should be encrypted",
                 "Description": "RDS Aurora Cluster "
                 + dbcId
-                + " is not using Database Activity Streams. Database Activity Streams allow you to get real-time insights into security and operational behaviors in your DB Cluster so that you can interdict potentially malicious activity. Refer to the remediation instructions to remediate this behavior",
+                + " is not using Database Activity Streams. Database Activity Streams allow you to get real-time insights into security and operational behaviors in your DB Cluster so that you can interdict potentially malicious activity. Refer to the remediation instructions if this configuration is not intended",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Database Activity Streams refer to the Using Database Activity Streams with Amazon Aurora section of the Amazon Aurora User Guide for Aurora (yes it's called that)",
@@ -2139,7 +2130,7 @@ def rds_aurora_cluster_encryption_check(cache: dict, session, awsAccountId: str,
                 "Title": "[RDS.12] RDS Aurora Clusters should be encrypted",
                 "Description": "RDS Aurora Cluster "
                 + dbcId
-                + " is not using Database Activity Streams. Database Activity Streams allow you to get real-time insights into security and operational behaviors in your DB Cluster so that you can interdict potentially malicious activity. Refer to the remediation instructions to remediate this behavior",
+                + " is not using Database Activity Streams. Database Activity Streams allow you to get real-time insights into security and operational behaviors in your DB Cluster so that you can interdict potentially malicious activity. Refer to the remediation instructions if this configuration is not intended",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Database Activity Streams refer to the Using Database Activity Streams with Amazon Aurora section of the Amazon Aurora User Guide for Aurora (yes it's called that)",
@@ -2269,7 +2260,7 @@ def rds_instance_snapshot_check(cache: dict, session, awsAccountId: str, awsRegi
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -2341,7 +2332,7 @@ def rds_instance_snapshot_check(cache: dict, session, awsAccountId: str, awsRegi
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -2639,7 +2630,7 @@ def rds_instance_instance_alerting_check(cache: dict, session, awsAccountId: str
                         "Severity": {"Label": "LOW"},
                         "Confidence": 99,
                         "Title": "[RDS.15] RDS instances should be monitored for important events using Event Subscriptions",
-                        "Description": f"AWS Account {awsAccountId} in Region {awsRegion} does not have an Event Subscription to alert on critical security and performance events for RDS which include 'maintenance', 'configuration change', and 'failure'. Refer to the remediation instructions to remediate this behavior.",
+                        "Description": f"AWS Account {awsAccountId} in Region {awsRegion} does not have an Event Subscription to alert on critical security and performance events for RDS which include 'maintenance', 'configuration change', and 'failure'. Refer to the remediation instructions if this configuration is not intended.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": 'To create a Filter use the following AWS CLI Script: aws rds create-event-subscription --subscription-name critical-instance-alerts --sns-topic-arn $SNS_TOPIC_ARN --source-type db-instance --event-categories "maintenance" "configuration change" "failure" --enabled. Or, refer to the AWS Security Hub Remediation Guide for RDS',
@@ -2763,7 +2754,7 @@ def rds_instance_instance_alerting_check(cache: dict, session, awsAccountId: str
             "Severity": {"Label": "LOW"},
             "Confidence": 99,
             "Title": "[RDS.15] RDS instances should be monitored for important events using Event Subscriptions",
-            "Description": f"AWS Account {awsAccountId} in Region {awsRegion} does not have an Event Subscription to alert on critical security and performance events for RDS which include 'maintenance', 'configuration change', and 'failure'. Refer to the remediation instructions to remediate this behavior.",
+            "Description": f"AWS Account {awsAccountId} in Region {awsRegion} does not have an Event Subscription to alert on critical security and performance events for RDS which include 'maintenance', 'configuration change', and 'failure'. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
                     "Text": 'To create a Filter use the following AWS CLI Script: aws rds create-event-subscription --subscription-name critical-instance-alerts --sns-topic-arn $SNS_TOPIC_ARN --source-type db-instance --event-categories "maintenance" "configuration change" "failure" --enabled. Or, refer to the AWS Security Hub Remediation Guide for RDS',
@@ -2903,7 +2894,7 @@ def rds_instance_parameter_group_alerting_check(cache: dict, session, awsAccount
                         "Severity": {"Label": "LOW"},
                         "Confidence": 99,
                         "Title": "[RDS.16] RDS parameter groups should be monitored for important events using Event Subscriptions",
-                        "Description": f"AWS Account {awsAccountId} in Region {awsRegion} does not have an Event Subscription to alert on critical security and performance events for RDS parameter groups which includes 'configuration change'. Refer to the remediation instructions to remediate this behavior.",
+                        "Description": f"AWS Account {awsAccountId} in Region {awsRegion} does not have an Event Subscription to alert on critical security and performance events for RDS parameter groups which includes 'configuration change'. Refer to the remediation instructions if this configuration is not intended.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": 'To create a Filter use the following AWS CLI Script: aws rds create-event-subscription --subscription-name critical-pg-alerts --sns-topic-arn $SNS_TOPIC_ARN --source-type db-parameter-group --event-categories "configuration change" --enabled. Or, refer to the AWS Security Hub Remediation Guide for RDS',
@@ -3027,7 +3018,7 @@ def rds_instance_parameter_group_alerting_check(cache: dict, session, awsAccount
             "Severity": {"Label": "LOW"},
             "Confidence": 99,
             "Title": "[RDS.16] RDS parameter groups should be monitored for important events using Event Subscriptions",
-            "Description": f"AWS Account {awsAccountId} in Region {awsRegion} does not have an Event Subscription to alert on critical security and performance events for RDS parameter groups which includes 'configuration change'. Refer to the remediation instructions to remediate this behavior.",
+            "Description": f"AWS Account {awsAccountId} in Region {awsRegion} does not have an Event Subscription to alert on critical security and performance events for RDS parameter groups which includes 'configuration change'. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
                     "Text": 'To create a Filter use the following AWS CLI Script: aws rds create-event-subscription --subscription-name critical-pg-alerts --sns-topic-arn $SNS_TOPIC_ARN --source-type db-parameter-group --event-categories "configuration change" --enabled. Or, refer to the AWS Security Hub Remediation Guide for RDS',
