@@ -224,16 +224,18 @@ def efs_filesys_policy_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 PR.DS-1",
-                        "NIST CSF V1.1 PR.AC-1",
                         "NIST CSF V1.1 PR.AC-4",
-                        "NIST SP 800-53 Rev. 4 IA-1",
-                        "NIST SP 800-53 Rev. 4 IA-2",
-                        "NIST SP 800-53 Rev. 4 IA-5",
-                        "AICPA TSC CC6.1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-5",
+                        "NIST SP 800-53 Rev. 4 AC-6",
+                        "NIST SP 800-53 Rev. 4 AC-16",
                         "AICPA TSC CC6.3",
-                        "ISO 27001:2013 A.9.1.1",
-                        "ISO 27001:2013 A.9.4.1"
+                        "ISO 27001:2013 A.6.1.2",
+                        "ISO 27001:2013 A.9.1.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.4.1",
+                        "ISO 27001:2013 A.9.4.4"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -287,16 +289,18 @@ def efs_filesys_policy_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 PR.DS-1",
-                        "NIST CSF V1.1 PR.AC-1",
                         "NIST CSF V1.1 PR.AC-4",
-                        "NIST SP 800-53 Rev. 4 IA-1",
-                        "NIST SP 800-53 Rev. 4 IA-2",
-                        "NIST SP 800-53 Rev. 4 IA-5",
-                        "AICPA TSC CC6.1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-5",
+                        "NIST SP 800-53 Rev. 4 AC-6",
+                        "NIST SP 800-53 Rev. 4 AC-16",
                         "AICPA TSC CC6.3",
-                        "ISO 27001:2013 A.9.1.1",
-                        "ISO 27001:2013 A.9.4.1"
+                        "ISO 27001:2013 A.6.1.2",
+                        "ISO 27001:2013 A.9.1.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.4.1",
+                        "ISO 27001:2013 A.9.4.4"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
