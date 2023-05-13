@@ -2236,10 +2236,10 @@ def rds_instance_snapshot_check(cache: dict, session, awsAccountId: str, awsRegi
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Relational Database Service",
                     "AssetComponent": "Database Instance"
@@ -2275,7 +2275,7 @@ def rds_instance_snapshot_check(cache: dict, session, awsAccountId: str, awsRegi
                         "ISO 27001:2013 A.11.1.4",
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1",
+                        "ISO 27001:2013 A.17.2.1"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
