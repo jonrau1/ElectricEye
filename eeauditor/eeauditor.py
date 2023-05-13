@@ -192,7 +192,7 @@ class EEAuditor(object):
                     # add the global services to the "globalServiceCompletedList" so they can be skipped after they run once
                     # in the `session` for each of these, the Auditor will override with the "parent region" as some endpoints
                     # are not smart enough to do that - for instance, CloudFront and Health won't respond outside of us-east-1 but IAM will
-                    if serviceName == ("cloudfront" or "globalaccelerator" or "iam" or "health" or "support"):
+                    if serviceName == "cloudfront" or "globalaccelerator" or "iam" or "health" or "support":
                         if serviceName not in globalServiceCompletedList:
                             globalServiceCompletedList.append(serviceName)
                         else:
