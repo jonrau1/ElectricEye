@@ -151,12 +151,17 @@ class EEAuditor(object):
         """
         
         # Retrieve the endpoints.json data to prevent multiple outbound calls
-        endpointUrl = "https://raw.githubusercontent.com/boto/botocore/develop/botocore/data/endpoints.json"
         endpointData = json.loads(
-            requests.get(endpointUrl).text
+            requests.get(
+                "https://raw.githubusercontent.com/boto/botocore/develop/botocore/data/endpoints.json"
+            ).text
         )
 
         for account in self.awsAccountTargets:
+
+            # This list will contain the "global" services so they're not run multiple times
+            globalServiceCompletedList = []
+
             for region in self.awsRegionsSelection:
                 for serviceName, checkList in self.registry.checks.items():
                     # Setup Session & Partition
@@ -172,8 +177,16 @@ class EEAuditor(object):
                         print(f"{serviceName} is not available in {region}")
                         continue
 
+                    # Check if a "global" service was already checked
+                    if serviceName in globalServiceCompletedList:
+                        print(f"{serviceName} Auditor was already run, global Auditors only need to be executed once.")
+                        continue
+
                     for checkName, check in checkList.items():
                         # clearing cache for each control whithin a auditor
+                        if serviceName == "cloudfront" or "globalaccelerator" or "iam" or "health" or "support":
+                            globalServiceCompletedList.append(serviceName)
+
                         auditorCache = {}
                         # if a specific check is requested, only run that one check
                         if (
@@ -392,7 +405,7 @@ class EEAuditor(object):
                 else:
                     description = ""
                 table.append(
-                    f"|{inspect.getfile(check).rpartition('/')[2]} | {serviceName} | {description}"
+                    f"| {inspect.getfile(check).rpartition('/')[2]} | {serviceName} | {description} "
                 )
 
         print("\n".join(table))

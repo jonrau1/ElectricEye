@@ -29,9 +29,17 @@ registry = CheckRegister()
 def describe_trusted_advisor_checks(cache, session):
     support = session.client("support", region_name="us-east-1")
     response = cache.get("describe_trusted_advisor_checks")
+    
     if response:
         return response
-    cache["describe_trusted_advisor_checks"] = support.describe_trusted_advisor_checks(language='en')
+    
+    try:
+        cache["describe_trusted_advisor_checks"] = support.describe_trusted_advisor_checks(language='en')
+    except botocore.exceptions.ClientError as error:
+        if error.response['Error']['Code'] == 'SubscriptionRequiredException':
+            print('You are not subscribed to AWS Premium Support - cannot use the Trusted Advisor Auditor')
+            return {}    
+    
     return cache["describe_trusted_advisor_checks"]
 
 @registry.register_check("support")
