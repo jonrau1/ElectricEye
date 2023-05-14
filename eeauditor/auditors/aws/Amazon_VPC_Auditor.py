@@ -533,7 +533,7 @@ def subnet_no_ip_space_check(cache: dict, session, awsAccountId: str, awsRegion:
                             "ISO 27001:2013 A.11.1.4",
                             "ISO 27001:2013 A.17.1.1",
                             "ISO 27001:2013 A.17.1.2",
-                            "ISO 27001:2013 A.17.2.1",
+                            "ISO 27001:2013 A.17.2.1"
                         ]
                     },
                     "Workflow": {"Status": "NEW"},

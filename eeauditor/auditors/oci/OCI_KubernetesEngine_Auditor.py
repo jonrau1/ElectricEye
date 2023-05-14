@@ -786,7 +786,7 @@ def oci_oke_cluster_latest_k8s_version_check(cache, awsAccountId, awsRegion, aws
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on latest Kubernetes patch versions supported by OKE refer to the Supported Versions of Kubernetes section of the Oracle Cloud Infrastructure Documentation for Container Engine.",
-                        "Url": "https://docs.oracle.com/en-us/iaas/Content/ContEng/Concepts/contengaboutk8sversions.htm#supportedk8sversions",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/ContEng/Concepts/contengaboutk8sversions.htm#supportedk8sversions"
                     }
                 },
                 "ProductFields": {
@@ -1380,14 +1380,637 @@ def oci_oke_node_pool_use_nsgs_check(cache, awsAccountId, awsRegion, awsPartitio
                 "RecordState": "ARCHIVED"
             }
             yield finding
+ 
+@registry.register_check("oci.oke")
+def oci_oke_node_pool_pods_use_nsgs_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.OKE.9] Oracle Container Engine for Kubernetes (OKE) node pools should be configured to protect pods with a Network Security Group (NSG)
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for nodepool in get_oke_node_pools(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(nodepool,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        nodepoolId = nodepool["id"]
+        nodepoolName = nodepool["name"]
+        compartmentId = nodepool["compartment_id"]
+        clusterId = nodepool["cluster_id"]
+        lifecycleState = nodepool["lifecycle_state"]
 
-# [OCI.OKE.9] Oracle Container Engine for Kubernetes (OKE) node pools should protect pods with a Network Security Group (NSG) - if nodepool["node_config_details"]["node_pool_pod_network_option_details"]["pod_nsg_ids"] is None
+        if nodepool["node_config_details"]["node_pool_pod_network_option_details"]["pod_nsg_ids"] is None:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{nodepoolId}/oci-oke-nodepool-pods-use-nsgs-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{nodepoolId}/oci-oke-nodepool-pods-use-nsgs-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[OCI.OKE.9] Oracle Container Engine for Kubernetes (OKE) node pools should be configured to protect pods with a Network Security Group (NSG)",
+                "Description": f"Oracle Container Engine for Kubernetes node pool {nodepoolName} in Compartment {compartmentId} in {ociRegionName} is not configured to protect pods with a Network Security Group (NSG). NSGs act as a virtual firewall for your compute instances and other kinds of resources. An NSG consists of a set of ingress and egress security rules that apply only to a set of VNICs of your choice in a single VCN (for example: all the compute instances that act as web servers in the web tier of a multi-tier application in your VCN). NSG security rules function the same as security list rules. The worker nodes, Kubernetes API endpoint, pods (when using VCN-native pod networking), and load balancer have different security rule requirements and thusly define mandatory ingress and egress across multiple ports. While Security Lists may suffice, for workloads that span across different subnets and different Clusters or Node Pools using NSGs can further lockdown network traffic to only be source from another specific NSG such as that of a Load Balancer for Ingress or otherwise. Control access to the pod subnet using security rules defined for one or more network security groups (NSGs) that you specify (up to a maximum of five). You can use security rules defined for NSGs instead of, or as well as, those defined for security lists. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on configuring NSGs for your OKE clusters refer to the Security Rule Configuration in Security Lists and/or Network Security Groups section of the Oracle Cloud Infrastructure Documentation for Container Engine.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/ContEng/Concepts/contengnetworkconfig.htm#securitylistconfig"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Containers",
+                    "AssetService": "Oracle Container Engine for Kubernetes",
+                    "AssetComponent": "Node Pool"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciOkeNodePool",
+                        "Id": nodepoolId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": nodepoolName,
+                                "Id": nodepoolId,
+                                "ClusterId": clusterId,
+                                "LifecycleState": lifecycleState
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{nodepoolId}/oci-oke-nodepool-pods-use-nsgs-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{nodepoolId}/oci-oke-nodepool-pods-use-nsgs-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.OKE.9] Oracle Container Engine for Kubernetes (OKE) node pools should be configured to protect pods with a Network Security Group (NSG)",
+                "Description": f"Oracle Container Engine for Kubernetes node pool {nodepoolName} in Compartment {compartmentId} in {ociRegionName} is configured to protect pods with a Network Security Group (NSG).",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on configuring NSGs for your OKE clusters refer to the Security Rule Configuration in Security Lists and/or Network Security Groups section of the Oracle Cloud Infrastructure Documentation for Container Engine.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/ContEng/Concepts/contengnetworkconfig.htm#securitylistconfig"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Containers",
+                    "AssetService": "Oracle Container Engine for Kubernetes",
+                    "AssetComponent": "Node Pool"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciOkeNodePool",
+                        "Id": nodepoolId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": nodepoolName,
+                                "Id": nodepoolId,
+                                "ClusterId": clusterId,
+                                "LifecycleState": lifecycleState
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
-# [OCI.OKE.10] Oracle Container Engine for Kubernetes (OKE) node pools should be configured to force terminate evicted worker nodes after the draining grace period - if nodepool["node_eviction_node_pool_settings"]["is_force_delete_after_grace_duration"] is False
-# https://docs.oracle.com/en-us/iaas/Content/ContEng/Tasks/contengdeletingworkernodes.htm#contengscalingnodepools_topic-Notes_on_cordon_and_drain
+@registry.register_check("oci.oke")
+def oci_oke_node_pool_force_terminate_evicted_nodes_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.OKE.10] Oracle Container Engine for Kubernetes (OKE) node pools should be configured to force terminate evicted worker nodes after the draining grace period
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for nodepool in get_oke_node_pools(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(nodepool,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        nodepoolId = nodepool["id"]
+        nodepoolName = nodepool["name"]
+        compartmentId = nodepool["compartment_id"]
+        clusterId = nodepool["cluster_id"]
+        lifecycleState = nodepool["lifecycle_state"]
 
-# [OCI.OKE.11] Oracle Container Engine for Kubernetes (OKE) node pools should use the latest supported Kubernetes versions - if nodepool["kubernetes_version"] not in OCI_SUPPORTED_K8S_VERSIONS
+        if nodepool["node_eviction_node_pool_settings"]["is_force_delete_after_grace_duration"] is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{nodepoolId}/oci-oke-nodepool-force-terminate-evicted-nodes-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{nodepoolId}/oci-oke-nodepool-force-terminate-evicted-nodes-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[OCI.OKE.10] Oracle Container Engine for Kubernetes (OKE) node pools should be configured to force terminate evicted worker nodes after the draining grace period",
+                "Description": f"Oracle Container Engine for Kubernetes node pool {nodepoolName} in Compartment {compartmentId} in {ociRegionName} is not configured to force terminate evicted worker nodes after the draining grace period. Cordoning is the name given to marking a worker node in a Kubernetes cluster as unschedulable. Cordoning a worker node prevents the kube-scheduler from placing new pods onto that node, but does not affect existing pods on the node. Cordoning a worker node is a useful preparatory step before terminating the node to perform administrative tasks (such as node deletion, scaling down a node pool, and changing placement configuration). Draining is the name given to safely evicting pods from a worker node in a Kubernetes cluster. Safely evicting pods ensures the pod's containers terminate gracefully and perform any necessary cleanup. Using the Force terminate after grace period configuration is if you always want worker nodes terminated at the end of the eviction grace period, even if they have not been successfully cordoned and drained. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on cordoning, draining, and force evicting worker nodes for your OKE clusters refer to the Deleting a Worker Node section of the Oracle Cloud Infrastructure Documentation for Container Engine.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/ContEng/Tasks/contengdeletingworkernodes.htm#contengscalingnodepools_topic-Notes_on_cordon_and_drain"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Containers",
+                    "AssetService": "Oracle Container Engine for Kubernetes",
+                    "AssetComponent": "Node Pool"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciOkeNodePool",
+                        "Id": nodepoolId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": nodepoolName,
+                                "Id": nodepoolId,
+                                "ClusterId": clusterId,
+                                "LifecycleState": lifecycleState
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{nodepoolId}/oci-oke-nodepool-force-terminate-evicted-nodes-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{nodepoolId}/oci-oke-nodepool-force-terminate-evicted-nodes-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.OKE.10] Oracle Container Engine for Kubernetes (OKE) node pools should be configured to force terminate evicted worker nodes after the draining grace period",
+                "Description": f"Oracle Container Engine for Kubernetes node pool {nodepoolName} in Compartment {compartmentId} in {ociRegionName} is configured to force terminate evicted worker nodes after the draining grace period.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on cordoning, draining, and force evicting worker nodes for your OKE clusters refer to the Deleting a Worker Node section of the Oracle Cloud Infrastructure Documentation for Container Engine.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/ContEng/Tasks/contengdeletingworkernodes.htm#contengscalingnodepools_topic-Notes_on_cordon_and_drain"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Containers",
+                    "AssetService": "Oracle Container Engine for Kubernetes",
+                    "AssetComponent": "Node Pool"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciOkeNodePool",
+                        "Id": nodepoolId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": nodepoolName,
+                                "Id": nodepoolId,
+                                "ClusterId": clusterId,
+                                "LifecycleState": lifecycleState
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
-# [OCI.OKE.12] Oracle Container Engine for Kubernetes (OKE) node pools should not use deprecated versions of Kubernetes - if nodepool["kubernetes_version"] in OCI_DEPRECATED_K8S_VERSIONS
+@registry.register_check("oci.oke")
+def oci_oke_node_pool_latest_k8s_version_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.OKE.11] Oracle Container Engine for Kubernetes (OKE) node pools should use the latest supported Kubernetes versions
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for nodepool in get_oke_node_pools(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(nodepool,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        nodepoolId = nodepool["id"]
+        nodepoolName = nodepool["name"]
+        compartmentId = nodepool["compartment_id"]
+        clusterId = nodepool["cluster_id"]
+        lifecycleState = nodepool["lifecycle_state"]
+
+        if nodepool["kubernetes_version"] not in OCI_SUPPORTED_K8S_VERSIONS:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{clusterId}/oci-oke-node-pools-latest-k8s-version-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{clusterId}/oci-oke-node-pools-latest-k8s-version-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[OCI.OKE.11] Oracle Container Engine for Kubernetes (OKE) node pools should use the latest supported Kubernetes versions",
+                "Description": f"Oracle Container Engine for Kubernetes node pool {nodepoolName} in Compartment {compartmentId} in {ociRegionName} does not use one of the latest supported Kubernetes versions. When Container Engine for Kubernetes support for a new version of Kubernetes is announced, an older Kubernetes version will subsequently cease to be supported. Oracle recommends that you upgrade existing clusters and their node pools to use the most recent Kubernetes version that Container Engine for Kubernetes supports. Container Engine for Kubernetes supports three versions of Kubernetes for new clusters. For a minimum of 30 days after the announcement of support for a new Kubernetes version, Container Engine for Kubernetes continues to support the fourth, oldest available Kubernetes version. After that time, the older Kubernetes version ceases to be supported. When Oracle announces Container Engine for Kubernetes support for a new Kubernetes version, Oracle recommends you upgrade existing clusters to use that new Kubernetes version as soon as possible. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on latest Kubernetes patch versions supported by OKE refer to the Supported Versions of Kubernetes section of the Oracle Cloud Infrastructure Documentation for Container Engine.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/ContEng/Concepts/contengaboutk8sversions.htm#supportedk8sversions"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Containers",
+                    "AssetService": "Oracle Container Engine for Kubernetes",
+                    "AssetComponent": "Node Pool"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciOkeNodePool",
+                        "Id": nodepoolId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": nodepoolName,
+                                "Id": nodepoolId,
+                                "ClusterId": clusterId,
+                                "LifecycleState": lifecycleState
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{clusterId}/oci-oke-node-pools-latest-k8s-version-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{clusterId}/oci-oke-node-pools-latest-k8s-version-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.OKE.11] Oracle Container Engine for Kubernetes (OKE) node pools should use the latest supported Kubernetes versions",
+                "Description": f"Oracle Container Engine for Kubernetes node pool {nodepoolName} in Compartment {compartmentId} in {ociRegionName} does use one of the latest supported Kubernetes versions.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on latest Kubernetes patch versions supported by OKE refer to the Supported Versions of Kubernetes section of the Oracle Cloud Infrastructure Documentation for Container Engine.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/ContEng/Concepts/contengaboutk8sversions.htm#supportedk8sversions"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Containers",
+                    "AssetService": "Oracle Container Engine for Kubernetes",
+                    "AssetComponent": "Node Pool"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciOkeNodePool",
+                        "Id": nodepoolId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": nodepoolName,
+                                "Id": nodepoolId,
+                                "ClusterId": clusterId,
+                                "LifecycleState": lifecycleState
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("oci.oke")
+def oci_oke_node_pool_deprecated_k8s_version_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.OKE.12] Oracle Container Engine for Kubernetes (OKE) node pools should not use deprecated versions of Kubernetes
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for nodepool in get_oke_node_pools(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(nodepool,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        nodepoolId = nodepool["id"]
+        nodepoolName = nodepool["name"]
+        compartmentId = nodepool["compartment_id"]
+        clusterId = nodepool["cluster_id"]
+        lifecycleState = nodepool["lifecycle_state"]
+
+        if nodepool["kubernetes_version"] in OCI_DEPRECATED_K8S_VERSIONS:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{clusterId}/oci-oke-node-pools-deprecated-k8s-version-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{clusterId}/oci-oke-node-pools-deprecated-k8s-version-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[OCI.OKE.12] Oracle Container Engine for Kubernetes (OKE) node pools should not use deprecated versions of Kubernetes",
+                "Description": f"Oracle Container Engine for Kubernetes node pool {nodepoolName} in Compartment {compartmentId} in {ociRegionName} does use a deprecated version of Kubernetes. Using a deprecated version of Kubernetes can mean missing out on the latest security and performance benefits at best, and at worst, introducing vulnerabilities, weaknesses, and exploits to your Kubernetes deployments. When Container Engine for Kubernetes support for a new version of Kubernetes is announced, an older Kubernetes version will subsequently cease to be supported. Oracle recommends that you upgrade existing clusters and node pools to use the most recent Kubernetes version that Container Engine for Kubernetes supports. Container Engine for Kubernetes supports three versions of Kubernetes for new clusters. For a minimum of 30 days after the announcement of support for a new Kubernetes version, Container Engine for Kubernetes continues to support the fourth, oldest available Kubernetes version. After that time, the older Kubernetes version ceases to be supported. When Oracle announces Container Engine for Kubernetes support for a new Kubernetes version, Oracle recommends you upgrade existing clusters to use that new Kubernetes version as soon as possible. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on latest Kubernetes patch versions supported by OKE refer to the Supported Versions of Kubernetes section of the Oracle Cloud Infrastructure Documentation for Container Engine.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/ContEng/Concepts/contengaboutk8sversions.htm#supportedk8sversions"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Containers",
+                    "AssetService": "Oracle Container Engine for Kubernetes",
+                    "AssetComponent": "Node Pool"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciOkeNodePool",
+                        "Id": nodepoolId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": nodepoolName,
+                                "Id": nodepoolId,
+                                "ClusterId": clusterId,
+                                "LifecycleState": lifecycleState
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{clusterId}/oci-oke-node-pools-deprecated-k8s-version-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{clusterId}/oci-oke-node-pools-deprecated-k8s-version-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.OKE.12] Oracle Container Engine for Kubernetes (OKE) node pools should not use deprecated versions of Kubernetes",
+                "Description": f"Oracle Container Engine for Kubernetes node pool {nodepoolName} in Compartment {compartmentId} in {ociRegionName} does not use a deprecated version of Kubernetes.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on latest Kubernetes patch versions supported by OKE refer to the Supported Versions of Kubernetes section of the Oracle Cloud Infrastructure Documentation for Container Engine.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/ContEng/Concepts/contengaboutk8sversions.htm#supportedk8sversions"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Containers",
+                    "AssetService": "Oracle Container Engine for Kubernetes",
+                    "AssetComponent": "Node Pool"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciOkeNodePool",
+                        "Id": nodepoolId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": nodepoolName,
+                                "Id": nodepoolId,
+                                "ClusterId": clusterId,
+                                "LifecycleState": lifecycleState
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 ## END ??
