@@ -110,7 +110,7 @@ def cloudsql_instance_public_check(cache, awsAccountId, awsRegion, awsPartition,
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -183,7 +183,7 @@ def cloudsql_instance_public_check(cache, awsAccountId, awsRegion, awsPartition,
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -276,7 +276,7 @@ def cloudsql_instance_standard_backup_check(cache, awsAccountId, awsRegion, awsP
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -289,7 +289,7 @@ def cloudsql_instance_standard_backup_check(cache, awsAccountId, awsRegion, awsP
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -349,7 +349,7 @@ def cloudsql_instance_standard_backup_check(cache, awsAccountId, awsRegion, awsP
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -362,7 +362,7 @@ def cloudsql_instance_standard_backup_check(cache, awsAccountId, awsRegion, awsP
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -447,7 +447,7 @@ def cloudsql_instance_mysql_pitr_backup_check(cache, awsAccountId, awsRegion, aw
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -460,7 +460,7 @@ def cloudsql_instance_mysql_pitr_backup_check(cache, awsAccountId, awsRegion, aw
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -520,7 +520,7 @@ def cloudsql_instance_mysql_pitr_backup_check(cache, awsAccountId, awsRegion, aw
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -533,7 +533,7 @@ def cloudsql_instance_mysql_pitr_backup_check(cache, awsAccountId, awsRegion, aw
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -618,7 +618,7 @@ def cloudsql_instance_psql_pitr_backup_check(cache, awsAccountId, awsRegion, aws
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -631,7 +631,7 @@ def cloudsql_instance_psql_pitr_backup_check(cache, awsAccountId, awsRegion, aws
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -691,7 +691,7 @@ def cloudsql_instance_psql_pitr_backup_check(cache, awsAccountId, awsRegion, aws
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -704,7 +704,7 @@ def cloudsql_instance_psql_pitr_backup_check(cache, awsAccountId, awsRegion, aws
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -784,7 +784,7 @@ def cloudsql_instance_private_network_check(cache, awsAccountId, awsRegion, awsP
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -857,7 +857,7 @@ def cloudsql_instance_private_network_check(cache, awsAccountId, awsRegion, awsP
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -950,7 +950,7 @@ def cloudsql_instance_private_gcp_services_connection_check(cache, awsAccountId,
                                     "MaintenanceVersion": maintenanceVersion,
                                     "CreatedAt": createTime,
                                     "State": state,
-                                    "IpAddress": ipAddress,
+                                    "IpAddress": ipAddress
                                 }
                             }
                         }
@@ -1021,7 +1021,7 @@ def cloudsql_instance_private_gcp_services_connection_check(cache, awsAccountId,
                                     "MaintenanceVersion": maintenanceVersion,
                                     "CreatedAt": createTime,
                                     "State": state,
-                                    "IpAddress": ipAddress,
+                                    "IpAddress": ipAddress
                                 }
                             }
                         }
@@ -1111,7 +1111,7 @@ def cloudsql_instance_password_policy_check(cache, awsAccountId, awsRegion, awsP
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -1196,7 +1196,7 @@ def cloudsql_instance_password_policy_check(cache, awsAccountId, awsRegion, awsP
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -1301,7 +1301,7 @@ def cloudsql_instance_password_min_length_check(cache, awsAccountId, awsRegion, 
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -1386,7 +1386,7 @@ def cloudsql_instance_password_min_length_check(cache, awsAccountId, awsRegion, 
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -1491,7 +1491,7 @@ def cloudsql_instance_password_reuse_check(cache, awsAccountId, awsRegion, awsPa
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -1576,7 +1576,7 @@ def cloudsql_instance_password_reuse_check(cache, awsAccountId, awsRegion, awsPa
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -1680,7 +1680,7 @@ def cloudsql_instance_password_username_block_check(cache, awsAccountId, awsRegi
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -1765,7 +1765,7 @@ def cloudsql_instance_password_username_block_check(cache, awsAccountId, awsRegi
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -1870,7 +1870,7 @@ def cloudsql_instance_password_change_interval_check(cache, awsAccountId, awsReg
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -1955,7 +1955,7 @@ def cloudsql_instance_password_change_interval_check(cache, awsAccountId, awsReg
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -2059,7 +2059,7 @@ def cloudsql_instance_storage_autoresize_check(cache, awsAccountId, awsRegion, a
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -2072,7 +2072,7 @@ def cloudsql_instance_storage_autoresize_check(cache, awsAccountId, awsRegion, a
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -2132,7 +2132,7 @@ def cloudsql_instance_storage_autoresize_check(cache, awsAccountId, awsRegion, a
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -2145,7 +2145,7 @@ def cloudsql_instance_storage_autoresize_check(cache, awsAccountId, awsRegion, a
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -2224,7 +2224,7 @@ def cloudsql_instance_deletion_protection_check(cache, awsAccountId, awsRegion, 
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -2237,7 +2237,7 @@ def cloudsql_instance_deletion_protection_check(cache, awsAccountId, awsRegion, 
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -2297,7 +2297,7 @@ def cloudsql_instance_deletion_protection_check(cache, awsAccountId, awsRegion, 
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -2310,7 +2310,7 @@ def cloudsql_instance_deletion_protection_check(cache, awsAccountId, awsRegion, 
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -2398,7 +2398,7 @@ def cloudsql_instance_query_insights_check(cache, awsAccountId, awsRegion, awsPa
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -2469,7 +2469,7 @@ def cloudsql_instance_query_insights_check(cache, awsAccountId, awsRegion, awsPa
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -2568,7 +2568,7 @@ def cloudsql_instance_tls_enforcement_check(cache, awsAccountId, awsRegion, awsP
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }
@@ -2640,7 +2640,7 @@ def cloudsql_instance_tls_enforcement_check(cache, awsAccountId, awsRegion, awsP
                                 "MaintenanceVersion": maintenanceVersion,
                                 "CreatedAt": createTime,
                                 "State": state,
-                                "IpAddress": ipAddress,
+                                "IpAddress": ipAddress
                             }
                         }
                     }

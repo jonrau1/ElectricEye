@@ -1012,11 +1012,491 @@ def oci_autodb_customer_contact_provided_check(cache, awsAccountId, awsRegion, a
             }
             yield finding
 
-# [OCI.AutonomousDatabase.7] Database resource autoscaling - if autodb["is_auto_scaling_enabled"] is False
+@registry.register_check("oci.autonomousdatabase")
+def oci_autodb_db_compute_autoscaling_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.AutonomousDatabase.7] Autonomous Databases should be configured to autoscale database compute resources
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for autodb in get_autonomous_databases(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(autodb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = autodb["compartment_id"]
+        autodbId = autodb["id"]
+        autodbName = autodb["display_name"]
+        lifecycleState = autodb["lifecycle_state"]
+        createdAt = str(autodb["time_created"])
 
-# [OCI.AutonomousDatabase.8] Database storage autoscaling - if autodb["is_auto_scaling_for_storage_enabled"] is False
+        if autodb["is_auto_scaling_enabled"] is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-compute-autoscaling-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-compute-autoscaling-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.7] Autonomous Databases should be configured to autoscale database compute resources",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} is not configured to autoscale database compute resources. With compute auto scaling enabled the database can use up to three times more CPU and IO resources than specified by the number of ECPUs (OCPUs if your database uses OCPUs) as shown in the ECPU count or OCPU count field on the Oracle Cloud Infrastructure Console. When auto scaling is enabled, if your workload requires additional CPU and IO resources, the database automatically uses the resources without any manual intervention required. Enabling compute auto scaling does not change the concurrency and parallelism settings for the predefined services. Note: If your license type is Bring Your Own License (BYOL) with Oracle Database Standard Edition (SE), compute auto scaling allows the system to automatically use up to three times more CPU and IO resources, capped at a maximum of 16 ECPUs (8 OCPUs if you are using the OCPU compute model). Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on compute autoscaling for your Autonomous Database refer to the Use Auto Scaling section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/autonomous-auto-scale.html#GUID-27FAB1C1-B09F-4A7A-9FB9-5CB8110F7141",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-compute-autoscaling-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-compute-autoscaling-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.7] Autonomous Databases should be configured to autoscale database compute resources",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} is configured to autoscale database compute resources.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on compute autoscaling for your Autonomous Database refer to the Use Auto Scaling section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/autonomous-auto-scale.html#GUID-27FAB1C1-B09F-4A7A-9FB9-5CB8110F7141",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
-# [OCI.AutonomousDatabase.9] Is Oracle Data Guard enabled - if autodb["is_data_guard_enabled"] is False
+@registry.register_check("oci.autonomousdatabase")
+def oci_autodb_db_storage_autoscaling_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.AutonomousDatabase.8] Autonomous Databases should be configured to autoscale database storage resources
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for autodb in get_autonomous_databases(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(autodb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = autodb["compartment_id"]
+        autodbId = autodb["id"]
+        autodbName = autodb["display_name"]
+        lifecycleState = autodb["lifecycle_state"]
+        createdAt = str(autodb["time_created"])
+
+        if autodb["is_auto_scaling_for_storage_enabled"] is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-storage-autoscaling-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-storage-autoscaling-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.8] Autonomous Databases should be configured to autoscale database storage resources",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} is not configured to autoscale database storage resources. When you create an Autonomous Database instance, by default Storage auto scaling is disabled. You can manage scaling and enable storage auto scaling from the Oracle Cloud Infrastructure Console. With Storage auto scaling enabled the Autonomous Database can expand to use up to three times the reserved base storage, as specified by the storage shown in the Storage field on the Oracle Cloud Infrastructure Console. If you need additional storage, the database automatically uses the reserved storage without any manual intervention required (For example, if your reserved base storage is 128 TB, you have access to 384 TB of storage). If you disable Storage auto scaling and the used storage is greater than the reserved base storage, as specified by the storage shown in the Storage field on the Oracle Cloud Infrastructure Console, Autonomous Database shows a warning on the disable storage auto scaling confirmation dialog. The warning lets you know that the reserved base storage value will be increased to the nearest TB greater than the actual storage usage, and shows the new reserved base storage value. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on storage autoscaling for your Autonomous Database refer to the Use Auto Scaling section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/autonomous-auto-scale.html#GUID-27FAB1C1-B09F-4A7A-9FB9-5CB8110F7141",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-storage-autoscaling-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-storage-autoscaling-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.8] Autonomous Databases should be configured to autoscale database storage resources",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} is configured to autoscale database storage resources.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on storage autoscaling for your Autonomous Database refer to the Use Auto Scaling section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/autonomous-auto-scale.html#GUID-27FAB1C1-B09F-4A7A-9FB9-5CB8110F7141",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("oci.autonomousdatabase")
+def oci_autodb_data_guard_enabled_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.AutonomousDatabase.9] Autonomous Databases should have Autonomous Data Guard enabled
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for autodb in get_autonomous_databases(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(autodb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = autodb["compartment_id"]
+        autodbId = autodb["id"]
+        autodbName = autodb["display_name"]
+        lifecycleState = autodb["lifecycle_state"]
+        createdAt = str(autodb["time_created"])
+
+        if autodb["is_data_guard_enabled"] is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-data-guard-disaster-recovery-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-data-guard-disaster-recovery-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.9] Autonomous Databases should have Autonomous Data Guard enabled",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} does not have Autonomous Data Guard enabled. To enable Autonomous Data Guard you update the disaster recovery type to use a standby database. By default and at no additional cost, Autonomous Database provides a local backup copy peer for each Autonomous Database instance. You enable Autonomous Data Guard by changing the disaster recovery type to use a standby database. Autonomous Data Guard provides a lower Recovery Time Objective (RTO), compared to using a backup copy peer, and provides for automatic failover to a local standby when the primary database is not available. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on improved disaster recovery settings for your Autonomous Database refer to the Enable Autonomous Data Guard section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/autonomous-database-shared/doc/autonomous-data-guard-update-type.html#GUID-967ED737-4A05-4D6E-A7CA-C3F21ACF9BF0",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-data-guard-disaster-recovery-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-data-guard-disaster-recovery-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.9] Autonomous Databases should have Autonomous Data Guard enabled",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} does have Autonomous Data Guard enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on improved disaster recovery settings for your Autonomous Database refer to the Enable Autonomous Data Guard section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/autonomous-database-shared/doc/autonomous-data-guard-update-type.html#GUID-967ED737-4A05-4D6E-A7CA-C3F21ACF9BF0",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 # [OCI.AutonomousDatabase.10] is mutual TLS (mTLS) access enforced - if autodb["is_mtls_connection_required"] is False
 
