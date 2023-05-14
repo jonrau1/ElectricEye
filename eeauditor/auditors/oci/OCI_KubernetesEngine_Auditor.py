@@ -79,6 +79,34 @@ def get_oke_clusters(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartme
     cache["get_oke_clusters"] = aListOfClusters
     return cache["get_oke_clusters"]
 
+def get_oke_node_pools(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    
+    response = cache.get("get_oke_node_pools")
+    if response:
+        return response
+
+    # Create & Validate OCI Creds - do this after cache check to avoid doing it a lot
+    config = {
+        "tenancy": ociTenancyId,
+        "user": ociUserId,
+        "region": ociRegionName,
+        "fingerprint": ociUserApiKeyFingerprint,
+        "key_file": os.environ["OCI_PEM_FILE_PATH"],
+        
+    }
+    validate_config(config)
+
+    okeClient = oci.container_engine.ContainerEngineClient(config)
+
+    aListOfNodePools = []
+
+    for compartment in ociCompartments:
+        for nodepool in okeClient.list_node_pools(compartment_id=compartment).data:
+            aListOfNodePools.append(process_response(nodepool))
+
+    cache["get_oke_node_pools"] = aListOfNodePools
+    return cache["get_oke_node_pools"]
+
 @registry.register_check("oci.oke")
 def oci_oke_cluster_public_api_endpoint_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
     """
@@ -276,7 +304,7 @@ def oci_oke_cluster_nsgs_in_use_check(cache, awsAccountId, awsRegion, awsPartiti
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on configuring NSGs for your OKE clusters refer to the Security Rule Configuration in Security Lists and/or Network Security Groups section of the Oracle Cloud Infrastructure Documentation for Container Engine.",
-                        "Url": "https://docs.oracle.com/en-us/iaas/Content/ContEng/Concepts/contengnetworkconfig.htm#securitylistconfig",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/ContEng/Concepts/contengnetworkconfig.htm#securitylistconfig"
                     }
                 },
                 "ProductFields": {
@@ -1031,14 +1059,327 @@ def oci_oke_cluster_deprecated_k8s_version_check(cache, awsAccountId, awsRegion,
             }
             yield finding
 
+@registry.register_check("oci.oke")
+def oci_oke_node_pool_in_transit_encryption_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.OKE.7] Oracle Container Engine for Kubernetes (OKE) node pools should enable block volume in-transit encryption
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for nodepool in get_oke_node_pools(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(nodepool,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        nodepoolId = nodepool["id"]
+        nodepoolName = nodepool["name"]
+        compartmentId = nodepool["compartment_id"]
+        clusterId = nodepool["cluster_id"]
+        lifecycleState = nodepool["lifecycle_state"]
 
+        if nodepool["node_config_details"]["is_pv_encryption_in_transit_enabled"] is not True:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{nodepoolId}/oci-oke-nodepool-volume-in-transit-encryption-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{nodepoolId}/oci-oke-nodepool-volume-in-transit-encryption-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[OCI.OKE.7] Oracle Container Engine for Kubernetes (OKE) node pools should enable block volume in-transit encryption",
+                "Description": f"Oracle Container Engine for Kubernetes node pool {nodepoolName} in Compartment {compartmentId} in {ociRegionName} does not enable block volume in-transit encryption. All the data moving between the instance and the block volume is transferred over an internal and highly secure network. If you have specific compliance requirements related to the encryption of the data while it is moving between the instance and the block volume, the Block Volume service provides the option to enable in-transit encryption for paravirtualized volume attachments on virtual machine (VM) instances. For Node Pool VM instances, you can optionally enable in-transit encryption check box, for bare metal instances that support in-transit encryption, it is enabled by default and is not configurable. If you are using your own Vault service encryption key for the boot volume, then this key is also used for in-transit encryption. Otherwise, the Oracle-provided encryption key is used. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on in-transit volume encryption refer to the Block Volume Encryption section of the Oracle Cloud Infrastructure Documentation for Compute.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Block/Concepts/overview.htm#BlockVolumeEncryption"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Containers",
+                    "AssetService": "Oracle Container Engine for Kubernetes",
+                    "AssetComponent": "Node Pool"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciOkeNodePool",
+                        "Id": nodepoolId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": nodepoolName,
+                                "Id": nodepoolId,
+                                "ClusterId": clusterId,
+                                "LifecycleState": lifecycleState
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-2",
+                        "NIST SP 800-53 Rev. 4 SC-8",
+                        "NIST SP 800-53 Rev. 4 SC-11",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{nodepoolId}/oci-oke-nodepool-volume-in-transit-encryption-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{nodepoolId}/oci-oke-nodepool-volume-in-transit-encryption-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.OKE.7] Oracle Container Engine for Kubernetes (OKE) node pools should enable block volume in-transit encryption",
+                "Description": f"Oracle Container Engine for Kubernetes node pool {nodepoolName} in Compartment {compartmentId} in {ociRegionName} does enable block volume in-transit encryption.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on in-transit volume encryption refer to the Block Volume Encryption section of the Oracle Cloud Infrastructure Documentation for Compute.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Block/Concepts/overview.htm#BlockVolumeEncryption"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Containers",
+                    "AssetService": "Oracle Container Engine for Kubernetes",
+                    "AssetComponent": "Node Pool"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciOkeNodePool",
+                        "Id": nodepoolId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": nodepoolName,
+                                "Id": nodepoolId,
+                                "ClusterId": clusterId,
+                                "LifecycleState": lifecycleState
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-2",
+                        "NIST SP 800-53 Rev. 4 SC-8",
+                        "NIST SP 800-53 Rev. 4 SC-11",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
+@registry.register_check("oci.oke")
+def oci_oke_node_pool_use_nsgs_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.OKE.8] Oracle Container Engine for Kubernetes (OKE) node pools should have at least one Network Security Group (NSG) assigned
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for nodepool in get_oke_node_pools(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(nodepool,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        nodepoolId = nodepool["id"]
+        nodepoolName = nodepool["name"]
+        compartmentId = nodepool["compartment_id"]
+        clusterId = nodepool["cluster_id"]
+        lifecycleState = nodepool["lifecycle_state"]
 
-# **NODES**
-
-# [OCI.OKE.7] Oracle Container Engine for Kubernetes (OKE) node pools should enable block volume in-transit encryption - if nodepool["node_config_details"]["is_pv_encryption_in_transit_enabled"] is not True
-
-# [OCI.OKE.8] Oracle Container Engine for Kubernetes (OKE) node pools should have at least one Network Security Group (NSG) assigned - if not nodepool["node_config_details"]["nsg_ids"]
+        if not nodepool["node_config_details"]["nsg_ids"]:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{nodepoolId}/oci-oke-nodepool-use-nsgs-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{nodepoolId}/oci-oke-nodepool-use-nsgs-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[OCI.OKE.8] Oracle Container Engine for Kubernetes (OKE) node pools should have at least one Network Security Group (NSG) assigned",
+                "Description": f"Oracle Container Engine for Kubernetes node pool {nodepoolName} in Compartment {compartmentId} in {ociRegionName} does not have a Network Security Group (NSG) assigned. NSGs act as a virtual firewall for your compute instances and other kinds of resources. An NSG consists of a set of ingress and egress security rules that apply only to a set of VNICs of your choice in a single VCN (for example: all the compute instances that act as web servers in the web tier of a multi-tier application in your VCN). NSG security rules function the same as security list rules. The worker nodes, Kubernetes API endpoint, pods (when using VCN-native pod networking), and load balancer have different security rule requirements and thusly define mandatory ingress and egress across multiple ports. While Security Lists may suffice, for workloads that span across different subnets and different Clusters or Node Pools using NSGs can further lockdown network traffic to only be source from another specific NSG such as that of a Load Balancer for Ingress or otherwise. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on configuring NSGs for your OKE clusters refer to the Security Rule Configuration in Security Lists and/or Network Security Groups section of the Oracle Cloud Infrastructure Documentation for Container Engine.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/ContEng/Concepts/contengnetworkconfig.htm#securitylistconfig"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Containers",
+                    "AssetService": "Oracle Container Engine for Kubernetes",
+                    "AssetComponent": "Node Pool"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciOkeNodePool",
+                        "Id": nodepoolId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": nodepoolName,
+                                "Id": nodepoolId,
+                                "ClusterId": clusterId,
+                                "LifecycleState": lifecycleState
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{nodepoolId}/oci-oke-nodepool-use-nsgs-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{nodepoolId}/oci-oke-nodepool-use-nsgs-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.OKE.8] Oracle Container Engine for Kubernetes (OKE) node pools should have at least one Network Security Group (NSG) assigned",
+                "Description": f"Oracle Container Engine for Kubernetes node pool {nodepoolName} in Compartment {compartmentId} in {ociRegionName} does have a Network Security Group (NSG) assigned.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on configuring NSGs for your OKE clusters refer to the Security Rule Configuration in Security Lists and/or Network Security Groups section of the Oracle Cloud Infrastructure Documentation for Container Engine.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/ContEng/Concepts/contengnetworkconfig.htm#securitylistconfig"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Containers",
+                    "AssetService": "Oracle Container Engine for Kubernetes",
+                    "AssetComponent": "Node Pool"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciOkeNodePool",
+                        "Id": nodepoolId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": nodepoolName,
+                                "Id": nodepoolId,
+                                "ClusterId": clusterId,
+                                "LifecycleState": lifecycleState
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 # [OCI.OKE.9] Oracle Container Engine for Kubernetes (OKE) node pools should protect pods with a Network Security Group (NSG) - if nodepool["node_config_details"]["node_pool_pod_network_option_details"]["pod_nsg_ids"] is None
 
