@@ -66,11 +66,7 @@ def get_oci_opensearch_clusters(cache, ociTenancyId, ociUserId, ociRegionName, o
         clusters = opensearchClient.list_opensearch_clusters(compartment_id=compartment).data
         for cluster in process_response(clusters)["items"]:
             getCluster = process_response(opensearchClient.get_opensearch_cluster(opensearch_cluster_id=cluster["id"]).data)
-            aListOfClusters.append(
-                process_response(
-                    getCluster
-                )
-            )
+            aListOfClusters.append(getCluster)
 
     cache["get_oci_opensearch_clusters"] = aListOfClusters
     return cache["get_oci_opensearch_clusters"]
