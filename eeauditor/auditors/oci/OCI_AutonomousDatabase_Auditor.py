@@ -63,14 +63,9 @@ def get_autonomous_databases(cache, ociTenancyId, ociUserId, ociRegionName, ociC
     aHugeBoxOfAutonomousDatabases = []
 
     for compartment in ociCompartments:
-        # We actually get back some schema which is immediately useful - so append away my guy
-        aHugeBoxOfAutonomousDatabases.append(
-            process_response(
-                dbClient.list_autonomous_databases(
-                    compartment_id=compartment
-                ).data
-            )
-        )
+        for autodb in dbClient.list_autonomous_databases(compartment_id=compartment, lifecycle_state="AVAILABLE").data:
+            autodb = process_response(autodb)
+            aHugeBoxOfAutonomousDatabases.append(autodb)
 
     cache["get_autonomous_databases"] = aHugeBoxOfAutonomousDatabases
     return cache["get_autonomous_databases"]
@@ -109,7 +104,7 @@ def oci_autodb_cmk_mek_check(cache, awsAccountId, awsRegion, awsPartition, ociTe
                 "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} does not use a Customer-managed Master Encryption Key. Oracle Autonomous Database uses always-on encryption that protects data at rest and in transit. Data at rest and in motion is encrypted by default. Encryption cannot be turned off. Data at rest is encrypted using TDE (Transparent Data Encryption), a cryptographic solution that protects the processing, transmission, and storage of data. Using AES256 tablespace encryption, each database has its own encryption key, and any backups have their own different encryption keys. By default, Oracle Autonomous Database creates and manages all the master encryption keys used to protect your data, storing them in a secure PKCS 12 keystore on the same systems where the database resides. If your company security policies require, Oracle Autonomous Database can instead use keys you create and manage in the Oracle Cloud Infrastructure Vault service. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For more information on using a customer-managed MEK for your file system refer to the About Master Encryption Key Management on Autonomous Database section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Text": "For more information on using a customer-managed MEK for your Autonomous Database refer to the About Master Encryption Key Management on Autonomous Database section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
                         "Url": "https://docs.oracle.com/en-us/iaas/autonomous-database-shared/doc/about-user-managed-key.html#GUID-F7FE0CAD-FE11-46DF-A14C-4A1E56DC5777",
                     }
                 },
@@ -175,7 +170,7 @@ def oci_autodb_cmk_mek_check(cache, awsAccountId, awsRegion, awsPartition, ociTe
                 "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} does use a Customer-managed Master Encryption Key.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For more information on using a customer-managed MEK for your file system refer to the About Master Encryption Key Management on Autonomous Database section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Text": "For more information on using a customer-managed MEK for your Autonomous Database refer to the About Master Encryption Key Management on Autonomous Database section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
                         "Url": "https://docs.oracle.com/en-us/iaas/autonomous-database-shared/doc/about-user-managed-key.html#GUID-F7FE0CAD-FE11-46DF-A14C-4A1E56DC5777",
                     }
                 },
@@ -225,7 +220,163 @@ def oci_autodb_cmk_mek_check(cache, awsAccountId, awsRegion, awsPartition, ociTe
             }
             yield finding
 
-# [OCI.AutonomousDatabase.2] Available Upgrade Target - if autodb["available_upgrade_versions"]
+@registry.register_check("oci.autonomousdatabase")
+def oci_autodb_available_upgrade_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.AutonomousDatabase.2] Autonomous Databases with available upgrade versions should be reviewed for upgrade
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for autodb in get_autonomous_databases(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(autodb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = autodb["compartment_id"]
+        autodbId = autodb["id"]
+        autodbName = autodb["display_name"]
+        lifecycleState = autodb["lifecycle_state"]
+        createdAt = str(autodb["time_created"])
+
+        if autodb["available_upgrade_versions"]:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-available-upgrade-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-available-upgrade-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.2] Autonomous Databases with available upgrade versions should be reviewed for upgrade",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} has available upgrade versions. When there is an available upgrade in Oracle Cloud Autonomous Database, you have the option to upgrade your database to the latest version. The available upgrade is usually indicated in the Oracle Cloud Infrastructure Console, and you will receive notifications about the upgrade. Before upgrading your database, you should review the documentation and release notes for the new version to ensure that the upgrade does not affect your applications or databases in unexpected ways. Once you are ready to upgrade, you can initiate the upgrade process through the Oracle Cloud Infrastructure Console or by using the Oracle Cloud Infrastructure CLI or SDK. The upgrade process will typically involve creating a new database deployment with the new version, migrating your data to the new deployment, and then switching your applications to the new database. The actual steps and process may vary depending on your specific database and application configuration. Keeping up-to-date with upgrade versions are typically dictate by application or IT teams, however, upgrades can contain important security enhancements or patches and should be reviewed. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on patching, maintainance windows, and upgrading your Autonomous Database refer to the View Patch and Maintenance Window Information, Set the Patch Level section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/autonomous-database-shared/doc/maintenance-windows-patching.html#GUID-C4F488BA-C2ED-4890-A411-9F99C69CD8DF",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.MA-1",
+                        "NIST SP 800-53 Rev. 4 MA-2",
+                        "NIST SP 800-53 Rev. 4 MA-3",
+                        "NIST SP 800-53 Rev. 4 MA-5",
+                        "NIST SP 800-53 Rev. 4 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-available-upgrade-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-available-upgrade-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.2] Autonomous Databases with available upgrade versions should be reviewed for upgrade",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} does not have available upgrade versions.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on patching, maintainance windows, and upgrading your Autonomous Database refer to the View Patch and Maintenance Window Information, Set the Patch Level section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/autonomous-database-shared/doc/maintenance-windows-patching.html#GUID-C4F488BA-C2ED-4890-A411-9F99C69CD8DF",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.MA-1",
+                        "NIST SP 800-53 Rev. 4 MA-2",
+                        "NIST SP 800-53 Rev. 4 MA-3",
+                        "NIST SP 800-53 Rev. 4 MA-5",
+                        "NIST SP 800-53 Rev. 4 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 # [OCI.AutonomousDatabase.3] Manual Backup should be configured - if autodb["backup_config"]["manual_backup_bucket_name"] is None
 
