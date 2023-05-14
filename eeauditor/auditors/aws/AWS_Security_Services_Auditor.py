@@ -490,8 +490,8 @@ def macie_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
                     "AICPA TSC 7.2",
                     "ISO 27001:2013 A.12.4.1",
                     "ISO 27001:2013 A.16.1.1",
-                    "ISO 27001:2013 A.16.1.4",
-                ],
+                    "ISO 27001:2013 A.16.1.4"
+                ]
             },
             "Workflow": {"Status": "RESOLVED"},
             "RecordState": "ARCHIVED",

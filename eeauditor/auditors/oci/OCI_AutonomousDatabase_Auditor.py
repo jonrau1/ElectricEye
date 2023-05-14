@@ -378,13 +378,639 @@ def oci_autodb_available_upgrade_check(cache, awsAccountId, awsRegion, awsPartit
             }
             yield finding
 
-# [OCI.AutonomousDatabase.3] Manual Backup should be configured - if autodb["backup_config"]["manual_backup_bucket_name"] is None
+@registry.register_check("oci.autonomousdatabase")
+def oci_autodb_manual_backup_bucket_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.AutonomousDatabase.3] Autonomous Databases should have an Oracle Object Storage bucket configured for manual and long-term backup storage
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for autodb in get_autonomous_databases(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(autodb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = autodb["compartment_id"]
+        autodbId = autodb["id"]
+        autodbName = autodb["display_name"]
+        lifecycleState = autodb["lifecycle_state"]
+        createdAt = str(autodb["time_created"])
 
-# [OCI.AutonomousDatabase.4] Registered with Oracle Data Safe - if autodb["data_safe_status"] != "REGISTERED"
+        if autodb["backup_config"]["manual_backup_bucket_name"] is None:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-long-backup-bucket-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-long-backup-bucket-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.3] Autonomous Databases should have an Oracle Object Storage bucket configured for manual and long-term backup storage",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} does not have an Oracle Object Storage bucket configured for manual and long-term backup storage. Regarding Files on Object Store, for external tables, partitioned external tables, and the external partitions of hybrid partitioned tables, backups do not include the external files that reside on Object Store. Thus, for operations where you use a backup to restore your database, such as Restore or Clone from a backup, it is your responsibility to backup and restore if necessary, the external files associated with external tables, external partitioned tables, or the external files for a hybrid partitioned table. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on long term backups and using Object Storage for your Autonomous Database refer to the Backup and Restore Notes section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/autonomous-database-shared/doc/backup-restore-notes.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-long-backup-bucket-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-long-backup-bucket-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.3] Autonomous Databases should have an Oracle Object Storage bucket configured for manual and long-term backup storage",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} does have an Oracle Object Storage bucket configured for manual and long-term backup storage.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on long term backups and using Object Storage for your Autonomous Database refer to the Backup and Restore Notes section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/autonomous-database-shared/doc/backup-restore-notes.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
-# [OCI.AutonomousDatabase.5] Registered with Database Management - if autodb["database_management_status"] is None
+@registry.register_check("oci.autonomousdatabase")
+def oci_autodb_data_safe_registered_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.AutonomousDatabase.4] Autonomous Databases should be registered with Oracle Data Safe
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for autodb in get_autonomous_databases(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(autodb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = autodb["compartment_id"]
+        autodbId = autodb["id"]
+        autodbName = autodb["display_name"]
+        lifecycleState = autodb["lifecycle_state"]
+        createdAt = str(autodb["time_created"])
 
-# [OCI.AutonomousDatabase.6] Access Controls should be enabled - if autodb["is_access_control_enabled"] is None
+        if autodb["data_safe_status"] != "REGISTERED":
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-data-safe-registered-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-data-safe-registered-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.4] Autonomous Databases should be registered with Oracle Data Safe",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} is not registered with Oracle Data Safe. Oracle Data Safe is a unified control center for your Oracle databases which helps you understand the sensitivity of your data, evaluate risks to data, mask sensitive data, implement and monitor security controls, assess user security, monitor user activity, and address data security compliance requirements. Use Oracle Data Safe to apply auditing policies for database users, for administrative users, to apply predefined auditing policies or to extend the audit data record retention for your Autonomous Database. Oracle Data Safe is a very important safeguard especially if your Autonomous Database will be handling any sensitive, classified, or otherwise controlled data for mission or business needs. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on registering your Autonomous Database refer to the Enable and Register Oracle Data Safe on Autonomous Database section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/adb-audit-enable-data-safe.html#GUID-C99570AD-0DC2-415E-AF60-734AC60B4AAB",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.AE-2",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC 7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-data-safe-registered-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-data-safe-registered-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.4] Autonomous Databases should be registered with Oracle Data Safe",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} is registered with Oracle Data Safe.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on registering your Autonomous Database refer to the Enable and Register Oracle Data Safe on Autonomous Database section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/adb-audit-enable-data-safe.html#GUID-C99570AD-0DC2-415E-AF60-734AC60B4AAB",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.AE-2",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC 7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("oci.autonomousdatabase")
+def oci_autodb_db_management_registered_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.AutonomousDatabase.5] Autonomous Databases should be registered with Database Management
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for autodb in get_autonomous_databases(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(autodb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = autodb["compartment_id"]
+        autodbId = autodb["id"]
+        autodbName = autodb["display_name"]
+        lifecycleState = autodb["lifecycle_state"]
+        createdAt = str(autodb["time_created"])
+
+        if autodb["database_management_status"] is None:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-database-management-registered-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-database-management-registered-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.5] Autonomous Databases should be registered with Database Management",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} is not registered with Database Management. Database management provides comprehensive database performance diagnostics and management capabilities to monitor and manage Oracle Databases. You can use Database Management to monitor a single Autonomous Database or a fleet of Autonomous Databases and obtain meaningful insights from the metrics pushed to the Oracle Cloud Infrastructure Monitoring service. On enabling Database Management for Autonomous Databases, you can perform the following Database Management tasks at an additional cost: Monitor the health of your fleet of Autonomous Databases, Monitor a single Autonomous Database on the Managed database details page and/or Group Autonomous Databases that reside across compartments into a Database Group, and monitor them. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on registering your Autonomous Database refer to the About Database Management for Autonomous Databases section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/iaas/database-management/doc/database-management-autonomous-databases.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-database-management-registered-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-database-management-registered-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.5] Autonomous Databases should be registered with Database Management",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} is registered with Database Management.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on registering your Autonomous Database refer to the About Database Management for Autonomous Databases section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/iaas/database-management/doc/database-management-autonomous-databases.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("oci.autonomousdatabase")
+def oci_autodb_customer_contact_provided_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.AutonomousDatabase.6] Autonomous Databases should have a customer contact detail to receive upgrade and other important notices
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for autodb in get_autonomous_databases(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(autodb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = autodb["compartment_id"]
+        autodbId = autodb["id"]
+        autodbName = autodb["display_name"]
+        lifecycleState = autodb["lifecycle_state"]
+        createdAt = str(autodb["time_created"])
+
+        if autodb["customer_contacts"] is None:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-customer-contact-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-customer-contact-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.6] Autonomous Databases should have a customer contact detail to receive upgrade and other important notices",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} does not have a customer contact detail to receive upgrade and other important notices. When customer contacts are set, Oracle sends notifications to the specified email addresses for Autonomous Database service-related issues. Contacts in the customer contacts list receive unplanned maintenance notices and other notices, including but not limited to notices for database upgrades and upcoming wallet expiration. When customer contacts are not set the notifications go to the tenancy admin email address associated with the account. Oracle recommends that you set the customer contacts so that the appropriate people receive service-related notifications. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on adding customer contacts to your Autonomous Database refer to the View and Manage Customer Contacts for Operational Issues and Announcements section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/customer-contacts.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.MA-1",
+                        "NIST SP 800-53 Rev. 4 MA-2",
+                        "NIST SP 800-53 Rev. 4 MA-3",
+                        "NIST SP 800-53 Rev. 4 MA-5",
+                        "NIST SP 800-53 Rev. 4 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-customer-contact-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-customer-contact-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.6] Autonomous Databases should have a customer contact detail to receive upgrade and other important notices",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} does have a customer contact detail to receive upgrade and other important notices.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on adding customer contacts to your Autonomous Database refer to the View and Manage Customer Contacts for Operational Issues and Announcements section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/customer-contacts.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.MA-1",
+                        "NIST SP 800-53 Rev. 4 MA-2",
+                        "NIST SP 800-53 Rev. 4 MA-3",
+                        "NIST SP 800-53 Rev. 4 MA-5",
+                        "NIST SP 800-53 Rev. 4 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 # [OCI.AutonomousDatabase.7] Database resource autoscaling - if autodb["is_auto_scaling_enabled"] is False
 
