@@ -56,7 +56,7 @@ def get_lambda_layers(cache, session):
         return cache["get_lambda_layers"]
 
 @registry.register_check("lambda")
-def unused_function_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def aws_lambda_unused_function_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Lambda.1] Lambda functions should be deleted after 30 days of no use"""
     cloudwatch = session.client("cloudwatch")
     # ISO Time
@@ -216,7 +216,7 @@ def unused_function_check(cache: dict, session, awsAccountId: str, awsRegion: st
                 yield finding
 
 @registry.register_check("lambda")
-def function_tracing_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def aws_lambda_function_tracing_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Lambda.2] Lambda functions should use active tracing with AWS X-Ray"""
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -367,7 +367,7 @@ def function_tracing_check(cache: dict, session, awsAccountId: str, awsRegion: s
             yield finding
 
 @registry.register_check("lambda")
-def function_code_signer_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def aws_lambda_function_code_signer_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Lambda.3] Lambda functions should use code signing from AWS Signer to ensure trusted code runs in a Function"""
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -457,7 +457,7 @@ def function_code_signer_check(cache: dict, session, awsAccountId: str, awsRegio
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[Lambda.3] Lambda functions should use code signing from AWS Signer to ensure trusted code runs in a Function",
-                "Description": f"Lambda function {functionName} does not have an AWS code signing job configured. Code signing for AWS Lambda helps to ensure that only trusted code runs in your Lambda functions. When you enable code signing for a function, Lambda checks every code deployment and verifies that the code package is signed by a trusted source. Refer to the remediation instructions if this configuration is not intended.",
+                "Description": f"Lambda function {functionName} does not have an AWS code signing job configured. Code signing for AWS Lambda helps to ensure that only trusted code runs in your Lambda functions. When you enable code signing for a function, Lambda checks every code deployment and verifies that the code package is signed by a trusted source. While code signing and verification plays an important part in software supply chain security, the overall posture and reachability of your Lambda function alongside the vulnerability assessment of your code and embedded packages should additionally be assessed. Lambda is a difficult attack vector for adversaries to exploit, however, with the right amount of misconfigurations - depending on the business logic the function serves - they can be exploited. Code signing provides assurance that once the function package has entered into your own supply chain it has not been otherwise tampered with. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "To configure code signing for your Functions refer to the Configuring code signing for AWS Lambda section of the Amazon Lambda Developer Guide",
@@ -509,7 +509,7 @@ def function_code_signer_check(cache: dict, session, awsAccountId: str, awsRegio
             yield finding
 
 @registry.register_check("lambda")
-def public_lambda_layer_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def aws_public_lambda_layer_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Lambda.4] Lambda layers should not be publicly shared"""
     lambdas = session.client("lambda")
     # ISO Time
@@ -759,7 +759,7 @@ def public_lambda_layer_check(cache: dict, session, awsAccountId: str, awsRegion
                 yield finding
 
 @registry.register_check("lambda")
-def public_lambda_function_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def aws_public_lambda_function_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Lambda.5] Lambda functions should not be publicly shared"""
     lambdas = session.client("lambda")
     # ISO Time
@@ -998,7 +998,7 @@ def public_lambda_function_check(cache: dict, session, awsAccountId: str, awsReg
                 yield finding
 
 @registry.register_check("lambda")
-def lambda_supported_runtimes_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def aws_lambda_supported_runtimes_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Lambda.6] Lambda functions should use supported runtimes"""
     # Supported Runtimes
     supportedRuntimes = [
