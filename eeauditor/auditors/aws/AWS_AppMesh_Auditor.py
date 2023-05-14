@@ -270,8 +270,8 @@ def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, session, awsA
                                     "ISO 27001:2013 A.13.2.1",
                                     "ISO 27001:2013 A.13.2.3",
                                     "ISO 27001:2013 A.14.1.2",
-                                    "ISO 27001:2013 A.14.1.3",
-                                ],
+                                    "ISO 27001:2013 A.14.1.3"
+                                ]
                             },
                             "Workflow": {"Status": "NEW"},
                             "RecordState": "ACTIVE",
@@ -314,10 +314,10 @@ def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, session, awsA
                                 "ProductFields": {
                                     "ProductName": "ElectricEye",
                                     "Provider": "AWS",
-                                "ProviderType": "CSP",
-                                "ProviderAccountId": awsAccountId,
-                                "AssetRegion": awsRegion,
-                                "AssetDetails": assetB64,
+                                    "ProviderType": "CSP",
+                                    "ProviderAccountId": awsAccountId,
+                                    "AssetRegion": awsRegion,
+                                    "AssetDetails": assetB64,
                                     "AssetClass": "Networking",
                                     "AssetService": "AWS App Mesh",
                                     "AssetComponent": "Virtual Node"
@@ -349,8 +349,8 @@ def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, session, awsA
                                         "ISO 27001:2013 A.13.2.1",
                                         "ISO 27001:2013 A.13.2.3",
                                         "ISO 27001:2013 A.14.1.2",
-                                        "ISO 27001:2013 A.14.1.3",
-                                    ],
+                                        "ISO 27001:2013 A.14.1.3"
+                                    ]
                                 },
                                 "Workflow": {"Status": "NEW"},
                                 "RecordState": "ACTIVE",

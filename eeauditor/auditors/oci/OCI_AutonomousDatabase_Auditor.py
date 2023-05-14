@@ -1498,18 +1498,989 @@ def oci_autodb_data_guard_enabled_check(cache, awsAccountId, awsRegion, awsParti
             }
             yield finding
 
-# [OCI.AutonomousDatabase.10] is mutual TLS (mTLS) access enforced - if autodb["is_mtls_connection_required"] is False
+@registry.register_check("oci.autonomousdatabase")
+def oci_autodb_enforce_mtls_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.AutonomousDatabase.10] Autonomous Databases should enforce mutual TLS (mTLS) connections
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for autodb in get_autonomous_databases(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(autodb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = autodb["compartment_id"]
+        autodbId = autodb["id"]
+        autodbName = autodb["display_name"]
+        lifecycleState = autodb["lifecycle_state"]
+        createdAt = str(autodb["time_created"])
 
-# [OCI.AutonomousDatabase.11] Are long term backups scheduled - if autodb["long_term_backup_schedule"] is None
+        if autodb["is_mtls_connection_required"] is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-mtls-enforced-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-mtls-enforced-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.10] Autonomous Databases should enforce mutual TLS (mTLS) connections",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} does not enforce mutual TLS (mTLS) connections. Using Mutual Transport Layer Security (mTLS), clients connect through a TCPS (Secure TCP) database connection using standard TLS 1.2 with a trusted client certificate authority (CA) certificate. With mutual authentication both the client application and Autonomous Database authenticate each other. Autonomous Database uses mTLS authentication by default. Mutual TLS authentication requires that the client downloads or obtains a trusted client CA certificate for connecting to an Autonomous Database instance. Autonomous Database then uses the certificate to authenticate the client. This provides increased security and specifies the clients that can communicate with an Autonomous Database instance. Certification authentication with Mutual TLS uses an encrypted key stored in a wallet on both the client (where the application is running) and the server (where your database service on the Autonomous Database is running). The key on the client must match the key on the server to make a connection. A wallet contains a collection of files, including the key and other information needed to connect to your Autonomous Database instance. All communications between the client and the server are encrypted. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on different TLS connections for your Autonomous Database refer to the About Connecting to an Autonomous Database Instance section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/autonomous-database-shared/doc/connect-introduction.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-2",
+                        "NIST SP 800-53 Rev. 4 SC-8",
+                        "NIST SP 800-53 Rev. 4 SC-11",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-mtls-enforced-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-mtls-enforced-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.10] Autonomous Databases should enforce mutual TLS (mTLS) connections",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} does enforce mutual TLS (mTLS) connections.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on different TLS connections for your Autonomous Database refer to the About Connecting to an Autonomous Database Instance section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/autonomous-database-shared/doc/connect-introduction.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-2",
+                        "NIST SP 800-53 Rev. 4 SC-8",
+                        "NIST SP 800-53 Rev. 4 SC-11",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
-# [OCI.AutonomousDatabase.12] Using NSGs - if autodb["nsg_ids"] is None
+@registry.register_check("oci.autonomousdatabase")
+def oci_autodb_long_term_backup_scheduled_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.AutonomousDatabase.11] Autonomous Databases should schedule long term backups
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for autodb in get_autonomous_databases(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(autodb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = autodb["compartment_id"]
+        autodbId = autodb["id"]
+        autodbName = autodb["display_name"]
+        lifecycleState = autodb["lifecycle_state"]
+        createdAt = str(autodb["time_created"])
 
-# [OCI.AutonomousDatabase.13] Ops Insights enabled - if autodb["operations_insights_status"] == "NOT_ENABLED"
+        if autodb["long_term_backup_schedule"] is None:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-long-term-backup-scheduled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-long-term-backup-scheduled-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.11] Autonomous Databases should schedule long term backups",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} does not schedule long term backups. You can create long-term backups on Autonomous Database with a retention period between three (3) months and up to ten (10) years. When you create a long-term backup you select to create a one-time backup or set a schedule to automatically create backups that are taken weekly, monthly, or annually (yearly). The Autonomous Database instance must have at least one automatic backup before you can create a long term backup. After you provision or clone an Autonomous Database instance, you may need to wait up to 4 hours before an automatic backup is available. See View Backups on Autonomous Database to find out if a backup exists. Long term backups do incur additional costs and should be weighed first against other recovery and resilience requirements and safeguards already in place. Additionally, while regulatory and industry compliance requirements may dictate long term archival and backups of certain data, there are also contraindications to these requirements which necessitate deletion of certain data. Consult with your privacy and internal security controls owners as well as IT and development teams before commiting to a long term backup strategy for Autonomous Database. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on long term backups for your Autonomous Database refer to the Create Long-Term Backups on Autonomous Database section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/autonomous-database-shared/doc/backup-long-term.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-long-term-backup-scheduled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-long-term-backup-scheduled-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.11] Autonomous Databases should schedule long term backups",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} does schedule long term backups.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on long term backups for your Autonomous Database refer to the Create Long-Term Backups on Autonomous Database section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/autonomous-database-shared/doc/backup-long-term.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
-# [OCI.AutonomousDatabase.14] Permissions Level (admin access only to DB, this doesn't really matter) - if autodb["permission_level"] == "UNRESTRICTED"
+@registry.register_check("oci.autonomousdatabase")
+def oci_autodb_use_nsgs_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.AutonomousDatabase.12] Autonomous Databases with Private Access should have at least one Network Security Group (NSG) assigned
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for autodb in get_autonomous_databases(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(autodb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = autodb["compartment_id"]
+        autodbId = autodb["id"]
+        autodbName = autodb["display_name"]
+        lifecycleState = autodb["lifecycle_state"]
+        createdAt = str(autodb["time_created"])
 
-# [OCI.AutonomousDatabase.15] Private Endpoint Access Only - if autodb["private_endpoint"] is None
+        # NSGs are only available to private endpoint AutoDBs - as they're "stuck" in a VCN
+        if autodb["private_endpoint"] is not None:
+            if autodb["nsg_ids"] is None:
+                nsgFail = True
+            else:
+                nsgFail = False
+        else:
+            nsgFail = False
 
-# [OCI.AutonomousDatabase.16] IP Allowlisting - if not autodb["whitelisted_ips"] or if "0.0.0.0/0" in autodb["whitelisted_ips"]
+        if nsgFail is True:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-private-access-nsgs-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-private-access-nsgs-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.12] Autonomous Databases with Private Access should have at least one Network Security Group (NSG) assigned",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} does not have at least one Network Security Group (NSG) assigned but is configured for private access. You can specify that Autonomous Database uses a private endpoint inside your Virtual Cloud Network (VCN) in your tenancy. You can configure a private endpoint during provisioning or cloning your Autonomous Database, or you can switch to using a private endpoint in an existing database that uses a public endpoint. This allows you to keep all traffic to and from your database off of the public internet. Specifying the virtual cloud network configuration allows traffic only from the virtual cloud network you specify and blocks access to the database from all public IPs or VCNs. This allows you to define security rules with Security Lists or at the Network Security Group (NSG) level to specify ingress/egress for your Autonomous Database instance. Using a private endpoint and defining Security Lists or NSGs allows you to control traffic to and from your Autonomous Database instance. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on using NSGs for your Autonomous Database refer to the Configuring Network Access with Private Endpoints section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/private-endpoints-autonomous.html#GUID-60FE6BFD-B05C-4C97-8B4A-83285F31D575",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-private-access-nsgs-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-private-access-nsgs-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.12] Autonomous Databases with Private Access should have at least one Network Security Group (NSG) assigned",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} does have at least one Network Security Group (NSG) assigned or is not configured for private access.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on using NSGs for your Autonomous Database refer to the Configuring Network Access with Private Endpoints section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/private-endpoints-autonomous.html#GUID-60FE6BFD-B05C-4C97-8B4A-83285F31D575",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("oci.autonomousdatabase")
+def oci_autodb_operations_insights_enabled_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.AutonomousDatabase.13] Autonomous Databases should have Operations Insights enabled
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for autodb in get_autonomous_databases(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(autodb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = autodb["compartment_id"]
+        autodbId = autodb["id"]
+        autodbName = autodb["display_name"]
+        lifecycleState = autodb["lifecycle_state"]
+        createdAt = str(autodb["time_created"])
+
+        if autodb["operations_insights_status"] == "NOT_ENABLED":
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-operations-insights-enabled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-operations-insights-enabled-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.13] Autonomous Databases should have Operations Insights enabled",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} does not have Operations Insights enabled. Operations Insights is a cloud-native service that enables users to make informed, data-driven, Autonomous Database resource and performance management decisions. These applications allow database administrators, DevOps, and IT executives to make critical decisions about their databases and hosts using historical and long term data. Operations Insights also provides direct access to the Oracle Cloud Infrastructure Database Management service, which lets you take advantage of its real-time database performance and management capability with a single click. For more information, see Accessing Related Services. Data collected and analyzed by Operations Insights Service will only be stored for the last 25 months from the current date. Data collected and analyzed by Operations Insights Service will be purged after 30 days once the Operations Insights Service is disabled on a resource. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on using Operations Insights for your Autonomous Database refer to the Use Operations Insights on Autonomous Database section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/autonomous-database-shared/doc/autonomous-operations-insights.html#GUID-FA8C943F-A535-4260-B8CB-A96A45CFBF14",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-operations-insights-enabled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-operations-insights-enabled-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.13] Autonomous Databases should have Operations Insights enabled",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} does have Operations Insights enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on using Operations Insights for your Autonomous Database refer to the Use Operations Insights on Autonomous Database section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/autonomous-database-shared/doc/autonomous-operations-insights.html#GUID-FA8C943F-A535-4260-B8CB-A96A45CFBF14",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("oci.autonomousdatabase")
+def oci_autodb_private_access_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.AutonomousDatabase.14] Autonomous Databases should be configured for Private Access connectivity through a Virtual Cloud Network (VCN)
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for autodb in get_autonomous_databases(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(autodb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = autodb["compartment_id"]
+        autodbId = autodb["id"]
+        autodbName = autodb["display_name"]
+        lifecycleState = autodb["lifecycle_state"]
+        createdAt = str(autodb["time_created"])
+
+        if autodb["private_endpoint"] is None:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-private-access-mode-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-private-access-mode-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.14] Autonomous Databases should be configured for Private Access connectivity through a Virtual Cloud Network (VCN)",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} is not configured for Private Access connectivity through a Virtual Cloud Network (VCN). You can specify that Autonomous Database uses a private endpoint inside your Virtual Cloud Network (VCN) in your tenancy. You can configure a private endpoint during provisioning or cloning your Autonomous Database, or you can switch to using a private endpoint in an existing database that uses a public endpoint. This allows you to keep all traffic to and from your database off of the public internet. Specifying the virtual cloud network configuration allows traffic only from the virtual cloud network you specify and blocks access to the database from all public IPs or VCNs. This allows you to define security rules with Security Lists or at the Network Security Group (NSG) level to specify ingress/egress for your Autonomous Database instance. Using a private endpoint and defining Security Lists or NSGs allows you to control traffic to and from your Autonomous Database instance. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Private Endpoints for your Autonomous Database refer to the Configure Private Endpoints section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/autonomous-database-shared/doc/network-private-endpoint-configure.html#GUID-70575016-35FE-447B-9894-FA0F48346355",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-private-access-mode-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-private-access-mode-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.14] Autonomous Databases should be configured for Private Access connectivity through a Virtual Cloud Network (VCN)",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} is configured for Private Access connectivity through a Virtual Cloud Network (VCN).",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Private Endpoints for your Autonomous Database refer to the Configure Private Endpoints section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/autonomous-database-shared/doc/network-private-endpoint-configure.html#GUID-70575016-35FE-447B-9894-FA0F48346355",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("oci.autonomousdatabase")
+def oci_autodb_ip_allowlist_populated_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.AutonomousDatabase.15] Autonomous Databases should configure an IP-based Allow-list to reduce permissible network access
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for autodb in get_autonomous_databases(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(autodb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = autodb["compartment_id"]
+        autodbId = autodb["id"]
+        autodbName = autodb["display_name"]
+        lifecycleState = autodb["lifecycle_state"]
+        createdAt = str(autodb["time_created"])
+
+        # Check if an allowlist is populated and if it is check that someone didn't just allow everyone
+        if not autodb["whitelisted_ips"]:
+            allowlistConfigured = False
+        else:
+            # some cheeky fucker put the whole internet in the allowlist...
+            if "0.0.0.0/0" in autodb["whitelisted_ips"]:
+                allowlistConfigured = False
+            else:
+                allowlistConfigured = True
+
+        if allowlistConfigured is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-ip-allowlist-configured-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-private-access-mode-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.15] Autonomous Databases should configure an IP-based Allow-list to reduce permissible network access",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} does not configure an IP-based Allow-list to reduce permissible network access. You can control and restrict access to your Autonomous Database by specifying network access control lists (ACLs). On an existing Autonomous Database instance with a public endpoint you can add, change, or remove ACLs. In Values field enter values for the IP Address. An IP address specified in a network ACL entry is the public IP address of the client that is visible on the public internet that you want to grant access. For example, for an Oracle Cloud Infrastructure VM, this is the IP address shown in the Public IP field on the Oracle Cloud Infrastructure console for that VM. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on IP Allowlists for your Autonomous Database refer to the Configure Access Control Lists for an Existing Autonomous Database Instance section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/network-access-control-list-configure.html#GUID-B6389402-3F4D-45A2-A4DE-EAF1B31D8E50",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-ip-allowlist-configured-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{autodbId}/oci-autodb-private-access-mode-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.AutonomousDatabase.15] Autonomous Databases should configure an IP-based Allow-list to reduce permissible network access",
+                "Description": f"Oracle Autonomous Database {autodbName} in Compartment {compartmentId} in {ociRegionName} does configure an IP-based Allow-list to reduce permissible network access.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on IP Allowlists for your Autonomous Database refer to the Configure Access Control Lists for an Existing Autonomous Database Instance section of the Oracle Cloud Infrastructure Documentation for Autonomous Databases.",
+                        "Url": "https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/network-access-control-list-configure.html#GUID-B6389402-3F4D-45A2-A4DE-EAF1B31D8E50",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Autonomous Database",
+                    "AssetComponent": "Database"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciAutonomousDatabaseDatabase",
+                        "Id": autodbId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": autodbName,
+                                "Id": autodbId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 ## END ??
