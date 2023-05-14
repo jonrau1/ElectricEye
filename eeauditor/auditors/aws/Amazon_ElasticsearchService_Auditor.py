@@ -263,7 +263,7 @@ def cognito_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPa
                                 "DomainName": esDomainName,
                                 "EngineVersion": esVersion,
                             }
-                        },
+                        }
                     }
                 ],
                 "Compliance": {
@@ -285,11 +285,11 @@ def cognito_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPa
                         "NIST SP 800-53 Rev. 4 PS-3",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.7.1.1",
-                        "ISO 27001:2013 A.9.2.1",
-                    ],
+                        "ISO 27001:2013 A.9.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
         else:
@@ -338,7 +338,7 @@ def cognito_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPa
                                 "DomainName": esDomainName,
                                 "EngineVersion": esVersion,
                             }
-                        },
+                        }
                     }
                 ],
                 "Compliance": {
@@ -360,11 +360,11 @@ def cognito_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPa
                         "NIST SP 800-53 Rev. 4 PS-3",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.7.1.1",
-                        "ISO 27001:2013 A.9.2.1",
-                    ],
+                        "ISO 27001:2013 A.9.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
 
