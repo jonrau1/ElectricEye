@@ -82,7 +82,7 @@ Allow group 'Default'/'<your_group_name>' to read audit-events in tenancy where 
 
 ![OCI Step 10](../../screenshots/setup/oci/setup_10.jpg)
 
-11. Navigate to your **User** and select it, in the `Resources` navigation menu select **API Keys** and then **Add API key**.
+11. Navigate to your **User** and select it, in the `Resources` navigation menu select **API Keys** and then **Add API key**. While you are here, copy the value of **`OCID`** as well, you will need it for the next section.
 
 12. Choose the option to **Generate API key pair** and then select **Download private key**. This will be `.pem` formatted X.509 certificate that contains all of your permissions. Oracle recommends [changing the file permissions](https://docs.oracle.com/iaas/Content/API/Concepts/apisigningkey.htm#two) so only you can view it, if you will be storing the key locally.
 
@@ -114,11 +114,132 @@ Once you have your API Key private key contents and Fingerprint saved as Paramet
 
 This section explains how to configure ElectricEye using a TOML configuration file. The configuration file contains settings for credentials, regions, accounts, and global settings and is located [here](../../eeauditor/external_providers.toml).
 
+To configure the TOML file, you need to modify the values of the variables in the `[global]`, `[regions_and_accounts.oci]`, and `[credentials.oci]` sections of the file. Here's an overview of the key variables you need to configure:
 
+- `credentials_location`: Set this variable to specify the location of where credentials are stored and will be retrieved from. You can choose from AWS Systems Manager Parameter Store (`AWS_SSM`), AWS Secrets Manager (`AWS_SECRETS_MANAGER`), or from the TOML file itself (`CONFIG_FILE`) which is **NOT** recommended.
+
+- `oci_tenancy_ocid`: Provide your Oracle Cloud Infrastructure Tenancy ID (`ocid`) that is associated with your OCI credentials
+
+- `oci_user_ocid`: The User ID (`ocid`) for the ElectricEye user you created and generated an API Key for
+
+- `oci_region_name`: The Region name you want to evaluate with ElectricEye. OCI Tenants typically only have one Region enabled as quotas to activate other Regions are locked behind support levels. If you require multiple Accounts evaluated create different TOMLs and running ElectricEye within a container or open up an Issue and I can add multi-Region support to the roadmap (it's simple, but lot's of manual code edits).
+
+- `oci_compartment_ocids`: A list of Compartment IDs (`ocid`) you want ElectricEye to evaluate, depending on the age of your OCI Tenancy the "root" Compartment ID will match your Tenancy ID. Ensure that you have `tenancy` level permissions otherwise you will not be able to access cross-Compartment resources from your parent Compartment.
+
+- `oci_user_api_key_fingerprint_value`: The location (or actual contents) of your OCI User API Key Fingerprint. This must be the CONTENTS not the file path this location must match the value  of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+
+- `oci_user_api_key_private_key_pem_contents_value`: The location (or actual contents) of your OCI User API Key Private Key PEM. This must be the CONTENTS not the file path this location must match the value  of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+
+It's important to note that this setting is a sensitive credential, and as such, its value should be stored in a secure manner that matches the location specified in the `[global]` section's `credentials_location` setting. For example, if `credentials_location` is set to `"AWS_SSM"`, then the OCI_service_account_json_payload_value should be the name of an AWS Systems Manager Parameter Store SecureString parameter that contains the contents of the OCI service account key JSON file.
 
 ## Use ElectricEye for OCI
 
+1. With >=Python 3.6 installed, install and upgrade `pip3` and setup `virtualenv`.
+
+```bash
+sudo apt install -y python3-pip
+pip3 install --upgrade pip
+pip3 install virtualenv --user
+virtualenv .venv
+```
+
+2. This will create a virtualenv directory called `.venv` which needs to be activated.
+
+```bash
+#For macOS and Linux
+. .venv/bin/activate
+
+#For Windows
+.venv\scripts\activate
+```
+
+3. Clone the repo and install all dependencies.
+
+```bash
+git clone https://github.com/jonrau1/ElectricEye.git
+cd ElectricEye
+pip3 install -r requirements.txt
+
+# if use AWS CloudShell
+pip3 install --user -r requirements.txt
+```
+
+4. Use the Controller to conduct different kinds of Assessments.
+
+    - 4A. Retrieve all options for the Controller.
+
+    ```bash
+    python3 eeauditor/controller.py --help
+    ```
+
+    - 4B. Evaluate your entire OCI environment, for a specific Project.
+
+    ```bash
+    python3 eeauditor/controller.py -t OCI
+    ```
+
+    - 4C. Evaluate your OCI environment against a specifc Auditor (runs all Checks within the Auditor).
+
+    ```bash
+    python3 eeauditor/controller.py -t OCI -a OCI_AutonomousDatabase_Auditor
+    ```
+
+    - 7D. Evaluate your OCI environment against a specific Check within any Auditor, it is ***not required*** to specify the Auditor name as well. The below examples runs the "[OCI.OKE.1] Oracle Container Engine for Kubernetes (OKE) cluster API servers should not be accessible from the internet" check.
+
+    ```bash
+    python3 eeauditor/controller.py -t OCI -c oci_oke_cluster_public_api_endpoint_check
+    ```
+
 ## Configuring Security List & NSG Auditors
+
+The Auditors for Oracle Cloud Virtual Cloud Network (VCN) Security Lists and Network Security Groups are configured using JSON files ([for NSGs](../../eeauditor/auditors/oci/electriceye_oci_vcn_nsg_auditor_config.json) and [for Security Lists](../../eeauditor/auditors/oci/electriceye_oci_vcn_seclist_auditor_config.json)) which contains titles, check IDs, to-from IANA port numbers and protocols that map to high-danger services you should not leave open to the world such as SMB, Win NetBIOS, databases, caches, et al. While this is not the same as figuring out what your how your actual assets & services are configured (see the [EASM](#aws-external-attack-surface-reporting) section for that) this is a good hygeine check.
+
+The JSON file is already prefilled with several dozen checks, however you can easily append more to the list. Shown below are how UDP (protocol `17`) and TCP (protcol `6`) rules are configured. The example shown is for the NSG Auditor, however the Rule Sets are the same, the two JSON files are in case you wanted to audit for different services on different security layers or totally ignore NSGs.
+
+```json
+[
+    {
+        "ToPort": 1194,
+        "FromPort": 1194,
+        "Protocol": "17",
+        "CheckTitle": "[OCI.NetworkSecurityGroup.28] Virtual Cloud Network Network Security Groups should not allow unrestricted OpenVPN (UDP 1194) access",
+        "CheckId": "oci-vcn-nsg-openvpn-open-check",
+        "CheckDescriptor": "OpenVPN (UDP 1194)"
+    },
+    {
+        "ToPort": 5672,
+        "FromPort": 5672,
+        "Protocol": "6",
+        "CheckTitle": "[OCI.NetworkSecurityGroup.29] Virtual Cloud Network Network Security Groups should not allow unrestricted access to AmazonMQ/RabbitMQ (TCP 5672)",
+        "CheckId": "oci-vcn-nsg-rabbitmq-open-check",
+        "CheckDescriptor": "AmazonMQ / RabbitMQ / AMQP (TCP 5672)"
+    },
+]
+```
+
+#### `ToPort`
+
+The IANA Port number at the top of the range for whatever service needs internet access, e.g., if your service required ports 135-139, then 139 is the `ToPort`
+
+#### `FromPort`
+
+The IANA Port number at the bottom of the range for whatever service needs internet access, e.g., if your service required ports 135-139, then 135 is the `ToPort`
+
+#### `Protocol`
+
+Unlike the AWS Security Group Auditor, the Protocols are represented numerically by Oracle Cloud, `17` for UDP services and `6` for TCP services.
+
+#### `CheckTitle`
+
+The `Title` within the AWS Security Finding Format, aka the title of the finding, ensure you follow the rule number order and the guidelines - or choose your own.
+
+#### `CheckId`
+
+An all lowercase, dash-separated string that is appended to the `Id` and `GeneratorId` within the AWS Security Finding Format, this is the ensure uniqueness of the Check performed by the Auditor
+
+#### `CheckDescriptor`
+
+A descriptor of what the protocol & port service is, this is added into the `Description` field within the AWS Security Finding Format and can be anything you want as long as it does not contain double-quotes (`""`)
 
 ## OCI External Attack Surface Reporting
 

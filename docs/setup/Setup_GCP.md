@@ -27,8 +27,6 @@ Refer [here](#gcp-multi-project-service-account-support) for information on addi
 
 ## Use ElectricEye for GCP
 
-**Note** In the future these GCP-specific docs, as well as the core ElectricEye Controller logic, will be changed to reflect using evaluating an entire GCP Organization
-
 1. Enable the following APIs for all GCP Projects you wish to assess with ElectricEye.
 
 > - Compute Engine API
@@ -42,7 +40,7 @@ Refer [here](#gcp-multi-project-service-account-support) for information on addi
 > - Security Reviewer
 > - Project Viewer
 
-**NOTE!** For evaluating multiple GCP Projects, you only need ONE Service Account, refer to [GCP Multi-Project Service Account Support](#gcp-multi-project-service-account-support) for more information on adding permissions to other Projects.
+#### NOTE: For evaluating multiple GCP Projects, you only need ONE Service Account, refer to [GCP Multi-Project Service Account Support](#gcp-multi-project-service-account-support) for more information on adding permissions to other Projects.
 
 3. Create a **JSON Private Key** and upload the full JSON contents to AWS Systems Manager Parameter store as a SecureString. When added into your Parameter Store, you can delete the Private Key JSON file so you do not give it to someone...unsavory.
 
@@ -55,9 +53,9 @@ aws ssm put-parameter \
     --value $PLACEHOLDER
 ```
 
-**NOTE!** You can also save this value as an AWS Secrets Manager Secret!
+#### NOTE: You can also save this value as an AWS Secrets Manager Secret!
 
-**Pro Tip**: Rotate your JSON Private Key as often as your internal SOPs dictate, you can even change the entire Parameter as long as you remember to update the `.toml`
+#### NOTE: Rotate your JSON Private Key as often as your internal SOPs dictate, you can even change the entire Parameter as long as you remember to update the `.toml`
 
 4. With >=Python 3.6 installed, install and upgrade `pip3` and setup `virtualenv`.
 
@@ -100,21 +98,18 @@ pip3 install --user -r requirements.txt
     - 7B. Evaluate your entire GCP environment, for a specific Project.
 
     ```bash
-    export GCP_PROJECT_ID='<My_project_id>'
     python3 eeauditor/controller.py -t GCP
     ```
 
     - 7C. Evaluate your GCP environment against a specifc Auditor (runs all Checks within the Auditor).
 
     ```bash
-    export GCP_PROJECT_ID='<My_project_id>'
     python3 eeauditor/controller.py -t GCP -a GCP_ComputeEngine_Auditor
     ```
 
     - 7D. Evaluate your GCP environment against a specific Check within any Auditor, it is ***not required*** to specify the Auditor name as well. The below examples runs the "[GCP.CloudSQL.1] CloudSQL Instances should not be publicly reachable" check.
 
     ```bash
-    export GCP_PROJECT_ID='<My_project_id>'
     python3 eeauditor/controller.py -t GCP -c cloudsql_instance_public_check
     ```
 
