@@ -1626,7 +1626,7 @@ def oci_cloud_compute_instance_public_ip_check(cache, awsAccountId, awsRegion, a
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your Oracle Cloud Compute instance should not have a Public IP assigned refer to the Public IP Addresses section of the Oracle Cloud Infrastructure Documentation for Networks.",
-                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/managingpublicIPs.htm#Public_IP_Addresses",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/managingpublicIPs.htm#Public_IP_Addresses"
                     }
                 },
                 "ProductFields": {

@@ -18,50 +18,93 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import datetime
+import os
+import oci
+from oci.config import validate_config
 import nmap3
-from check_register import CheckRegister
-import googleapiclient.discovery
+import datetime
 import base64
 import json
+from check_register import CheckRegister
 
 registry = CheckRegister()
 
 # Instantiate a NMAP scanner for TCP scans to define ports
 nmap = nmap3.NmapScanTechniques()
 
-def get_compute_engine_instances(cache: dict, gcpProjectId: str):
-    '''
-    AggregatedList result provides Zone information as well as every single Instance in a Project
-    '''
-    if cache:
-        return cache
+def process_response(responseObject):
+    """
+    Receives an OCI Python SDK `Response` type (differs by service) and returns a JSON object
+    """
+
+    payload = json.loads(
+        str(
+            responseObject
+        )
+    )
+
+    return payload
+
+def get_oci_compute_instances(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
     
-    results = []
+    response = cache.get("get_oci_compute_instances")
+    if response:
+        return response
 
-    compute = googleapiclient.discovery.build('compute', 'v1')
+    # Create & Validate OCI Creds - do this after cache check to avoid doing it a lot
+    config = {
+        "tenancy": ociTenancyId,
+        "user": ociUserId,
+        "region": ociRegionName,
+        "fingerprint": ociUserApiKeyFingerprint,
+        "key_file": os.environ["OCI_PEM_FILE_PATH"],
+        
+    }
+    validate_config(config)
 
-    aggResult = compute.instances().aggregatedList(project=gcpProjectId).execute()
+    instanceClient = oci.core.ComputeClient(config)
 
-    # Write all Zones to list
-    zoneList = []
-    for zone in aggResult["items"].keys():
-        zoneList.append(zone)
+    instancesList = []
 
-    # If the Zone has a top level key of "warning" it does not contain entries
-    for z in zoneList:
-        for agg in aggResult["items"][z]:
-            if agg == 'warning':
-                continue
-            # reloop the list except looking at instances - this is a normal List we can loop
-            else:
-                for i in aggResult["items"][z]["instances"]:
-                    results.append(i)
+    for compartment in ociCompartments:
+        listInstances = instanceClient.list_instances(compartment_id=compartment, lifecycle_state="RUNNING").data
+        if not listInstances:
+            return {}
+        else:
+            for instance in listInstances:
+                processedInstance = process_response(instance)
+                instancesList.append(processedInstance)
 
-    del aggResult
-    del zoneList
+    cache["get_oci_compute_instances"] = instancesList
+    return cache["get_oci_compute_instances"]
 
-    return results
+# Needed to get the Public IP of an Instance
+def get_compute_instance_vnic(ociTenancyId, ociUserId, ociRegionName, ociUserApiKeyFingerprint, compartmentId, instanceId):
+    """
+    Helper function to retrieve the Virtual NIC & Network Security Group information for a Cloud Compute Instance.
+    OCI requires you to call ListVnicAttachments, derive the VNC OCID, and use that to call the GetVnic ID in another
+    client object. The response of GetVnic contains information on the public IP of an instance and the associated NSGs
+    """
+
+    # Create & Validate OCI Creds - do this after cache check to avoid doing it a lot
+    config = {
+        "tenancy": ociTenancyId,
+        "user": ociUserId,
+        "region": ociRegionName,
+        "fingerprint": ociUserApiKeyFingerprint,
+        "key_file": os.environ["OCI_PEM_FILE_PATH"],
+        
+    }
+    validate_config(config)
+
+    instanceClient = oci.core.ComputeClient(config)
+    vncClient = oci.core.VirtualNetworkClient(config)
+
+    vnics = instanceClient.list_vnic_attachments(compartment_id=compartmentId, instance_id=instanceId).data
+    vnicId = process_response(vnics)[0]["vnic_id"]
+    vnicData = vncClient.get_vnic(vnic_id=vnicId).data
+
+    return process_response(vnicData)
 
 # This function performs the actual NMAP Scan
 def scan_host(hostIp, assetName, assetComponent):
@@ -78,33 +121,31 @@ def scan_host(hostIp, assetName, assetComponent):
     except KeyError:
         results = None
 
-@registry.register_check("gce")
-def gce_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
-    """[AttackSurface.GCP.GCE.{checkIdNumber}] Google Compute Engine VM instances should not be publicly reachable on {serviceName}"""
+@registry.register_check("oci.computeinstances")
+def oci_compute_attack_surface_open_tcp_port_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [AttackSurface.OCI.ComputeInstance.{checkIdNumber}] Cloud Compute instances should not be publicly reachable on {serviceName}    
+    """
+    # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-
-    for gce in get_compute_engine_instances(cache, gcpProjectId):
+    for instance in get_oci_compute_instances(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(gce,default=str).encode("utf-8")
+        assetJson = json.dumps(instance,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        id = gce["id"]
-        name = gce["name"]
-        description = gce["description"]
-        zone = gce["zone"].split('/')[-1]
-        machineType = gce["machineType"].split('/')[-1]
-        createdAt = gce["creationTimestamp"]
-        lastStartedAt = gce["lastStartTimestamp"]
-        status = gce["status"]
-        # Check if a Public IP is available in the NICs via "natIP"
-        try:
-            pubIp = gce["networkInterfaces"][0]["accessConfigs"][0]["natIP"]
-        except KeyError:
-            pubIp = None
-        # Skip over instances without a public IP
-        if pubIp == None:
+        instanceId = instance["id"]
+        instanceName = instance["display_name"]
+        compartmentId = instance["compartment_id"]
+        imageId = instance["image_id"]
+        shape = instance["shape"]
+        lifecycleState = instance["lifecycle_state"]
+        # Get the VNIC info
+        instanceVnic = get_compute_instance_vnic(ociTenancyId, ociUserId, ociRegionName, ociUserApiKeyFingerprint, compartmentId, instanceId)
+        # Skip over instances that are not public
+        pubIp = instanceVnic["public_ip"]
+        if instanceVnic["public_ip"] is None:
             continue
         # Submit details to the scanner function
-        scanner = scan_host(pubIp, name, "GCE VM instance")
+        scanner = scan_host(pubIp, instanceName, "OCI Cloud Compute instance")
         # NoneType returned on KeyError due to Nmap errors
         if scanner == None:
             continue
@@ -135,9 +176,9 @@ def gce_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                 if serviceState == "open":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": f"{gcpProjectId}/{zone}/{id}/gcp-attack-surface-gce-open-{serviceName}-check",
+                        "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{instanceId}/oci-attack-surface-compute-instance-open-{serviceName}-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gcp-attack-surface-gce-open-{serviceName}-check",
+                        "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{instanceId}/oci-attack-surface-compute-instance-open-{serviceName}-check",
                         "AwsAccountId": awsAccountId,
                         "Types": [
                             "Software and Configuration Checks/AWS Security Best Practices/Network Reachability",
@@ -148,44 +189,43 @@ def gce_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                         "UpdatedAt": iso8601Time,
                         "Severity": {"Label": "HIGH"},
                         "Confidence": 99,
-                        "Title": f"[AttackSurface.GCP.GCE.{checkIdNumber}] Google Compute Engine VM instances should not be publicly reachable on {serviceName}",
-                        "Description": f"Google Compute Engine VM instance {name} in {zone} is publicly reachable on port {portNumber} which corresponds to the {serviceName} service. When Services are successfully fingerprinted by the ElectricEye Attack Surface Management Auditor it means the instance is public (mapped 'natIp`), has an open VPC Firewall rule, and a running service on the host which adversaries can also see. Refer to the remediation insturctions for an example of a way to secure Compute Engine instances.",
+                        "Title": f"[AttackSurface.OCI.ComputeInstance.{checkIdNumber}] Cloud Compute instances should not be publicly reachable on {serviceName}",
+                        "Description": f"Oracle Cloud Compute instance {instanceName} in Compartment {compartmentId} in {ociRegionName} is publicly reachable on port {portNumber} which corresponds to the {serviceName} service. When Services are successfully fingerprinted by the ElectricEye Attack Surface Management Auditor it means the instance is public (mapped 'public_ip` in the associated vNIC), has an open Security List or Network Security Group, and a running service on the host which adversaries can also see. Refer to the remediation insturctions for an example of a way to secure OCI Cloud Compute instances.",
                         "Remediation": {
                             "Recommendation": {
-                                "Text": "GCE VM instances should only have the minimum necessary ports open to achieve their purposes, allow traffic from authorized sources, and use other defense-in-depth and hardening strategies. For a basic view on traffic authorization into your instances refer to the Access control overview section of the Google Compute Engine guide",
-                                "Url": "https://cloud.google.com/compute/docs/access"
+                                "Text": "OCI Cloud Compute instances should only have the minimum necessary ports open to achieve their purposes, allow traffic from authorized sources, and use other defense-in-depth and hardening strategies. For a basic view on traffic authorization into your instances refer to the Public IP Addresses section of the Oracle Cloud Infrastructure Documentation for Networks.",
+                                "Url": "https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/managingpublicIPs.htm#Public_IP_Addresses"
                             }
                         },
                         "ProductFields": {
                             "ProductName": "ElectricEye",
-                            "Provider": "GCP",
+                            "Provider": "OCI",
                             "ProviderType": "CSP",
-                            "ProviderAccountId": gcpProjectId,
-                            "AssetRegion": zone,
+                            "ProviderAccountId": ociTenancyId,
+                            "AssetRegion": ociRegionName,
                             "AssetDetails": assetB64,
                             "AssetClass": "Compute",
-                            "AssetService": "Google Compute Engine",
+                            "AssetService": "Oracle Cloud Compute",
                             "AssetComponent": "Instance"
                         },
                         "Resources": [
                             {
-                                "Type": "GcpGceVmInstance",
-                                "Id": f"{gcpProjectId}/{zone}/{id}",
+                                "Type": "OciCloudComputeInstance",
+                                "Id": instanceId,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "Other": {
-                                        "GcpProjectId": gcpProjectId,
-                                        "Zone": zone,
-                                        "Name": name,
-                                        "Id": id,
-                                        "Description": description,
-                                        "MachineType": machineType,
-                                        "CreatedAt": createdAt,
-                                        "LastStartedAt": lastStartedAt,
-                                        "Status": status
+                                        "TenancyId": ociTenancyId,
+                                        "CompartmentId": compartmentId,
+                                        "Region": ociRegionName,
+                                        "Name": instanceName,
+                                        "Id": instanceId,
+                                        "ImageId": imageId,
+                                        "Shape": shape,
+                                        "LifecycleState": lifecycleState
                                     }
-                                },
+                                }
                             }
                         ],
                         "Compliance": {
@@ -218,9 +258,9 @@ def gce_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                 else:
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": f"{gcpProjectId}/{zone}/{id}/gcp-attack-surface-gce-open-{serviceName}-check",
+                        "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{instanceId}/oci-attack-surface-compute-instance-open-{serviceName}-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gcp-attack-surface-gce-open-{serviceName}-check",
+                        "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{instanceId}/oci-attack-surface-compute-instance-open-{serviceName}-check",
                         "AwsAccountId": awsAccountId,
                         "Types": [
                             "Software and Configuration Checks/AWS Security Best Practices/Network Reachability",
@@ -231,44 +271,43 @@ def gce_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                         "UpdatedAt": iso8601Time,
                         "Severity": {"Label": "INFORMATIONAL"},
                         "Confidence": 99,
-                        "Title": f"[AttackSurface.GCP.GCE.{checkIdNumber}] Google Compute Engine VM instances should not be publicly reachable on {serviceName}",
-                        "Description": f"Google Compute Engine VM instance {name} in {zone} is not publicly reachable on port {portNumber} which corresponds to the {serviceName} service due to {serviceStateReason}. VM instances and their respective VPC Firewall Rules should still be reviewed for minimum necessary access.",
+                        "Title": f"[AttackSurface.OCI.ComputeInstance.{checkIdNumber}] Cloud Compute instances should not be publicly reachable on {serviceName}",
+                        "Description": f"Oracle Cloud Compute instance {instanceName} in Compartment {compartmentId} in {ociRegionName} is not publicly reachable on port {portNumber} which corresponds to the {serviceName} service due to {serviceStateReason}. OCI Cloud Compute instances and their respective Security Lists and/or Network Security Groups should still be reviewed for minimum necessary access.",
                         "Remediation": {
                             "Recommendation": {
-                                "Text": "GCE VM instances should only have the minimum necessary ports open to achieve their purposes, allow traffic from authorized sources, and use other defense-in-depth and hardening strategies. For a basic view on traffic authorization into your instances refer to the Access control overview section of the Google Compute Engine guide",
-                                "Url": "https://cloud.google.com/compute/docs/access"
+                                "Text": "OCI Cloud Compute instances should only have the minimum necessary ports open to achieve their purposes, allow traffic from authorized sources, and use other defense-in-depth and hardening strategies. For a basic view on traffic authorization into your instances refer to the Public IP Addresses section of the Oracle Cloud Infrastructure Documentation for Networks.",
+                                "Url": "https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/managingpublicIPs.htm#Public_IP_Addresses"
                             }
                         },
                         "ProductFields": {
                             "ProductName": "ElectricEye",
-                            "Provider": "GCP",
+                            "Provider": "OCI",
                             "ProviderType": "CSP",
-                            "ProviderAccountId": gcpProjectId,
-                            "AssetRegion": zone,
+                            "ProviderAccountId": ociTenancyId,
+                            "AssetRegion": ociRegionName,
                             "AssetDetails": assetB64,
                             "AssetClass": "Compute",
-                            "AssetService": "Google Compute Engine",
+                            "AssetService": "Oracle Cloud Compute",
                             "AssetComponent": "Instance"
                         },
                         "Resources": [
                             {
-                                "Type": "GcpGceVmInstance",
-                                "Id": f"{gcpProjectId}/{zone}/{id}",
+                                "Type": "OciCloudComputeInstance",
+                                "Id": instanceId,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "Other": {
-                                        "GcpProjectId": gcpProjectId,
-                                        "Zone": zone,
-                                        "Name": name,
-                                        "Id": id,
-                                        "Description": description,
-                                        "MachineType": machineType,
-                                        "CreatedAt": createdAt,
-                                        "LastStartedAt": lastStartedAt,
-                                        "Status": status
+                                        "TenancyId": ociTenancyId,
+                                        "CompartmentId": compartmentId,
+                                        "Region": ociRegionName,
+                                        "Name": instanceName,
+                                        "Id": instanceId,
+                                        "ImageId": imageId,
+                                        "Shape": shape,
+                                        "LifecycleState": lifecycleState
                                     }
-                                },
+                                }
                             }
                         ],
                         "Compliance": {
@@ -298,3 +337,6 @@ def gce_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                         "RecordState": "ARCHIVED"
                     }
                     yield finding
+
+
+# END ??
