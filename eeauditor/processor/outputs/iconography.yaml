@@ -183,4 +183,4 @@
 - AssetService: Oracle Cloud Load Balancer
   ImageTag: <svg height="30" version="1.1" viewBox="0 0 32 32" width="30" xmlns="http://www.w3.org/2000/svg"><path d="M21.333 2.667v10.667h-4v1.333h8v4h4v10.667h-10.667v-10.667h4v-1.333h-13.333v1.333h4v10.667h-10.667v-10.667h4v-4h8v-1.333h-4v-10.667zM10.667 21.333h-5.333v5.333h5.333zM26.667 21.333h-5.333v5.333h5.333zM18.667 5.333h-5.333v5.333h5.333z"></path></svg>
 - AssetService: Oracle Container Instance Serivce
-  ImageTag: <path xmlns="http://www.w3.org/2000/svg" class="st0" d="M2.67,41.5c-1.19,0-2.17-0.97-2.17-2.17V2.67c0-1.19,0.97-2.17,2.17-2.17h36.67c1.19,0,2.17,0.97,2.17,2.17    v36.67c0,1.19-0.97,2.17-2.17,2.17H2.67z"/>
+  ImageTag: <img src="https://iconography.electriceye.lol/OCI/Compute/Virtual+Machine.svg" alt="Oracle Cloud Infrastructure Compute Virtual Machine Icon">
