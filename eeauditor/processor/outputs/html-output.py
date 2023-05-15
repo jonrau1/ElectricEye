@@ -269,7 +269,6 @@ class HtmlProvider(object):
             width: 36px;
             height: 36px;
             margin-right: .5rem;
-            border-radius: 50%;
 
             vertical-align: middle;
         }
