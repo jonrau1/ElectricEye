@@ -9,3 +9,4 @@ python3-nmap
 tomli
 pysnow
 google-api-python-client
+oci
