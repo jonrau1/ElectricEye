@@ -86,7 +86,7 @@ def get_oci_network_security_groups(cache, ociTenancyId, ociUserId, ociRegionNam
     cache["get_oci_network_security_groups"] = extendedNsgs
     return cache["get_oci_network_security_groups"]
 
-@registry.register_check("oci.vcn.securitylist")
+@registry.register_check("oci.vcn.nsg")
 def oci_vcn_security_list_all_open_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
     """"[OCI.NetworkSecurityGroup.1] Virtual Cloud Network Network Security Groups should not allow unrestricted access to all ports and protocols"""
     # ISO Time
@@ -255,7 +255,7 @@ def oci_vcn_security_list_all_open_check(cache, awsAccountId, awsRegion, awsPart
             }
             yield finding
 
-@registry.register_check("oci.vcn.securitylist")
+@registry.register_check("oci.vcn.nsg")
 def oci_vcn_security_master_auditor_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
     """"[OCI.NetworkSecurityGroup.{checkIdNumber}] Virtual Cloud Network Network Security Groups should not allow unrestricted {protocol} access"""
     # ISO Time
