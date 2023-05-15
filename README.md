@@ -106,12 +106,15 @@ Refer to sub-headings for per-CSP or per-SaaS setup instructions.
 
 - [For Amazon Web Services (AWS)](./docs/setup/Setup_AWS.md)
 - [For Google Cloud Platform (GCP)](./docs/setup/Setup_GCP.md)
+- [For Oracle Cloud Infrastructure](./docs/setup/Setup_OCI.md)
+
 - [For Microsoft Azure (*Coming Soon*)](./docs/setup/Setup_Azure.md)
-- [For Oracle Cloud Infrastructure (*Coming Soon*)](./docs/setup/Setup_OCI.md)
+
 
 ### Software-as-a-Service (SaaS) Providers
 
 - [For ServiceNow](./docs/setup/Setup_ServiceNow.md)
+
 - [For Microsoft M365 (E5) (*Coming Soon*)](./docs//Setup_M365.md)
 - [For Workday ERP (*Coming Soon*)](./docs/setup/Setup_WorkDay.md)
 - [For GitHub (*Coming Soon*)](./docs/setup/Setup_GitHub.md)
@@ -134,11 +137,11 @@ In total there are:
 
 > - **1** Supported SaaS Provider
 
-> - **830** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
+> - **880** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
 
 > - **122** Supported CSP & SaaS Resources / Asset Types
 
-> - **102** Auditor Plugins
+> - **103** Auditor Plugins
 
 ### AWS Checks & Services
 ___
@@ -788,9 +791,9 @@ These are the following services and checks perform by each Auditor, there are c
 ___
 
 These are the following services and checks perform by each Auditor, there are currently...
-- :boom: **129 Checks** :boom:
+- :boom: **179 Checks** :boom:
 - :exclamation: **14 supported OCI services/components** :exclamation:
-- :fire: **11 Auditors** :fire:
+- :fire: **12 Auditors** :fire:
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
@@ -805,21 +808,21 @@ These are the following services and checks perform by each Auditor, there are c
 | OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should have Autonomous Data Guard enabled
 | OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should enforce mutual TLS (mTLS) connections
 | OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should schedule long term backups
-| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee |ADBs with Private Access should have at least one Network Security Group (NSG) assigned
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs with Private Access should have at least one Network Security Group (NSG) assigned
 | OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should have Operations Insights enabled
 | OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should be configured for Private Access connectivity through a Virtual Cloud Network (VCN)
 | OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should configure an IP-based Allow-list to reduce permissible network access
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instances | instances should have Secure Boot enabled
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instances | instances should have Measured Boot enabled
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instances | instances should have the Trusted Platform Module enabled
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instances | instances should enable block volume in-transit encryption
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instances | instances should be encrypted with a Customer-managed Master Encryption Key
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instances | instances should disable access to legacy Instance Metadata Service (IMDSv1) endpoints
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instances | instances should have the Management Agent enabled
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instances | instances should have the Monitoring Agent enabled
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instances | instances should have the Vulnerability Scanning plugin enabled
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instances | instances should not be publicly discoverable on the internet
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instances | instances should have at least one Network Security Group (NSG) assigned
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should have Secure Boot enabled
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should have Measured Boot enabled
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should have the Trusted Platform Module enabled
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should enable block volume in-transit encryption
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should be encrypted with a Customer-managed Master Encryption Key
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should disable access to legacy Instance Metadata Service (IMDSv1) endpoints
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should have the Management Agent enabled
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should have the Monitoring Agent enabled
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should have the Vulnerability Scanning plugin enabled
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should not be publicly discoverable on the internet
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should have at least one Network Security Group (NSG) assigned
 | OCI_FileStorage_Auditor | Oracle File Storage file system | File Storage file systems should be encrypted with a Customer-managed Master Encryption Key
 | OCI_FileStorage_Auditor | Oracle File Storage file system | File Storage file systems should enforce secure export options by requiring that NFS clients use privileged source ports
 | OCI_FileStorage_Auditor | Oracle File Storage file system | File Storage file systems should enforce secure export options by configuring NFS identity squashing
@@ -923,6 +926,56 @@ These are the following services and checks perform by each Auditor, there are c
 | OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is Spark WebUI (tcp4040) open to the internet |
 | OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is POP3 (tcp110) open to the internet |
 | OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is VMWare ESXi (tcp8182) open to the internet |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a FTP service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a SSH service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a Telnet service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a SMTP service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a HTTP service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a POP3 service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a Win NetBIOS service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a SMB service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a RDP service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a MSSQL service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a MySQL/MariaDB service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a NFS service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a Docker API service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a OracleDB service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a PostgreSQL service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a Kibana service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a VMWARE ESXi service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a HTTP Proxy service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a SplunkD service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a Kubernetes API Server service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a Redis service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a Kafka service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a MongoDB/DocDB service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a Rabbit/AmazonMQ service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a SparkUI service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a FTP service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a SSH service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a Telnet service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a SMTP service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a HTTP service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a POP3 service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a Win NetBIOS service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a SMB service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a RDP service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a MSSQL service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a MySQL/MariaDB service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a NFS service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a Docker API service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a OracleDB service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a PostgreSQL service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a Kibana service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a VMWARE ESXi service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a HTTP Proxy service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a SplunkD service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a Kubernetes API Server service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a Redis service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a Kafka service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a MongoDB/DocDB service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a Rabbit/AmazonMQ service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a SparkUI service publicly accessible |
 
 ### Azure Checks & Services
 ___

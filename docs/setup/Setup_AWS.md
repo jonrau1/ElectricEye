@@ -1,6 +1,6 @@
 # ElectricEye Cloud Security Posture Management for AWS
 
-This documentation is dedicated to using ElectricEye for evaluation of AWS Environments using CSPM and External Attack Surface Management (EASM) capabilities, as well as running ElectricEye *in* AWS
+This documentation is dedicated to using ElectricEye for evaluation of AWS Environments using CSPM and External Attack Surface Management (EASM) capabilities.
 
 ## Table of Contents
 
@@ -12,7 +12,7 @@ This documentation is dedicated to using ElectricEye for evaluation of AWS Envir
 
 ## Configuring TOML
 
-This section explains how to configure ElectricEye, a Python CLI tool that supports Cloud Asset Management (CAM), Cloud Security Posture Management (CSPM), SaaS Security Posture Management (SSPM), and External Attack Surface Management (EASM) capabilities across AWS, GCP, and ServiceNow, using a TOML configuration file. The configuration file contains settings for credentials, regions, accounts, and global settings and is located [here](../../eeauditor/external_providers.toml).
+This section explains how to configure ElectricEye using a TOML configuration file. The configuration file contains settings for credentials, regions, accounts, and global settings and is located [here](../../eeauditor/external_providers.toml).
 
 To configure the TOML file, you need to modify the values of the variables in the `[global]` and `[regions_and_accounts.aws]` sections of the file. Here's an overview of the key variables you need to configure:
 

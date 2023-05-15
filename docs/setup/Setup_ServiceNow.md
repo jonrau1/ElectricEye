@@ -9,7 +9,7 @@ This documentation is dedicated to using ElectricEye for evaluation of ServiceNo
 
 ## Configuring TOML
 
-This section explains how to configure ElectricEye, a Python CLI tool that supports Cloud Asset Management (CAM), Cloud Security Posture Management (CSPM), SaaS Security Posture Management (SSPM), and External Attack Surface Management (EASM) capabilities across AWS, GCP, and ServiceNow, using a TOML configuration file. The configuration file contains settings for credentials, regions, accounts, and global settings and is located [here](../../eeauditor/external_providers.toml).
+This section explains how to configure ElectricEye using a TOML configuration file. The configuration file contains settings for credentials, regions, accounts, and global settings and is located [here](../../eeauditor/external_providers.toml).
 
 To configure the TOML file, you need to modify the values of the variables in the `[global]` and `[credentials.servicenow]` sections of the file. Here's an overview of the key variables you need to configure:
 
