@@ -131,7 +131,7 @@ def oci_load_balancer_nsg_assigned_check(cache, awsAccountId, awsRegion, awsPart
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your Oracle Cloud Load Balancer should have a NSG assigned refer to the Network Security Groups section of the Oracle Cloud Infrastructure Documentation for Networks.",
-                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/networksecuritygroups.htm#support",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/networksecuritygroups.htm#support"
                     }
                 },
                 "ProductFields": {

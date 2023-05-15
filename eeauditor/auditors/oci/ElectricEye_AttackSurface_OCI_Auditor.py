@@ -106,6 +106,36 @@ def get_compute_instance_vnic(ociTenancyId, ociUserId, ociRegionName, ociUserApi
 
     return process_response(vnicData)
 
+def get_oci_load_balancers(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    
+    response = cache.get("get_oci_load_balancers")
+    if response:
+        return response
+
+    # Create & Validate OCI Creds - do this after cache check to avoid doing it a lot
+    config = {
+        "tenancy": ociTenancyId,
+        "user": ociUserId,
+        "region": ociRegionName,
+        "fingerprint": ociUserApiKeyFingerprint,
+        "key_file": os.environ["OCI_PEM_FILE_PATH"],
+        
+    }
+    validate_config(config)
+
+    lbClient = oci.load_balancer.LoadBalancerClient(config)
+
+    lbList = []
+
+    for compartment in ociCompartments:
+        listLbs = lbClient.list_load_balancers(compartment_id=compartment)
+        for lb in listLbs.data:
+            processedInstance = process_response(lb)
+            lbList.append(processedInstance)
+
+    cache["get_oci_load_balancers"] = lbList
+    return cache["get_oci_load_balancers"]
+
 # This function performs the actual NMAP Scan
 def scan_host(hostIp, assetName, assetComponent):
     try:
@@ -338,5 +368,222 @@ def oci_compute_attack_surface_open_tcp_port_check(cache, awsAccountId, awsRegio
                     }
                     yield finding
 
+@registry.register_check("oci.loadbalancer")
+def oci_load_balancer_attack_surface_open_tcp_port_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [AttackSurface.OCI.LoadBalancer.{checkIdNumber}] Load Balancers should not be publicly reachable on {serviceName}
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for loadbalancer in get_oci_load_balancers(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(loadbalancer,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = loadbalancer["compartment_id"]
+        loadBalancerId = loadbalancer["id"]
+        loadBalancerName = loadbalancer["display_name"]
+        lbLifecycleState = loadbalancer["lifecycle_state"]
+        createdAt = str(loadbalancer["time_created"])
+
+        # Create a list comprehension to check if any Public IPs are assigned to the LB - an empty list
+        # means we should skip. In the event there are more than one Public IPs we will just take the first
+        # as they all go to the same place after all...
+        publicIps = [ip["ip_address"] for ip in loadbalancer["ip_addresses"] if ip["is_public"] is True]
+        if not publicIps:
+            continue
+        else:
+            pubIp = publicIps[0]
+        # Submit details to the scanner function
+        scanner = scan_host(pubIp, loadBalancerName, "OCI Load Balancer")
+        # NoneType returned on KeyError due to Nmap errors
+        if scanner == None:
+            continue
+        else:
+            # Loop the results of the scan - starting with Open Ports which require a combination of
+            # a Public Instance, an open SG rule, and a running service/server on the host itself
+            # use enumerate and a fixed offset to product the Check Title ID number
+            for index, p in enumerate(scanner[pubIp]["ports"]):
+                # Parse out the Protocol, Port, Service, and State/State Reason from NMAP Results
+                checkIdNumber = str(int(index + 1))
+                portNumber = int(p["portid"])
+                if portNumber == 8089:
+                    serviceName = 'SPLUNKD'
+                elif portNumber == 10250:
+                    serviceName = 'KUBERNETES-API'
+                elif portNumber == 5672:
+                    serviceName = 'RABBITMQ'
+                elif portNumber == 4040:
+                    serviceName = 'SPARK-WEBUI'
+                else:
+                    try:
+                        serviceName = str(p["service"]["name"]).upper()
+                    except KeyError:
+                        serviceName = "Unknown"
+                serviceStateReason = str(p["reason"])
+                serviceState = str(p["state"])
+                # This is a failing check
+                if serviceState == "open":
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{loadBalancerId}/oci-attack-surface-lb-open-{serviceName}-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{loadBalancerId}/oci-attack-surface-lb-open-{serviceName}-check",
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices/Network Reachability",
+                            "TTPs/Discovery"
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "HIGH"},
+                        "Confidence": 99,
+                        "Title": f"[AttackSurface.OCI.LoadBalancer.{checkIdNumber}] Load Balancers should not be publicly reachable on {serviceName}",
+                        "Description": f"Oracle Load Balancer {loadBalancerName} in Compartment {compartmentId} in {ociRegionName} is publicly reachable on port {portNumber} which corresponds to the {serviceName} service. When Services are successfully fingerprinted by the ElectricEye Attack Surface Management Auditor it means the load balancer is public (mapped 'ip_address` and 'is_public' is True within the list of IP Addresses), has an open Security List or Network Security Group, and a running service on the host which adversaries can also see. Refer to the remediation insturctions for an example of a way to secure OCI Load Balancers.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "OCI Load Balancers instances should only have the minimum necessary ports open to achieve their purposes, allow traffic from authorized sources, and use other defense-in-depth and hardening strategies. For a basic view on traffic authorization into your instances refer to the Network Security Groups section of the Oracle Cloud Infrastructure Documentation for Networks.",
+                                "Url": "https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/networksecuritygroups.htm#support"
+                            }
+                        },
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "OCI",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": ociTenancyId,
+                            "AssetRegion": ociRegionName,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Networking",
+                            "AssetService": "Oracle Cloud Load Balancer",
+                            "AssetComponent": "Load Balancer"
+                        },
+                        "Resources": [
+                            {
+                                "Type": "OciCloudLoadBalancerLoadBalancer",
+                                "Id": loadBalancerId,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "Other": {
+                                        "TenancyId": ociTenancyId,
+                                        "CompartmentId": compartmentId,
+                                        "Region": ociRegionName,
+                                        "Name": loadBalancerName,
+                                        "Id": loadBalancerId,
+                                        "CreatedAt": createdAt,
+                                        "LifecycleState": lbLifecycleState
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF V1.1 PR.AC-3",
+                                "NIST SP 800-53 Rev. 4 AC-1",
+                                "NIST SP 800-53 Rev. 4 AC-17",
+                                "NIST SP 800-53 Rev. 4 AC-19",
+                                "NIST SP 800-53 Rev. 4 AC-20",
+                                "NIST SP 800-53 Rev. 4 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1",
+                                "MITRE ATT&CK T1040",
+                                "MITRE ATT&CK T1046",
+                                "MITRE ATT&CK T1580",
+                                "MITRE ATT&CK T1590",
+                                "MITRE ATT&CK T1592",
+                                "MITRE ATT&CK T1595"
+                            ]
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE"
+                    }
+                    yield finding
+                else:
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{loadBalancerId}/oci-attack-surface-lb-open-{serviceName}-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{loadBalancerId}/oci-attack-surface-lb-open-{serviceName}-check",
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices/Network Reachability",
+                            "TTPs/Discovery"
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": f"[AttackSurface.OCI.LoadBalancer.{checkIdNumber}] Load Balancers should not be publicly reachable on {serviceName}",
+                        "Description": f"Oracle Load Balancer {loadBalancerName} in Compartment {compartmentId} in {ociRegionName} is not publicly reachable on port {portNumber} which corresponds to the {serviceName} service due to {serviceStateReason}. OCI Load Balancers and their respective Security Lists and/or Network Security Groups should still be reviewed for minimum necessary access.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "OCI Load Balancers instances should only have the minimum necessary ports open to achieve their purposes, allow traffic from authorized sources, and use other defense-in-depth and hardening strategies. For a basic view on traffic authorization into your instances refer to the Network Security Groups section of the Oracle Cloud Infrastructure Documentation for Networks.",
+                                "Url": "https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/networksecuritygroups.htm#support"
+                            }
+                        },
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "OCI",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": ociTenancyId,
+                            "AssetRegion": ociRegionName,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Networking",
+                            "AssetService": "Oracle Cloud Load Balancer",
+                            "AssetComponent": "Load Balancer"
+                        },
+                        "Resources": [
+                            {
+                                "Type": "OciCloudLoadBalancerLoadBalancer",
+                                "Id": loadBalancerId,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "Other": {
+                                        "TenancyId": ociTenancyId,
+                                        "CompartmentId": compartmentId,
+                                        "Region": ociRegionName,
+                                        "Name": loadBalancerName,
+                                        "Id": loadBalancerId,
+                                        "CreatedAt": createdAt,
+                                        "LifecycleState": lbLifecycleState
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF V1.1 PR.AC-3",
+                                "NIST SP 800-53 Rev. 4 AC-1",
+                                "NIST SP 800-53 Rev. 4 AC-17",
+                                "NIST SP 800-53 Rev. 4 AC-19",
+                                "NIST SP 800-53 Rev. 4 AC-20",
+                                "NIST SP 800-53 Rev. 4 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1",
+                                "MITRE ATT&CK T1040",
+                                "MITRE ATT&CK T1046",
+                                "MITRE ATT&CK T1580",
+                                "MITRE ATT&CK T1590",
+                                "MITRE ATT&CK T1592",
+                                "MITRE ATT&CK T1595"
+                            ]
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED"
+                    }
+                    yield finding
+        
 
 # END ??
