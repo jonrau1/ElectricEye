@@ -9,6 +9,7 @@ This documentation is dedicated to using ElectricEye for evaluation of Oracle Cl
 - [Use ElectricEye for OCI](#use-electriceye-for-oci)
 - [Configuring Security List & NSG Auditors](#configuring-security-list--nsg-auditors)
 - [OCI External Attack Surface Reporting](#oci-external-attack-surface-reporting)
+- [Oracle Cloud Infrastructure Checks & Services](#oracle-cloud-infrastructure-checks--services)
 
 ## Setting up OCI Permissions
 
@@ -248,3 +249,193 @@ If you only wanted to run Attack Surface Monitoring checks use the following com
 ```bash
 python3 eeauditor/controller.py -t AWS -a ElectricEye_AttackSurface_OCI_Auditor -o json_normalized --output-file ElectricASMforOCI
 ```
+
+## Oracle Cloud Infrastructure Checks & Services
+
+These are the following services and checks perform by each Auditor, there are currently **181 Checks** across **13 Auditors** that support the secure configuration of **15 services/components**
+
+| Auditor File Name | Scanned Resource Name | Auditor Scan Description |
+|---|---|---|
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should be encrypted with a Customer-managed Master Encryption Key
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs with available upgrade versions should be reviewed for upgrade
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should have an Oracle Object Storage bucket configured for manual and long-term backup storage
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should be registered with Oracle Data Safe
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should be registered with Database Management
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should have a customer contact detail to receive upgrade and other important notices
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should be configured to autoscale database compute resources
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should be configured to autoscale database storage resources
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should have Autonomous Data Guard enabled
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should enforce mutual TLS (mTLS) connections
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should schedule long term backups
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs with Private Access should have at least one Network Security Group (NSG) assigned
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should have Operations Insights enabled
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should be configured for Private Access connectivity through a Virtual Cloud Network (VCN)
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should configure an IP-based Allow-list to reduce permissible network access
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should have Secure Boot enabled
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should have Measured Boot enabled
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should have the Trusted Platform Module enabled
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should enable block volume in-transit encryption
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should be encrypted with a Customer-managed Master Encryption Key
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should disable access to legacy Instance Metadata Service (IMDSv1) endpoints
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should have the Management Agent enabled
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should have the Monitoring Agent enabled
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should have the Vulnerability Scanning plugin enabled
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should not be publicly discoverable on the internet
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should have at least one Network Security Group (NSG) assigned
+| OCI_ContainerInstance_Auditor | Oracle Cloud Container Instance | Container instances should consider defining a container restart policy
+| OCI_ContainerInstance_Auditor | Oracle Cloud Container Instance | Container instances should consider defining a graceful shutdown timeout
+| OCI_FileStorage_Auditor | Oracle File Storage file system | File Storage file systems should be encrypted with a Customer-managed Master Encryption Key
+| OCI_FileStorage_Auditor | Oracle File Storage file system | File Storage file systems should enforce secure export options by requiring that NFS clients use privileged source ports
+| OCI_FileStorage_Auditor | Oracle File Storage file system | File Storage file systems should enforce secure export options by configuring NFS identity squashing
+| OCI_FileStorage_Auditor | Oracle File Storage mount target | File Storage Mount Targets should have at least one Network Security Group (NSG) assigned
+| OCI_KubernetesEngine_Auditor | OKE cluster | OKE cluster API servers should not be accessible from the internet
+| OCI_KubernetesEngine_Auditor | OKE cluster | OKE cluster should have at least one Network Security Group (NSG) assigned
+| OCI_KubernetesEngine_Auditor | OKE cluster | OKE clusters should enable image verification policies
+| OCI_KubernetesEngine_Auditor | OKE cluster | OKE clusters with the Kubernetes dashboard enabled should be reviewed
+| OCI_KubernetesEngine_Auditor | OKE cluster | OKE clusters should use one of the latest supported Kubernetes versions
+| OCI_KubernetesEngine_Auditor | OKE cluster | OKE clusters should not use deprecated versions of Kubernetes
+| OCI_KubernetesEngine_Auditor | OKE node pool | OKE node pools should enable block volume in-transit encryption
+| OCI_KubernetesEngine_Auditor | OKE node pool | OKE node pools should have at least one Network Security Group (NSG) assigned
+| OCI_KubernetesEngine_Auditor | OKE node pool | OKE node pools should be configured to protect pods with a Network Security Group (NSG)
+| OCI_KubernetesEngine_Auditor | OKE node pool | OKE node pools should be configured to force terminate evicted worker nodes after the draining grace period
+| OCI_KubernetesEngine_Auditor | OKE node pool | OKE node pools should use the latest supported Kubernetes versions
+| OCI_KubernetesEngine_Auditor | OKE node pool | OKE node pools should not use deprecated versions of Kubernetes
+| OCI_KubernetesEngine_Auditor | OKE virtual node pool | OKE virtual node pools should have at least one Network Security Group (NSG) assigned
+| OCI_KubernetesEngine_Auditor | OKE virtual node pool | OKE virtual node pools should be configured to protect pods with a Network Security Group (NSG)
+| OCI_KubernetesEngine_Auditor | OKE virtual node pool | OKE virtual node pools should use the latest supported Kubernetes versions
+| OCI_KubernetesEngine_Auditor | OKE virtual node pool | OKE virtual node pools should not use deprecated versions of Kubernetes
+| OCI_LoadBalancer_Auditor | Oracle Load Balancer | Load Balancers should have Network Security Groups (NSGs) assigned
+| OCI_LoadBalancer_Auditor | Oracle Load Balancer | Load Balancer listeners should be configured to use HTTPS/TLS
+| OCI_LoadBalancer_Auditor | Oracle Load Balancer | Load Balancer backend sets should be configured to use HTTPS/TLS
+| OCI_LoadBalancer_Auditor | Oracle Load Balancer | Load Balancers with health checks reporting Critical or Warning should be investigated
+| OCI_MySQL_DatabaseService_Auditor | Oracle MySQL DB System | DB systems should be configured to take automatic backups
+| OCI_MySQL_DatabaseService_Auditor | Oracle MySQL DB System | DB systems should have Point-in-Time Recovery (PITR) enabled
+| OCI_MySQL_DatabaseService_Auditor | Oracle MySQL DB System | DB systems should have Crash Recovery enabled
+| OCI_MySQL_DatabaseService_Auditor | Oracle MySQL DB System | DB systems should have Deletion Protection enabled
+| OCI_MySQL_DatabaseService_Auditor | Oracle MySQL DB System | DB systems should enforce creating a final manual snapshot before deletion
+| OCI_MySQL_DatabaseService_Auditor | Oracle MySQL DB System | DB systems should be configured to automatically delete automatic snapshots after system deletion
+| OCI_MySQL_DatabaseService_Auditor | Oracle MySQL DB System | DB systems should be configured to be highly available
+| OCI_NoSQL_Auditor | Oracle NoSQL Table |  Oracle NoSQL Database Cloud Service tables should be configured for on-demand scaling (autoscaling)
+| OCI_ObjectStorage_Auditor | Oracle Cloud Storage bucket | buckets should be encrypted with a Customer-managed Master Encryption Key
+| OCI_ObjectStorage_Auditor | Oracle Cloud Storage bucket | buckets should have a lifecycle policy defined
+| OCI_ObjectStorage_Auditor | Oracle Cloud Storage bucket | buckets should define a lifecycle policy rule to delete failed multipart uploads
+| OCI_ObjectStorage_Auditor | Oracle Cloud Storage bucket | buckets should not allow public access to objects
+| OCI_ObjectStorage_Auditor | Oracle Cloud Storage bucket | buckets should be configured to use object replication to promote resilience and recovery
+| OCI_ObjectStorage_Auditor | Oracle Cloud Storage bucket | buckets should be configured to use object versioning to promote resilience and recovery
+| OCI_OpenSearch_Auditor | Oracle Search with OpenSearch clusteer | clusters should have Security Mode enabled and set to Enforcing
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Are all ports (-1) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is FTP (tcp20-21) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is TelNet (tcp23) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is WSDCOM-RPC (tcp135) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is SMB (tcp445) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is MSSQL (tcp1433) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is OracleDB (tcp1521) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is MySQL/MariaDB (tcp3306) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is RDP (tcp3389) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is PostgreSQL (tcp5432) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is Kibana (tcp5601) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is Redis (tcp6379) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is Splunkd (tcp8089) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is Elasticsearch (tcp9200) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is Elasticsearch (tcp9300) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is Memcached (udp11211) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is Redshift (tcp5439) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is DocDB (tcp27017) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is Cassandra (tcp9142) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is Kafka (tcp9092) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is NFS (tcp2049) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is Rsync (tcp873) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is TFTP (udp69) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is Docker API (tcp2375) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is K8s API (tcp10250) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is SMTP (tcp25) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is NetBioas (tcp137-139) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is OpenVPN (udp1194) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is RabbitMQ (tcp5672) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is Spark WebUI (tcp4040) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is POP3 (tcp110) open to the internet |
+| OCI_VCN_SecurityList_Auditor | OCI Security List | Is VMWare ESXi (tcp8182) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Are all ports (-1) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is FTP (tcp20-21) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is TelNet (tcp23) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is WSDCOM-RPC (tcp135) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is SMB (tcp445) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is MSSQL (tcp1433) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is OracleDB (tcp1521) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is MySQL/MariaDB (tcp3306) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is RDP (tcp3389) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is PostgreSQL (tcp5432) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is Kibana (tcp5601) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is Redis (tcp6379) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is Splunkd (tcp8089) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is Elasticsearch (tcp9200) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is Elasticsearch (tcp9300) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is Memcached (udp11211) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is Redshift (tcp5439) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is DocDB (tcp27017) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is Cassandra (tcp9142) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is Kafka (tcp9092) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is NFS (tcp2049) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is Rsync (tcp873) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is TFTP (udp69) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is Docker API (tcp2375) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is K8s API (tcp10250) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is SMTP (tcp25) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is NetBioas (tcp137-139) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is OpenVPN (udp1194) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is RabbitMQ (tcp5672) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is Spark WebUI (tcp4040) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is POP3 (tcp110) open to the internet |
+| OCI_VCN_NetworkSecurityGroup_Auditor | OCI Network Security Group | Is VMWare ESXi (tcp8182) open to the internet |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a FTP service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a SSH service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a Telnet service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a SMTP service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a HTTP service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a POP3 service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a Win NetBIOS service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a SMB service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a RDP service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a MSSQL service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a MySQL/MariaDB service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a NFS service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a Docker API service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a OracleDB service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a PostgreSQL service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a Kibana service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a VMWARE ESXi service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a HTTP Proxy service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a SplunkD service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a Kubernetes API Server service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a Redis service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a Kafka service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a MongoDB/DocDB service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a Rabbit/AmazonMQ service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Cloud Compute instance | Is a SparkUI service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a FTP service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a SSH service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a Telnet service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a SMTP service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a HTTP service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a POP3 service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a Win NetBIOS service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a SMB service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a RDP service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a MSSQL service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a MySQL/MariaDB service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a NFS service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a Docker API service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a OracleDB service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a PostgreSQL service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a Kibana service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a VMWARE ESXi service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a HTTP Proxy service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a SplunkD service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a Kubernetes API Server service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a Redis service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a Kafka service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a MongoDB/DocDB service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a Rabbit/AmazonMQ service publicly accessible |
+| ElectricEye_AttackSurface_OCI_Auditor | Oracle Load Balancer | Is a SparkUI service publicly accessible |
+
+Continue to check this section for information on active, retired, and renamed checks or using the `--list-checks` command in the CLI!

@@ -8,6 +8,7 @@ This documentation is dedicated to using ElectricEye for evaluation of GCP Envir
 - [Use ElectricEye for GCP](#use-electriceye-for-gcp)
 - [GCP EASM Reporting](#gcp-external-attack-surface-reporting)
 - [GCP Multi-Project Service Account Support](#gcp-multi-project-service-account-support)
+- [GCP Checks & Services](#gcp-checks--services)
 
 ## Configuring TOML
 
@@ -144,3 +145,64 @@ do
   gcloud projects add-iam-policy-binding $project_id --member=$SERVICE_ACCOUNT_EMAIL --role=roles/viewer
 done
 ```
+
+## GCP Checks & Services
+
+These are the following services and checks perform by each Auditor, there are currently **53 Checks** across **3 Auditors** that support the secure configuration of **2 services/components**
+
+| Auditor File Name | Scanned Resource Name | Auditor Scan Description |
+|---|---|---|
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is deletion protection enabled |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is IP forwarding disabled |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is auto-restart enabled |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is Secure Boot enabled |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is Virtual Trusted Platform Module enabled |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is Instance Integrity Monitoring enabled |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is Secure Integrity Monitoring Auto-learning Policy set to Update |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is Serial Port access disabled |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Are Linux VM Instances access with OS Logon |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Are Linux VM Instances acessed with OS Logon using 2FA/MFA |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Are project-wide SSH keys blocked from access VM instances |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Are instances publicly facing |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Are instances publicly facing |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances enabled auto-backup |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do MySQL instances enable PITR |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do PostgreSQL instances enable PITR |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a private network enabled |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances allowe GCP services connectivity |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a password policy enabled |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a password min length |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a password reuse check |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a configuration to disallow usernames in the password |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a password change interval check |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have storage auto-resize enabled |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have deletion protection enabled |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have query insights enabled |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have SSL/TLS Enforcement enabled |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a FTP service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a SSH service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Telnet service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a SMTP service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a HTTP service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a POP3 service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Win NetBIOS service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a SMB service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a RDP service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a MSSQL service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a MySQL/MariaDB service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a NFS service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Docker API service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a OracleDB service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a PostgreSQL service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Kibana service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a VMWARE ESXi service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a HTTP Proxy service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a SplunkD service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Kubernetes API Server service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Redis service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Kafka service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a MongoDB/DocDB service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Rabbit/AmazonMQ service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a SparkUI service publicly accessible |
+
+Continue to check this section for information on active, retired, and renamed checks or using the `--list-checks` command in the CLI!
