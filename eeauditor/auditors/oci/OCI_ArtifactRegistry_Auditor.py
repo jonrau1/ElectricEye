@@ -495,7 +495,7 @@ def oci_artifact_registry_artifact_virustotal_scan_check(cache, awsAccountId, aw
 
         # B64 encode all of the details for the Asset
         # in this case we've already written the artifacts into the `repo` object anyway
-        assetJson = json.dumps(artifact,default=str).encode("utf-8")
+        assetJson = json.dumps(repo,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         compartmentId = repo["compartment_id"]
         repoId = repo["id"]
