@@ -113,7 +113,6 @@ def get_scanned_repositories(cache, ociTenancyId, ociUserId, ociRegionName, ociC
     cache["get_scanned_repositories"] = scannedContainerRegistryRepos
     return cache["get_scanned_repositories"]
 
-# Function Applications should have NSGs
 @registry.register_check("oci.cloudfunctions")
 def oci_cloud_functions_apps_use_nsgs_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
     """
@@ -134,9 +133,9 @@ def oci_cloud_functions_apps_use_nsgs_check(cache, awsAccountId, awsRegion, awsP
         if not application["network_security_group_ids"]:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{applicationId}/oci-cloud-functions-apps-use-nsgs-chec",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{applicationId}/oci-cloud-functions-apps-use-nsgs-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{applicationId}/oci-cloud-functions-apps-use-nsgs-chec",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{applicationId}/oci-cloud-functions-apps-use-nsgs-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -206,9 +205,9 @@ def oci_cloud_functions_apps_use_nsgs_check(cache, awsAccountId, awsRegion, awsP
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{applicationId}/oci-cloud-functions-apps-use-nsgs-chec",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{applicationId}/oci-cloud-functions-apps-use-nsgs-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{applicationId}/oci-cloud-functions-apps-use-nsgs-chec",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{applicationId}/oci-cloud-functions-apps-use-nsgs-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -276,20 +275,841 @@ def oci_cloud_functions_apps_use_nsgs_check(cache, awsAccountId, awsRegion, awsP
             }
             yield finding
 
-# [OCI.CloudFunctions.2] Oracle Cloud Functions applications should enforce the usage of signed images from Oracle Container Registry
-# composite True checks via application["image_policy_config"]["is_policy_enabled"] is False unless application["image_policy_config"] is None
-# Signing Function Images and Enforcing the Use of Signed Images from Registry - https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionsenforcingsignedimagesfromocir.htm
+@registry.register_check("oci.cloudfunctions")
+def oci_cloud_functions_apps_enforce_signed_images_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.CloudFunctions.2] Oracle Cloud Functions applications should enforce the usage of signed images from Oracle Container Registry
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for application in get_cloud_function_apps(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(application,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = application["compartment_id"]
+        applicationId = application["id"]
+        applicationName = application["display_name"]
+        lifecycleState = application["lifecycle_state"]
+        createdAt = str(application["time_created"])
 
-# [OCI.CloudFunctions.3] Oracle Cloud Functions applications should use more than one subnet to promote high availability
-# if len(application["subnet_ids"]) == 0:
-# Creating an Application - https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionscreatingapps-task.htm#functionscreatingapps-taskcopy
+        # Evaluate 3 possible conditions of signing
+        if application["image_policy_config"] is None:
+            imageSigning = False
+        else:
+            if application["image_policy_config"]["is_policy_enabled"] is False:
+                imageSigning = False
+            else:
+                imageSigning = True
 
-# [OCI.CloudFunctions.4] Oracle Cloud Functions applications should consider using tracing for Performance Monitoring
-# if application["trace_config"]["is_enabled"] is False:
-# Distributed Tracing for Functions - https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionstracing.htm
+        if imageSigning is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{applicationId}/oci-cloud-functions-apps-enforce-signed-images-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{applicationId}/oci-cloud-functions-apps-enforce-signed-images-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[OCI.CloudFunctions.2] Oracle Cloud Functions applications should enforce the usage of signed images from Oracle Container Registry",
+                "Description": f" Oracle Cloud Functions application {applicationName} in Compartment {compartmentId} in {ociRegionName} does not enforce the usage of signed images from Oracle Container Registry. For compliance and security reasons, system administrators often want to deploy software into a production system only when they are satisfied that: comes from a trusted source and has not been modified since it was published, compromising its integrity. To meet these requirements, you can sign images stored in Oracle Cloud Infrastructure Registry. Signed images provide a way to verify both the source of an image and its integrity. Oracle Cloud Infrastructure Registry enables users or systems to push images to the registry and then sign them creating an image signature. To further enhance security, you can configure OCI Functions applications to only allow the creation, updating, deployment, and invocation of functions based on images in Oracle Cloud Infrastructure Registry that have been signed by particular master encryption keys. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on signing images and enforcing their usage with Cloud Function Applications refer to the Signing Function Images and Enforcing the Use of Signed Images from Registry section of the Oracle Cloud Infrastructure Documentation for Functions.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionsenforcingsignedimagesfromocir.htm"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Oracle Cloud Functions",
+                    "AssetComponent": "Application"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciCloudFunctionsApplication",
+                        "Id": applicationId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": applicationName,
+                                "Id": applicationId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.SC-2",
+                        "NIST CSF V1.1 PR.DS-6",
+                        "NIST SP 800-53 Rev. 4 RA-2",
+                        "NIST SP 800-53 Rev. 4 RA-3",
+                        "NIST SP 800-53 Rev. 4 PM-9",
+                        "NIST SP 800-53 Rev. 4 SA-12",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "NIST SP 800-53 Rev. 4 SA-15",
+                        "NIST SP 800-53 Rev. 4 SI-7",
+                        "AICPA TSC CC7.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.2.1", 
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.15.2.2"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{applicationId}/oci-cloud-functions-apps-enforce-signed-images-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{applicationId}/oci-cloud-functions-apps-enforce-signed-images-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.CloudFunctions.2] Oracle Cloud Functions applications should enforce the usage of signed images from Oracle Container Registry",
+                "Description": f" Oracle Cloud Functions application {applicationName} in Compartment {compartmentId} in {ociRegionName} does enforce the usage of signed images from Oracle Container Registry.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on signing images and enforcing their usage with Cloud Function Applications refer to the Signing Function Images and Enforcing the Use of Signed Images from Registry section of the Oracle Cloud Infrastructure Documentation for Functions.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionsenforcingsignedimagesfromocir.htm"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Oracle Cloud Functions",
+                    "AssetComponent": "Application"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciCloudFunctionsApplication",
+                        "Id": applicationId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": applicationName,
+                                "Id": applicationId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.SC-2",
+                        "NIST CSF V1.1 PR.DS-6",
+                        "NIST SP 800-53 Rev. 4 RA-2",
+                        "NIST SP 800-53 Rev. 4 RA-3",
+                        "NIST SP 800-53 Rev. 4 PM-9",
+                        "NIST SP 800-53 Rev. 4 SA-12",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "NIST SP 800-53 Rev. 4 SA-15",
+                        "NIST SP 800-53 Rev. 4 SI-7",
+                        "AICPA TSC CC7.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.2.1", 
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.15.2.2"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
-# [OCI.CloudFunctions.5] Oracle Cloud Functions should only use images that are scanned for vulnerabilities
-# for function in application["functions"] - and call the helper too
-# Scanning Function Images for Vulnerabilities - https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionsimagescanning.htm
+@registry.register_check("oci.cloudfunctions")
+def oci_cloud_functions_apps_subnet_high_availability_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.CloudFunctions.3] Oracle Cloud Functions applications should use more than one subnet to promote high availability
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for application in get_cloud_function_apps(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(application,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = application["compartment_id"]
+        applicationId = application["id"]
+        applicationName = application["display_name"]
+        lifecycleState = application["lifecycle_state"]
+        createdAt = str(application["time_created"])
+
+        if len(application["subnet_ids"]) == 1:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{applicationId}/oci-cloud-functions-apps-subnet-high-availability-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{applicationId}/oci-cloud-functions-apps-subnet-high-availability-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[OCI.CloudFunctions.3] Oracle Cloud Functions applications should use more than one subnet to promote high availability",
+                "Description": f" Oracle Cloud Functions application {applicationName} in Compartment {compartmentId} in {ociRegionName} does not use more than one subnet to promote high availability. If a regional subnet has been defined, best practice is to select that subnet to make failover across availability domains simpler to implement. If a regional subnet has not been defined and you need to meet high availability requirements, select multiple subnets. Oracle recommends that the subnets are in the same region as the Docker registry that is used for the actual Functions within the Application. Additionally, note that a public subnet requires an internet gateway in the VCN, and a private subnet requires a service gateway in the VCN. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on setting up subnets for Cloud Function Applications refer to the Creating an Application section of the Oracle Cloud Infrastructure Documentation for Functions.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionscreatingapps-task.htm#functionscreatingapps-taskcopy"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Oracle Cloud Functions",
+                    "AssetComponent": "Application"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciCloudFunctionsApplication",
+                        "Id": applicationId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": applicationName,
+                                "Id": applicationId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{applicationId}/oci-cloud-functions-apps-subnet-high-availability-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{applicationId}/oci-cloud-functions-apps-subnet-high-availability-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.CloudFunctions.3] Oracle Cloud Functions applications should use more than one subnet to promote high availability",
+                "Description": f" Oracle Cloud Functions application {applicationName} in Compartment {compartmentId} in {ociRegionName} does use more than one subnet to promote high availability.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on setting up subnets for Cloud Function Applications refer to the Creating an Application section of the Oracle Cloud Infrastructure Documentation for Functions.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionscreatingapps-task.htm#functionscreatingapps-taskcopy"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Oracle Cloud Functions",
+                    "AssetComponent": "Application"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciCloudFunctionsApplication",
+                        "Id": applicationId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": applicationName,
+                                "Id": applicationId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("oci.cloudfunctions")
+def oci_cloud_functions_apps_active_tracing_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.CloudFunctions.4] Oracle Cloud Functions applications should consider using tracing for Performance Monitoring
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for application in get_cloud_function_apps(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(application,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = application["compartment_id"]
+        applicationId = application["id"]
+        applicationName = application["display_name"]
+        lifecycleState = application["lifecycle_state"]
+        createdAt = str(application["time_created"])
+
+        if application["trace_config"]["is_enabled"] is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{applicationId}/oci-cloud-functions-apps-active-tracing-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{applicationId}/oci-cloud-functions-apps-active-tracing-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[OCI.CloudFunctions.4] Oracle Cloud Functions applications should consider using tracing for Performance Monitoring",
+                "Description": f" Oracle Cloud Functions application {applicationName} in Compartment {compartmentId} in {ociRegionName} does not use tracing for Performance Monitoring. When a function is invoked but doesn't run or perform as expected, you need to investigate the issue at a detailed level. The distributed tracing feature observes the function's execution as it moves through the different components of the system. You can trace and instrument standalone functions to debug execution and performance issues. You can also use function tracing to debug issues with complete serverless applications comprising multiple functions and services. The OCI Functions tracing capabilities are provided by the Oracle Cloud Infrastructure Application Performance Monitoring service. Features in Application Performance Monitoring (APM) enable you to identify and troubleshoot failures and latency issues in the functions you create and deploy. The Application Performance Monitoring Trace Explorer enables you to visualize the entire request flow and explore trace and span details for diagnostics. You can view and monitor slow traces and traces with errors. To isolate and identify trace issues, you can drill down into specific spans, such as page loads, AJAX calls, and service requests. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on setting up tracing for Cloud Function Applications refer to the Distributed Tracing for Functions section of the Oracle Cloud Infrastructure Documentation for Functions.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionstracing.htm"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Oracle Cloud Functions",
+                    "AssetComponent": "Application"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciCloudFunctionsApplication",
+                        "Id": applicationId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": applicationName,
+                                "Id": applicationId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{applicationId}/oci-cloud-functions-apps-active-tracing-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{applicationId}/oci-cloud-functions-apps-active-tracing-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.CloudFunctions.4] Oracle Cloud Functions applications should consider using tracing for Performance Monitoring",
+                "Description": f" Oracle Cloud Functions application {applicationName} in Compartment {compartmentId} in {ociRegionName} does use tracing for Performance Monitoring.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on setting up tracing for Cloud Function Applications refer to the Distributed Tracing for Functions section of the Oracle Cloud Infrastructure Documentation for Functions.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionstracing.htm"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Oracle Cloud Functions",
+                    "AssetComponent": "Application"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciCloudFunctionsApplication",
+                        "Id": applicationId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": applicationName,
+                                "Id": applicationId,
+                                "LifecycleState": lifecycleState,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("oci.cloudfunctions")
+def oci_cloud_functions_image_vuln_scanned_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.CloudFunctions.5] Oracle Cloud Functions should only use images that are scanned for vulnerabilities
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    # Grab the scanned repos
+    scannedRepositories = get_scanned_repositories(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint)
+
+    for application in get_cloud_function_apps(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        if not application["functions"]:
+            continue
+        
+        compartmentId = application["compartment_id"]
+        # Run through the actual functions
+        for function in application["functions"]:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(function,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
+            appId = function["application_id"]
+            funcName = function["display_name"]
+            funcId = function["id"]
+            funcImage = function["image"]
+            funcCreatedAt = str(function["time_created"])
+            lifecycleState = function["lifecycleState"]
+
+            # Split off the version
+            functionImageSourceRepo = funcImage.split(":")[0]
+
+            if functionImageSourceRepo not in scannedRepositories:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{funcId}/oci-cloud-functions-use-scanned-images-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{funcId}/oci-cloud-functions-use-scanned-images-check",
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "HIGH"},
+                    "Confidence": 99,
+                    "Title": "[OCI.CloudFunctions.5] Oracle Cloud Functions should only use images that are scanned for vulnerabilities",
+                    "Description": f" Oracle Cloud Function {funcName} in Compartment {compartmentId} in {ociRegionName} does not use an image that is scanned for vulnerabilities. In OCI Functions, a function's definition specifies the Docker image to push to, and pull from, a repository in Oracle Cloud Infrastructure Registry. You can set up Oracle Cloud Infrastructure Registry (also known as Container Registry) to scan function images when they are pushed to a function's repository. The function images are scanned for security vulnerabilities published in the publicly available Common Vulnerabilities and Exposures (CVE) database. You enable function image scanning by adding an image scanner to the function's repository. From then on, any images pushed to that repository are scanned for vulnerabilities by the image scanner. If the repository already contains images, the four most recently pushed images are immediately scanned for vulnerabilities. Always use the latest FDK build-time and runtime base images to reduce the number of known vulnerabilities included in an image and reported in the scan results. Refer to the remediation instructions if this configuration is not intended.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on setting up vulnerability scanning for Cloud Functions refer to the Scanning Function Images for Vulnerabilities section of the Oracle Cloud Infrastructure Documentation for Functions.",
+                            "Url": "https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionsimagescanning.htm"
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "OCI",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": ociTenancyId,
+                        "AssetRegion": ociRegionName,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Compute",
+                        "AssetService": "Oracle Cloud Functions",
+                        "AssetComponent": "Function"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "OciCloudFunctionsFunction",
+                            "Id": funcId,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "Other": {
+                                    "TenancyId": ociTenancyId,
+                                    "CompartmentId": compartmentId,
+                                    "Region": ociRegionName,
+                                    "Name": funcName,
+                                    "Id": funcId,
+                                    "Image": funcImage,
+                                    "ApplicationId": appId,
+                                    "LifecycleState": lifecycleState,
+                                    "CreatedAt": funcCreatedAt
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 DE.CM-8",
+                            "NIST SP 800-53 Rev. 4 RA-5",
+                            "AICPA TSC CC7.1",
+                            "ISO 27001:2013 A.12.6.1"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
+            else:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{funcId}/oci-cloud-functions-use-scanned-images-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{funcId}/oci-cloud-functions-use-scanned-images-check",
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[OCI.CloudFunctions.5] Oracle Cloud Functions should only use images that are scanned for vulnerabilities",
+                    "Description": f" Oracle Cloud Function {funcName} in Compartment {compartmentId} in {ociRegionName} does use an image that is scanned for vulnerabilities.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on setting up vulnerability scanning for Cloud Functions refer to the Scanning Function Images for Vulnerabilities section of the Oracle Cloud Infrastructure Documentation for Functions.",
+                            "Url": "https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionsimagescanning.htm"
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "OCI",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": ociTenancyId,
+                        "AssetRegion": ociRegionName,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Compute",
+                        "AssetService": "Oracle Cloud Functions",
+                        "AssetComponent": "Function"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "OciCloudFunctionsFunction",
+                            "Id": funcId,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "Other": {
+                                    "TenancyId": ociTenancyId,
+                                    "CompartmentId": compartmentId,
+                                    "Region": ociRegionName,
+                                    "Name": funcName,
+                                    "Id": funcId,
+                                    "Image": funcImage,
+                                    "ApplicationId": appId,
+                                    "LifecycleState": lifecycleState,
+                                    "CreatedAt": funcCreatedAt
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 DE.CM-8",
+                            "NIST SP 800-53 Rev. 4 RA-5",
+                            "AICPA TSC CC7.1",
+                            "ISO 27001:2013 A.12.6.1"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
+
+@registry.register_check("oci.cloudfunctions")
+def oci_cloud_functions_provisioned_concurrency_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.CloudFunctions.6] Oracle Cloud Functions should consider using provisioned concurrency to reduce latency
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for application in get_cloud_function_apps(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        if not application["functions"]:
+            continue
+        
+        compartmentId = application["compartment_id"]
+        # Run through the actual functions
+        for function in application["functions"]:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(function,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
+            appId = function["application_id"]
+            funcName = function["display_name"]
+            funcId = function["id"]
+            funcImage = function["image"]
+            funcCreatedAt = str(function["time_created"])
+            lifecycleState = function["lifecycleState"]
+
+            if function["provisioned_concurrency_config"]["strategy"] is None:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{funcId}/oci-cloud-functions-provisioned-concurrency-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{funcId}/oci-cloud-functions-provisioned-concurrency-check",
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "LOW"},
+                    "Confidence": 99,
+                    "Title": "[OCI.CloudFunctions.6] Oracle Cloud Functions should consider using provisioned concurrency to reduce latency",
+                    "Description": f" Oracle Cloud Function {funcName} in Compartment {compartmentId} in {ociRegionName} does not use provisioned concurrency to reduce latency. When a function is invoked for the first time (referred to as a 'cold start'), OCI Functions provisions the function invocation with the execution infrastructure it requires. The execution infrastructure includes the compute and network resources necessary to successfully invoke the function. The initial provisioning, and hence the response to the first invocation, might take some variable amount of time (potentially several seconds, or longer). The initial function invocation's execution infrastructure is retained for a period of time (referred to as the 'idle time'), for use by subsequent invocations of the same function. When a subsequent function invocation is able to make use of existing infrastructure (referred to as a 'hot start'), there is usually a sub-second response time to the function invocation. It's common that you'll want consistent, sub-second, responses to function invocations. To minimize any latency associated with initial provisioning and to ensure hot starts, you can enable provisioned concurrency for a function. Provisioned concurrency is the ability of OCI Functions to always have available the execution infrastructure for at least a certain minimum number of concurrent function invocations. Provisioned concurrency is measured in 'provisioned concurrency units' (PCUs). The total number of PCUs available depends on the size of the function, the tenancy limit, and whether provisioned concurrency has been enabled for other functions in the tenancy. Refer to the remediation instructions if this configuration is not intended.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on setting up provisioned concurrency for Cloud Functions refer to the Reducing Initial Latency Using Provisioned Concurrency section of the Oracle Cloud Infrastructure Documentation for Functions.",
+                            "Url": "https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionsusingprovisionedconcurrency.htm"
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "OCI",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": ociTenancyId,
+                        "AssetRegion": ociRegionName,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Compute",
+                        "AssetService": "Oracle Cloud Functions",
+                        "AssetComponent": "Function"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "OciCloudFunctionsFunction",
+                            "Id": funcId,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "Other": {
+                                    "TenancyId": ociTenancyId,
+                                    "CompartmentId": compartmentId,
+                                    "Region": ociRegionName,
+                                    "Name": funcName,
+                                    "Id": funcId,
+                                    "Image": funcImage,
+                                    "ApplicationId": appId,
+                                    "LifecycleState": lifecycleState,
+                                    "CreatedAt": funcCreatedAt
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 ID.BE-5",
+                            "NIST CSF V1.1 PR.PT-5",
+                            "NIST SP 800-53 Rev. 4 CP-2",
+                            "NIST SP 800-53 Rev. 4 CP-11",
+                            "NIST SP 800-53 Rev. 4 SA-13",
+                            "NIST SP 800-53 Rev. 4 SA-14",
+                            "AICPA TSC CC3.1",
+                            "AICPA TSC A1.2",
+                            "ISO 27001:2013 A.11.1.4",
+                            "ISO 27001:2013 A.17.1.1",
+                            "ISO 27001:2013 A.17.1.2",
+                            "ISO 27001:2013 A.17.2.1"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
+            else:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{funcId}/oci-cloud-functions-provisioned-concurrency-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{funcId}/oci-cloud-functions-provisioned-concurrency-check",
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[OCI.CloudFunctions.6] Oracle Cloud Functions should consider using provisioned concurrency to reduce latency",
+                    "Description": f" Oracle Cloud Function {funcName} in Compartment {compartmentId} in {ociRegionName} does use provisioned concurrency to reduce latency.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on setting up provisioned concurrency for Cloud Functions refer to the Reducing Initial Latency Using Provisioned Concurrency section of the Oracle Cloud Infrastructure Documentation for Functions.",
+                            "Url": "https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionsusingprovisionedconcurrency.htm"
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "OCI",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": ociTenancyId,
+                        "AssetRegion": ociRegionName,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Compute",
+                        "AssetService": "Oracle Cloud Functions",
+                        "AssetComponent": "Function"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "OciCloudFunctionsFunction",
+                            "Id": funcId,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "Other": {
+                                    "TenancyId": ociTenancyId,
+                                    "CompartmentId": compartmentId,
+                                    "Region": ociRegionName,
+                                    "Name": funcName,
+                                    "Id": funcId,
+                                    "Image": funcImage,
+                                    "ApplicationId": appId,
+                                    "LifecycleState": lifecycleState,
+                                    "CreatedAt": funcCreatedAt
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 ID.BE-5",
+                            "NIST CSF V1.1 PR.PT-5",
+                            "NIST SP 800-53 Rev. 4 CP-2",
+                            "NIST SP 800-53 Rev. 4 CP-11",
+                            "NIST SP 800-53 Rev. 4 SA-13",
+                            "NIST SP 800-53 Rev. 4 SA-14",
+                            "AICPA TSC CC3.1",
+                            "AICPA TSC A1.2",
+                            "ISO 27001:2013 A.11.1.4",
+                            "ISO 27001:2013 A.17.1.1",
+                            "ISO 27001:2013 A.17.1.2",
+                            "ISO 27001:2013 A.17.2.1"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
 
 ## END ??

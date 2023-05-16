@@ -254,7 +254,7 @@ python3 eeauditor/controller.py -t AWS -a ElectricEye_AttackSurface_OCI_Auditor 
 
 ## Oracle Cloud Infrastructure Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **192 Checks** across **1 Auditors** that support the secure configuration of **21 services/components**
+These are the following services and checks perform by each Auditor, there are currently **193 Checks** across **15 Auditors** that support the secure configuration of **21 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
@@ -297,6 +297,7 @@ These are the following services and checks perform by each Auditor, there are c
 | OCI_CloudFunctions_Auditor | Oracle Cloud Functions application | Applications should be configured to use more than 1 subnet for high availability |
 | OCI_CloudFunctions_Auditor | Oracle Cloud Functions application | Applications should using tracing for performance monitoring |
 | OCI_CloudFunctions_Auditor | Oracle Cloud Functions function | Function images should be scanned for vulnerabilities |
+| OCI_CloudFunctions_Auditor | Oracle Cloud Functions function | Function should use provisioned concurrency |
 | OCI_FileStorage_Auditor | Oracle File Storage file system | File Storage file systems should be encrypted with a Customer-managed Master Encryption Key |
 | OCI_FileStorage_Auditor | Oracle File Storage file system | File Storage file systems should enforce secure export options by requiring that NFS clients use privileged source ports |
 | OCI_FileStorage_Auditor | Oracle File Storage file system | File Storage file systems should enforce secure export options by configuring NFS identity squashing |

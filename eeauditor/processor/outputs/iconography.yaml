@@ -200,3 +200,9 @@
   ImageTag: <img src="https://iconography.electriceye.lol/OCI/Storage/Object+Storage.svg">
 - AssetService: Oracle File Storage
   ImageTag: <img src="https://iconography.electriceye.lol/OCI/Storage/File+Storage.svg">
+- AssetService: Oracle Cloud Functions
+  ImageTag: <img src="https://iconography.electriceye.lol/OCI/Compute/Functions.svg">
+- AssetService: Oracle Container Registry
+  ImageTag: <img src="https://iconography.electriceye.lol/OCI/Developer+services/Container+Registry.svg">
+- AssetService: Oracle Artifact Registry
+  ImageTag: <img src="https://iconography.electriceye.lol/OCI/Developer+services/Application+Dependency+Management+(ADM).svg">
