@@ -97,9 +97,8 @@ def get_scanned_repositories(cache, ociTenancyId, ociUserId, ociRegionName, ociC
 
     scannedContainerRegistryRepos = []
 
-    namespace = process_response(artifactClient.get_container_configuration(compartment_id=compartment).data)["namespace"]
-
     for compartment in ociCompartments:
+        namespace = process_response(artifactClient.get_container_configuration(compartment_id=compartment).data)["namespace"]
         for targets in process_response(vssClient.list_container_scan_targets(compartment_id=compartment).data)["items"]:
             targetUrl = targets["target_registry"]["url"]
             for targetrepo in targets["target_registry"]["repositories"]:
