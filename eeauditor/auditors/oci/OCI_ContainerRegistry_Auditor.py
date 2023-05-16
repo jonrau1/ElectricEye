@@ -559,13 +559,20 @@ def oci_container_registry_images_signed_check(cache, awsAccountId, awsRegion, a
                     "Status": "FAILED",
                     "RelatedRequirements": [
                         "NIST CSF V1.1 ID.SC-2",
+                        "NIST CSF V1.1 PR.DS-6",
                         "NIST SP 800-53 Rev. 4 RA-2",
                         "NIST SP 800-53 Rev. 4 RA-3",
                         "NIST SP 800-53 Rev. 4 PM-9",
                         "NIST SP 800-53 Rev. 4 SA-12",
                         "NIST SP 800-53 Rev. 4 SA-14",
                         "NIST SP 800-53 Rev. 4 SA-15",
+                        "NIST SP 800-53 Rev. 4 SI-7",
+                        "AICPA TSC CC7.1",
                         "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.2.1", 
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.15.2.2"
                     ]
@@ -631,13 +638,20 @@ def oci_container_registry_images_signed_check(cache, awsAccountId, awsRegion, a
                     "Status": "PASSED",
                     "RelatedRequirements": [
                         "NIST CSF V1.1 ID.SC-2",
+                        "NIST CSF V1.1 PR.DS-6",
                         "NIST SP 800-53 Rev. 4 RA-2",
                         "NIST SP 800-53 Rev. 4 RA-3",
                         "NIST SP 800-53 Rev. 4 PM-9",
                         "NIST SP 800-53 Rev. 4 SA-12",
                         "NIST SP 800-53 Rev. 4 SA-14",
                         "NIST SP 800-53 Rev. 4 SA-15",
+                        "NIST SP 800-53 Rev. 4 SI-7",
+                        "AICPA TSC CC7.1",
                         "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.2.1", 
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.15.2.2"
                     ]

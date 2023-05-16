@@ -188,9 +188,7 @@ def ecr_repo_image_lifecycle_policy_check(cache: dict, session, awsAccountId: st
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[ECR.2] ECR repositories should be have an image lifecycle policy configured",
-                "Description": "ECR repository "
-                + repoName
-                + " does not have an image lifecycle policy configured. Refer to the remediation instructions if this configuration is not intended",
+                "Description": f"ECR repository {repoName} does have an image lifecycle policy configured.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your repository should be configured to have an image lifecycle policy refer to the Amazon ECR Lifecycle Policies section in the Amazon ECR User Guide",
@@ -249,9 +247,7 @@ def ecr_repo_image_lifecycle_policy_check(cache: dict, session, awsAccountId: st
                     "Severity": {"Label": "MEDIUM"},
                     "Confidence": 99,
                     "Title": "[ECR.2] ECR repositories should be have an image lifecycle policy configured",
-                    "Description": "ECR repository "
-                    + repoName
-                    + " does not have an image lifecycle policy configured. Refer to the remediation instructions if this configuration is not intended",
+                    "Description": f"ECR repository {repoName} does not have an image lifecycle policy configured. Amazon ECR lifecycle policies provide more control over the lifecycle management of images in a private repository. A lifecycle policy contains one or more rules, where each rule defines an action for Amazon ECR. This provides a way to automate the cleaning up of your container images by expiring images based on age or count. You should expect that images become expired within 24 hours after they meet the expiration criteria per your lifecycle policy. When Amazon ECR performs an action based on a lifecycle policy, this is captured as an event in AWS CloudTrail. When considering the use of lifecycle policies, it's important to use the lifecycle policy preview to confirm which images the lifecycle policy expires before applying it to a repository. Using Lifecycle Policies can help to reduce security exposure by forcefully removing stale images and promoting good image hygeine by having processes to continually scan and rebuild container images. Refer to the remediation instructions if this configuration is not intended",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "If your repository should be configured to have an image lifecycle policy refer to the Amazon ECR Lifecycle Policies section in the Amazon ECR User Guide",
@@ -288,8 +284,8 @@ def ecr_repo_image_lifecycle_policy_check(cache: dict, session, awsAccountId: st
                             "AICPA TSC CC6.1",
                             "ISO 27001:2013 A.8.1.1",
                             "ISO 27001:2013 A.8.1.2",
-                            "ISO 27001:2013 A.12.5.1",
-                        ],
+                            "ISO 27001:2013 A.12.5.1"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
                     "RecordState": "ACTIVE",
