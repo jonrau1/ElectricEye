@@ -34,7 +34,7 @@ COPY requirements.txt /tmp/requirements.txt
 # NOTE: This will copy all application files and auditors to the container
 # IMPORTANT: ADD YOUR TOML CONFIGURATIONS BEFORE YOU BUILD THIS!
 
-COPY ./eeauditor/ /eeauditor/
+COPY ./eeauditor /eeauditor
 
 # Installing dependencies
 RUN \

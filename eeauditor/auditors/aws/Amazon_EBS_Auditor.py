@@ -707,7 +707,7 @@ def ebs_snapshot_public_check(cache: dict, session, awsAccountId: str, awsRegion
                         "Severity": {"Label": "CRITICAL"},
                         "Confidence": 99,
                         "Title": "[EBS.5] EBS Snapshots should not be public",
-                        "Description": f"EBS Snapshot {snapshotId} is public. Snapshots that are public are restorable into Volumes or Amazon Machine Images (AMIs) by anyone with an AWS Account, if sensitive data is contained on the snapshot then adversaries can easily harvest it. Ensure you carefully examine the data stored onto root volumes as well as their permissions. Refer to the remediation instructions to remediate this behavior.",
+                        "Description": f"EBS Snapshot {snapshotId} is public. Snapshots that are public are restorable into Volumes or Amazon Machine Images (AMIs) by anyone with an AWS Account, if sensitive data is contained on the snapshot then adversaries can easily harvest it. Ensure you carefully examine the data stored onto root volumes as well as their permissions. There are some cases where it is perfectly viable to have a public snapshot, always seek to understand the business or mission context before unilaterally removing publicly-shared permissions from a Snapshot. Refer to the remediation instructions to remediate this behavior.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "If your EBS snapshot should not be public refer to the Sharing an Amazon EBS Snapshot section of the Amazon Elastic Compute Cloud User Guide",

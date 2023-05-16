@@ -109,39 +109,39 @@ def get_artifact_repos(cache, ociTenancyId, ociUserId, ociRegionName, ociCompart
 @registry.register_check("oci.containerregistry")
 def oci_container_registry_review_public_repos_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
     """
-    [OCI.ContainerRegistry.1] Oracle Container Registry repositories should be configured for on-demand scaling (autoscaling)
+    [OCI.ContainerRegistry.1] Oracle Container Registry repositories that are public should be reviewed
     """
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for table in get_container_repos(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    for repo in get_container_repos(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(table,default=str).encode("utf-8")
+        assetJson = json.dumps(repo,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        compartmentId = table["compartment_id"]
-        tableId = table["id"]
-        tableName = table["name"]
-        lifecycleState = table["lifecycle_state"]
-        createdAt = str(table["time_created"])
+        compartmentId = repo["compartment_id"]
+        repoId = repo["id"]
+        repoName = repo["display_name"]
+        lifecycleState = repo["lifecycle_state"]
+        createdAt = str(repo["time_created"])
 
-        if table["table_limits"]["capacity_mode"] != "ON_DEMAND":
+        if repo["is_public"] is True:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{tableId}/oci-nosql-dbs-on-demand-table-check",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{repoId}/oci-container-registry-repo-public-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{tableId}/oci-nosql-dbs-on-demand-table-check",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{repoId}/oci-container-registry-repo-public-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "LOW"},
+                "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[OCI.NoSQL.1] Oracle NoSQL Database Cloud Service tables should be configured for on-demand scaling (autoscaling)",
-                "Description": f"Oracle NoSQL Database Cloud Service table {tableName} in Compartment {compartmentId} in {ociRegionName} is not configured for on-demand scaling (autoscaling). Oracle NoSQL Database Cloud Service scales to meet application throughput performance requirements with low and predictable latency. As workloads increase with periodic business fluctuations, applications can increase their provisioned throughput to maintain a consistent user experience. As workloads decrease, the same applications can reduce their provisioned throughput, resulting in lower operating expenses. The same holds true for storage requirements. Those can be adjusted based on business fluctuations. With on-demand capacity, you don't need to provision the read or write capacities for each table. You only pay for the read and write units that are actually consumed. Oracle NoSQL Database Cloud Service automatically manages the read and write capacities to meet the needs of dynamic workloads. Refer to the remediation instructions if this configuration is not intended.",
+                "Title": "[OCI.ContainerRegistry.1] Oracle Container Registry repositories that are public should be reviewed",
+                "Description": f"Oracle Container Registry repository {repoName} in Compartment {compartmentId} in {ociRegionName} is currently configured to be public. Regarding Public Repositories, you can only make the new repository public if you belong to the tenancy's Administrators group or have been granted the REPOSITORY_MANAGE permission. If you make the new repository public, any user with internet access and knowledge of the appropriate URL will be able to pull images from the repository. If you make the repository private, you (along with users belonging to the tenancy's Administrators group) will be able to perform any operation on the repository. There are many use cases where having a Public repository is viable such as providing an image you build as part of an open source, research, or product offering - however - you should review the repository and understand the business or mission context. Additionally, even if a repository should be public ensure that images are reviewed for sensitive or confidential information, vulnerabilities, and are signed if at all possible. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For more information on modifying your table refer to the Creating Tables and Indexes section of the Oracle Cloud Infrastructure Documentation for Oracle NoSQL Database Cloud Service.",
-                        "Url": "https://docs.oracle.com/en-us/iaas/nosql-database/doc/creating-tables-and-indexes.html#GUID-4382BC75-5448-440E-B9DF-13E6FEC764C1",
+                        "Text": "If necessary a repository that is public can be made private, and vice versa, for more information see the Editing a Repository section of the Oracle Cloud Infrastructure Documentation for Container Registry.",
+                        "Url": "hhttps://docs.oracle.com/en-us/iaas/Content/Registry/Tasks/edit-repository.htm",
                     }
                 },
                 "ProductFields": {
@@ -152,13 +152,13 @@ def oci_container_registry_review_public_repos_check(cache, awsAccountId, awsReg
                     "AssetRegion": ociRegionName,
                     "AssetDetails": assetB64,
                     "AssetClass": "Database",
-                    "AssetService": "Oracle NoSQL Database Cloud Service",
-                    "AssetComponent": "Table"
+                    "AssetService": "Oracle Container Registry",
+                    "AssetComponent": "Repository"
                 },
                 "Resources": [
                     {
-                        "Type": "OciNosqlDatabaseCloudServiceTable",
-                        "Id": tableId,
+                        "Type": "OciContainerRegistryRepository",
+                        "Id": repoId,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -166,8 +166,8 @@ def oci_container_registry_review_public_repos_check(cache, awsAccountId, awsReg
                                 "TenancyId": ociTenancyId,
                                 "CompartmentId": compartmentId,
                                 "Region": ociRegionName,
-                                "Name": tableName,
-                                "Id": tableId,
+                                "Name": repoName,
+                                "Id": repoId,
                                 "LifecycleState": lifecycleState,
                                 "CreatedAt": createdAt
                             }
@@ -177,18 +177,18 @@ def oci_container_registry_review_public_repos_check(cache, awsAccountId, awsReg
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 ID.BE-5",
-                        "NIST CSF V1.1 PR.PT-5",
-                        "NIST SP 800-53 Rev. 4 CP-2",
-                        "NIST SP 800-53 Rev. 4 CP-11",
-                        "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA-14",
-                        "AICPA TSC CC3.1",
-                        "AICPA TSC A1.2",
-                        "ISO 27001:2013 A.11.1.4",
-                        "ISO 27001:2013 A.17.1.1",
-                        "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1"
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -198,9 +198,9 @@ def oci_container_registry_review_public_repos_check(cache, awsAccountId, awsReg
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{tableId}/oci-nosql-dbs-on-demand-table-check",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{repoId}/oci-container-registry-repo-public-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{tableId}/oci-nosql-dbs-on-demand-table-check",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{repoId}/oci-container-registry-repo-public-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -208,12 +208,12 @@ def oci_container_registry_review_public_repos_check(cache, awsAccountId, awsReg
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[OCI.NoSQL.1] Oracle NoSQL Database Cloud Service tables should be configured for on-demand scaling (autoscaling)",
-                "Description": f"Oracle NoSQL Database Cloud Service table {tableName} in Compartment {compartmentId} in {ociRegionName} is configured for on-demand scaling (autoscaling).",
+                "Title": "[OCI.ContainerRegistry.1] Oracle Container Registry repositories that are public should be reviewed",
+                "Description": f"Oracle Container Registry repository {repoName} in Compartment {compartmentId} in {ociRegionName} is currently configured to be private.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For more information on modifying your table refer to the Creating Tables and Indexes section of the Oracle Cloud Infrastructure Documentation for Oracle NoSQL Database Cloud Service.",
-                        "Url": "https://docs.oracle.com/en-us/iaas/nosql-database/doc/creating-tables-and-indexes.html#GUID-4382BC75-5448-440E-B9DF-13E6FEC764C1",
+                        "Text": "If necessary a repository that is public can be made private, and vice versa, for more information see the Editing a Repository section of the Oracle Cloud Infrastructure Documentation for Container Registry.",
+                        "Url": "hhttps://docs.oracle.com/en-us/iaas/Content/Registry/Tasks/edit-repository.htm",
                     }
                 },
                 "ProductFields": {
@@ -224,13 +224,13 @@ def oci_container_registry_review_public_repos_check(cache, awsAccountId, awsReg
                     "AssetRegion": ociRegionName,
                     "AssetDetails": assetB64,
                     "AssetClass": "Database",
-                    "AssetService": "Oracle NoSQL Database Cloud Service",
-                    "AssetComponent": "Table"
+                    "AssetService": "Oracle Container Registry",
+                    "AssetComponent": "Repository"
                 },
                 "Resources": [
                     {
-                        "Type": "OciNosqlDatabaseCloudServiceTable",
-                        "Id": tableId,
+                        "Type": "OciContainerRegistryRepository",
+                        "Id": repoId,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -238,8 +238,8 @@ def oci_container_registry_review_public_repos_check(cache, awsAccountId, awsReg
                                 "TenancyId": ociTenancyId,
                                 "CompartmentId": compartmentId,
                                 "Region": ociRegionName,
-                                "Name": tableName,
-                                "Id": tableId,
+                                "Name": repoName,
+                                "Id": repoId,
                                 "LifecycleState": lifecycleState,
                                 "CreatedAt": createdAt
                             }
@@ -249,21 +249,23 @@ def oci_container_registry_review_public_repos_check(cache, awsAccountId, awsReg
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 ID.BE-5",
-                        "NIST CSF V1.1 PR.PT-5",
-                        "NIST SP 800-53 Rev. 4 CP-2",
-                        "NIST SP 800-53 Rev. 4 CP-11",
-                        "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA-14",
-                        "AICPA TSC CC3.1",
-                        "AICPA TSC A1.2",
-                        "ISO 27001:2013 A.11.1.4",
-                        "ISO 27001:2013 A.17.1.1",
-                        "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1"
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED"
             }
             yield finding
+
+## END ??
