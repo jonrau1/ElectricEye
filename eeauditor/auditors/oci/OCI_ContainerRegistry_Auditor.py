@@ -63,7 +63,7 @@ def get_container_repos(cache, ociTenancyId, ociUserId, ociRegionName, ociCompar
     ociContainerRepos = []
 
     for compartment in ociCompartments:
-        for repo in process_response(artifactClient.list_container_repositories(compartment_id=compartment, lifecycle_state="ACTIVE").data)["items"]:
+        for repo in process_response(artifactClient.list_container_repositories(compartment_id=compartment, lifecycle_state="AVAILABLE").data)["items"]:
             ociContainerRepos.append(
                 process_response(
                     artifactClient.get_container_repository(repository_id=repo["id"]).data
@@ -127,7 +127,7 @@ def get_repository_images(cache, ociTenancyId, ociUserId, ociRegionName, ociComp
 
     # It looks similar to containers, but the plain repository means an Aritfact Repository
     for compartment in ociCompartments:
-        for image in process_response(artifactClient.list_container_images(compartment_id=compartment, lifecycle_state="ACTIVE").data)["items"]:
+        for image in process_response(artifactClient.list_container_images(compartment_id=compartment, lifecycle_state="AVAILABLE").data)["items"]:
             signingData = process_response(
                 artifactClient.list_container_image_signatures(compartment_id=compartment, image_id=image["id"]).data
             )
