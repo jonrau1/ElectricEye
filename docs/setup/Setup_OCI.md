@@ -254,83 +254,88 @@ python3 eeauditor/controller.py -t AWS -a ElectricEye_AttackSurface_OCI_Auditor 
 
 ## Oracle Cloud Infrastructure Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **187 Checks** across **14 Auditors** that support the secure configuration of **19 services/components**
+These are the following services and checks perform by each Auditor, there are currently **192 Checks** across **1 Auditors** that support the secure configuration of **21 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
-| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should be encrypted with a Customer-managed Master Encryption Key
-| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs with available upgrade versions should be reviewed for upgrade
-| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should have an Oracle Object Storage bucket configured for manual and long-term backup storage
-| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should be registered with Oracle Data Safe
-| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should be registered with Database Management
-| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should have a customer contact detail to receive upgrade and other important notices
-| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should be configured to autoscale database compute resources
-| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should be configured to autoscale database storage resources
-| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should have Autonomous Data Guard enabled
-| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should enforce mutual TLS (mTLS) connections
-| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should schedule long term backups
-| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs with Private Access should have at least one Network Security Group (NSG) assigned
-| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should have Operations Insights enabled
-| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should be configured for Private Access connectivity through a Virtual Cloud Network (VCN)
-| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should configure an IP-based Allow-list to reduce permissible network access
-| OCI_ArtifactRegistry_Auditor | Oracle Artifact Registry repository | Repositories that are empty should be reviewed for deletion     
-| OCI_ArtifactRegistry_Auditor | Oracle Artifact Registry repository | Repositories should consider enabling immutable artifacts     
-| OCI_ArtifactRegistry_Auditor | Oracle Artifact Registry artifact | Artifacts should be scanned for malware and viruses 
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have Secure Boot enabled
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have Measured Boot enabled
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have the Trusted Platform Module enabled
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should enable block volume in-transit encryption
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should be encrypted with a Customer-managed Master Encryption Key
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should disable access to legacy Instance Metadata Service (IMDSv1) endpoints
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have the Management Agent enabled
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have the Monitoring Agent enabled
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have the Vulnerability Scanning plugin enabled
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should not be publicly discoverable on the internet
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have at least one Network Security Group (NSG) assigned
-| OCI_ContainerInstance_Auditor | Oracle Cloud Container Instance | Container instances should consider defining a container restart policy
-| OCI_ContainerInstance_Auditor | Oracle Cloud Container Instance | Container instances should consider defining a graceful shutdown timeout
-| OCI_ContainerRegistry_Auditor | Oracle Container Registry repository | Repositories that are public should be reviewed     
-| OCI_ContainerRegistry_Auditor | Oracle Container Registry repository | Repositories should have an Oracle Vulnerability Scanning Service (VSS) target association     
-| OCI_ContainerRegistry_Auditor | Oracle Container Registry images | Images should be signed with an image signature   
-| OCI_FileStorage_Auditor | Oracle File Storage file system | File Storage file systems should be encrypted with a Customer-managed Master Encryption Key
-| OCI_FileStorage_Auditor | Oracle File Storage file system | File Storage file systems should enforce secure export options by requiring that NFS clients use privileged source ports
-| OCI_FileStorage_Auditor | Oracle File Storage file system | File Storage file systems should enforce secure export options by configuring NFS identity squashing
-| OCI_FileStorage_Auditor | Oracle File Storage mount target | File Storage Mount Targets should have at least one Network Security Group (NSG) assigned
-| OCI_KubernetesEngine_Auditor | OKE cluster | OKE cluster API servers should not be accessible from the internet
-| OCI_KubernetesEngine_Auditor | OKE cluster | OKE cluster should have at least one Network Security Group (NSG) assigned
-| OCI_KubernetesEngine_Auditor | OKE cluster | OKE clusters should enable image verification policies
-| OCI_KubernetesEngine_Auditor | OKE cluster | OKE clusters with the Kubernetes dashboard enabled should be reviewed
-| OCI_KubernetesEngine_Auditor | OKE cluster | OKE clusters should use one of the latest supported Kubernetes versions
-| OCI_KubernetesEngine_Auditor | OKE cluster | OKE clusters should not use deprecated versions of Kubernetes
-| OCI_KubernetesEngine_Auditor | OKE node pool | OKE node pools should enable block volume in-transit encryption
-| OCI_KubernetesEngine_Auditor | OKE node pool | OKE node pools should have at least one Network Security Group (NSG) assigned
-| OCI_KubernetesEngine_Auditor | OKE node pool | OKE node pools should be configured to protect pods with a Network Security Group (NSG)
-| OCI_KubernetesEngine_Auditor | OKE node pool | OKE node pools should be configured to force terminate evicted worker nodes after the draining grace period
-| OCI_KubernetesEngine_Auditor | OKE node pool | OKE node pools should use the latest supported Kubernetes versions
-| OCI_KubernetesEngine_Auditor | OKE node pool | OKE node pools should not use deprecated versions of Kubernetes
-| OCI_KubernetesEngine_Auditor | OKE virtual node pool | OKE virtual node pools should have at least one Network Security Group (NSG) assigned
-| OCI_KubernetesEngine_Auditor | OKE virtual node pool | OKE virtual node pools should be configured to protect pods with a Network Security Group (NSG)
-| OCI_KubernetesEngine_Auditor | OKE virtual node pool | OKE virtual node pools should use the latest supported Kubernetes versions
-| OCI_KubernetesEngine_Auditor | OKE virtual node pool | OKE virtual node pools should not use deprecated versions of Kubernetes
-| OCI_LoadBalancer_Auditor | Oracle Load Balancer | Load Balancers should have Network Security Groups (NSGs) assigned
-| OCI_LoadBalancer_Auditor | Oracle Load Balancer | Load Balancer listeners should be configured to use HTTPS/TLS
-| OCI_LoadBalancer_Auditor | Oracle Load Balancer | Load Balancer backend sets should be configured to use HTTPS/TLS
-| OCI_LoadBalancer_Auditor | Oracle Load Balancer | Load Balancers with health checks reporting Critical or Warning should be investigated
-| OCI_MySQL_DatabaseService_Auditor | Oracle MySQL DB System | DB systems should be configured to take automatic backups
-| OCI_MySQL_DatabaseService_Auditor | Oracle MySQL DB System | DB systems should have Point-in-Time Recovery (PITR) enabled
-| OCI_MySQL_DatabaseService_Auditor | Oracle MySQL DB System | DB systems should have Crash Recovery enabled
-| OCI_MySQL_DatabaseService_Auditor | Oracle MySQL DB System | DB systems should have Deletion Protection enabled
-| OCI_MySQL_DatabaseService_Auditor | Oracle MySQL DB System | DB systems should enforce creating a final manual snapshot before deletion
-| OCI_MySQL_DatabaseService_Auditor | Oracle MySQL DB System | DB systems should be configured to automatically delete automatic snapshots after system deletion
-| OCI_MySQL_DatabaseService_Auditor | Oracle MySQL DB System | DB systems should be configured to be highly available
-| OCI_NoSQL_Auditor | Oracle NoSQL Table |  Oracle NoSQL Database Cloud Service tables should be configured for on-demand scaling (autoscaling)
-| OCI_ObjectStorage_Auditor | Oracle Cloud Storage bucket | buckets should be encrypted with a Customer-managed Master Encryption Key
-| OCI_ObjectStorage_Auditor | Oracle Cloud Storage bucket | buckets should have a lifecycle policy defined
-| OCI_ObjectStorage_Auditor | Oracle Cloud Storage bucket | buckets should define a lifecycle policy rule to delete failed multipart uploads
-| OCI_ObjectStorage_Auditor | Oracle Cloud Storage bucket | buckets should not allow public access to objects
-| OCI_ObjectStorage_Auditor | Oracle Cloud Storage bucket | buckets should be configured to use object replication to promote resilience and recovery
-| OCI_ObjectStorage_Auditor | Oracle Cloud Storage bucket | buckets should be configured to use object versioning to promote resilience and recovery
-| OCI_OpenSearch_Auditor | Oracle Search with OpenSearch clusteer | clusters should have Security Mode enabled and set to Enforcing
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should be encrypted with a Customer-managed Master Encryption Key |
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs with available upgrade versions should be reviewed for upgrade |
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should have an Oracle Object Storage bucket configured for manual and long-term backup storage |
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should be registered with Oracle Data Safe |
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should be registered with Database Management |
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should have a customer contact detail to receive upgrade and other important notices |
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should be configured to autoscale database compute resources |
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should be configured to autoscale database storage resources |
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should have Autonomous Data Guard enabled |
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should enforce mutual TLS (mTLS) connections |
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should schedule long term backups |
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs with Private Access should have at least one Network Security Group (NSG) assigned |
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should have Operations Insights enabled |
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should be configured for Private Access connectivity through a Virtual Cloud Network (VCN) |
+| OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should configure an IP-based Allow-list to reduce permissible network access |
+| OCI_ArtifactRegistry_Auditor | Oracle Artifact Registry repository | Repositories that are empty should be reviewed for deletion |
+| OCI_ArtifactRegistry_Auditor | Oracle Artifact Registry repository | Repositories should consider enabling immutable artifacts | 
+| OCI_ArtifactRegistry_Auditor | Oracle Artifact Registry artifact | Artifacts should be scanned for malware and viruses |
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have Secure Boot enabled |
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have Measured Boot enabled |
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have the Trusted Platform Module enabled |
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should enable block volume in-transit encryption |
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should be encrypted with a Customer-managed Master Encryption Key |
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should disable access to legacy Instance Metadata Service (IMDSv1) endpoints |
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have the Management Agent enabled |
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have the Monitoring Agent enabled |
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have the Vulnerability Scanning plugin enabled |
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should not be publicly discoverable on the internet |
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have at least one Network Security Group (NSG) assigned |
+| OCI_ContainerInstance_Auditor | Oracle Cloud Container Instance | Container instances should consider defining a container restart policy |
+| OCI_ContainerInstance_Auditor | Oracle Cloud Container Instance | Container instances should consider defining a graceful shutdown timeout |
+| OCI_ContainerRegistry_Auditor | Oracle Container Registry repository | Repositories that are public should be reviewed |
+| OCI_ContainerRegistry_Auditor | Oracle Container Registry repository | Repositories should have an Oracle Vulnerability Scanning Service (VSS) target association | 
+| OCI_ContainerRegistry_Auditor | Oracle Container Registry image | Images should be signed with an image signature |
+| OCI_CloudFunctions_Auditor | Oracle Cloud Functions application | Applications should have NSGs assigned |
+| OCI_CloudFunctions_Auditor | Oracle Cloud Functions application | Applications should enforce the usage of signing images |
+| OCI_CloudFunctions_Auditor | Oracle Cloud Functions application | Applications should be configured to use more than 1 subnet for high availability |
+| OCI_CloudFunctions_Auditor | Oracle Cloud Functions application | Applications should using tracing for performance monitoring |
+| OCI_CloudFunctions_Auditor | Oracle Cloud Functions function | Function images should be scanned for vulnerabilities |
+| OCI_FileStorage_Auditor | Oracle File Storage file system | File Storage file systems should be encrypted with a Customer-managed Master Encryption Key |
+| OCI_FileStorage_Auditor | Oracle File Storage file system | File Storage file systems should enforce secure export options by requiring that NFS clients use privileged source ports |
+| OCI_FileStorage_Auditor | Oracle File Storage file system | File Storage file systems should enforce secure export options by configuring NFS identity squashing |
+| OCI_FileStorage_Auditor | Oracle File Storage mount target | File Storage Mount Targets should have at least one Network Security Group (NSG) assigned |
+| OCI_KubernetesEngine_Auditor | OKE cluster | OKE cluster API servers should not be accessible from the internet |
+| OCI_KubernetesEngine_Auditor | OKE cluster | OKE cluster should have at least one Network Security Group (NSG) assigned |
+| OCI_KubernetesEngine_Auditor | OKE cluster | OKE clusters should enable image verification policies |
+| OCI_KubernetesEngine_Auditor | OKE cluster | OKE clusters with the Kubernetes dashboard enabled should be reviewed |
+| OCI_KubernetesEngine_Auditor | OKE cluster | OKE clusters should use one of the latest supported Kubernetes versions |
+| OCI_KubernetesEngine_Auditor | OKE cluster | OKE clusters should not use deprecated versions of Kubernetes |
+| OCI_KubernetesEngine_Auditor | OKE node pool | OKE node pools should enable block volume in-transit encryption |
+| OCI_KubernetesEngine_Auditor | OKE node pool | OKE node pools should have at least one Network Security Group (NSG) assigned |
+| OCI_KubernetesEngine_Auditor | OKE node pool | OKE node pools should be configured to protect pods with a Network Security Group (NSG) |
+| OCI_KubernetesEngine_Auditor | OKE node pool | OKE node pools should be configured to force terminate evicted worker nodes after the draining grace period |
+| OCI_KubernetesEngine_Auditor | OKE node pool | OKE node pools should use the latest supported Kubernetes versions |
+| OCI_KubernetesEngine_Auditor | OKE node pool | OKE node pools should not use deprecated versions of Kubernetes |
+| OCI_KubernetesEngine_Auditor | OKE virtual node pool | OKE virtual node pools should have at least one Network Security Group (NSG) assigned |
+| OCI_KubernetesEngine_Auditor | OKE virtual node pool | OKE virtual node pools should be configured to protect pods with a Network Security Group (NSG) |
+| OCI_KubernetesEngine_Auditor | OKE virtual node pool | OKE virtual node pools should use the latest supported Kubernetes versions |
+| OCI_KubernetesEngine_Auditor | OKE virtual node pool | OKE virtual node pools should not use deprecated versions of Kubernetes |
+| OCI_LoadBalancer_Auditor | Oracle Load Balancer | Load Balancers should have Network Security Groups (NSGs) assigned |
+| OCI_LoadBalancer_Auditor | Oracle Load Balancer | Load Balancer listeners should be configured to use HTTPS/TLS |
+| OCI_LoadBalancer_Auditor | Oracle Load Balancer | Load Balancer backend sets should be configured to use HTTPS/TLS |
+| OCI_LoadBalancer_Auditor | Oracle Load Balancer | Load Balancers with health checks reporting Critical or Warning should be investigated |
+| OCI_MySQL_DatabaseService_Auditor | Oracle MySQL DB System | DB systems should be configured to take automatic backups |
+| OCI_MySQL_DatabaseService_Auditor | Oracle MySQL DB System | DB systems should have Point-in-Time Recovery (PITR) enabled |
+| OCI_MySQL_DatabaseService_Auditor | Oracle MySQL DB System | DB systems should have Crash Recovery enabled |
+| OCI_MySQL_DatabaseService_Auditor | Oracle MySQL DB System | DB systems should have Deletion Protection enabled |
+| OCI_MySQL_DatabaseService_Auditor | Oracle MySQL DB System | DB systems should enforce creating a final manual snapshot before deletion |
+| OCI_MySQL_DatabaseService_Auditor | Oracle MySQL DB System | DB systems should be configured to automatically delete automatic snapshots after system deletion |
+| OCI_MySQL_DatabaseService_Auditor | Oracle MySQL DB System | DB systems should be configured to be highly available |
+| OCI_NoSQL_Auditor | Oracle NoSQL Table |  Oracle NoSQL Database Cloud Service tables should be configured for on-demand scaling (autoscaling) |
+| OCI_ObjectStorage_Auditor | Oracle Cloud Storage bucket | buckets should be encrypted with a Customer-managed Master Encryption Key |
+| OCI_ObjectStorage_Auditor | Oracle Cloud Storage bucket | buckets should have a lifecycle policy defined |
+| OCI_ObjectStorage_Auditor | Oracle Cloud Storage bucket | buckets should define a lifecycle policy rule to delete failed multipart uploads |
+| OCI_ObjectStorage_Auditor | Oracle Cloud Storage bucket | buckets should not allow public access to objects |
+| OCI_ObjectStorage_Auditor | Oracle Cloud Storage bucket | buckets should be configured to use object replication to promote resilience and recovery |
+| OCI_ObjectStorage_Auditor | Oracle Cloud Storage bucket | buckets should be configured to use object versioning to promote resilience and recovery |
+| OCI_OpenSearch_Auditor | Oracle Search with OpenSearch clusteer | clusters should have Security Mode enabled and set to Enforcing |
 | OCI_VCN_SecurityList_Auditor | OCI Security List | Are all ports (-1) open to the internet |
 | OCI_VCN_SecurityList_Auditor | OCI Security List | Is FTP (tcp20-21) open to the internet |
 | OCI_VCN_SecurityList_Auditor | OCI Security List | Is TelNet (tcp23) open to the internet |

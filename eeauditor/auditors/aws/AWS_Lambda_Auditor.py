@@ -217,7 +217,7 @@ def aws_lambda_unused_function_check(cache: dict, session, awsAccountId: str, aw
 
 @registry.register_check("lambda")
 def aws_lambda_function_tracing_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Lambda.2] Lambda functions should use active tracing with AWS X-Ray"""
+    """[Lambda.2] Lambda functions should consider using active tracing with AWS X-Ray for Performance Monitoring"""
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for function in get_lambda_functions(cache, session):
@@ -240,7 +240,7 @@ def aws_lambda_function_tracing_check(cache: dict, session, awsAccountId: str, a
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Lambda.2] Lambda functions should use active tracing with AWS X-Ray",
+                "Title": "[Lambda.2] Lambda functions should consider using active tracing with AWS X-Ray for Performance Monitoring",
                 "Description": "Lambda function "
                 + functionName
                 + " has Active Tracing enabled.",
@@ -309,7 +309,7 @@ def aws_lambda_function_tracing_check(cache: dict, session, awsAccountId: str, a
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[Lambda.2] Lambda functions should use active tracing with AWS X-Ray",
+                "Title": "[Lambda.2] Lambda functions should consider using active tracing with AWS X-Ray for Performance Monitoring",
                 "Description": "Lambda function "
                 + functionName
                 + " does not have Active Tracing enabled. Because X-Ray gives you an end-to-end view of an entire request, you can analyze latencies in your Functions and their backend services. You can use an X-Ray service map to view the latency of an entire request and that of the downstream services that are integrated with X-Ray. Refer to the remediation instructions if this configuration is not intended.",
@@ -1181,7 +1181,7 @@ def aws_lambda_supported_runtimes_check(cache: dict, session, awsAccountId: str,
 
 @registry.register_check("lambda")
 def lambda_vpc_ha_subnets_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Lambda.7] Lambda functions in VPCs should use more than one Availability Zone"""
+    """[Lambda.7] Lambda functions in VPCs should use more than one Availability Zone to promote high availability"""
     ec2 = session.client("ec2")
     # Create empty list to hold unique Subnet IDs - for future lookup against AZs
     uSubnets = []
@@ -1225,7 +1225,7 @@ def lambda_vpc_ha_subnets_check(cache: dict, session, awsAccountId: str, awsRegi
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "MEDIUM"},
                     "Confidence": 99,
-                    "Title": "[Lambda.7] Lambda functions in VPCs should use more than one Availability Zone",
+                    "Title": "[Lambda.7] Lambda functions in VPCs should use more than one Availability Zone to promote high availability",
                     "Description": f"Lambda function {functionName} is only deployed to a Single Availability Zone. Deploying resources across multiple Availability Zones is an AWS best practice to ensure high availability within your architecture. Availability is a core pillar in the confidentiality, integrity, and availability triad security model. All Lambda functions should have a multi-Availability Zone deployment to ensure that a single zone of failure does not cause a total disruption of operations. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
@@ -1292,7 +1292,7 @@ def lambda_vpc_ha_subnets_check(cache: dict, session, awsAccountId: str, awsRegi
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
-                    "Title": "[Lambda.7] Lambda functions in VPCs should use more than one Availability Zone",
+                    "Title": "[Lambda.7] Lambda functions in VPCs should use more than one Availability Zone to promote high availability",
                     "Description": f"Lambda function {functionName} is deployed to at least two Availability Zones.",
                     "Remediation": {
                         "Recommendation": {
@@ -1359,7 +1359,7 @@ def lambda_vpc_ha_subnets_check(cache: dict, session, awsAccountId: str, awsRegi
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Lambda.7] Lambda functions in VPCs should use more than one Availability Zone",
+                "Title": "[Lambda.7] Lambda functions in VPCs should use more than one Availability Zone to promote high availability",
                 "Description": f"Lambda function {functionName} is not deployed to a VPC and is thus exempt from this check.",
                 "Remediation": {
                     "Recommendation": {
