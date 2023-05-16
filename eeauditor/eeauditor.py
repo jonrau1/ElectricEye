@@ -117,11 +117,13 @@ class EEAuditor(object):
         ]
 
         # overrides - some services fall under a service's "endpoint" and not so much a dedicated namespace from what I can tell??
-        # we're overriding these just to trick ElectricEye into *not* aborting for certain services
+        # we're overriding these just to trick ElectricEye into *not* aborting for certain services and also not re-naming plugins which use the same cache
         if service == "globalaccelerator":
             service = "iam"
         elif service == "imagebuilder":
             service = "ec2"
+        elif service == "elasticloadbalancingv2":
+            service = "elasticloadbalancing"
 
         for partition in endpointData['partitions']:
             if awsPartition == partition['partition']:
