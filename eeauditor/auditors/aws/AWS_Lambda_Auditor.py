@@ -441,7 +441,7 @@ def aws_lambda_function_code_signer_check(cache: dict, session, awsAccountId: st
                         "ISO 27001:2013 A.12.2.1", 
                         "ISO 27001:2013 A.12.5.1",
                         "ISO 27001:2013 A.14.1.2",
-                        "ISO 27001:2013 A.14.1.3"
+                        "ISO 27001:2013 A.14.1.3",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.15.2.2"
                     ]
@@ -512,7 +512,7 @@ def aws_lambda_function_code_signer_check(cache: dict, session, awsAccountId: st
                         "ISO 27001:2013 A.12.2.1", 
                         "ISO 27001:2013 A.12.5.1",
                         "ISO 27001:2013 A.14.1.2",
-                        "ISO 27001:2013 A.14.1.3"
+                        "ISO 27001:2013 A.14.1.3",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.15.2.2"
                     ]
