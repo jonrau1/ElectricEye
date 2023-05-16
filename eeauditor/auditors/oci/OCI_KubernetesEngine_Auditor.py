@@ -73,7 +73,7 @@ def get_oke_clusters(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartme
     aListOfClusters = []
 
     for compartment in ociCompartments:
-        for cluster in okeClient.list_clusters(compartment_id=compartment, lifecycle_state='ACTIVE').data:
+        for cluster in okeClient.list_clusters(compartment_id=compartment).data:
             aListOfClusters.append(process_response(cluster))
 
     cache["get_oke_clusters"] = aListOfClusters
@@ -83,6 +83,7 @@ def get_oke_node_pools(cache, ociTenancyId, ociUserId, ociRegionName, ociCompart
     
     response = cache.get("get_oke_node_pools")
     if response:
+        print("cache hit")
         return response
 
     # Create & Validate OCI Creds - do this after cache check to avoid doing it a lot
@@ -101,7 +102,7 @@ def get_oke_node_pools(cache, ociTenancyId, ociUserId, ociRegionName, ociCompart
     aListOfNodePools = []
 
     for compartment in ociCompartments:
-        for nodepool in okeClient.list_node_pools(compartment_id=compartment, lifecycle_state='ACTIVE').data:
+        for nodepool in okeClient.list_node_pools(compartment_id=compartment).data:
             aListOfNodePools.append(process_response(nodepool))
 
     cache["get_oke_node_pools"] = aListOfNodePools
@@ -129,7 +130,7 @@ def get_oke_virtual_node_pools(cache, ociTenancyId, ociUserId, ociRegionName, oc
     aListOfVirtualNodes = []
 
     for compartment in ociCompartments:
-        for virtualnode in okeClient.list_virtual_node_pools(compartment_id=compartment, lifecycle_state='ACTIVE').data:
+        for virtualnode in okeClient.list_virtual_node_pools(compartment_id=compartment).data:
             aListOfVirtualNodes.append(process_response(virtualnode))
 
     cache["get_oke_virtual_node_pools"] = aListOfVirtualNodes
