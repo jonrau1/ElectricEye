@@ -18,15 +18,76 @@
 #specific language governing permissions and limitations
 #under the License.
 
+import tomli
 import os
 import oci
 from oci.config import validate_config
+import vt
 import datetime
 import base64
 import json
 from check_register import CheckRegister
 
-'''registry = CheckRegister()
+registry = CheckRegister()
+
+def get_virustotal_api_key():
+    import sys
+    import boto3
+    from botocore.exceptions import ClientError
+
+    validCredLocations = ["AWS_SSM", "AWS_SECRETS_MANAGER", "CONFIG_FILE"]
+
+    # Get the absolute path of the current directory
+    currentDir = os.path.abspath(os.path.dirname(__file__))
+    # Go two directories back to /eeauditor/
+    twoBack = os.path.abspath(os.path.join(currentDir, "../../"))
+
+    # TOML is located in /eeauditor/ directory
+    tomlFile = f"{twoBack}/external_providers.toml"
+    with open(tomlFile, "rb") as f:
+        data = tomli.load(f)
+
+    # Parse from [global] to determine credential location of PostgreSQL Password
+    credLocation = data["global"]["credentials_location"]
+    vtCredValue = data["global"]["virustotal_api_key_value"]
+    if credLocation not in validCredLocations:
+        print(f"Invalid option for [global.credLocation]. Must be one of {str(validCredLocations)}.")
+        sys.exit(2)
+    if not vtCredValue:
+        apiKey = None
+    else:
+
+        # Boto3 Clients
+        ssm = boto3.client("ssm")
+        asm = boto3.client("secretsmanager")
+
+        # Retrieve API Key
+        if credLocation == "CONFIG_FILE":
+            apiKey = vtCredValue
+
+        # Retrieve the credential from SSM Parameter Store
+        elif credLocation == "AWS_SSM":
+            
+            try:
+                apiKey = ssm.get_parameter(
+                    Name=vtCredValue,
+                    WithDecryption=True
+                )["Parameter"]["Value"]
+            except ClientError as e:
+                print(f"Error retrieving API Key from SSM, skipping all Shodan checks, error: {e}")
+                apiKey = None
+
+        # Retrieve the credential from AWS Secrets Manager
+        elif credLocation == "AWS_SECRETS_MANAGER":
+            try:
+                apiKey = asm.get_secret_value(
+                    SecretId=vtCredValue,
+                )["SecretString"]
+            except ClientError as e:
+                print(f"Error retrieving API Key from ASM, skipping all Shodan checks, error: {e}")
+                apiKey = None
+        
+    return apiKey
 
 def process_response(responseObject):
     """
@@ -62,41 +123,43 @@ def get_artifact_repos(cache, ociTenancyId, ociUserId, ociRegionName, ociCompart
 
     ociArtifactRepos = []
 
-    # It looks similar to containers, but the plain repository means an Aritfact Repository
     for compartment in ociCompartments:
         for repo in process_response(artifactClient.list_repositories(compartment_id=compartment).data)["items"]:
-            ociArtifactRepos.append(
-                process_response(
-                    artifactClient.get_repository(repository_id=repo["id"]).data
-                )
-            )
+            # Get all of the Artifacts in the actual Repository and add it as a new list - this way we can avoid
+            # multiple API calls
+            artifactStorage = process_response(
+                artifactClient.list_generic_artifacts(
+                    compartment_id=compartment, repository_id=repo["id"]).data
+                )["items"]
+            repo["generic_artifacts"] = artifactStorage
+            ociArtifactRepos.append(repo)
 
     cache["get_artifact_repos"] = ociArtifactRepos
     return cache["get_artifact_repos"]
 
-@registry.register_check("oci.containerregistry")
-def oci_artifact_registry_empty_registry_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+@registry.register_check("oci.artifactregistry")
+def oci_artifact_registry_empty_repository_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
     """
-    [OCI.ArtifactRegistry.1] Oracle Artifact Registry repositories without any artifacts should be reviewed
+    [OCI.ArtifactRegistry.1] Oracle Artifact Registry repositories that are empty should be reviewed for deletion
     """
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for table in get_artifact_repos(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    for repo in get_artifact_repos(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(table,default=str).encode("utf-8")
+        assetJson = json.dumps(repo,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        compartmentId = table["compartment_id"]
-        tableId = table["id"]
-        tableName = table["name"]
-        lifecycleState = table["lifecycle_state"]
-        createdAt = str(table["time_created"])
+        compartmentId = repo["compartment_id"]
+        repoId = repo["id"]
+        repoName = repo["display_name"]
+        lifecycleState = repo["lifecycle_state"]
+        createdAt = str(repo["time_created"])
 
-        if table["table_limits"]["capacity_mode"] != "ON_DEMAND":
+        if not repo["generic_artifacts"]:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{tableId}/oci-nosql-dbs-on-demand-table-check",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{repoId}/oci-artifact-registry-empty-repo-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{tableId}/oci-nosql-dbs-on-demand-table-check",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{repoId}/oci-artifact-registry-empty-repo-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -104,12 +167,12 @@ def oci_artifact_registry_empty_registry_check(cache, awsAccountId, awsRegion, a
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[OCI.NoSQL.1] Oracle NoSQL Database Cloud Service tables should be configured for on-demand scaling (autoscaling)",
-                "Description": f"Oracle NoSQL Database Cloud Service table {tableName} in Compartment {compartmentId} in {ociRegionName} is not configured for on-demand scaling (autoscaling). Oracle NoSQL Database Cloud Service scales to meet application throughput performance requirements with low and predictable latency. As workloads increase with periodic business fluctuations, applications can increase their provisioned throughput to maintain a consistent user experience. As workloads decrease, the same applications can reduce their provisioned throughput, resulting in lower operating expenses. The same holds true for storage requirements. Those can be adjusted based on business fluctuations. With on-demand capacity, you don't need to provision the read or write capacities for each table. You only pay for the read and write units that are actually consumed. Oracle NoSQL Database Cloud Service automatically manages the read and write capacities to meet the needs of dynamic workloads. Refer to the remediation instructions if this configuration is not intended.",
+                "Title": "[OCI.ArtifactRegistry.1] Oracle Artifact Registry repositories that are empty should be reviewed for deletion",
+                "Description": f"Oracle Artifact Registry repository {repoName} in Compartment {compartmentId} in {ociRegionName} does not contain any artifacts and should be reviewed for deletion. An artifact is a software package, library, zip file, or any other type of file used for deploying applications. Examples are Python or Maven libraries. Artifacts are grouped into repositories, which are collections of related artifacts. For example, you could group several versions of a Maven artifact in a Maven repository, or upload your Python libraries to a Python repository. Having an empty repository can be innocuous as it may be staged before development teams upload any artifacts to it, however, empty repositories could potentially be filled with malicious packages if adversaries were to gain access to it and trick developers into using it. That scenario is highly unlikely to occur but proper hygeine in your environment means using only the services and components absolutely needed and removing orphaned or derelict resources. At the very least, your CFO or VP of IT Finance may thank you. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For more information on modifying your table refer to the Creating Tables and Indexes section of the Oracle Cloud Infrastructure Documentation for Oracle NoSQL Database Cloud Service.",
-                        "Url": "https://docs.oracle.com/en-us/iaas/nosql-database/doc/creating-tables-and-indexes.html#GUID-4382BC75-5448-440E-B9DF-13E6FEC764C1",
+                        "Text": "For more information on repository deletion refer to the Deleting a Repository in Artifact Registry section of the Oracle Cloud Infrastructure Documentation for Artifact Registry.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/artifacts/delete-repo.htm",
                     }
                 },
                 "ProductFields": {
@@ -119,14 +182,14 @@ def oci_artifact_registry_empty_registry_check(cache, awsAccountId, awsRegion, a
                     "ProviderAccountId": ociTenancyId,
                     "AssetRegion": ociRegionName,
                     "AssetDetails": assetB64,
-                    "AssetClass": "Database",
-                    "AssetService": "Oracle NoSQL Database Cloud Service",
-                    "AssetComponent": "Table"
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "Oracle Artifact Registry",
+                    "AssetComponent": "Repository"
                 },
                 "Resources": [
                     {
-                        "Type": "OciNosqlDatabaseCloudServiceTable",
-                        "Id": tableId,
+                        "Type": "OciArtifactRegistryRepository",
+                        "Id": repoId,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -134,8 +197,8 @@ def oci_artifact_registry_empty_registry_check(cache, awsAccountId, awsRegion, a
                                 "TenancyId": ociTenancyId,
                                 "CompartmentId": compartmentId,
                                 "Region": ociRegionName,
-                                "Name": tableName,
-                                "Id": tableId,
+                                "Name": repoName,
+                                "Id": repoId,
                                 "LifecycleState": lifecycleState,
                                 "CreatedAt": createdAt
                             }
@@ -166,9 +229,9 @@ def oci_artifact_registry_empty_registry_check(cache, awsAccountId, awsRegion, a
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{tableId}/oci-nosql-dbs-on-demand-table-check",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{repoId}/oci-artifact-registry-empty-repo-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{tableId}/oci-nosql-dbs-on-demand-table-check",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{repoId}/oci-artifact-registry-empty-repo-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -176,12 +239,12 @@ def oci_artifact_registry_empty_registry_check(cache, awsAccountId, awsRegion, a
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[OCI.NoSQL.1] Oracle NoSQL Database Cloud Service tables should be configured for on-demand scaling (autoscaling)",
-                "Description": f"Oracle NoSQL Database Cloud Service table {tableName} in Compartment {compartmentId} in {ociRegionName} is configured for on-demand scaling (autoscaling).",
+                "Title": "[OCI.ArtifactRegistry.1] Oracle Artifact Registry repositories that are empty should be reviewed for deletion",
+                "Description": f"Oracle Artifact Registry repository {repoName} in Compartment {compartmentId} in {ociRegionName} does contain artifacts.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For more information on modifying your table refer to the Creating Tables and Indexes section of the Oracle Cloud Infrastructure Documentation for Oracle NoSQL Database Cloud Service.",
-                        "Url": "https://docs.oracle.com/en-us/iaas/nosql-database/doc/creating-tables-and-indexes.html#GUID-4382BC75-5448-440E-B9DF-13E6FEC764C1",
+                        "Text": "For more information on repository deletion refer to the Deleting a Repository in Artifact Registry section of the Oracle Cloud Infrastructure Documentation for Artifact Registry.",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/artifacts/delete-repo.htm",
                     }
                 },
                 "ProductFields": {
@@ -191,14 +254,14 @@ def oci_artifact_registry_empty_registry_check(cache, awsAccountId, awsRegion, a
                     "ProviderAccountId": ociTenancyId,
                     "AssetRegion": ociRegionName,
                     "AssetDetails": assetB64,
-                    "AssetClass": "Database",
-                    "AssetService": "Oracle NoSQL Database Cloud Service",
-                    "AssetComponent": "Table"
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "Oracle Artifact Registry",
+                    "AssetComponent": "Repository"
                 },
                 "Resources": [
                     {
-                        "Type": "OciNosqlDatabaseCloudServiceTable",
-                        "Id": tableId,
+                        "Type": "OciArtifactRegistryRepository",
+                        "Id": repoId,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -206,8 +269,8 @@ def oci_artifact_registry_empty_registry_check(cache, awsAccountId, awsRegion, a
                                 "TenancyId": ociTenancyId,
                                 "CompartmentId": compartmentId,
                                 "Region": ociRegionName,
-                                "Name": tableName,
-                                "Id": tableId,
+                                "Name": repoName,
+                                "Id": repoId,
                                 "LifecycleState": lifecycleState,
                                 "CreatedAt": createdAt
                             }
@@ -234,4 +297,6 @@ def oci_artifact_registry_empty_registry_check(cache, awsAccountId, awsRegion, a
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED"
             }
-            yield finding'''
+            yield finding
+
+## END ??

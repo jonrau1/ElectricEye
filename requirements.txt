@@ -10,3 +10,4 @@ tomli
 pysnow
 google-api-python-client
 oci
+vt-py

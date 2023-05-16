@@ -74,7 +74,8 @@ def get_shodan_api_key():
                     WithDecryption=True
                 )["Parameter"]["Value"]
             except ClientError as e:
-                raise e
+                print(f"Error retrieving API Key from SSM, skipping all Shodan checks, error: {e}")
+                apiKey = None
 
         # Retrieve the credential from AWS Secrets Manager
         elif credLocation == "AWS_SECRETS_MANAGER":
@@ -83,7 +84,8 @@ def get_shodan_api_key():
                     SecretId=shodanCredValue,
                 )["SecretString"]
             except ClientError as e:
-                raise e
+                print(f"Error retrieving API Key from ASM, skipping all Shodan checks, error: {e}")
+                apiKey = None
         
     return apiKey
 

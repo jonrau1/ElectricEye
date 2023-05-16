@@ -21,6 +21,12 @@ title = "ElectricEye Configuration"
 
     shodan_api_key_value = ""
 
+    # The location (or actual contents) of your VirusTotal (VT) API Key
+    # this location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then
+    # the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+
+    virustotal_api_key_value = ""
+
 [regions_and_accounts]
 
     [regions_and_accounts.aws]
