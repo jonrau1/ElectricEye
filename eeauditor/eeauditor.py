@@ -202,10 +202,10 @@ class EEAuditor(object):
                             print(f"{serviceName.capitalize()} Auditor was already run for AWS Account {account}. Global Auditors only need to run once per Account.")
                             continue
 
-                    for checkName, check in checkList.items():
-                        # clearing cache for each control whithin a auditor
-                        auditorCache = {}
+                    # Pass the Cache at the "serviceName" level aka Plugin
+                    auditorCache = {}
 
+                    for checkName, check in checkList.items():
                         # if a specific check is requested, only run that one check
                         if (
                             not pluginName
@@ -263,9 +263,9 @@ class EEAuditor(object):
 
         for project in self.gcpProjectIds:
             for serviceName, checkList in self.registry.checks.items():
+                # Pass the Cache at the "serviceName" level aka Plugin
+                auditorCache = {}
                 for checkName, check in checkList.items():
-                    # clearing cache for each control whithin a auditor
-                    auditorCache = {}
                     # if a specific check is requested, only run that one check
                     if (
                         not pluginName
@@ -320,9 +320,9 @@ class EEAuditor(object):
             partition = "aws"
 
         for serviceName, checkList in self.registry.checks.items():
+            # Pass the Cache at the "serviceName" level aka Plugin
+            auditorCache = {}
             for checkName, check in checkList.items():
-                # clearing cache for each control whithin a auditor
-                auditorCache = {}
                 # if a specific check is requested, only run that one check
                 if (
                     not pluginName
@@ -381,9 +381,9 @@ class EEAuditor(object):
             partition = "aws"
 
         for serviceName, checkList in self.registry.checks.items():
+            # Pass the Cache at the "serviceName" level aka Plugin
+            auditorCache = {}
             for checkName, check in checkList.items():
-                # clearing cache for each control whithin a auditor
-                auditorCache = {}
                 # if a specific check is requested, only run that one check
                 if (
                     not pluginName
