@@ -63,7 +63,7 @@ def get_container_repos(cache, ociTenancyId, ociUserId, ociRegionName, ociCompar
     ociContainerRepos = []
 
     for compartment in ociCompartments:
-        for repo in process_response(artifactClient.list_container_repositories(compartment_id=compartment).data)["items"]:
+        for repo in process_response(artifactClient.list_container_repositories(compartment_id=compartment, lifecycle_state="ACTIVE").data)["items"]:
             ociContainerRepos.append(
                 process_response(
                     artifactClient.get_container_repository(repository_id=repo["id"]).data
@@ -72,39 +72,6 @@ def get_container_repos(cache, ociTenancyId, ociUserId, ociRegionName, ociCompar
 
     cache["get_container_repos"] = ociContainerRepos
     return cache["get_container_repos"]
-
-def get_artifact_repos(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
-    
-    response = cache.get("get_artifact_repos")
-    if response:
-        return response
-
-    # Create & Validate OCI Creds - do this after cache check to avoid doing it a lot
-    config = {
-        "tenancy": ociTenancyId,
-        "user": ociUserId,
-        "region": ociRegionName,
-        "fingerprint": ociUserApiKeyFingerprint,
-        "key_file": os.environ["OCI_PEM_FILE_PATH"],
-        
-    }
-    validate_config(config)
-
-    artifactClient = oci.artifacts.ArtifactsClient(config)
-
-    ociArtifactRepos = []
-
-    # It looks similar to containers, but the plain repository means an Aritfact Repository
-    for compartment in ociCompartments:
-        for repo in process_response(artifactClient.list_repositories(compartment_id=compartment).data)["items"]:
-            ociArtifactRepos.append(
-                process_response(
-                    artifactClient.get_repository(repository_id=repo["id"]).data
-                )
-            )
-
-    cache["get_artifact_repos"] = ociArtifactRepos
-    return cache["get_artifact_repos"]
 
 def get_scanned_repositories(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
     
@@ -160,7 +127,7 @@ def get_repository_images(cache, ociTenancyId, ociUserId, ociRegionName, ociComp
 
     # It looks similar to containers, but the plain repository means an Aritfact Repository
     for compartment in ociCompartments:
-        for image in process_response(artifactClient.list_container_images(compartment_id=compartment).data)["items"]:
+        for image in process_response(artifactClient.list_container_images(compartment_id=compartment, lifecycle_state="ACTIVE").data)["items"]:
             signingData = process_response(
                 artifactClient.list_container_image_signatures(compartment_id=compartment, image_id=image["id"]).data
             )

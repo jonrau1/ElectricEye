@@ -130,7 +130,7 @@ def get_artifact_repos(cache, ociTenancyId, ociUserId, ociRegionName, ociCompart
     ociArtifactRepos = []
 
     for compartment in ociCompartments:
-        for repo in process_response(artifactClient.list_repositories(compartment_id=compartment).data)["items"]:
+        for repo in process_response(artifactClient.list_repositories(compartment_id=compartment,lifecycle_state="ACTIVE").data)["items"]:
             # Get all of the Artifacts in the actual Repository and add it as a new list - this way we can avoid
             # multiple API calls
             artifactStorage = process_response(
