@@ -177,6 +177,8 @@ class EEAuditor(object):
 
             for region in self.awsRegionsSelection:
                 for serviceName, checkList in self.registry.checks.items():
+                    # Pass the Cache at the "serviceName" level aka Plugin
+                    auditorCache = {}
                     # Setup Boto3 Session with STS AssumeRole
                     session = CloudConfig.create_aws_session(
                         account,
@@ -201,9 +203,6 @@ class EEAuditor(object):
                         else:
                             print(f"{serviceName.capitalize()} Auditor was already run for AWS Account {account}. Global Auditors only need to run once per Account.")
                             continue
-
-                    # Pass the Cache at the "serviceName" level aka Plugin
-                    auditorCache = {}
 
                     for checkName, check in checkList.items():
                         # if a specific check is requested, only run that one check
