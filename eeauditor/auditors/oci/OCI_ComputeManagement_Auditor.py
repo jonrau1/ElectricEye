@@ -73,9 +73,160 @@ def get_instance_configurations(cache, ociTenancyId, ociUserId, ociRegionName, o
     cache["get_instance_configurations"] = aSlightlyConfigurableListOfInstanceConfigurations
     return cache["get_instance_configurations"]
 
+@registry.register_check("oci.instanceconfiguration")
+def oci_cloud_compute_instance_vuln_scan_plugin_enabled_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.InstanceConfiguration.1] Oracle Cloud Compute Instance Configurations should define that the Vulnerability Scanning agent is enabled on instances
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for config in get_instance_configurations(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(config,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        configId = config["id"]
+        configName = config["display_name"]
+        compartmentId = config["compartment_id"]
+        timeCreated = str(config["time_created"])
 
-# [OCI.InstanceConfiguration.1] Oracle Cloud Compute Instance Configurations should define that the Vulnerability Scanning agent is enabled on instances
-# List comprehension on config["instance_details"]["launch_details"]["agent_config"]["plugins_config"] for plugin["name"] == "Vulnerability Scanning" if plugin["desired_state"] == "ENABLED"
+        plugins = config["instance_details"]["launch_details"]["agent_config"]["plugins_config"]
+        # Check the status / existence of the "Vulnerability Scanning" plugin
+        vulnScanPlugin = [param for param in plugins if param["name"] == "Vulnerability Scanning"]
+        if vulnScanPlugin:
+            if vulnScanPlugin[0]["desired_state"] == "DISABLED":
+                vulnScanEnabled = False
+            else:
+                vulnScanEnabled = True
+        else:
+            vulnScanEnabled = False
+
+        # Begin finding evaluation
+        if vulnScanEnabled is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{configId}/oci-instance-config-vuln-scan-plugin-enabled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{configId}/oci-instance-config-vuln-scan-plugin-enabled-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[OCI.InstanceConfiguration.1] Oracle Cloud Compute Instance Configurations should define that the Vulnerability Scanning agent is enabled on instances",
+                "Description": f"Oracle Cloud Compute Instance Configuration {configName} in Compartment {compartmentId} in {ociRegionName} does not define that the Vulnerability Scanning agent is enabled on instances. Oracle Cloud Infrastructure Vulnerability Scanning Service helps improve your security posture by routinely checking hosts and container images for potential vulnerabilities. The service gives developers, operations, and security administrators comprehensive visibility into misconfigured or vulnerable resources, and generates reports with metrics and details about these vulnerabilities including remediation information. All Scanning resources and reports are regional, but scan results are also visible as problems in your Cloud Guard global reporting region. Oracle Cloud Infrastructure Vulnerability Scanning Service can help you quickly correct vulnerabilities and exposures, but the service is not a Payment Card Industry (PCI) compliant scanner. Do not use the Scanning service to meet PCI compliance requirements. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on the Vulnerability Scanning plugin refer to the Scanning Overview section of the Oracle Cloud Infrastructure Documentation for Management Agents.",
+                        "Url": "https://docs.oracle.com/iaas/scanning/using/overview.htm",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Oracle Cloud Compute Management",
+                    "AssetComponent": "Instance Configuration"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciCloudComputeInstanceConfiguration",
+                        "Id": configId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": configName,
+                                "Id": configId,
+                                "CreatedAt": timeCreated
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.CM-8",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.6.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{configId}/oci-instance-config-vuln-scan-plugin-enabled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{configId}/oci-instance-config-vuln-scan-plugin-enabled-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.InstanceConfiguration.1] Oracle Cloud Compute Instance Configurations should define that the Vulnerability Scanning agent is enabled on instances",
+                "Description": f"Oracle Cloud Compute Instance Configuration {configName} in Compartment {compartmentId} in {ociRegionName} does define that the Vulnerability Scanning agent is enabled on instances.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on the Vulnerability Scanning plugin refer to the Scanning Overview section of the Oracle Cloud Infrastructure Documentation for Management Agents.",
+                        "Url": "https://docs.oracle.com/iaas/scanning/using/overview.htm",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Oracle Cloud Compute Management",
+                    "AssetComponent": "Instance Configuration"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciCloudComputeInstanceConfiguration",
+                        "Id": configId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": configName,
+                                "Id": configId,
+                                "CreatedAt": timeCreated
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.CM-8",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.6.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 # [OCI.InstanceConfiguration.2] Oracle Cloud Compute Instance Configurations should define that the OS Management Service Agent agent is enabled on instances
 # List comprehension on config["instance_details"]["launch_details"]["agent_config"]["plugins_config"] for plugin["name"] == "OS Management Service Agent" if plugin["desired_state"] == "ENABLED"
