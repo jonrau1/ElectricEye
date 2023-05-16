@@ -526,6 +526,8 @@ def oci_artifact_registry_artifact_virustotal_scan_check(cache, awsAccountId, aw
                         fileMalicious = False
                 except vt.APIError:
                     fileMalicious = False
+                    # this more or less resembles the APIError: ('NotFoundError', 'File "somehash436692c01b87f0bac80e5fchash3ed" not found')
+                    analysis = {f"NotFoundError: File {artifactHash} not found"}
 
                 # Now we can create findings
                 if fileMalicious is True:
