@@ -151,7 +151,7 @@ def oci_cloud_compute_secure_boot_check(cache, awsAccountId, awsRegion, awsParti
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your Oracle Cloud Compute instance should have Secure Boot enabled refer to the Using Shielded Instances section of the Oracle Cloud Infrastructure Documentation for Compute.",
-                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Compute/References/shielded-instances.htm#use",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Compute/References/shielded-instances.htm#use"
                     }
                 },
                 "ProductFields": {
@@ -324,7 +324,7 @@ def oci_cloud_compute_measured_boot_check(cache, awsAccountId, awsRegion, awsPar
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your Oracle Cloud Compute instance should have Measured Boot enabled refer to the Using Shielded Instances section of the Oracle Cloud Infrastructure Documentation for Compute.",
-                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Compute/References/shielded-instances.htm#use",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Compute/References/shielded-instances.htm#use"
                     }
                 },
                 "ProductFields": {
@@ -497,7 +497,7 @@ def oci_cloud_compute_tpm_check(cache, awsAccountId, awsRegion, awsPartition, oc
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your Oracle Cloud Compute instance should have the Trusted Platform Module enabled refer to the Using Shielded Instances section of the Oracle Cloud Infrastructure Documentation for Compute.",
-                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Compute/References/shielded-instances.htm#use",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Compute/References/shielded-instances.htm#use"
                     }
                 },
                 "ProductFields": {
@@ -819,7 +819,7 @@ def oci_cloud_compute_volume_customer_mek_encryption_check(cache, awsAccountId, 
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your Oracle Cloud Compute instance should use a Customer-managed MEK refer to the Block Volume Encryption section of the Oracle Cloud Infrastructure Documentation for Compute.",
-                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Block/Concepts/overview.htm#BlockVolumeEncryption",
+                        "Url": "https://docs.oracle.com/en-us/iaas/Content/Block/Concepts/overview.htm#BlockVolumeEncryption"
                     }
                 },
                 "ProductFields": {
@@ -1145,7 +1145,7 @@ def oci_cloud_compute_instance_mgmt_agent_enabled_check(cache, awsAccountId, aws
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your Oracle Cloud Compute instance should use the Management Agent refer to the Upgrading to the Deploy Management Agents on Compute Instances section of the Oracle Cloud Infrastructure Documentation for Management Agents.",
-                        "Url": "https://docs.oracle.com/iaas/management-agents/doc/management-agents-oracle-cloud-agent.html",
+                        "Url": "https://docs.oracle.com/iaas/management-agents/doc/management-agents-oracle-cloud-agent.html"
                     }
                 },
                 "ProductFields": {
