@@ -1816,7 +1816,7 @@ def oci_cloud_compute_instance_config_enable_tpm_check(cache, awsAccountId, awsR
             yield finding
 
 @registry.register_check("oci.instanceconfiguration")
-def oci_cloud_compute_instance_config_enable_tpm_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+def oci_cloud_compute_instance_config_use_vault_mek_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
     """
     [OCI.InstanceConfiguration.12] Oracle Cloud Compute Instance Configurations should define that instances are encrypted with a Customer-managed Master Encryption Key (MEK)
     """
@@ -1834,9 +1834,9 @@ def oci_cloud_compute_instance_config_enable_tpm_check(cache, awsAccountId, awsR
         if config["instance_details"]["launch_details"]["source_details"]["kms_key_id"] is None:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{configId}/oci-instance-config-enable-tpm-check",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{configId}/oci-instance-use-cmk-mek-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{configId}/oci-instance-config-enable-tpm-check",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{configId}/oci-instance-use-cmk-mek-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1899,9 +1899,9 @@ def oci_cloud_compute_instance_config_enable_tpm_check(cache, awsAccountId, awsR
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{configId}/oci-instance-config-enable-tpm-check",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{configId}/oci-instance-use-cmk-mek-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{configId}/oci-instance-config-enable-tpm-check",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{configId}/oci-instance-use-cmk-mek-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
