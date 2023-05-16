@@ -93,7 +93,7 @@ Options:
                                   Hub instance
   --list-controls                 Lists all Controls (Check Titles) for an
                                   Assessment Target, used for mapping...
-  --help                          Show this message and exit.                     Show this message and exit.
+  --help                          Show this message and exit.
 ```
 
 For more information see [here](#using-electriceye), you can read the [FAQ here](./docs/faq/FAQ.md), or if you want a more in-depth analysis of the control flow and concepts review [the Developer Guide](./docs/new_checks/DEVELOPER_GUIDE.md).
@@ -108,7 +108,6 @@ Refer to sub-headings for per-CSP or per-SaaS setup instructions.
 - [For Google Cloud Platform (GCP)](./docs/setup/Setup_GCP.md)
 - [For Oracle Cloud Infrastructure](./docs/setup/Setup_OCI.md)
 - [For Microsoft Azure (*Coming Soon*)](./docs/setup/Setup_Azure.md)
-
 
 ### Software-as-a-Service (SaaS) Providers
 
@@ -125,11 +124,11 @@ For more information on ElectricEye's CAM concept of operations and output, refe
 
 In total there are:
 
-- **3** Supported Public CSPs
-- **1** Supported SaaS Provider
-- **104** ElectricEye Auditors
-- **882** ElectricEye Checks
-- **123** Supported CSP & SaaS Asset Components across all Services
+- **3** Supported Public CSPs: `AWS`, `GCP`, `OCI`
+- **1** Supported SaaS Provider: `ServiceNow`
+- **888** ElectricEye Checks
+- **127** Supported CSP & SaaS Asset Components across all Services
+- **101** ElectricEye Auditors
 
 The subsections have been migrated to the respective per-Provider setup documentation linked above in [Using ElectricEye](#using-electriceye)
 

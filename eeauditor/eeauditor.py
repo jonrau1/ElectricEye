@@ -410,7 +410,7 @@ class EEAuditor(object):
     def print_checks_md(self):
         table = []
         table.append(
-            "| Auditor File Name                      | Scanned Resource Name         | Auditor Scan Description                                                               |"
+            "| Auditor File Name                      | Scanned Resource Plugin Name         | Auditor Scan Description                                                               |"
         )
         table.append(
             "|----------------------------------------|-------------------------------|----------------------------------------------------------------------------------------|"
@@ -423,8 +423,12 @@ class EEAuditor(object):
                     description = (check.__doc__).replace("\n", "")
                 else:
                     description = ""
+
+                auditorFile = inspect.getfile(check).rpartition('/')[2]
+                auditorName = auditorFile.split(".py")[0]
+                
                 table.append(
-                    f"| {inspect.getfile(check).rpartition('/')[2]} | {serviceName} | {description} "
+                    f"| {auditorName} | {serviceName} | {description} "
                 )
 
         print("\n".join(table))

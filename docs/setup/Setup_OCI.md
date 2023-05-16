@@ -254,7 +254,7 @@ python3 eeauditor/controller.py -t AWS -a ElectricEye_AttackSurface_OCI_Auditor 
 
 ## Oracle Cloud Infrastructure Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **181 Checks** across **13 Auditors** that support the secure configuration of **15 services/components**
+These are the following services and checks perform by each Auditor, there are currently **187 Checks** across **14 Auditors** that support the secure configuration of **19 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
@@ -273,19 +273,25 @@ These are the following services and checks perform by each Auditor, there are c
 | OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should have Operations Insights enabled
 | OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should be configured for Private Access connectivity through a Virtual Cloud Network (VCN)
 | OCI_AutonomousDatabase_Auditor | Oracle Autonomous Databasee | ADBs should configure an IP-based Allow-list to reduce permissible network access
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should have Secure Boot enabled
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should have Measured Boot enabled
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should have the Trusted Platform Module enabled
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should enable block volume in-transit encryption
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should be encrypted with a Customer-managed Master Encryption Key
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should disable access to legacy Instance Metadata Service (IMDSv1) endpoints
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should have the Management Agent enabled
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should have the Monitoring Agent enabled
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should have the Vulnerability Scanning plugin enabled
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should not be publicly discoverable on the internet
-| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | instances should have at least one Network Security Group (NSG) assigned
+| OCI_ArtifactRegistry_Auditor | Oracle Artifact Registry repository | Repositories that are empty should be reviewed for deletion     
+| OCI_ArtifactRegistry_Auditor | Oracle Artifact Registry repository | Repositories should consider enabling immutable artifacts     
+| OCI_ArtifactRegistry_Auditor | Oracle Artifact Registry artifact | Artifacts should be scanned for malware and viruses 
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have Secure Boot enabled
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have Measured Boot enabled
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have the Trusted Platform Module enabled
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should enable block volume in-transit encryption
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should be encrypted with a Customer-managed Master Encryption Key
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should disable access to legacy Instance Metadata Service (IMDSv1) endpoints
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have the Management Agent enabled
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have the Monitoring Agent enabled
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have the Vulnerability Scanning plugin enabled
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should not be publicly discoverable on the internet
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have at least one Network Security Group (NSG) assigned
 | OCI_ContainerInstance_Auditor | Oracle Cloud Container Instance | Container instances should consider defining a container restart policy
 | OCI_ContainerInstance_Auditor | Oracle Cloud Container Instance | Container instances should consider defining a graceful shutdown timeout
+| OCI_ContainerRegistry_Auditor | Oracle Container Registry repository | Repositories that are public should be reviewed     
+| OCI_ContainerRegistry_Auditor | Oracle Container Registry repository | Repositories should have an Oracle Vulnerability Scanning Service (VSS) target association     
+| OCI_ContainerRegistry_Auditor | Oracle Container Registry images | Images should be signed with an image signature   
 | OCI_FileStorage_Auditor | Oracle File Storage file system | File Storage file systems should be encrypted with a Customer-managed Master Encryption Key
 | OCI_FileStorage_Auditor | Oracle File Storage file system | File Storage file systems should enforce secure export options by requiring that NFS clients use privileged source ports
 | OCI_FileStorage_Auditor | Oracle File Storage file system | File Storage file systems should enforce secure export options by configuring NFS identity squashing
