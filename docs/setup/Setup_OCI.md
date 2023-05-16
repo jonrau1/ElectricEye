@@ -254,7 +254,7 @@ python3 eeauditor/controller.py -t AWS -a ElectricEye_AttackSurface_OCI_Auditor 
 
 ## Oracle Cloud Infrastructure Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **193 Checks** across **15 Auditors** that support the secure configuration of **21 services/components**
+These are the following services and checks perform by each Auditor, there are currently **205 Checks** across **16 Auditors** that support the secure configuration of **22 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
@@ -287,6 +287,18 @@ These are the following services and checks perform by each Auditor, there are c
 | OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have the Vulnerability Scanning plugin enabled |
 | OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should not be publicly discoverable on the internet |
 | OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have at least one Network Security Group (NSG) assigned |
+| OCI_ComputeManagement_Auditor | Oracle Cloud Compute instance configuration | Instance configurations should enable the Vulnerability Scanning agent |
+| OCI_ComputeManagement_Auditor | Oracle Cloud Compute instance configuration | Instance configurations should enable the OS Management Service Agent |
+| OCI_ComputeManagement_Auditor | Oracle Cloud Compute instance configuration | Instance configurations should enable the Management Agent |
+| OCI_ComputeManagement_Auditor | Oracle Cloud Compute instance configuration | Instance configurations should enable the Compute Instance Run Command Agent |
+| OCI_ComputeManagement_Auditor | Oracle Cloud Compute instance configuration | Instance configurations should ensure public IP addresses are not mapped unless required |
+| OCI_ComputeManagement_Auditor | Oracle Cloud Compute instance configuration | Instance configurations should define NSGs to protect instances |
+| OCI_ComputeManagement_Auditor | Oracle Cloud Compute instance configuration | Instance configurations should disable IMDSv1 |
+| OCI_ComputeManagement_Auditor | Oracle Cloud Compute instance configuration | Instance configurations should ensure PV volume in-transit encryption is enabled |
+| OCI_ComputeManagement_Auditor | Oracle Cloud Compute instance configuration | Instance configurations should ensure Secure Boot is enabled |
+| OCI_ComputeManagement_Auditor | Oracle Cloud Compute instance configuration | Instance configurations should ensure Measured Boot is enabled |
+| OCI_ComputeManagement_Auditor | Oracle Cloud Compute instance configuration | Instance configurations should ensure the TPM is enabled |
+| OCI_ComputeManagement_Auditor | Oracle Cloud Compute instance configuration | Instance configurations should define a customer-managed Vault MEK for encryption |
 | OCI_ContainerInstance_Auditor | Oracle Cloud Container Instance | Container instances should consider defining a container restart policy |
 | OCI_ContainerInstance_Auditor | Oracle Cloud Container Instance | Container instances should consider defining a graceful shutdown timeout |
 | OCI_ContainerRegistry_Auditor | Oracle Container Registry repository | Repositories that are public should be reviewed |

@@ -786,7 +786,7 @@ def oci_cloud_compute_volume_in_transit_encryption_check(cache, awsAccountId, aw
 @registry.register_check("oci.computeinstances")
 def oci_cloud_compute_volume_customer_mek_encryption_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
     """
-    [OCI.ComputeInstance.5] Cloud Compute instances should be encrypted with a Customer-managed Master Encryption Key
+    [OCI.ComputeInstance.5] Cloud Compute instances should be encrypted with a Customer-managed Master Encryption Key (MEK)
     """
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -814,7 +814,7 @@ def oci_cloud_compute_volume_customer_mek_encryption_check(cache, awsAccountId, 
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[OCI.ComputeInstance.5] Cloud Compute instances should be encrypted with a Customer-managed Master Encryption Key",
+                "Title": "[OCI.ComputeInstance.5] Cloud Compute instances should be encrypted with a Customer-managed Master Encryption Key (MEK)",
                 "Description": f"Oracle Cloud Compute instance {instanceName} in Compartment {compartmentId} in {ociRegionName} does not use a Customer-managed Master Encryption Key. The Oracle Cloud Infrastructure Block Volume service always encrypts all block volumes, boot volumes, and volume backups at rest by using the Advanced Encryption Standard (AES) algorithm with 256-bit encryption. By default all volumes and their backups are encrypted using the Oracle-provided encryption keys. Each time a volume is cloned or restored from a backup the volume is assigned a new unique encryption key. You have the option to encrypt all of your volumes and their backups using the keys that you own and manage using the Vault service. If you do not configure a volume to use the Vault service or you later unassign a key from the volume, the Block Volume service uses the Oracle-provided encryption key instead. This applies to both encryption at-rest and paravirtualized in-transit encryption. Using Customer-managed keys gives you control over rotation, usage, and accountability. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -881,7 +881,7 @@ def oci_cloud_compute_volume_customer_mek_encryption_check(cache, awsAccountId, 
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[OCI.ComputeInstance.5] Cloud Compute instances should be encrypted with a Customer-managed Master Encryption Key",
+                "Title": "[OCI.ComputeInstance.5] Cloud Compute instances should be encrypted with a Customer-managed Master Encryption Key (MEK)",
                 "Description": f"Oracle Cloud Compute instance {instanceName} in Compartment {compartmentId} in {ociRegionName} does use a Customer-managed Master Encryption Key.",
                 "Remediation": {
                     "Recommendation": {

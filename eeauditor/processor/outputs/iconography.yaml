@@ -206,3 +206,5 @@
   ImageTag: <img src="https://iconography.electriceye.lol/OCI/Developer+services/Container+Registry.svg">
 - AssetService: Oracle Artifact Registry
   ImageTag: <img src="https://iconography.electriceye.lol/OCI/Developer+services/Application+Dependency+Management+(ADM).svg">
+- AssetService: Oracle Cloud Compute Instance Configuration
+  ImageTag: <img src="https://iconography.electriceye.lol/OCI/Compute/Instance+Pools.svg">

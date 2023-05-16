@@ -126,9 +126,9 @@ In total there are:
 
 - **3** Supported Public CSPs: `AWS`, `GCP`, `OCI`
 - **1** Supported SaaS Provider: `ServiceNow`
-- **894** ElectricEye Checks
-- **129** Supported CSP & SaaS Asset Components across all Services
-- **102** ElectricEye Auditors
+- **906** ElectricEye Checks
+- **130** Supported CSP & SaaS Asset Components across all Services
+- **103** ElectricEye Auditors
 
 The subsections have been migrated to the respective per-Provider setup documentation linked above in [Using ElectricEye](#using-electriceye)
 
@@ -138,7 +138,9 @@ Refer to the [Developer Guide](./docs/new_checks/DEVELOPER_GUIDE.md) for instruc
 
 Feel free to open PRs and Issues where syntax, grammatic, and implementation errors are encountered in the code base.
 
-**ElectricEye is for sale**: contact the maintainer for more imformation!
+### ElectricEye is for sale
+
+Contact the maintainer for more information!
 
 ### Early Contributors
 
