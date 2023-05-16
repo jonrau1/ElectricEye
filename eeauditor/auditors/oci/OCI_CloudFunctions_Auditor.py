@@ -801,7 +801,7 @@ def oci_cloud_functions_image_vuln_scanned_check(cache, awsAccountId, awsRegion,
             funcId = function["id"]
             funcImage = function["image"]
             funcCreatedAt = str(function["time_created"])
-            lifecycleState = function["lifecycleState"]
+            lifecycleState = function["lifecycle_state"]
 
             # Split off the version
             functionImageSourceRepo = funcImage.split(":")[0]
@@ -961,7 +961,7 @@ def oci_cloud_functions_provisioned_concurrency_check(cache, awsAccountId, awsRe
             funcId = function["id"]
             funcImage = function["image"]
             funcCreatedAt = str(function["time_created"])
-            lifecycleState = function["lifecycleState"]
+            lifecycleState = function["lifecycle_state"]
 
             if function["provisioned_concurrency_config"]["strategy"] is None:
                 finding = {
