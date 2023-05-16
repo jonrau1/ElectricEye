@@ -32,14 +32,14 @@ ENV PYTHONUNBUFFERED=1
 COPY requirements.txt /tmp/requirements.txt
 
 # NOTE: This will copy all application files and auditors to the container
-# IMPORTANT: ADD YOUR TOML CONFIGURATIONS BEFORE YOU BUILD THIS!
+# IMPORTANT: ADD YOUR TOML CONFIGURATIONS BEFORE YOU BUILD THIS! - or use docker run -v options to override
 
 COPY ./eeauditor /eeauditor
 
 # Installing dependencies
 RUN \
     apk update && \
-    apk add --no-cache python3 postgresql-libs bash nmap git && \
+    apk add --no-cache python3 postgresql-libs bash nmap && \
     apk add --no-cache --virtual .build-deps gcc python3-dev musl-dev postgresql-dev && \
     python3 -m ensurepip && \
     pip3 install --no-cache --upgrade pip setuptools wheel && \
@@ -48,16 +48,15 @@ RUN \
     apk --purge del .build-deps && \
     rm -f /var/cache/apk/*
 
-# new stage to bring in Labels and ENV Vars
+# new stage to bring in Labels and Permissions
 FROM builder as electriceye
 
-ENV SHODAN_API_KEY_PARAM=SHODAN_API_KEY_PARAM
-
 LABEL \ 
-    maintainer="https://github.com/jonrau1" \
+    maintainer="opensource@electriceye.cloud" \
     version="3.0" \
     license="Apache-2.0" \
-    description="ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management, and External Attack Surface Management supporting 100s of services and evaluations to harden your public cloud & SaaS environments."
+    org.opencontainers.image.source="https://github.com/jonrau1/ElectricEye" \
+    description="ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Management supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapping for NIST CSF, 800-53, 800-171, ISO 27001, AICPA TSC (SOC2), and more!"
 
 # Create a System Group and User for ElectricEye so we don't run as root
 RUN \

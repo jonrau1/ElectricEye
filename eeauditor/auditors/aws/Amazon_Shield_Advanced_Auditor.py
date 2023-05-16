@@ -42,7 +42,7 @@ def shield_advanced_route_53_protection_check(cache: dict, session, awsAccountId
         hostedZoneArn = f"arn:{awsPartition}:route53:::hostedzone/{hostedZoneId}"
         try:
             # this is a passing check
-            response = shield.describe_protection(ResourceArn=hostedZoneArn)
+            shield.describe_protection(ResourceArn=hostedZoneArn)
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": hostedZoneArn + "/route53-shield-adv-protection-check",
@@ -196,7 +196,7 @@ def shield_advanced_elb_protection_check(cache: dict, session, awsAccountId: str
         clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
         try:
             # this is a passing check
-            response = shield.describe_protection(ResourceArn=clbArn)
+            shield.describe_protection(ResourceArn=clbArn)
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clbArn + "/classiclb-shield-adv-protection-check",
@@ -359,7 +359,7 @@ def shield_advanced_elb_v2_protection_check(cache: dict, session, awsAccountId: 
         elbv2IpAddressType = str(loadbalancer["IpAddressType"])
         try:
             # this is a passing check
-            response = shield.describe_protection(ResourceArn=elbv2Arn)
+            shield.describe_protection(ResourceArn=elbv2Arn)
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": elbv2Arn + "/elbv2-shield-adv-protection-check",
@@ -533,7 +533,7 @@ def shield_advanced_eip_protection_check(cache: dict, session, awsAccountId: str
         eipAllocationArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:eip-allocation/{allocationId}"
         try:
             # this is a passing check
-            response = shield.describe_protection(ResourceArn=eipAllocationArn)
+            shield.describe_protection(ResourceArn=eipAllocationArn)
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": eipAllocationArn + "/elasticip-shield-adv-protection-check",
@@ -691,7 +691,7 @@ def shield_advanced_cloudfront_protection_check(cache: dict, session, awsAccount
         distroDomainName = str(distro["DomainName"])
         try:
             # this is a passing check
-            response = shield.describe_protection(ResourceArn=distroArn)
+            shield.describe_protection(ResourceArn=distroArn)
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": distroArn + "/cloudfront-shield-adv-protection-check",
