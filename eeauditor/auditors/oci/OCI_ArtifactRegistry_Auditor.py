@@ -26,7 +26,7 @@ import base64
 import json
 from check_register import CheckRegister
 
-registry = CheckRegister()
+'''registry = CheckRegister()
 
 def process_response(responseObject):
     """
@@ -234,4 +234,4 @@ def oci_artifact_registry_empty_registry_check(cache, awsAccountId, awsRegion, a
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED"
             }
-            yield finding
+            yield finding'''

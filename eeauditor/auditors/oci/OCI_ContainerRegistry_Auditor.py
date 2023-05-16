@@ -497,7 +497,7 @@ def oci_container_registry_images_signed_check(cache, awsAccountId, awsRegion, a
         compartmentId = image["compartment_id"]
         imageId = image["id"]
         imageName = image["display_name"]
-        repoId = image["imagesitory_id"]
+        repoId = image["repository_id"]
         repoName = image["repository_name"]
         lifecycleState = image["lifecycle_state"]
         createdAt = str(image["time_created"])
