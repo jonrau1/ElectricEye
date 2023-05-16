@@ -428,7 +428,7 @@ def public_ec2_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
             }
             yield finding
 
-@registry.register_check("elasticloadbalancing")
+@registry.register_check("elasticloadbalancingv2")
 def public_alb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.ELBv2.1] Internet-facing Application Load Balancers should be monitored for being indexed by Shodan"""
     shodanApiKey = get_shodan_api_key()
