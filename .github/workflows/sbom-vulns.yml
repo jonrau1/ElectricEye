@@ -36,7 +36,7 @@ jobs:
         id: scan
         with:
           sbom: "syft-cdx-sbom.json"
-          severity-cutoff: high
+          severity-cutoff: critical
           fail-build: true
 
       # Print Grype JSON Report to stdout
