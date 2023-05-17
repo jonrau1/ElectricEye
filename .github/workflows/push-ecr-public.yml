@@ -44,4 +44,4 @@ jobs:
       
       # Print the location
       - name: Print Image
-        run: cat "$REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG"
+        run: echo  "$REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG"
