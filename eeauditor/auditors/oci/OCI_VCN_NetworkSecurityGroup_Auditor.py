@@ -297,8 +297,8 @@ def oci_vcn_security_master_auditor_check(cache, awsAccountId, awsRegion, awsPar
                     rule for rule in nsg["network_security_group_security_rules"] 
                     if rule.get("protocol") == targetProtocol 
                     and rule.get("source") == "0.0.0.0/0"
-                    and rule[portFilterDict]["source_port_range"].get("max") == toPortTarget
-                    and rule[portFilterDict]["source_port_range"].get("min") == fromPortTarget
+                    and rule[portFilterDict]["destination_port_range"].get("max") == toPortTarget
+                    and rule[portFilterDict]["destination_port_range"].get("min") == fromPortTarget
                 ]
             except AttributeError:
                 continue
