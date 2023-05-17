@@ -35,6 +35,7 @@ jobs:
         uses: anchore/scan-action@v3.3.5
         id: scan
         with:
+          output-format: sarif
           sbom: "syft-cdx-sbom.json"
           severity-cutoff: critical
           fail-build: true
@@ -42,7 +43,7 @@ jobs:
       # Print Grype JSON Report to stdout
       - name: View Grype Scan SBOM Report
         if: always() # run when build fails too
-        run: cat "${{ steps.scan.outputs.json }}"
+        run: cat "${{ steps.scan.outputs.sarif }}"
 
       # Upload Grype SARIF Report
       - name: Upload Grype Scan SBOM Report
