@@ -4,6 +4,10 @@ on:
   push:
     branches: [ master, oracle-cloud-1 ]
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   ElectricEyeOnEcrPublic:
     runs-on: ubuntu-latest
