@@ -208,3 +208,5 @@
   ImageTag: <img src="https://iconography.electriceye.lol/OCI/Developer+services/Application+Dependency+Management+(ADM).svg">
 - AssetService: Oracle Cloud Compute Management
   ImageTag: <img src="https://iconography.electriceye.lol/OCI/Compute/Instance+Pools.svg">
+- AssetService: Oracle Block Storage
+  ImageTag: <img src="https://iconography.electriceye.lol/OCI/Storage/Block+Storage.svg">
