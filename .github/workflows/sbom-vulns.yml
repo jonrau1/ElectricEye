@@ -1,8 +1,8 @@
-name: "Anchore Docker SBOM Generation & Vuln Scan"
+name: "Syft & Grype SBOM and Vuln Scan"
 
 on:
   push:
-    branches: [ master, oracle-cloud-1 ]
+    branches: [ master ]
 
 jobs:
   Anchore-Syft-Grype:
@@ -13,7 +13,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2.5.0
 
-      # Build the ElectricEye Docker Image
+      # Build the ElectricEye Docker Image, locally
       - name: Build ElectricEye Docker Image
         run: docker build . --file Dockerfile --tag localbuild/electriceye:latest
 
@@ -22,7 +22,7 @@ jobs:
         uses: anchore/sbom-action@v0
         with:
           image: localbuild/electriceye:latest
-          format: cyclonedx-json
+          format: cyclonedx-json # the One True SBOM Format
           artifact-name: syft-cdx-sbom.json
           output-file: syft-cdx-sbom.json
 
@@ -40,12 +40,12 @@ jobs:
           severity-cutoff: critical
           fail-build: true
 
-      # Print Grype JSON Report to stdout
+      # Print Grype SARIF Report to stdout
       - name: View Grype Scan SBOM Report
         if: always() # run when build fails too
         run: cat "${{ steps.scan.outputs.sarif }}"
 
-      # Upload Grype SARIF Report
+      # Upload Grype SARIF Report to GitHub Security
       - name: Upload Grype Scan SBOM Report
         uses: github/codeql-action/upload-sarif@v2
         with:

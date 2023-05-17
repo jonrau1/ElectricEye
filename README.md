@@ -1,8 +1,12 @@
 # ElectricEye
 
-![Logo](./screenshots/logo.svg)
+<p align="center">
+  <img src="./screenshots/logo.svg" width="375" height="375">
+</p>
 
 ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Management supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to NIST CSF, 800-53, 800-171, ISO 27001, AICPA TSC (SOC2), and more!
+
+![VulnScan](https://github.com/jonrau1/ElectricEye/actions/workflows/sbom-vulns.yml/badge.svg) ![](https://github.com/jonrau1/ElectricEye/actions/workflows/codeql-analysis.yml/badge.svg) 
 
 ***Up here in space***<br/>
 ***I'm looking down on you***<br/>
@@ -21,8 +25,8 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 - [FAQ](./docs/faq/FAQ.md)
 - [Supported Services and Checks](#supported-services-and-checks)
 - [Contributing](#contributing)
-- [Developer Guide](./docs/new_checks/DEVELOPER_GUIDE.md)
-    - [Auditor testing](./docs/new_checks/DEVELOPER_GUIDE.md#auditor-testing)
+- [Developer & Testing Guide](./docs/new_checks/DEVELOPER_GUIDE.md)
+- [Repository Security](#repository-security)
 - [License](#license)
 
 ## Workflow
@@ -157,6 +161,34 @@ Quick shout-outs to the folks who answered the call early to test out ElectricEy
 - [Manuel Leos Rivas](https://www.linkedin.com/in/manuel-lr/)
 - [Andrew Alaniz](https://www.linkedin.com/in/andrewdalaniz/)
 - [Christopher Childers](https://www.linkedin.com/in/christopher-childers-28950537/)
+
+## Repository Security
+
+Since ElectricEye is a security tool, it only makes sense to ensure a high-level of security of components are maintained. To that end the following tools are configured for usage. Refer to the build badges and Actions for detailed information about each run.
+
+#### [`Syft`](https://github.com/anchore/syft)
+
+A CLI tool and Go library for generating a Software Bill of Materials (SBOM) from container images and filesystems.
+
+ElectricEye uses Syft to build an SBOM off of a built ElectricEye Docker Image in CycloneDX format and upload it as an artifact to every succesful GitHub Action run.
+
+#### [`Grype`](https://github.com/anchore/grype)
+
+A vulnerability scanner for container images and filesystems. Easily install the binary to try it out. Works with Syft, the powerful SBOM (software bill of materials) tool for container images and filesystems.
+
+ElectricEye passes the CycloneDX SBOM from `Syft` to `Grype` to perform vulnerability scans on the built Docker image which combines all Python dependencies and built-in methods within the `alpine` Docker Image parent that ElectricEye uses. Builds with critical vulnerabilities are broken automatically. The results are posted to the GitHub Action and uploaded as `sarif` to GitHub Security
+
+#### [`Dependabot`](https://github.com/dependabot)
+
+Dependabot alerts tell you that your code depends on a package that is insecure. If your code depends on a package with a security vulnerability, this can cause a range of problems for your project or the people who use it. You should upgrade to a secure version of the package as soon as possible. If your code uses malware, you need to replace the package with a secure alternative.
+
+ElectricEye uses Dependabot as a Software Composition Analysis (SCA) tool to run daily scans and open Pull Requests in the event that a Docker, Python, or GitHub-Action dependency requires a security patch.
+
+#### [`CodeQL`](https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/about-code-scanning-with-codeql)
+
+CodeQL is the code analysis engine developed by GitHub to automate security checks. You can analyze your code using CodeQL and display the results as code scanning alerts.
+
+ElectricEye uses `codeql` as a Static Application Security Testing (SAST) tool to scan all Auditors which are written in Python, `codeql` also looks for secrets in code. It is ran on push and on a schedule.
 
 ## License
 
