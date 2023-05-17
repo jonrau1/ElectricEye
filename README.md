@@ -2,22 +2,13 @@
 
 ![Logo](./screenshots/logo.svg)
 
-ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Management supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapping for NIST CSF, 800-53, 800-171, ISO 27001, AICPA TSC (SOC2), and more!
+ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Management supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to NIST CSF, 800-53, 800-171, ISO 27001, AICPA TSC (SOC2), and more!
 
 ***Up here in space***<br/>
 ***I'm looking down on you***<br/>
 ***My lasers trace***<br/>
 ***Everything you do***<br/>
 <sub>*Judas Priest, 1982*</sub>
-
-## Super Quick Start :triangular_flag_on_post: :triangular_flag_on_post:
-
-```bash
-git clone https://github.com/jonrau1/ElectricEye.git
-cd ElectricEye
-pip3 install -r requirements.txt
-python3 eeauditor/controller.py -t AWS -o stdout
-```
 
 ## Table of Contents
 
@@ -26,7 +17,7 @@ python3 eeauditor/controller.py -t AWS -o stdout
 - [Tell me more!](#tell-me-more-raised_eyebrow-raised_eyebrow)
 - [Using ElectricEye](#using-electriceye)
 - [Cloud Asset Management](./docs/asset_management/ASSET_MANAGEMENT.md)
-- [Custom Outputs](./docs/outputs/OUTPUTS.md)
+- [Outputs](./docs/outputs/OUTPUTS.md)
 - [FAQ](./docs/faq/FAQ.md)
 - [Supported Services and Checks](#supported-services-and-checks)
 - [Contributing](#contributing)
@@ -34,15 +25,15 @@ python3 eeauditor/controller.py -t AWS -o stdout
     - [Auditor testing](./docs/new_checks/DEVELOPER_GUIDE.md#auditor-testing)
 - [License](#license)
 
-## Architecture
+## Workflow
 
 ![Architecture](./screenshots/ElectricEye2023Architecture.svg)
 
 ## Quick Run Down :running: :running:
 
-- ElectricEye is a Python CLI tool that offers cross-Account, cross-Region, multi-Cloud CAM, CSPM, SSPM, and EASM capabilities across AWS, GCP, Oracle Cloud Infrastructure (OCI), and ServiceNow (*with more on the way!*). All Partitions are supported for AWS!
+- ElectricEye is a Python CLI tool that offers cross-Account, cross-Region, multi-Cloud & SaaS Asset Management, Security Posture Management, and Attack Surface Management capabilities across AWS, GCP, Oracle Cloud Infrastructure (OCI), and ServiceNow (*with more on the way!*). All Partitions are supported for AWS!
 
-- ElectricEye offers over 650 checks for security, reliability, monitoring, and exposure across 100 CSP & SaaS services, including atypical services not supported by AWS Config/Google Cloud Asset API or mainstream CSPM & CNAPP tools.
+- ElectricEye offers over 800 checks for security, reliability, monitoring, and exposure across 100 CSP & SaaS services, including atypical services not supported by AWS Config/Google Cloud Asset API or mainstream CSPM & CNAPP tools.
 
 - All checks are currently mapped to NIST Cybersecurity Framework V1.1, NIST Special Publication 800-53 Revision 4, AICPA 2020 Trust Service Criteria (TSCs), and ISO 27001:2013 Annex A controls.
 
@@ -54,11 +45,11 @@ python3 eeauditor/controller.py -t AWS -o stdout
 
 ElectricEye's core concept is the **Auditor** which are sets of Python scripts that run **Checks** per Service dedicated to a specific SaaS vendor or public cloud service provider called an **Assessment Target**. You can run an entire Assessment Target, a specific Auditor, or a specific Check within an Auditor. After ElectricEye is done with evaluations, it supports over a dozen types of **Outputs** ranging from an HTML executive report to AWS DocumentDB clusters. ElectricEye also uses other tools such as Shodan, `detect-secrets`, and NMAP for carrying out its Checks. While mainly a security tool, ElectricEye can be used for Cloud Asset Management use cases such as discovery and inventory and has Checks aligned to several best-practice regimes that cover resiliency, recovery, performance optimization, monitoring, as well as several 100 security checks against your cloud infrastructure and identities.
 
-First, clone this repository and install the requirements using `pip3`: `pip3 install -r requirements.txt`.
+1. First, clone this repository and install the requirements using `pip3`: `pip3 install -r requirements.txt`.
 
-Then, modify the [TOML file](./eeauditor/external_providers.toml) located in `ElectricEye/eeauditor/external_providers.toml` to specify various configurations for the CSP(s) and SaaS Provider(s) you want to assess.
+2. Then, modify the [TOML file](./eeauditor/external_providers.toml) located in `ElectricEye/eeauditor/external_providers.toml` to specify various configurations for the CSP(s) and SaaS Provider(s) you want to assess.
 
-Finally, run the Controller to learn about the various Checks, Auditors, Assessment Targets, and Outputs.
+3. Finally, run the Controller to learn about the various Checks, Auditors, Assessment Targets, and Outputs.
 
 ```bash
 $ python3 eeauditor/controller.py --help
@@ -100,7 +91,7 @@ For more information see [here](#using-electriceye), you can read the [FAQ here]
 
 ## Using ElectricEye
 
-Refer to sub-headings for per-CSP or per-SaaS setup instructions.
+Refer to sub-headings for per-CSP or per-SaaS setup instructions. Go to [Outputs](./docs/outputs/OUTPUTS.md) to, well, learn about Outputs and examples.
 
 ### Public Cloud Service Providers
 
@@ -118,7 +109,7 @@ Refer to sub-headings for per-CSP or per-SaaS setup instructions.
 
 ## Cloud Asset Management (CAM)
 
-For more information on ElectricEye's CAM concept of operations and output, refer to [the Asset Management documentation](./docs/asset_management/ASSET_MANAGEMENT.md).
+For more information on ElectricEye's CAM concept of operations and schema, refer to [the Asset Management documentation](./docs/asset_management/ASSET_MANAGEMENT.md).
 
 ## Supported Services and Checks
 
@@ -130,7 +121,7 @@ In total there are:
 - **131** Supported CSP & SaaS Asset Components across all Services
 - **104** ElectricEye Auditors
 
-The subsections have been migrated to the respective per-Provider setup documentation linked above in [Using ElectricEye](#using-electriceye)
+The tables of supported Services and Checks have been migrated to the respective per-Provider setup documentation linked above in [Using ElectricEye](#using-electriceye).
 
 ## Contributing
 
