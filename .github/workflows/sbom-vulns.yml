@@ -11,7 +11,7 @@ jobs:
     steps:
       # Checkout le branch
       - name: Checkout
-        uses: actions/checkout@v2.5.0
+        uses: actions/checkout@v3
 
       # Build the ElectricEye Docker Image, locally
       - name: Build ElectricEye Docker Image

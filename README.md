@@ -6,7 +6,7 @@
 
 ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Management supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to NIST CSF, 800-53, 800-171, ISO 27001, AICPA TSC (SOC2), and more!
 
-![VulnScan](https://github.com/jonrau1/ElectricEye/actions/workflows/sbom-vulns.yml/badge.svg) ![](https://github.com/jonrau1/ElectricEye/actions/workflows/codeql-analysis.yml/badge.svg) 
+![VulnScan](https://github.com/jonrau1/ElectricEye/actions/workflows/sbom-vulns.yml/badge.svg) ![CodeQL](https://github.com/jonrau1/ElectricEye/actions/workflows/codeql-analysis.yml/badge.svg) 
 
 ***Up here in space***<br/>
 ***I'm looking down on you***<br/>
@@ -16,7 +16,7 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 
 ## Table of Contents
 
-- [Architecture](#architecture)
+- [Workflow](#workflow)
 - [Quick Run Down](#quick-run-down-running-running)
 - [Tell me more!](#tell-me-more-raised_eyebrow-raised_eyebrow)
 - [Using ElectricEye](#using-electriceye)
@@ -168,11 +168,15 @@ Since ElectricEye is a security tool, it only makes sense to ensure a high-level
 
 #### [`Syft`](https://github.com/anchore/syft)
 
+See [results here](https://github.com/jonrau1/ElectricEye/actions/workflows/sbom-vulns.yml)!
+
 A CLI tool and Go library for generating a Software Bill of Materials (SBOM) from container images and filesystems.
 
 ElectricEye uses Syft to build an SBOM off of a built ElectricEye Docker Image in CycloneDX format and upload it as an artifact to every succesful GitHub Action run.
 
 #### [`Grype`](https://github.com/anchore/grype)
+
+See [results here](https://github.com/jonrau1/ElectricEye/actions/workflows/sbom-vulns.yml)!
 
 A vulnerability scanner for container images and filesystems. Easily install the binary to try it out. Works with Syft, the powerful SBOM (software bill of materials) tool for container images and filesystems.
 
@@ -185,6 +189,8 @@ Dependabot alerts tell you that your code depends on a package that is insecure.
 ElectricEye uses Dependabot as a Software Composition Analysis (SCA) tool to run daily scans and open Pull Requests in the event that a Docker, Python, or GitHub-Action dependency requires a security patch.
 
 #### [`CodeQL`](https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/about-code-scanning-with-codeql)
+
+See [results here](https://github.com/jonrau1/ElectricEye/actions/workflows/codeql-analysis.yml)!
 
 CodeQL is the code analysis engine developed by GitHub to automate security checks. You can analyze your code using CodeQL and display the results as code scanning alerts.
 
