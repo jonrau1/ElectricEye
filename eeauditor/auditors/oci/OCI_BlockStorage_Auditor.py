@@ -709,7 +709,7 @@ def oci_block_storage_volume_use_volume_group_check(cache, awsAccountId, awsRegi
             yield finding
 
 @registry.register_check("oci.blockstorage")
-def oci_block_storage_volume_use_volume_group_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+def oci_block_storage_volume_automated_backups_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
     """
     [OCI.BlockStorage.5] Oracle Cloud Block Storage volumes be configured to take automated backups
     """
