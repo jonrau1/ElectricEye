@@ -36,7 +36,7 @@ python3 eeauditor/controller.py -t AWS -o stdout
 
 ## Architecture
 
-![Architecture](./screenshots/ElectricEye2023Architecture.jpg)
+![Architecture](./screenshots/ElectricEye2023Architecture.svg)
 
 ## Quick Run Down :running: :running:
 
@@ -96,7 +96,7 @@ Options:
   --help                          Show this message and exit.
 ```
 
-For more information see [here](#using-electriceye), you can read the [FAQ here](./docs/faq/FAQ.md), or if you want a more in-depth analysis of the control flow and concepts review [the Developer Guide](./docs/new_checks/DEVELOPER_GUIDE.md).
+For more information see [here](#using-electriceye), you can read the [FAQ here](./docs/faq/FAQ.md), information on [Outputs is here](./docs/outputs/OUTPUTS.md) or, if you want a more in-depth analysis of the control flow and concepts review [the Developer Guide](./docs/new_checks/DEVELOPER_GUIDE.md).
 
 ## Using ElectricEye
 
@@ -126,9 +126,9 @@ In total there are:
 
 - **3** Supported Public CSPs: `AWS`, `GCP`, `OCI`
 - **1** Supported SaaS Provider: `ServiceNow`
-- **906** ElectricEye Checks
-- **130** Supported CSP & SaaS Asset Components across all Services
-- **103** ElectricEye Auditors
+- **911** ElectricEye Checks
+- **131** Supported CSP & SaaS Asset Components across all Services
+- **104** ElectricEye Auditors
 
 The subsections have been migrated to the respective per-Provider setup documentation linked above in [Using ElectricEye](#using-electriceye)
 

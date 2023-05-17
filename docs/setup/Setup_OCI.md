@@ -254,7 +254,7 @@ python3 eeauditor/controller.py -t AWS -a ElectricEye_AttackSurface_OCI_Auditor 
 
 ## Oracle Cloud Infrastructure Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **205 Checks** across **16 Auditors** that support the secure configuration of **22 services/components**
+These are the following services and checks perform by each Auditor, there are currently **210 Checks** across **17 Auditors** that support the secure configuration of **23 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
@@ -276,6 +276,11 @@ These are the following services and checks perform by each Auditor, there are c
 | OCI_ArtifactRegistry_Auditor | Oracle Artifact Registry repository | Repositories that are empty should be reviewed for deletion |
 | OCI_ArtifactRegistry_Auditor | Oracle Artifact Registry repository | Repositories should consider enabling immutable artifacts | 
 | OCI_ArtifactRegistry_Auditor | Oracle Artifact Registry artifact | Artifacts should be scanned for malware and viruses |
+| OCI_BlockStorage_Auditor | Oracle Block Storage volume | Volumes (with high availability/resilience requirements) should use replication |
+| OCI_BlockStorage_Auditor | Oracle Block Storage volume | Volumes should use auto-tune policies |
+| OCI_BlockStorage_Auditor | Oracle Block Storage volume | Volumes should use a CMK MEK for encryption |
+| OCI_BlockStorage_Auditor | Oracle Block Storage volume | Volumes should be a member of a Block Volume Group |
+| OCI_BlockStorage_Auditor | Oracle Block Storage volume | Volumes should have an assigned backup policy |
 | OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have Secure Boot enabled |
 | OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have Measured Boot enabled |
 | OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have the Trusted Platform Module enabled |
