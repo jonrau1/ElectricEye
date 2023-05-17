@@ -6,7 +6,8 @@
 
 ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Management supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to NIST CSF, 800-53, 800-171, ISO 27001, AICPA TSC (SOC2), and more!
 
-![VulnScan](https://github.com/jonrau1/ElectricEye/actions/workflows/sbom-vulns.yml/badge.svg) ![CodeQL](https://github.com/jonrau1/ElectricEye/actions/workflows/codeql-analysis.yml/badge.svg) 
+![VulnScan](https://github.com/jonrau1/ElectricEye/actions/workflows/sbom-vulns.yml/badge.svg)  ![CodeQL](https://github.com/jonrau1/ElectricEye/actions/workflows/codeql-analysis.yml/badge.svg) ![EcrBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-ecr-public.yml/badge.svg) ![OcrBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-ocr-public.yml/badge.svg)
+<p><a href="https://gallery.ecr.aws/t4o3u7t2/electriceye"><img width="120" height=19" alt="AWS ECR Gallery" src="https://user-images.githubusercontent.com/3985464/151531396-b6535a68-c907-44eb-95a1-a09508178616.png"></a></p>
 
 ***Up here in space***<br/>
 ***I'm looking down on you***<br/>

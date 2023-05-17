@@ -2,7 +2,7 @@ name: "ElectricEye on ECR Public"
 
 on:
   push:
-    branches: [ master, oracle-cloud-1 ]
+    branches: [ master ]
 
 permissions:
   id-token: write
@@ -41,3 +41,7 @@ jobs:
         run: |
           docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
+      
+      # Print the location
+      - name: Print Image
+        run: cat "$REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG"
