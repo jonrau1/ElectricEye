@@ -1,4 +1,4 @@
-name: "CodeQL Security Scan"
+name: "Anchore Docker SBOM Generation & Vuln Scan"
 
 on:
   push:
@@ -36,7 +36,7 @@ jobs:
         id: scan
         with:
           sbom: "syft-cdx-sbom.json"
-          severity-cutof: high
+          severity-cutoff: high
           fail-build: true
 
       # Print Grype JSON Report to stdout
