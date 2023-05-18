@@ -7,7 +7,23 @@
 ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Management supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to NIST CSF, 800-53, 800-171, ISO 27001, AICPA TSC (SOC2), and more!
 
 ![VulnScan](https://github.com/jonrau1/ElectricEye/actions/workflows/sbom-vulns.yml/badge.svg)  ![CodeQL](https://github.com/jonrau1/ElectricEye/actions/workflows/codeql-analysis.yml/badge.svg) ![EcrBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-ecr-public.yml/badge.svg) ![OcrBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-ocr-public.yml/badge.svg) ![DockerHubBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-docker-hub.yml/badge.svg)
-<p><a href="https://gallery.ecr.aws/t4o3u7t2/electriceye"><img width="120" height=19" alt="AWS ECR Gallery" src="https://user-images.githubusercontent.com/3985464/151531396-b6535a68-c907-44eb-95a1-a09508178616.png"></a></p>
+
+<p>
+  <a href="https://hub.docker.com/r/electriceye/electriceye"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/electriceye/electriceye"></a>
+  <a href="https://hub.docker.com/r/electriceye/electriceye"><img alt="Docker" src="https://img.shields.io/docker/image-size/electriceye/electriceye"></a>
+  <a href="https://github.com/jonrau1/ElectricEye"><img alt="Repo size" src="https://img.shields.io/github/repo-size/jonrau1/ElectricEye"></a>
+  <a href="https://github.com/jonrau1/ElectricEye/issues"><img alt="Issues" src="https://img.shields.io/github/issues/jonrau1/ElectricEye"></a>
+  <a href="https://github.com/jonrau1/ElectricEye"><img alt="Contributors" src="https://img.shields.io/github/contributors-anon/jonrau1/ElectricEye"></a>
+  <a href="https://github.com/jonrau1/ElectricEye"><img alt="License" src="https://img.shields.io/github/license/jonrau1/ElectricEye"></a>
+</p>
+
+<p align="center">
+  <a href="https://gallery.ecr.aws/t4o3u7t2/electriceye"><img width="150" height=40" alt="AWS ECR Gallery" src="https://user-images.githubusercontent.com/3985464/151531396-b6535a68-c907-44eb-95a1-a09508178616.png"></a>
+  <a href="https://hub.docker.com/repository/docker/electriceye/electriceye/general"><img width="150" height=40" alt="AWS ECR Gallery" src="https://www.unixtutorial.org/images/software/docker-hub.png"></a>
+  
+</p>
+
+
 
 ***Up here in space***<br/>
 ***I'm looking down on you***<br/>
@@ -54,7 +70,7 @@ ElectricEye's core concept is the **Auditor** which are sets of Python scripts t
 
 3. Finally, run the Controller to learn about the various Checks, Auditors, Assessment Targets, and Outputs.
 
-```bash
+```
 $ python3 eeauditor/controller.py --help
 Usage: controller.py [OPTIONS]
 
@@ -132,9 +148,9 @@ You can also pull an ElectricEye image from the various repositories, a `latest`
 
 To pull from the various repositories, use these commands, you can replace `latest` as you see fit. The dependencies within ElectricEye stay relatively stable until a new cloud or major integration is added. Check the PR release notes for more information.
 
-- ECR Public: `docker pull public.ecr.aws/t4o3u7t2/electriceye:latest`
+- Amazon Elastic Container Registry (ECR) Public: `docker pull public.ecr.aws/t4o3u7t2/electriceye:latest` 
 
-- Oracle Cloud Registry: `docker pull iad.ocir.io/idudmagprsdi/electriceye:latest`
+- Oracle Cloud Infrastructure Registry (OCIR): `docker pull iad.ocir.io/idudmagprsdi/electriceye:latest`
 
 - Docker Hub: `docker pull electriceye/electriceye`
 

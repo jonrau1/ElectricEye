@@ -2,7 +2,7 @@ name: "ElectricEye on ECR Public"
 
 on:
   push:
-    branches: [ master, oracle-cloud-1 ]
+    branches: [ master ]
 
 permissions:
   id-token: write

@@ -2,7 +2,7 @@ name: "ElectricEye on Docker Hub"
 
 on:
   push:
-    branches: [ master, oracle-cloud-1 ]
+    branches: [ master ]
 
 jobs:
   ElectricEyeOnDockerHub:
