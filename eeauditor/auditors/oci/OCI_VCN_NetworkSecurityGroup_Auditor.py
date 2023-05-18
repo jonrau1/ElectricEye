@@ -302,6 +302,8 @@ def oci_vcn_security_master_auditor_check(cache, awsAccountId, awsRegion, awsPar
                 ]
             except AttributeError:
                 continue
+            except TypeError:
+                continue
 
             # If the "filteredRules" list has at least one entry it means there is a rule that allows access to everyone (on CIDRs) for a specific rule
             # that means there will always be a "counter" finding for it so the changes can be monitored over time

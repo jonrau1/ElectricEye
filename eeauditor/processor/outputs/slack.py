@@ -205,21 +205,25 @@ class PostgresProvider(object):
         lowFindings = [finding for finding in findings if finding["Severity"]["Label"] == "LOW"]
         infoFindings = [finding for finding in findings if finding["Severity"]["Label"] == "INFORMATIONAL"]
         # Resource IDs
+        allResources = []
+        for finding in findings:
+            allResources.append(
+                finding["Resources"][0]["Id"]
+            )
         uniqueResources = []
-        allResources = [d.get("Resources").get([0]).get("Id") for d in findings]
         for resource in allResources:
             if resource not in uniqueResources:
                 uniqueResources.append(resource)
         # Assets
-        uniqueClass = list(set(d.get("AssetClass") for d in findings))
+        uniqueClass = set(finding["ProductFields"]["AssetClass"] for finding in findings)
         #allServices = [d.get("AssetService") for d in findings]
-        uniqueServices = list(set(d.get("AssetService") for d in findings))
+        uniqueServices = set(finding["ProductFields"]["AssetService"] for finding in findings)
         #allComponents = [d.get("AssetComponent") for d in findings]
-        uniqueComponents = list(set(d.get("AssetComponent") for d in findings))
+        uniqueComponents = set(finding["ProductFields"]["AssetComponent"] for finding in findings)
         # Accounts
-        uniqueAccounts = list(set(d.get("ProviderAccountId") for d in findings))
+        uniqueAccounts = set(finding["ProductFields"]["ProviderAccountId"] for finding in findings)
         # Regions
-        uniqueRegions = list(set(d.get("AssetRegion") for d in findings))
+        uniqueRegions = set(finding["ProductFields"]["AssetRegion"] for finding in findings)
 
         date = datetime.datetime.now()
 
@@ -290,7 +294,7 @@ class PostgresProvider(object):
                 "fields": [
                     {
                         "type": "mrkdwn",
-                        "text": f"*Unique Assets:* `{len(uniqueResource)}`"
+                        "text": f"*Unique Assets:* `{len(uniqueResources)}`"
                     },
                     {
                         "type": "mrkdwn",
