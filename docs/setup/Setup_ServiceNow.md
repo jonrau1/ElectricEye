@@ -15,6 +15,8 @@ To configure the TOML file, you need to modify the values of the variables in th
 
 - `credentials_location`: Set this variable to specify the location of where credentials are stored and will be retrieved from. You can choose from AWS Systems Manager Parameter Store (`AWS_SSM`), AWS Secrets Manager (`AWS_SECRETS_MANAGER`), or from the TOML file itself (`CONFIG_FILE`) which is **NOT** recommended.
 
+**NOTE** When retrieving from SSM or Secrets Manager, your current Profile / Boto3 Session is used and *NOT* the ElectricEye Role that is specified in `aws_electric_eye_iam_role_name`. Ensure you have `ssm:GetParameter`, `secretsmanager:GetSecretValue`, and relevant `kms` permissions as needed to retrieve this values.
+
 - `servicenow_instance_name`: The name of your ServiceNow Instance. For example, if your ServiceNow URL is "https://dev90210.service-now.com/", the name is "dev90210".
 
 - `servicenow_instance_region`: The geographic location of your ServiceNow Instance which will be provided to ProductFields.AssetRegion within the ElectricEye findings. This is typically `"us"`, `"eu"`, or `"ap"` and may differ for Federal instances.

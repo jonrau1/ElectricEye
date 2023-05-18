@@ -119,6 +119,8 @@ To configure the TOML file, you need to modify the values of the variables in th
 
 - `credentials_location`: Set this variable to specify the location of where credentials are stored and will be retrieved from. You can choose from AWS Systems Manager Parameter Store (`AWS_SSM`), AWS Secrets Manager (`AWS_SECRETS_MANAGER`), or from the TOML file itself (`CONFIG_FILE`) which is **NOT** recommended.
 
+**NOTE** When retrieving from SSM or Secrets Manager, your current Profile / Boto3 Session is used and *NOT* the ElectricEye Role that is specified in `aws_electric_eye_iam_role_name`. Ensure you have `ssm:GetParameter`, `secretsmanager:GetSecretValue`, and relevant `kms` permissions as needed to retrieve this values.
+
 - `virustotal_api_key_value`: The location (or actual contents) of your VirusTotal (VT) API Key, this location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter. VirusTotal is used for the **OCI_ArtifactRegistry_Auditor** to check individual SHA256 hashes of artifacts against VirusTotal for malware. The logic is currently hard-coded that if 5 or more detectors report `suspicious` or that 2 or more detectors report `malicious` then the artifact is considered malicious.
 
 - `oci_tenancy_ocid`: Provide your Oracle Cloud Infrastructure Tenancy ID (`ocid`) that is associated with your OCI credentials

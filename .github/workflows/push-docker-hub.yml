@@ -1,0 +1,36 @@
+name: "ElectricEye on Docker Hub"
+
+on:
+  push:
+    branches: [ master, oracle-cloud-1 ]
+
+jobs:
+  ElectricEyeOnDockerHub:
+    runs-on: ubuntu-latest
+
+    env:
+      DOCKER_USER: ${{secrets.DOCKER_USER}}
+      DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+      IMAGE_TAG: ${{ github.sha }}
+
+    steps:
+      # Checkout le branch
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Log in to Docker Hub
+      - name: Docker Hub Login
+        run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD 
+
+      # Build, Tag, Push to Docker Hub
+      - name: Build, Tag, Push Image to Docker Hub
+        id: tag-and-push-image
+        run: |
+          docker build -t electriceye/electriceye:$IMAGE_TAG .
+          docker tag electriceye/electriceye:$IMAGE_TAG electriceye/electriceye:latest
+          docker push electriceye/electriceye:$IMAGE_TAG
+          docker push electriceye/electriceye:latest
+
+      # Print the location
+      - name: Print Image
+        run: echo "electriceye/electriceye:$IMAGE_TAG"

@@ -2,7 +2,7 @@ name: "ElectricEye on OCR Public"
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, oracle-cloud-1 ]
 
 jobs:
   ElectricEyeOnOcrPublic:
@@ -31,19 +31,21 @@ jobs:
           name: electriceye
           compartment: ${{ secrets.OCI_COMPARTMENT_OCID }}
 
-      # Login to OCR with AuthKey
-      - name: Login to OCR
+      # Log into OCR with AuthKey
+      - name: OCR Login
         uses: oracle-actions/login-ocir@v1.2.1
         id: login-ocir
         with:
           auth_token: ${{ secrets.OCR_AUTHKEY }}
 
       # Build, Tag, Push to OCR
-      - name: Build, Tag, Push Docker Image to OCR
+      - name: Build, Tag, Push Image to OCR
         id: tag-and-push-image
         run: |
           docker build -t ${{ steps.get-ocir-repository.outputs.repo_path }}:$IMAGE_TAG .
+          docker tag ${{ steps.get-ocir-repository.outputs.repo_path }}:$IMAGE_TAG ${{ steps.get-ocir-repository.outputs.repo_path }}:latest
           docker push ${{ steps.get-ocir-repository.outputs.repo_path }}:$IMAGE_TAG
+          docker push ${{ steps.get-ocir-repository.outputs.repo_path }}:latest
 
       # Print the location
       - name: Print Image

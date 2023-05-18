@@ -6,7 +6,7 @@
 
 ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Management supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to NIST CSF, 800-53, 800-171, ISO 27001, AICPA TSC (SOC2), and more!
 
-![VulnScan](https://github.com/jonrau1/ElectricEye/actions/workflows/sbom-vulns.yml/badge.svg)  ![CodeQL](https://github.com/jonrau1/ElectricEye/actions/workflows/codeql-analysis.yml/badge.svg) ![EcrBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-ecr-public.yml/badge.svg) ![OcrBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-ocr-public.yml/badge.svg)
+![VulnScan](https://github.com/jonrau1/ElectricEye/actions/workflows/sbom-vulns.yml/badge.svg)  ![CodeQL](https://github.com/jonrau1/ElectricEye/actions/workflows/codeql-analysis.yml/badge.svg) ![EcrBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-ecr-public.yml/badge.svg) ![OcrBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-ocr-public.yml/badge.svg) ![DockerHubBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-docker-hub.yml/badge.svg)
 <p><a href="https://gallery.ecr.aws/t4o3u7t2/electriceye"><img width="120" height=19" alt="AWS ECR Gallery" src="https://user-images.githubusercontent.com/3985464/151531396-b6535a68-c907-44eb-95a1-a09508178616.png"></a></p>
 
 ***Up here in space***<br/>
@@ -19,8 +19,8 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 
 - [Workflow](#workflow)
 - [Quick Run Down](#quick-run-down-running-running)
-- [Tell me more!](#tell-me-more-raised_eyebrow-raised_eyebrow)
-- [Using ElectricEye](#using-electriceye)
+- [Configuring ElectricEye](#configuring-electricey)
+- [ElectricEye on Docker](#electriceye-on-docker)
 - [Cloud Asset Management](./docs/asset_management/ASSET_MANAGEMENT.md)
 - [Outputs](./docs/outputs/OUTPUTS.md)
 - [FAQ](./docs/faq/FAQ.md)
@@ -46,13 +46,11 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 
 - Outputs to AWS Security Hub, AWS DocumentDB, JSON, CSV, HTML Executive Reports, MongoDB, Amazon SQS, PostgreSQL, Amazon Simple Queue Service (SQS), Amazon DynamoDB, and [**FireMon Cloud Defense**](https://www.firemon.com/introducing-disruptops/).
 
-## Tell Me More! :raised_eyebrow: :raised_eyebrow:
-
 ElectricEye's core concept is the **Auditor** which are sets of Python scripts that run **Checks** per Service dedicated to a specific SaaS vendor or public cloud service provider called an **Assessment Target**. You can run an entire Assessment Target, a specific Auditor, or a specific Check within an Auditor. After ElectricEye is done with evaluations, it supports over a dozen types of **Outputs** ranging from an HTML executive report to AWS DocumentDB clusters. ElectricEye also uses other tools such as Shodan, `detect-secrets`, and NMAP for carrying out its Checks. While mainly a security tool, ElectricEye can be used for Cloud Asset Management use cases such as discovery and inventory and has Checks aligned to several best-practice regimes that cover resiliency, recovery, performance optimization, monitoring, as well as several 100 security checks against your cloud infrastructure and identities.
 
 1. First, clone this repository and install the requirements using `pip3`: `pip3 install -r requirements.txt`.
 
-2. Then, modify the [TOML file](./eeauditor/external_providers.toml) located in `ElectricEye/eeauditor/external_providers.toml` to specify various configurations for the CSP(s) and SaaS Provider(s) you want to assess.
+2. Then, modify the [TOML configuration](./eeauditor/external_providers.toml) located in `ElectricEye/eeauditor/external_providers.toml` to specify various configurations for the CSP(s) and SaaS Provider(s) you want to assess, specify where credentials are stored, and configure Outputs.
 
 3. Finally, run the Controller to learn about the various Checks, Auditors, Assessment Targets, and Outputs.
 
@@ -92,9 +90,9 @@ Options:
   --help                          Show this message and exit.
 ```
 
-For more information see [here](#using-electriceye), you can read the [FAQ here](./docs/faq/FAQ.md), information on [Outputs is here](./docs/outputs/OUTPUTS.md) or, if you want a more in-depth analysis of the control flow and concepts review [the Developer Guide](./docs/new_checks/DEVELOPER_GUIDE.md).
+For more information see [here](#configuring-electricey), you can read the [FAQ here](./docs/faq/FAQ.md), information on [Outputs is here](./docs/outputs/OUTPUTS.md) or, if you want a more in-depth analysis of the control flow and concepts review [the Developer Guide](./docs/new_checks/DEVELOPER_GUIDE.md).
 
-## Using ElectricEye
+## Configuring ElectricEye
 
 Refer to sub-headings for per-CSP or per-SaaS setup instructions. Go to [Outputs](./docs/outputs/OUTPUTS.md) to, well, learn about Outputs and examples.
 
@@ -112,6 +110,117 @@ Refer to sub-headings for per-CSP or per-SaaS setup instructions. Go to [Outputs
 - [For Workday ERP (*Coming Soon*)](./docs/setup/Setup_WorkDay.md)
 - [For GitHub (*Coming Soon*)](./docs/setup/Setup_GitHub.md)
 
+## ElectricEye on Docker
+
+After configuring ElectricEye for your environment(s) using the [TOML configuration](./eeauditor/external_providers.toml), you can instead utilize Docker to run ElectricEye which have images maintained on ECR Public, Oracle Cloud Container Registry (OCR), and Docker Hub. You can read more about the security assurance activities [here](#repository-security), in the future more Registries and image signing will be utilized.
+
+### Building Images
+
+If you would rather build your own image use the following commands. Be sure to add `sudo` if you do not have a `docker` user properly setup in your system.
+
+```bash
+git clone https://github.com/jonrau1/ElectricEye.git
+cd ElectricEye
+docker build -t electriceye:local .
+```
+
+From here you can push to your repository of chocie, be sure to change the tag from `local` to whichever tag your repository is expected.
+
+### Pulling Images
+
+You can also pull an ElectricEye image from the various repositories, a `latest` image tag will always be pushed alongside an image tagged with the SHA hash of the workflow `${{ github.sha }}` and can be viewed within the various GitHub Action Workflows within the `Print Image` step.
+
+To pull from the various repositories, use these commands, you can replace `latest` as you see fit. The dependencies within ElectricEye stay relatively stable until a new cloud or major integration is added. Check the PR release notes for more information.
+
+- ECR Public: `docker pull public.ecr.aws/t4o3u7t2/electriceye:latest`
+
+- Oracle Cloud Registry: `docker pull iad.ocir.io/idudmagprsdi/electriceye:latest`
+
+- Docker Hub: `docker pull electriceye/electriceye`
+
+### Setting up a Session
+
+#### NOTE!! You can skip this section if you are using hard-coded credentials in your TOML and if you will not be using any AWS Output or running any AWS Auditors
+
+When interacting with AWS credential stores such as AWS Systems Manager, AWS Secrets Manager and Outputs such as AWS Security and for Role Assumption into the Role specified in the `aws_electric_eye_iam_role_name` TOML parameter, ElectricEye uses your current (default) Boto3 Session which is derived from your credentials. Running ElectricEye from AWS Infrastructure that has an attached Role, or running from a location with `aws cli` credentials already instantiated, this is handled transparently. When using Docker, you will need to provide [Environment Variables](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html#using-environment-variables) directly to the Container.
+
+Ensure that if you will be using AWS SSM (`ssm:GetParameter`), AWS Secrets Manager (`secretsmanager:GetSecretValue`), AWS Security Hub (`securityhub:BatchImportFindings`), Amazon SQS (`sqs:SendMessage`), and/or Amazon DynamoDB (`dynamodb:PutItem`) for credentials and Outputs that you have the proper permissions! You will likely also require `kms:Decrypt` depending if you are using AWS Key Management Service (KMS) Customer-managed Keys (CMKs) for your secrets/parameters encryption. You will need `sts:AssumeRole` to assume into the Role specified in the `aws_electric_eye_iam_role_name` TOML parameter.
+
+You will need to pass in your AWS Region, an AWS Access Key, and an AWS Secret Access Key. If you are NOT using an AWS IAM User with Access Keys you will need to also provide an AWS Session Token which is produced by temporary credentials such as an IAM Role or EC2 Instance Profile.
+
+If you are using a User, proceed to the next step, you will need to have your credentials ready to copy. If you are using an EC2 Instance Profile or an additional IAM Role you will Assume, ensure you have `jq` installed: `apt install -y jq` or `yum install jq`.
+
+> - To Assume an IAM Role and retrieve the temporary credentials
+
+```bash
+AWS_ACCOUNT_ID=$(aws sts get-caller-identity | jq -r '.Account')
+MY_ROLE_NAME='iam-role-name'
+TEMP_CREDS=$(aws sts assume-role --role-arn arn:aws:iam::$AWS_ACCOUNT_ID:role/$MY_ROLE_NAME --role-session-name ElectriceyeForDocker)
+AWS_ACCESS_KEY=$(echo $TEMP_CREDS | jq -r '.Credentials.AccessKeyId')
+AWS_SECRET_KEY=$(echo $TEMP_CREDS | jq -r '.Credentials.SecretAccessKey')
+AWS_SESSION_TOKEN=$(echo $TEMP_CREDS | jq -r '.Credentials.SessionToken')
+MY_REGION='aws-region-here'
+```
+
+> - To retrieve temporary credentials for an EC2 Instance Profile using Instance Metadata Service Version 1
+
+```bash
+MY_INSTANCE_PROFILE_ROLE_NAME="my_ec2_role_name"
+IMDS_SECURITY_CREDENTIALS=$(curl http://169.254.169.254/latest/meta-data/iam/security-credentials/$MY_INSTANCE_PROFILE_ROLE_NAME)
+MY_REGION='my_aws_region'
+AWS_ACCESS_KEY=$(echo $IMDS_SECURITY_CREDENTIALS | jq -r '.AccessKeyId')
+AWS_SECRET_KEY=$(echo $IMDS_SECURITY_CREDENTIALS | jq -r '.SecretAccessKey')
+AWS_SESSION_TOKEN=$(echo $IMDS_SECURITY_CREDENTIALS | jq -r '.Token')
+```
+
+> - To retrieve temporary credentials for an EC2 Instance Profile using Instance Metadata Service Version 2
+
+```bash
+MY_INSTANCE_PROFILE_ROLE_NAME="my_ec2_role_name"
+TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 300")
+IMDSV2_SECURITY_CREDENTIALS=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/iam/security-credentials/$MY_INSTANCE_PROFILE_ROLE_NAME)
+MY_REGION='my_aws_region'
+AWS_ACCESS_KEY=$(echo $IMDSV2_SECURITY_CREDENTIALS | jq -r '.AccessKeyId')
+AWS_SECRET_KEY=$(echo $IMDSV2_SECURITY_CREDENTIALS | jq -r '.SecretAccessKey')
+AWS_SESSION_TOKEN=$(echo $IMDSV2_SECURITY_CREDENTIALS | jq -r '.Token')
+```
+
+You can also retrieve temporary credentials from Federated identities, read more at the links for [AssumeRoleWithWebIdentity](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithWebIdentity.html) or [AssumeRoleWithSAML](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithSAML.html) or refer to the larger temporary credential documentation [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_request.html#api_assumerole).
+
+### Running ElectricEye Container
+
+Run ElectricEye using the following commands, passing in your Session credentials. Change the commands within the container to evaluate different environments with ElectricEye. Change the value of `/path/to/my/external_providers.toml` to your exact path, such as `~/electriceye-docker/external_providers.toml` for example.
+
+**IMPORTANT NOTE** If you are using an AWS IAM User with Access Keys, hardcode the values and omit the value for `AWS_SESSION_TOKEN`!!
+
+```bash
+sudo docker run \
+    --user eeuser:eeuser \
+    -e AWS_DEFAULT_REGION=$MY_REGION \
+    -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY \
+    -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_KEY \
+    -e AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN \
+    -v /path/to/my/external_providers.toml:/root/eeauditor/external_providers.toml \
+    electriceye /bin/bash -c "python3 eeauditor/controller.py --help"
+```
+
+To save a local file output such as `-o json`. `-o cam-json`, `-o csv`, or `-o html` and so on, ensure that you specify a file name that begins with `/eeauditor/` as the `eeuser` within the Docker Image only has permissions within that directory. To remove the files you cannot use `docker cp` but you can submit the file to remote APIs you have control of by `base64` encoding the output or you can use the Session with AWS S3 permissions to upload the file to S3. If you are evaluating Oracle Cloud or Google Cloud Platform, your credentials will be locally loaded and you can upload to Oracle Object Storage or Google Cloud Storage buckets, respectively.
+
+```bash
+BUCKET_NAME="your_s3_bucket_you_have_access_to"
+sudo docker run \
+    --user eeuser:eeuser \
+    -e AWS_DEFAULT_REGION=$MY_REGION \
+    -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY \
+    -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_KEY \
+    -e AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN \
+    -v /eeauditor/external_providers.toml:/root/eeauditor/external_providers.toml \
+    electriceye /bin/bash -c "python3 eeauditor/controller.py -t AWS -o json --output-file /eeauditor/my-aws-findings \
+    && aws s3 cp /eeauditor/my-aws-findings.json s3://$BUCKET_NAME/eefindings.json"
+```
+
+For more configuration information ensure you refer back to the per-Provider setup instructions.
+
 ## Cloud Asset Management (CAM)
 
 For more information on ElectricEye's CAM concept of operations and schema, refer to [the Asset Management documentation](./docs/asset_management/ASSET_MANAGEMENT.md).
@@ -126,7 +235,7 @@ In total there are:
 - **131** Supported CSP & SaaS Asset Components across all Services
 - **104** ElectricEye Auditors
 
-The tables of supported Services and Checks have been migrated to the respective per-Provider setup documentation linked above in [Using ElectricEye](#using-electriceye).
+The tables of supported Services and Checks have been migrated to the respective per-Provider setup documentation linked above in [Using ElectricEye](#configuring-electricey).
 
 ## Contributing
 
