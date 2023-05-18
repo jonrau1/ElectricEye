@@ -108,7 +108,7 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
     multiple=True,
     default=(["stdout"]),
     show_default=True,
-    help="A list of Outputs (files, APIs, databases) to send ElectricEye Findings - can provide more than one",
+    help="A list of Outputs (files, APIs, databases) to send ElectricEye Findings, specify multiple with additional arguments, e.g., -o csv -o postgresql",
 )
 # Output File Name
 @click.option(

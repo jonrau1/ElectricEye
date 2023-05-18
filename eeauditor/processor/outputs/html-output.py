@@ -445,10 +445,10 @@ class HtmlProvider(object):
         uniqueRegions = list(set(d.get("AssetRegion") for d in processedData))
 
         executiveReport = f'ElectricEye Auditors scanned {len(uniqueResource)} total Assets across {len(uniqueAccounts)} Provider Account(s) in {len(uniqueRegions)} Region(s)/Zone(s) \
-            and generated {totalFindings} Findings. Of all findings, {len(totalFailed)} failed and {len(totalPassed)} passed for a composite ElectricEye audit readiness score of {roundedPercentage}. \
+            and generated {totalFindings} Findings. Of all findings, {len(totalFailed)} failed and {len(totalPassed)} passed for a composite ElectricEye audit readiness score of {roundedPercentage} failing checks. \
             Of these findings the severities are {len(criticalsFindings)} Critical, {len(highFindings)} High, {len(mediumFindings)} Medium, {len(lowFindings)} Low, and {len(infoFindings)} Informational. \
             There are {len(allResources)} resources across the Provider Accounts & Regions, comprising {len(uniqueServices)} distinct Asset Services (e.g., GCP CloudSQL, AWS Lambda) and {len(uniqueComponents)} distinct \
-            Asset Components (e.g., Instance, Function, User, Key). It is recommended to work backwards from resources with the highest amount of failed findings and Assets with important business- or mission-criticality.'
+            Asset Components. It is recommended to work backwards from resources with the highest amount of failed findings and Assets with important business- or mission-criticality.'
         
         return executiveReport
 

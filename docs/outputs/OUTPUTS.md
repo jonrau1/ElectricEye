@@ -1,12 +1,13 @@
 # ElectricEye Outputs
 
-This documentation is all about Outputs supported by ElectricEye and how to configure them with the Command-line and/or TOML file.
+This documentation is all about Outputs supported by ElectricEye and how to configure them with the Command-line and/or TOML configuration file.
 
 ## Table of Contents
 
 - [Key Considerations](#key-considerations)
 - [`stdout` Output](#stdout-output)
 - [JSON Output](#json-output)
+- [HTML Output](#html-output)
 - [Normalized JSON Output](#json-normalized-output)
 - [Cloud Asset Management JSON Output](#json-cloud-asset-management-cam-output)
 - [CSV Output](#csv-output)
@@ -18,6 +19,8 @@ This documentation is all about Outputs supported by ElectricEye and how to conf
 - [Firemon Cloud Defense (DisruptOps) Output](#firemon-cloud-defense-disruptops-output)
 - [AWS DynamoDB Output](#aws-dynamodb-output)
 - [Amazon Simple Queue Service (SQS) Output](#amazon-simple-queue-service-sqs-output)
+- [Microsoft Teams Summary Output](#microsoft-teams-summary-output)
+- [Slack Summary Output](#slack-summary-output)
 
 ## Key Considerations
 
@@ -32,6 +35,8 @@ $ python3 eeauditor/controller.py --list-options
 ['firemon_cloud_defense', 'json', 'sechub', 'json_normalized', 'postgresql', 'cam_json', 'csv', 'stdout', 'mongodb', 'ddb_backend', 'cam_postgresql']
 ```
 
+#### IMPORTANT NOTE!! You can specify multiple Outputs by providing the `-o` or `--outputs` argument multiple times, for instance: `python3 eeauditor/controller.py -t AWS -o json -o csv -o postgresql`
+
 For ***file-based Ouputs*** such as JSON or CSV, the filename is controlled using the `--output-file` argument, if provided for other Outputs it will be ignored. Note that you do not need to specify a MIME type (e.g., `.csv`, `.json`), this will be handled by the Output Processor
 
 ```bash
@@ -39,6 +44,7 @@ $ python3 eeauditor/controller.py --output-file my_important_file -o json -t AWS
 ```
 
 All other Output attributes are controlled in the [TOML Configuration File](../../eeauditor/external_providers.toml) underneath the `[Outputs]` heading, ensure that any sensitive values you provide match the selection within `[global.credentials_location]`. At this time, it is **NOT POSSIBLE** to mix-and-match credential locations between local files, SSM, ASM, or otherwise.
+
 
 ```toml
 
@@ -810,5 +816,13 @@ Additionally, values within the `[outputs.postgresql]` section of the TOML file 
 *Coming Soon*
 
 ## Amazon Simple Queue Service (SQS) Output
+
+*Coming Soon*
+
+## Microsoft Teams Summary Output
+
+*Coming Soon*
+
+## Slack Summary Output
 
 *Coming Soon*

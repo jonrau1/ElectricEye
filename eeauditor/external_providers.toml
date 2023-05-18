@@ -264,3 +264,42 @@ title = "ElectricEye Configuration"
         # Batch
 
         amazon_sqs_batch_size = 10 # This must be an integer
+
+    [outputs.microsoft_teams]
+
+        # The location (or actual contents) of the Webhook for your MS Teams Channel
+        # this location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then
+        # the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+        
+        microsoft_teams_webhook_value = ""
+
+    [outputs.slack]
+
+        # The location (or actual contents) of the Slack Bot Token associated with your Slack App - ensure that
+        # your App is added into the Channel you will specify and that it has "chat:write" Bot Token Scopes
+        # this location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then
+        # the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+
+        slack_app_bot_token_value = ""
+
+        # The name or identifier for your Slack Channel you want ElectricEye to send findings to. Ensure that you
+        # Slack App has been added to this channel as well.
+
+        slack_channel_identifier = ""
+
+        # The type of output you want sent to Slack by ElectricEye. The "Summary" selection will send an aggregation
+        # of the total count of findings, types of assets, number of Regions and Accounts, pass vs failing, finding breakdown
+        # and the "Findings" selection will send each finding based on your filter values for `electric_eye_slack_severity_filter`
+        # and for `electric_eye_slack_finding_state_filter - this defaults to "Summary"
+
+        electric_eye_slack_message_type = "Summary" # VALID VALUES: "Summary" | "Findings"
+
+        # A list of ElectricEye Severities (matching the ASFF Severity.Label) that you want sent to Slack if your selection for
+        # `electric_eye_slack_message_type` is "Findings". This defaults to ["HIGH", "CRITICAL"]
+
+        electric_eye_slack_severity_filter = ["HIGH", "CRITICAL"] # VALID VALUES | "INFORMATIONAL", "LOW", "MEDIUM", "HIGH", "CRITICAL"
+
+        # A list of ElectricEye Finding States (matching the ASFF RecordState) that you want sent to slack if your selection for
+        # `electric_eye_slack_message_type` is "FindingS". This defaults to ["ACTIVE"]
+
+        electric_eye_slack_finding_state_filter = ["ACTIVE"] # VALID VALUES | "ACTIVE", "ARCHIVED"
