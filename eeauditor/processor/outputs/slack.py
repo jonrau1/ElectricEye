@@ -193,17 +193,17 @@ class PostgresProvider(object):
         # Total
         totalFindings = len(findings)
         # Compliance Passed v Failed
-        totalPassed = [finding for finding in findings if finding["ComplianceStatus"] == "PASSED"]
-        totalFailed = [finding for finding in findings if finding["ComplianceStatus"] == "FAILED"]
+        totalPassed = [finding for finding in findings if finding["Compliance"]["Status"] == "PASSED"]
+        totalFailed = [finding for finding in findings if finding["Compliance"]["Status"]== "FAILED"]
         totalFailedCount = len(totalFailed)
         failingPercentage = (totalFailedCount / totalFindings) * 100
         roundedPercentage = f"{round(failingPercentage, 2)}%"
         # Severity Status
-        criticalFindings = [finding for finding in findings if finding["Severity"] == "CRITICAL"]
-        highFindings = [finding for finding in findings if finding["Severity"] == "HIGH"]
-        mediumFindings = [finding for finding in findings if finding["Severity"] == "MEDIUM"]
-        lowFindings = [finding for finding in findings if finding["Severity"] == "LOW"]
-        infoFindings = [finding for finding in findings if finding["Severity"] == "INFORMATIONAL"]
+        criticalFindings = [finding for finding in findings if finding["Severity"]["Label"] == "CRITICAL"]
+        highFindings = [finding for finding in findings if finding["Severity"]["Label"] == "HIGH"]
+        mediumFindings = [finding for finding in findings if finding["Severity"]["Label"] == "MEDIUM"]
+        lowFindings = [finding for finding in findings if finding["Severity"]["Label"] == "LOW"]
+        infoFindings = [finding for finding in findings if finding["Severity"]["Label"] == "INFORMATIONAL"]
         # Resource IDs
         allResources = [d.get("Resources").get([0]).get("Id") for d in findings]
         uniqueResource = list(set(d.get("Resources").get([0]).get("Id") for d in findings))
