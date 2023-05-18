@@ -205,8 +205,11 @@ class PostgresProvider(object):
         lowFindings = [finding for finding in findings if finding["Severity"]["Label"] == "LOW"]
         infoFindings = [finding for finding in findings if finding["Severity"]["Label"] == "INFORMATIONAL"]
         # Resource IDs
+        uniqueResources = []
         allResources = [d.get("Resources").get([0]).get("Id") for d in findings]
-        uniqueResource = list(set(d.get("Resources").get([0]).get("Id") for d in findings))
+        for resource in allResources:
+            if resource not in uniqueResources:
+                uniqueResources.append(resource)
         # Assets
         uniqueClass = list(set(d.get("AssetClass") for d in findings))
         #allServices = [d.get("AssetService") for d in findings]
