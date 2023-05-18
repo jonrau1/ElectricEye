@@ -196,7 +196,7 @@ class PostgresProvider(object):
         totalPassed = [finding for finding in findings if finding["Compliance"]["Status"] == "PASSED"]
         totalFailed = [finding for finding in findings if finding["Compliance"]["Status"]== "FAILED"]
         totalFailedCount = len(totalFailed)
-        failingPercentage = (totalFailedCount / totalFindings) * 100
+        failingPercentage = (len(totalPassed) / totalFindings) * 100
         roundedPercentage = f"{round(failingPercentage, 2)}%"
         # Severity Status
         criticalFindings = [finding for finding in findings if finding["Severity"]["Label"] == "CRITICAL"]
@@ -254,7 +254,7 @@ class PostgresProvider(object):
                     },
                     {
                         "type": "mrkdwn",
-                        "text": f"*ElectricEye Audit Readiness \n Failing Percentage:* `{roundedPercentage}`"
+                        "text": f"*ElectricEye Findings Passing Score:* `{roundedPercentage}`"
                     }
                 ]
             },

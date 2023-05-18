@@ -423,7 +423,7 @@ class HtmlProvider(object):
         totalPassed = [finding for finding in processedData if finding["ComplianceStatus"] == "PASSED"]
         totalFailed = [finding for finding in processedData if finding["ComplianceStatus"] == "FAILED"]
         totalFailedCount = len(totalFailed)
-        failingPercentage = (totalFailedCount / totalFindings) * 100
+        failingPercentage = (len(totalPassed) / totalFindings) * 100
         roundedPercentage = f"{round(failingPercentage, 2)}%"
         # Severity Status
         criticalsFindings = [finding for finding in processedData if finding["Severity"] == "CRITICAL"]
@@ -445,7 +445,7 @@ class HtmlProvider(object):
         uniqueRegions = list(set(d.get("AssetRegion") for d in processedData))
 
         executiveReport = f'ElectricEye Auditors scanned {len(uniqueResource)} total Assets across {len(uniqueAccounts)} Provider Account(s) in {len(uniqueRegions)} Region(s)/Zone(s) \
-            and generated {totalFindings} Findings. Of all findings, {len(totalFailed)} failed and {len(totalPassed)} passed for a composite ElectricEye audit readiness score of {roundedPercentage} failing checks. \
+            and generated {totalFindings} Findings. Of all findings, {len(totalFailed)} failed and {len(totalPassed)} passed for an ElectricEye Findings Passing Score of {roundedPercentage}. \
             Of these findings the severities are {len(criticalsFindings)} Critical, {len(highFindings)} High, {len(mediumFindings)} Medium, {len(lowFindings)} Low, and {len(infoFindings)} Informational. \
             There are {len(allResources)} resources across the Provider Accounts & Regions, comprising {len(uniqueServices)} distinct Asset Services (e.g., GCP CloudSQL, AWS Lambda) and {len(uniqueComponents)} distinct \
             Asset Components. It is recommended to work backwards from resources with the highest amount of failed findings and Assets with important business- or mission-criticality.'
