@@ -19,8 +19,8 @@ This documentation is all about Outputs supported by ElectricEye and how to conf
 - [Firemon Cloud Defense (DisruptOps) Output](#firemon-cloud-defense-disruptops-output)
 - [AWS DynamoDB Output](#aws-dynamodb-output)
 - [Amazon Simple Queue Service (SQS) Output](#amazon-simple-queue-service-sqs-output)
+- [Slack Output](#slack-output)
 - [Microsoft Teams Summary Output](#microsoft-teams-summary-output)
-- [Slack Summary Output](#slack-summary-output)
 
 ## Key Considerations
 
@@ -127,7 +127,7 @@ To use this Output include the following arguments in your ElectricEye CLI: `pyt
 
 **NOTE** This was screen-captured on a 3840x2160 screen at 67% zoom, so it looks like shit, sorry.
 
-![HTML JPG](../../screenshots/html_output.jpg)
+![HTML JPG](../../screenshots/outputs/html_output.jpg)
 
 ## JSON Output
 
@@ -819,10 +819,66 @@ Additionally, values within the `[outputs.postgresql]` section of the TOML file 
 
 *Coming Soon*
 
+## Slack Output
+
+The Slack output will use a Bot Token of a Slack App you have added to your Workspace to write findings using the [`chat.PostMessage`](https://api.slack.com/methods/chat.postMessage) API Endpoint to your Channel which has your App added to it. There are two modes that you can send Findings to slack, you can either choose to send an aggregated message that contains the amount of findings, assets, providers, and passing percentage or you can send a pre-filtered list of findings which will contain a snapshot of important information per finding. Since ElectricEye does not track state, the integration will not be about to use the [`chat.update`](https://api.slack.com/methods/chat.update) or [`chat.delete`](https://api.slack.com/methods/chat.delete) APIs to update or delete findings. For more information on creating a Slack App Bot, refer to [Slack's documentation](https://api.slack.com/tutorials/tracks/create-bot-to-welcome-users), at the minimum you will need [`chat:write`](https://api.slack.com/scopes/chat:write) Scopes and to generate a Bot Token to authenticate against the `chat.PostMessage` API.
+
+This Output will *not* provide the `ProductFields.AssetDetails` information.
+
+To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o slack`
+
+Additionally, values within the `[outputs.slack]` section of the TOML file *must be provided* for this integration to work.
+
+- **`slack_app_bot_token_value`**: The location (or actual contents) of the Slack Bot Token associated with your Slack App - ensure that your App is added into the Channel you will specify and that it has "chat:write" Bot Token Scopes. This location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter.
+
+- **`slack_channel_identifier`**: The name or identifier for your Slack Channel you want ElectricEye to send findings to. Ensure that you Slack App has been added to this channel as well.
+
+- **`electric_eye_slack_message_type`**: Specify either `Summary` to send a Summary / aggregation of ElectricEye findings in a single message or use `Findings` partnered with the two other TOML parameters to send individual findings-per-message that match your state and severity criteria. This defaults to `Summary`.
+
+- **`electric_eye_slack_severity_filter`**: A list of `Severity.Label` values from the ASFF that you want included in findings that are sent to Slack if you chose `Findings` for the value of `electric_eye_slack_message_type`. These can include "INFORMATIONAL", "LOW", "MEDIUM", "HIGH", "CRITICAL" but defaults to HIGH and CRITICAL. These values are case sensitive and default to `["HIGH", "CRITICAL"]`.
+
+- **`electric_eye_slack_finding_state_filter`**: A list of `RecordState` values from the ASFF that you want included in findings that are sent to Slack if you chose `Findings` for the value of `electric_eye_slack_message_type`. This is a list of one or both of "ACTIVE" and "ARCHIVED" and defaults to `["ACTIVE"] `.
+
+The "Summary" output will contain the following values:
+- Total Findings Count
+- Total Passed Findings Count
+- Total Failed Findings Count
+- Total Passing Percentage
+- Total Findings broken down per Severity
+- Total Assets (should reflect Findings)
+- Unique Asset Count
+- Unique Asset Classes
+- Unique Asset Services
+- Unique Asset Components
+- Total unique Accounts/Tenancies/Projects/Instances/Subscriptions/etc. covered
+- Total unique Regions/Zones covered
+
+An example of the "Summary" output.
+
+![SlackSummary](../../screenshots/outputs/slack_summary_output.jpg)
+
+The "Findings" output will contain the follow values from the ElectricEye ASFF:
+- `Title`
+- `Description`
+- `Remediation.Recommendation.Text`
+- `Remediation.Recommendation.Url`
+- `Severity.Label`
+- `ProductFields.Provider`
+- `ProductFields.ProviderAccountId`
+- `ProductFields.ProviderType`
+- `ProductFields.AssetRegion`
+- `ProductFields.AssetClass`
+- `ProductFields.AssetService`
+- `ProductFields.AssetComponent`
+- `Resources.[].Id` (`AssetId`)
+- `CreatedAt`
+- `Compliance.RelatedRequirements`
+- `RecordState`
+
+An example of the "Findings" output.
+
+![SlackFindings](../../screenshots/outputs/slack_findings_output.jpg)
+
 ## Microsoft Teams Summary Output
-
-*Coming Soon*
-
-## Slack Summary Output
 
 *Coming Soon*

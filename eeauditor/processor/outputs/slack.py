@@ -100,6 +100,8 @@ class PostgresProvider(object):
             print("There are not any findings to write!")
             exit(0)
 
+        print(f"Sending a {self.messageType} Output to Slack channel {self.channelId}.")
+
         # Call another method depending on whether or not the user configured the TOML for Summary or per-Finding
         if self.messageType == "Findings":
             processedBlocks = self.create_findings_blocks_payload(findings)
@@ -495,7 +497,7 @@ class PostgresProvider(object):
 
             aBlockyListOfSlackBlocks.append(block)
    
-        print(f"Processed {len(aBlockyListOfSlackBlocks)} findings after filters to send to Slack.")
+        print(f"Processed {len(aBlockyListOfSlackBlocks)} findings - after filtering them - to send to Slack.")
 
         return aBlockyListOfSlackBlocks
 
