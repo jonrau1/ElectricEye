@@ -248,7 +248,7 @@ def user_permission_boundary_check(cache: dict, session, awsAccountId: str, awsR
         except KeyError:
             hasPermBoundary = False
         # this is a passing check
-        if hasPermBoundary == True:
+        if hasPermBoundary is True:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{userArn}/iam-user-permissions-boundary-check",
@@ -401,7 +401,7 @@ def user_mfa_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
         except KeyError:
             pwCheck = False
         # If there is a password, evaluate if there any MFA devices
-        if pwCheck == True:
+        if pwCheck is True:
             # this is a failing check due to the list comprehension returning empty (false)
             if not iam.list_mfa_devices(UserName=userName)["MFADevices"]:
                 finding = {
@@ -995,24 +995,36 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccoun
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        pwPolicy = response["PasswordPolicy"]
-        minPwLength = int(pwPolicy["MinimumPasswordLength"])
-        symbolReq = str(pwPolicy["RequireSymbols"])
-        numberReq = str(pwPolicy["RequireNumbers"])
-        uppercaseReq = str(pwPolicy["RequireUppercaseCharacters"])
-        lowercaseReq = str(pwPolicy["RequireLowercaseCharacters"])
-        maxPwAge = int(pwPolicy["MaxPasswordAge"])
-        pwReuse = int(pwPolicy["PasswordReusePrevention"])
+
+        # Sometimes, PW Policy attributes are missing which would make it a fail - different than the error of it not being enabled at all
+        try:
+            pwPolicy = response["PasswordPolicy"]
+            
+            minPwLength = pwPolicy["MinimumPasswordLength"]
+            symbolReq = pwPolicy["RequireSymbols"]
+            numberReq = pwPolicy["RequireNumbers"]
+            uppercaseReq = pwPolicy["RequireUppercaseCharacters"]
+            lowercaseReq = pwPolicy["RequireLowercaseCharacters"]
+            maxPwAge = pwPolicy["MaxPasswordAge"]
+            pwReuse = pwPolicy["PasswordReusePrevention"]
+
+            if (
+                minPwLength >= 14
+                and maxPwAge <= 90
+                and pwReuse >= 24
+                and symbolReq is True
+                and numberReq is True
+                and uppercaseReq is True
+                and lowercaseReq is True
+            ):
+                cisCompliantPolicy = True
+            else:
+                cisCompliantPolicy = False
+        except KeyError:
+            print("IAM Password Policy is missing one or more attributes, this is a failing check.")
+            cisCompliantPolicy = False
         
-        if (
-            minPwLength >= 14
-            and maxPwAge <= 90
-            and pwReuse >= 24
-            and symbolReq == "True"
-            and numberReq == "True"
-            and uppercaseReq == "True"
-            and lowercaseReq == "True"
-        ):
+        if cisCompliantPolicy is True:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": awsAccountId + "/cis-aws-foundations-benchmark-pw-policy-check",
