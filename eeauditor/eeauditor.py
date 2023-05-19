@@ -163,7 +163,7 @@ class EEAuditor(object):
         """
 
         # "Global" Auditors that should only need to be ran once per Account
-        globalAuditors = ["cloudfront", "globalaccelerator", "iam", "health", "support"]
+        globalAuditors = ["cloudfront", "globalaccelerator", "iam", "health", "support", "account", "s3"]
         
         # Retrieve the endpoints.json data to prevent multiple outbound calls
         endpointData = json.loads(
