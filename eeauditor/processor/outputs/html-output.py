@@ -305,25 +305,25 @@ class HtmlProvider(object):
         }
 
         .severity.critical {
-            background-color: #7b1212;
+            background-color: rgb(214, 63, 56);
             color: #ffc400;
         }
 
         .severity.high {
-            background-color: #df5138e8;
+            background-color: rgb(254, 110, 115);
             color: #fff;
         }
 
         .severity.medium {
-            background-color: #ef7e06e8;
+            background-color: rgb(248, 146, 86);
         }
 
         .severity.low {
-            background-color: #c5c214;
+            background-color: rgb(223, 181, 44);
         }
 
         .severity.informational {
-            background-color: #70a010;
+            background-color: #d5dbdb;
         }
 
         .compliance {
@@ -333,12 +333,12 @@ class HtmlProvider(object):
         }
 
         .compliance.passed {
-            background-color: green;
+            background-color: #6aaf35;
             color: white;
         }
 
         .compliance.failed {
-            background-color: red;
+            background-color: #fe6e73;
             color: white;
         }
 
@@ -447,7 +447,7 @@ class HtmlProvider(object):
         executiveReport = f'ElectricEye Auditors scanned {len(uniqueResource)} total Assets across {len(uniqueAccounts)} Provider Account(s) in {len(uniqueRegions)} Region(s)/Zone(s) \
             and generated {totalFindings} Findings. Of all findings, {len(totalFailed)} failed and {len(totalPassed)} passed for an ElectricEye Findings Passing Score of {roundedPercentage}. \
             Of these findings the severities are {len(criticalsFindings)} Critical, {len(highFindings)} High, {len(mediumFindings)} Medium, {len(lowFindings)} Low, and {len(infoFindings)} Informational. \
-            There are {len(allResources)} resources across the Provider Accounts & Regions, comprising {len(uniqueServices)} distinct Asset Services (e.g., GCP CloudSQL, AWS Lambda) and {len(uniqueComponents)} distinct \
+            There are {len(allResources)} resources across the Provider Accounts & Regions, comprising {len(uniqueServices)} distinct Asset Services and {len(uniqueComponents)} distinct \
             Asset Components. It is recommended to work backwards from resources with the highest amount of failed findings and Assets with important business- or mission-criticality.'
         
         return executiveReport
