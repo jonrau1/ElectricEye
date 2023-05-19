@@ -20,10 +20,7 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 <p align="center">
   <a href="https://gallery.ecr.aws/t4o3u7t2/electriceye"><img width="150" height=40" alt="AWS ECR Gallery" src="https://user-images.githubusercontent.com/3985464/151531396-b6535a68-c907-44eb-95a1-a09508178616.png"></a>
   <a href="https://hub.docker.com/repository/docker/electriceye/electriceye/general"><img width="150" height=40" alt="AWS ECR Gallery" src="https://www.unixtutorial.org/images/software/docker-hub.png"></a>
-  
 </p>
-
-
 
 ***Up here in space***<br/>
 ***I'm looking down on you***<br/>
@@ -60,7 +57,7 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 
 - The EASM module uses NMAP for service discovery and reachability assessment of over 20 highly-dangerous ports and protocols for nearly every public-facing CSP service
 
-- Outputs to AWS Security Hub, AWS DocumentDB, JSON, CSV, HTML Executive Reports, MongoDB, Amazon SQS, PostgreSQL, Amazon Simple Queue Service (SQS), Amazon DynamoDB, and [**FireMon Cloud Defense**](https://www.firemon.com/introducing-disruptops/).
+- Outputs to AWS Security Hub, AWS DocumentDB, JSON, CSV, HTML Reports, Slack (via Slack App Bots), MongoDB, Amazon SQS, PostgreSQL, Amazon Simple Queue Service (SQS), and [**FireMon Cloud Defense**](https://www.firemon.com/introducing-disruptops/).
 
 ElectricEye's core concept is the **Auditor** which are sets of Python scripts that run **Checks** per Service dedicated to a specific SaaS vendor or public cloud service provider called an **Assessment Target**. You can run an entire Assessment Target, a specific Auditor, or a specific Check within an Auditor. After ElectricEye is done with evaluations, it supports over a dozen types of **Outputs** ranging from an HTML executive report to AWS DocumentDB clusters. ElectricEye also uses other tools such as Shodan, `detect-secrets`, and NMAP for carrying out its Checks. While mainly a security tool, ElectricEye can be used for Cloud Asset Management use cases such as discovery and inventory and has Checks aligned to several best-practice regimes that cover resiliency, recovery, performance optimization, monitoring, as well as several 100 security checks against your cloud infrastructure and identities.
 
@@ -216,7 +213,7 @@ sudo docker run \
     -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY \
     -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_KEY \
     -e AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN \
-    -v /path/to/my/external_providers.toml:/root/eeauditor/external_providers.toml \
+    -v /path/to/my/external_providers.toml:/eeauditor/external_providers.toml \
     electriceye /bin/bash -c "python3 eeauditor/controller.py --help"
 ```
 
@@ -230,7 +227,7 @@ sudo docker run \
     -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY \
     -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_KEY \
     -e AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN \
-    -v /eeauditor/external_providers.toml:/root/eeauditor/external_providers.toml \
+    -v /path/to/my/external_providers.toml:/eeauditor/external_providers.toml \
     electriceye /bin/bash -c "python3 eeauditor/controller.py -t AWS -o json --output-file /eeauditor/my-aws-findings \
     && aws s3 cp /eeauditor/my-aws-findings.json s3://$BUCKET_NAME/eefindings.json"
 ```

@@ -325,7 +325,25 @@ class CloudConfig(object):
         """
         Uses STS AssumeRole to create a temporary Boto3 Session with a specified Account and Region
         """
-        crossAccountRoleArn = f"arn:aws:iam::{account}:role/{roleName}"
+
+        # Get the Partition you're in as to not royally fuck up this STS AssumeRole
+
+        # GovCloud partition override
+        if region in ["us-gov-east-1", "us-gov-west-1"]:
+            partition = "aws-us-gov"
+        # China partition override
+        elif region in ["cn-north-1", "cn-northwest-1"]:
+            partition = "aws-cn"
+        # AWS Secret Region override
+        elif region in ["us-isob-east-1", "us-isob-west-1"]:
+            partition = "aws-isob"
+        # AWS Top Secret Region override
+        elif region in ["us-iso-east-1", "us-iso-west-1"]:
+            partition = "aws-iso"
+        else:
+            partition = "aws"
+
+        crossAccountRoleArn = f"arn:{partition}:iam::{account}:role/{roleName}"
 
         try:
             memberAcct = sts.assume_role(
@@ -344,7 +362,7 @@ class CloudConfig(object):
 
         return session
     
-    # This function is called outside of this Class
+    # This function is called outside of this Class and from create_aws_session()
     def check_aws_partition(region):
         """
         Returns the AWS Partition based on the current Region of a Session

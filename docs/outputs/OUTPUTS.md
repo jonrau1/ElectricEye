@@ -32,7 +32,7 @@ To review the list of possible Output providers, use the following ElectricEye c
 
 ```bash
 $ python3 eeauditor/controller.py --list-options
-['firemon_cloud_defense', 'json', 'sechub', 'json_normalized', 'postgresql', 'cam_json', 'csv', 'stdout', 'mongodb', 'ddb_backend', 'cam_postgresql']
+['cam_json', 'cam_mongodb', 'cam_postgresql', 'csv', 'ddb_backend', 'firemon_cloud_defense', 'html', 'json', 'json_normalized', 'mongodb', 'postgresql', 'sechub', 'slack', 'stdout']
 ```
 
 #### IMPORTANT NOTE!! You can specify multiple Outputs by providing the `-o` or `--outputs` argument multiple times, for instance: `python3 eeauditor/controller.py -t AWS -o json -o csv -o postgresql`
@@ -821,7 +821,9 @@ Additionally, values within the `[outputs.postgresql]` section of the TOML file 
 
 ## Slack Output
 
-The Slack output will use a Bot Token of a Slack App you have added to your Workspace to write findings using the [`chat.PostMessage`](https://api.slack.com/methods/chat.postMessage) API Endpoint to your Channel which has your App added to it. There are two modes that you can send Findings to slack, you can either choose to send an aggregated message that contains the amount of findings, assets, providers, and passing percentage or you can send a pre-filtered list of findings which will contain a snapshot of important information per finding. Since ElectricEye does not track state, the integration will not be about to use the [`chat.update`](https://api.slack.com/methods/chat.update) or [`chat.delete`](https://api.slack.com/methods/chat.delete) APIs to update or delete findings. For more information on creating a Slack App Bot, refer to [Slack's documentation](https://api.slack.com/tutorials/tracks/create-bot-to-welcome-users), at the minimum you will need [`chat:write`](https://api.slack.com/scopes/chat:write) Scopes and to generate a Bot Token to authenticate against the `chat.PostMessage` API.
+The Slack output will use a Bot Token of a Slack App you have added to your Workspace to write findings using the [`chat.PostMessage`](https://api.slack.com/methods/chat.postMessage) API Endpoint to your Channel which has your App added to it. There are two modes that you can send Findings to slack, you can either choose to send an aggregated message that contains the amount of findings, assets, providers, and passing percentage or you can send a pre-filtered list of findings which will contain a snapshot of important information per finding. 
+
+Since ElectricEye does not track state, the integration will not be about to use the [`chat.update`](https://api.slack.com/methods/chat.update) or [`chat.delete`](https://api.slack.com/methods/chat.delete) APIs to update or delete findings. For more information on creating a Slack App Bot, refer to [Slack's documentation](https://api.slack.com/tutorials/tracks/create-bot-to-welcome-users), at the minimum you will need [`chat:write`](https://api.slack.com/scopes/chat:write) Scopes and to generate a Bot Token to authenticate against the `chat.PostMessage` API.
 
 This Output will *not* provide the `ProductFields.AssetDetails` information.
 
