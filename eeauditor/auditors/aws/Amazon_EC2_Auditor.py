@@ -1634,6 +1634,8 @@ def ec2_instance_ssm_managed_check(cache: dict, session, awsAccountId: str, awsR
         except KeyError:
             instanceLaunchedAt = str(i["LaunchTime"])
 
+        print(i)
+
         # We added the information for SSM DescribeInstanceInformation to each instance in Cache, if the list is empty
         # that means they are not managed at all due to a variety of reasons detailed in the finding...
         if not i["ManagedInstanceInformation"]:
@@ -1771,7 +1773,7 @@ def ec2_instance_ssm_managed_check(cache: dict, session, awsAccountId: str, awsR
 
 @registry.register_check("ec2")
 def ssm_instace_agent_update_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EC2.SystemsManager.2] EC2 Linux Instances managed by Systems Manager should have the latest SSM Agent installed"""
+    """[EC2.10] Amazon EC2 Linux instances managed by Systems Manager should have the latest SSM Agent installed"""
     ssm = session.client("ssm",config=config)
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -1789,6 +1791,11 @@ def ssm_instace_agent_update_check(cache: dict, session, awsAccountId: str, awsR
             instanceLaunchedAt = str(i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"])
         except KeyError:
             instanceLaunchedAt = str(i["LaunchTime"])
+
+        # We added the information for SSM DescribeInstanceInformation to each instance in Cache, we can
+        # use it to build a list comprehension to create a failing or passing state and not ignore all instances
+        coverage = [x for x in i["ManagedInstanceInformation"] if x["PlatformType"] == "Linux" and x["IsLatestVersion"] is False]
+
         # Check specific metadata
         r = ssm.describe_instance_information(
             Filters=[
@@ -1819,7 +1826,7 @@ def ssm_instace_agent_update_check(cache: dict, session, awsAccountId: str, awsR
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "LOW"},
                             "Confidence": 99,
-                            "Title": "[EC2.SystemsManager.2] EC2 Linux Instances managed by Systems Manager should have the latest SSM Agent installed",
+                            "Title": "[EC2.10] Amazon EC2 Linux instances managed by Systems Manager should have the latest SSM Agent installed",
                             "Description": f"EC2 Instance {instanceId} is a Linux-based platform which does not have the latest SSM Agent installed. Not having the latest SSM Agent can lead to issues with patching, configuration management, inventory management, and/or vulnerability management activities. Refer to the remediation instructions if this configuration is not intended.",
                             "Remediation": {
                                 "Recommendation": {
@@ -1885,7 +1892,7 @@ def ssm_instace_agent_update_check(cache: dict, session, awsAccountId: str, awsR
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "INFORMATIONAL"},
                             "Confidence": 99,
-                            "Title": "[EC2.SystemsManager.2] EC2 Linux Instances managed by Systems Manager should have the latest SSM Agent installed",
+                            "Title": "[EC2.10] Amazon EC2 Linux instances managed by Systems Manager should have the latest SSM Agent installed",
                             "Description": f"EC2 Instance {instanceId} is a Linux-based platform and has the latest SSM Agent installed.",
                             "Remediation": {
                                 "Recommendation": {
