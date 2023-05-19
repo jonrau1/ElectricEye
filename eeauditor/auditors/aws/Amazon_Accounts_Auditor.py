@@ -32,9 +32,6 @@ def aws_accounts_billing_dedicated_contact_check(cache: dict, session, awsAccoun
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     accountClient = session.client("account")
     
-    response = accountClient.get_alternate_contact(
-        AccountId='string',
-        AlternateContactType='BILLING'|'OPERATIONS'|'SECURITY'
-    )
+    response = accountClient.get_alternate_contact(AlternateContactType="BILLING")# |"OPERATIONS"|"SECURITY"
 
     print(response)
