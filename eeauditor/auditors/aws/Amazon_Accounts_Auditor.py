@@ -22,6 +22,7 @@ from check_register import CheckRegister
 import datetime
 import base64
 import json
+import botocore
 
 registry = CheckRegister()
 
@@ -32,6 +33,9 @@ def aws_accounts_billing_dedicated_contact_check(cache: dict, session, awsAccoun
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     accountClient = session.client("account")
     
-    response = accountClient.get_alternate_contact(AlternateContactType="BILLING")# |"OPERATIONS"|"SECURITY"
+    try:
+        response = accountClient.get_alternate_contact(AlternateContactType="BILLING")# |"OPERATIONS"|"SECURITY"
 
-    print(response)
+        print(response)
+    except botocore.exceptions as e:
+        print(e)
