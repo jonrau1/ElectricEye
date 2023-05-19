@@ -70,9 +70,7 @@ def ebs_volume_attachment_check(cache: dict, session, awsAccountId: str, awsRegi
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
                     "Title": "[EBS.1] EBS Volumes should be in an attached state",
-                    "Description": "EBS Volume "
-                    + volumeId
-                    + " is not in an attached state. Refer to the remediation instructions if this configuration is not intended",
+                    "Description": f"EBS Volume {volumeId} is not in an attached state. While detaching an EBS Volume is considered normal in certain aspects such as detaching extra mounted block storage or needing to preserve a boot volume from a deleted instance, you are still responsible for storage charges. Additionally, unattached volumes with sensitive data on are harder to safeguard and monitor the actual data on the volume. If you do not have a requirement to store detached volumes consider deleting them. Additionally, consider taking a Snapshot instead and deleting the Volume. With the Snapshot you can place additional IAM protections to ensure only certain principals can interact with the Snapshot and also prevent it from being shared. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "If your EBS volume should be attached refer to the Attaching an Amazon EBS Volume to an Instance section of the Amazon Elastic Compute Cloud User Guide",
@@ -130,7 +128,7 @@ def ebs_volume_attachment_check(cache: dict, session, awsAccountId: str, awsRegi
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
                     "Title": "[EBS.1] EBS Volumes should be in an attached state",
-                    "Description": "EBS Volume " + volumeId + " is in an attached state.",
+                    "Description": f"EBS Volume {volumeId} is in an attached state.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "If your EBS volume should be attached refer to the Attaching an Amazon EBS Volume to an Instance section of the Amazon Elastic Compute Cloud User Guide",
@@ -203,9 +201,7 @@ def ebs_volume_delete_on_termination_check(cache: dict, session, awsAccountId: s
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
                     "Title": "[EBS.2] EBS Volumes should be configured to be deleted on termination",
-                    "Description": "EBS Volume "
-                    + volumeId
-                    + " is not configured to be deleted on termination. Refer to the remediation instructions if this configuration is not intended",
+                    "Description": f"EBS Volume {volumeId} is not configured to be deleted on termination. By default, the DeleteOnTermination attribute for the root volume of an instance is set to true. Therefore, the default is to delete the root volume of the instance when the instance terminates. The DeleteOnTermination attribute can be set by the creator of an AMI as well as by the person who launches an instance. When the attribute is changed by the creator of an AMI or by the person who launches an instance, the new setting overrides the original AMI default setting. We recommend that you verify the default setting for the DeleteOnTermination attribute after you launch an instance with an AMI. By default, when you attach a non-root EBS volume to an instance, its DeleteOnTermination attribute is set to false. Therefore, the default is to preserve these volumes. After the instance terminates, you can take a snapshot of the preserved volume or attach it to another instance. You must delete a volume to avoid incurring further charges. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "If your EBS volume should be deleted on instance termination refer to the Preserving Amazon EBS Volumes on Instance Termination section of the Amazon Elastic Compute Cloud User Guide",
@@ -263,9 +259,7 @@ def ebs_volume_delete_on_termination_check(cache: dict, session, awsAccountId: s
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
                     "Title": "[EBS.2] EBS Volumes should be configured to be deleted on termination",
-                    "Description": "EBS Volume "
-                    + volumeId
-                    + " is configured to be deleted on termination.",
+                    "Description": f"EBS Volume {volumeId} is configured to be deleted on termination.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "If your EBS volume should be deleted on instance termination refer to the Preserving Amazon EBS Volumes on Instance Termination section of the Amazon Elastic Compute Cloud User Guide",
@@ -339,9 +333,7 @@ def ebs_volume_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
                 "Title": "[EBS.3] EBS Volumes should be encrypted",
-                "Description": "EBS Volume "
-                + volumeId
-                + " is not encrypted. Refer to the remediation instructions if this configuration is not intended",
+                "Description": f"EBS Volume {volumeId} is not encrypted. Use Amazon EBS encryption as a straight-forward encryption solution for your EBS resources associated with your EC2 instances. With Amazon EBS encryption, you aren't required to build, maintain, and secure your own key management infrastructure. Amazon EBS encryption uses AWS KMS keys when creating encrypted volumes and snapshots. Encryption operations occur on the servers that host EC2 instances, ensuring the security of both data-at-rest and data-in-transit between an instance and its attached EBS storage. Amazon EBS encrypts your volume with a data key using industry-standard AES-256 data encryption. The data key is generated by AWS KMS and then encrypted by AWS KMS with your AWS KMS key prior to being stored with your volume information. All snapshots, and any subsequent volumes created from those snapshots using the same AWS KMS key share the same data key. While EBS encryption will protect the in-transit traffic between the instance and the paravirtualized block storage attachment as well as the data written to disk, it will not protect the data in-use, nor will it appear encrypted to the actual file system on the operating system for your EC2 instances (or other services using EBS as block storage). Consider using your own encryption such as LUKS or Windows Encryption. Additionally, when using the default aws/ebs KMS key, this is tied to your Account and Region - if you intend to share snapshots, volumes or AMIs between Accounts and Regions consider using a KMS CMK instead. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your EBS volume should be encrypted refer to the Amazon EBS Encryption section of the Amazon Elastic Compute Cloud User Guide",
@@ -482,9 +474,7 @@ def ebs_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRe
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
                 "Title": "[EBS.4] EBS Snapshots should be encrypted",
-                "Description": "EBS Snapshot "
-                + snapshotId
-                + " is not encrypted. Refer to the remediation instructions if this configuration is not intended",
+                "Description": f"EBS Snapshot {snapshotId} is not encrypted. Use Amazon EBS encryption as a straight-forward encryption solution for your EBS resources associated with your EC2 instances. With Amazon EBS encryption, you aren't required to build, maintain, and secure your own key management infrastructure. Amazon EBS encryption uses AWS KMS keys when creating encrypted volumes and snapshots. Encryption operations occur on the servers that host EC2 instances, ensuring the security of both data-at-rest and data-in-transit between an instance and its attached EBS storage. Amazon EBS encrypts your volume with a data key using industry-standard AES-256 data encryption. The data key is generated by AWS KMS and then encrypted by AWS KMS with your AWS KMS key prior to being stored with your volume information. All snapshots, and any subsequent volumes created from those snapshots using the same AWS KMS key share the same data key. While EBS encryption will protect the in-transit traffic between the instance and the paravirtualized block storage attachment as well as the data written to disk, it will not protect the data in-use, nor will it appear encrypted to the actual file system on the operating system for your EC2 instances (or other services using EBS as block storage). Consider using your own encryption such as LUKS or Windows Encryption. Additionally, when using the default aws/ebs KMS key, this is tied to your Account and Region - if you intend to share snapshots, volumes or AMIs between Accounts and Regions consider using a KMS CMK instead. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your EBS snapshot should be encrypted refer to the Encryption Support for Snapshots section of the Amazon Elastic Compute Cloud User Guide",
@@ -857,7 +847,7 @@ def ebs_account_encryption_by_default_check(cache: dict, session, awsAccountId: 
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
             "Title": "[EBS.6] Account-level EBS Volume encryption should be enabled",
-            "Description": f"Account-level EBS volume encryption is not enabled for AWS Account {awsAccountId} in {awsRegion}. Refer to the remediation instructions if this configuration is not intended.",
+            "Description": f"Account-level EBS volume encryption is not enabled for AWS Account {awsAccountId} in {awsRegion}. You can configure your AWS account to enforce the encryption of the new EBS volumes and snapshot copies that you create. For example, Amazon EBS encrypts the EBS volumes created when you launch an instance and the snapshots that you copy from an unencrypted snapshot. Encryption by default is a Region-specific setting. If you enable it for a Region, you cannot disable it for individual volumes or snapshots in that Region. Amazon EBS encryption by default is supported on all current generation and previous generation instance types. If you copy a snapshot and encrypt it to a new KMS key, a complete (non-incremental) copy is created. This results in additional storage costs. When migrating servers using AWS Server Migration Service (SMS), do not turn on encryption by default. If encryption by default is already on and you are experiencing delta replication failures, turn off encryption by default. Instead, enable AMI encryption when you create the replication job. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
                     "Text": "For information on Account-level encryption refer to the Encryption by Default to an Instance section of the Amazon Elastic Compute Cloud User Guide",
@@ -913,7 +903,7 @@ def ebs_account_encryption_by_default_check(cache: dict, session, awsAccountId: 
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
             "Title": "[EBS.6] Account-level EBS Volume encryption should be enabled",
-            "Description": "Account-level EBS volume encryption is enabled for AWS Account {awsAccountId} in {awsRegion}.",
+            "Description": f"Account-level EBS volume encryption is enabled for AWS Account {awsAccountId} in {awsRegion}.",
             "Remediation": {
                 "Recommendation": {
                     "Text": "For information on Account-level encryption refer to the Encryption by Default to an Instance section of the Amazon Elastic Compute Cloud User Guide",
@@ -972,7 +962,7 @@ def ebs_volume_snapshot_check(cache: dict, session, awsAccountId: str, awsRegion
         except KeyError:
             snapshotId = None
         # This is a passing finding        
-        if snapshotId != None:
+        if snapshotId is not None:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{volumeArn}/ebs-volume-snapshot-check",
@@ -986,9 +976,7 @@ def ebs_volume_snapshot_check(cache: dict, session, awsAccountId: str, awsRegion
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[EBS.7] EBS Volumes should have snapshots",
-                "Description": "EBS Volume "
-                + volumeId
-                + " has a snapshot which can promote cyber resilience due to a viable backup.",
+                "Description": f"EBS Volume {volumeId} has a snapshot which can promote cyber resilience due to a viable backup.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your EBS volume should be backed up via Snapshots refer to the Amazon EBS snapshots section of the Amazon Elastic Compute Cloud User Guide",
@@ -1054,9 +1042,7 @@ def ebs_volume_snapshot_check(cache: dict, session, awsAccountId: str, awsRegion
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
                 "Title": "[EBS.7] EBS Volumes should have snapshots",
-                "Description": "EBS Volume "
-                + volumeId
-                + " does not have a snapshot which can reduce cyber resilience due to a lack of a viable backup. Refer to the remediation instructions if this configuration is not intended",
+                "Description": f"EBS Volume {volumeId} does not have a snapshot which can reduce cyber resilience due to a lack of a viable backup. You can back up the data on your Amazon EBS volumes to Amazon S3 by taking point-in-time snapshots. Snapshots are incremental backups, which means that only the blocks on the device that have changed after your most recent snapshot are saved. This minimizes the time required to create the snapshot and saves on storage costs by not duplicating data. AWS does not automatically back up data stored on your Amazon EBS volumes. For data resiliency and disaster recovery, it remains your responsibility to create regular backups using Amazon EBS snapshots, or to set up automatic snapshot creation using Amazon Data Lifecycle Manager or AWS Backup. Each snapshot contains all of the information that is needed to restore your data (from the moment when the snapshot was taken) to a new EBS volume. When you create an EBS volume based on a snapshot, the new volume begins as an exact replica of the original volume that was used to create the snapshot. The replicated volume loads data in the background so that you can begin using it immediately. If you access data that hasn't been loaded yet, the volume immediately downloads the requested data from Amazon S3, and then continues loading the rest of the volume's data in the background. Refer to the remediation instructions if this configuration is not intended",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your EBS volume should be backed up via Snapshots refer to the Amazon EBS snapshots section of the Amazon Elastic Compute Cloud User Guide",
