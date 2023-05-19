@@ -1634,8 +1634,6 @@ def ec2_instance_ssm_managed_check(cache: dict, session, awsAccountId: str, awsR
         except KeyError:
             instanceLaunchedAt = str(i["LaunchTime"])
 
-        print(i)
-
         # We added the information for SSM DescribeInstanceInformation to each instance in Cache, if the list is empty
         # that means they are not managed at all due to a variety of reasons detailed in the finding...
         if not i["ManagedInstanceInformation"]:
