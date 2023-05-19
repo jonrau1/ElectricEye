@@ -202,13 +202,15 @@ python3 eeauditor/controller.py -t AWS -a ElectricEye_AttackSurface_Auditor -o j
 
 These are the following services and checks perform by each Auditor, there are currently **556 Checks** across **77 Auditors** that support the secure configuration of **103 services/components**
 
-**Regarding AWS ElasticSearch Service/OpenSearch Service:** AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
+**Regarding AWS ElasticSearch Service/OpenSearch Service**: AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
-**Regarding AWS Shield Advanced:** You must be actively subscribed to Shield Advanced with at least one Protection assigned to assess this Service.
+**Regarding AWS Shield Advanced**: You must be actively subscribed to Shield Advanced with at least one Protection assigned to assess this Service.
 
-**Regarding AWS Trusted Advisor:** You must be on AWS Business or Enterprise Support to interact with the `support` API for Trusted Advisor.
+**Regarding AWS Trusted Advisor**: You must be on AWS Business or Enterprise Support to interact with the `support` API for Trusted Advisor.
 
-**Regarding AWS Health:** You must be on AWS Business or Enterprise Support to interact with the `support` API for Health.
+**Regarding AWS Health**: You must be on AWS Business or Enterprise Support to interact with the `support` API for Health.
+
+**Regarding EC2**: As of 19 MAY 2023, the separate `Amazon_EC2_SSM_Auditor` and all of its checks have been merged into the `Amazon_EC2_Auditor` with only the control names changing from their `[EC2.SystemsManager.XX]` schema to the normal `[EC2.X]` one.
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
@@ -281,6 +283,10 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_EC2_Auditor | EC2 Instance | Is instance using an AMI baked in last 3 months |
 | Amazon_EC2_Auditor | EC2 Instance | Is instance using a correctly registered AMI |
 | Amazon_EC2_Auditor | Account | Are instances spread across Multiple AZs |
+| Amazon_EC2_Auditor | EC2 Instance | Is the instance managed by SSM |
+| Amazon_EC2_Auditor | EC2 Instance | Does the instance have a successful SSM association |
+| Amazon_EC2_Auditor | EC2 Instance | Is the SSM Agent up to date |
+| Amazon_EC2_Auditor | EC2 Instance | Is the Patch status up to date |
 | Amazon_EC2_Image_Builder_Auditor | Image Builder | Are pipeline tests enabled |
 | Amazon_EC2_Image_Builder_Auditor | Image Builder | Is EBS encrypted |
 | Amazon_EC2_Security_Group_Auditor | Security Group | Are all ports (-1) open to the internet |
@@ -315,10 +321,6 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_EC2_Security_Group_Auditor | Security Group | Is Spark WebUI (tcp4040) open to the internet |
 | Amazon_EC2_Security_Group_Auditor | Security Group | Is POP3 (tcp110) open to the internet |
 | Amazon_EC2_Security_Group_Auditor | Security Group | Is VMWare ESXi (tcp8182) open to the internet |
-| Amazon_EC2_SSM_Auditor | EC2 Instance | Is the instance managed by SSM |
-| Amazon_EC2_SSM_Auditor | EC2 Instance | Does the instance have a successful SSM association |
-| Amazon_EC2_SSM_Auditor | EC2 Instance | Is the SSM Agent up to date |
-| Amazon_EC2_SSM_Auditor | EC2 Instance | Is the Patch status up to date |
 | Amazon_ECR_Auditor | ECR Registry (Account) | Is there a registry access policy |
 | Amazon_ECR_Auditor | ECR Registry (Account) | Is image replication configured |
 | Amazon_ECR_Auditor | ECR Repository | Does the repository support scan-on-push |

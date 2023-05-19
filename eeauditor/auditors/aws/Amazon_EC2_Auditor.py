@@ -23,23 +23,50 @@ from dateutil.parser import parse
 from check_register import CheckRegister
 import base64
 import json
+from botocore.config import Config
+
+# Adding backoff and retries for SSM - this API gets throttled a lot
+config = Config(
+   retries = {
+      'max_attempts': 10,
+      'mode': 'adaptive'
+   }
+)
 
 registry = CheckRegister()
 
 def describe_instances(cache, session):
-    ec2 = session.client("ec2")
-    instanceList = []
-    response = cache.get("instances")
+    response = cache.get("describe_instances")
     if response:
         return response
-    paginator = ec2.get_paginator("describe_instances")
-    if paginator:
-        for page in paginator.paginate(Filters=[{"Name": "instance-state-name","Values": ["running","stopped"]}]):
-            for r in page["Reservations"]:
-                for i in r["Instances"]:
-                    instanceList.append(i)
-        cache["instances"] = instanceList
-        return cache["instances"]
+    
+    instanceList = []
+    
+    ec2 = session.client("ec2")
+    ssm = session.client("ssm", config=config)
+    # Enrich EC2 with SSM details - this is done for the EC2 Auditor - all others using EC2 don't matter too much
+    managedInstances = ssm.describe_instance_information()["InstanceInformationList"]
+
+    for page in ec2.get_paginator("describe_instances").paginate(
+            Filters=[
+                {
+                    "Name": "instance-state-name",
+                    "Values": [ 
+                        "running",
+                        "stopped" 
+                    ]
+                }
+            ]
+        ):
+        for r in page["Reservations"]:
+            for i in r["Instances"]:
+                # Use a list comprehension to attempt to get SSM info for the instance
+                managedInstanceInfo = [mnginst for mnginst in managedInstances if mnginst["InstanceId"] == i["InstanceId"]]
+                i["ManagedInstanceInformation"] = managedInstanceInfo
+                instanceList.append(i)
+
+        cache["describe_instances"] = instanceList
+        return cache["describe_instances"]
 
 @registry.register_check("ec2")
 def ec2_imdsv2_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -753,7 +780,7 @@ def ec2_source_dest_verification_check(cache: dict, session, awsAccountId: str, 
 
 @registry.register_check("ec2")
 def ec2_serial_console_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EC2.5] Serial port access to EC2 should be prohibited unless absolutely required"""
+    """[EC2.5] Account-wide EC2 Serial port access should be prohibited unless absolutely required"""
     ec2 = session.client("ec2")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
@@ -778,12 +805,8 @@ def ec2_serial_console_access_check(cache: dict, session, awsAccountId: str, aws
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[EC2.5] Serial port access to EC2 should be prohibited unless absolutely required",
-            "Description": "AWS Account "
-            + awsAccountId
-            + " in Region "
-            + awsRegion
-            + " does not restrict access to the EC2 Serial Console, EC2 Serial Console provides text-based access to an instances’ serial port as though a monitor and keyboard were attached to it, this can be useful for troubleshooting but can also be abused if not properly restricted. Refer to the remediation instructions if this configuration is not intended",
+            "Title": "[EC2.5] Account-wide EC2 Serial port access should be prohibited unless absolutely required",
+            "Description": f"AWS Account {awsAccountId} does not restrict access to the EC2 Serial Console in {awsRegion}. The EC2 Serial Console provides text-based access to an instances' serial port as though a monitor and keyboard were attached to it, this can be useful for troubleshooting but can also be abused if not properly restricted, allowing internal and external adversaries unfettered access to the underlying systems within a specific Region. Refer to the remediation instructions if this configuration is not intended",
             "Remediation": {
                 "Recommendation": {
                     "Text": "To learn more about the EC2 Serial Console refer to the EC2 Serial Console for Linux instances section of the Amazon Elastic Compute Cloud User Guide",
@@ -847,12 +870,8 @@ def ec2_serial_console_access_check(cache: dict, session, awsAccountId: str, aws
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[EC2.5] Serial port access to EC2 should be prohibited unless absolutely required",
-            "Description": "AWS Account "
-            + awsAccountId
-            + " in Region "
-            + awsRegion
-            + " restricts access to the EC2 Serial Console.",
+            "Title": "[EC2.5] Account-wide EC2 Serial port access should be prohibited unless absolutely required",
+            "Description": f"AWS Account {awsAccountId} does restrict access to the EC2 Serial Console in {awsRegion}.",
             "Remediation": {
                 "Recommendation": {
                     "Text": "To learn more about the EC2 Serial Console refer to the EC2 Serial Console for Linux instances section of the Amazon Elastic Compute Cloud User Guide",
@@ -902,7 +921,7 @@ def ec2_serial_console_access_check(cache: dict, session, awsAccountId: str, aws
 
 @registry.register_check("ec2")
 def ec2_ami_age_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EC2.6] EC2 Instances should use AMIs that are less than 3 months old"""
+    """[EC2.6] Amazon EC2 Instances should use AMIs that are less than three months old"""
     ec2 = session.client("ec2")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
@@ -942,7 +961,7 @@ def ec2_ami_age_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "MEDIUM"},
                     "Confidence": 99,
-                    "Title": "[EC2.5] EC2 Instances should use AMIs that are less than 3 months old",
+                    "Title": "[EC2.5] Amazon EC2 Instances should use AMIs that are less than three months old",
                     "Description": f"EC2 Instance {instanceId} is using an AMI that is {AmiAge.days} days old",
                     "Remediation": {
                         "Recommendation": {
@@ -1012,7 +1031,7 @@ def ec2_ami_age_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
-                    "Title": "[EC2.5] EC2 Instances should use AMIs that are less than 3 months old",
+                    "Title": "[EC2.5] Amazon EC2 Instances should use AMIs that are less than three months old",
                     "Description": f"EC2 Instance {instanceId} is using an AMI that is {AmiAge.days} days old",
                     "Remediation": {
                         "Recommendation": {
@@ -1072,7 +1091,7 @@ def ec2_ami_age_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
 
 @registry.register_check("ec2")
 def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EC2.7] EC2 Instances should use AMIs that are currently registered"""
+    """[EC2.7] Amazon EC2 Instances should use AMIs that are currently registered"""
     ec2 = session.client("ec2")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
@@ -1110,7 +1129,7 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "HIGH"},
                     "Confidence": 99,
-                    "Title": "[EC2.6] EC2 Instances should use AMIs that are currently registered",
+                    "Title": "[EC2.6] Amazon EC2 Instances should use AMIs that are currently registered",
                     "Description": f"EC2 Instance {instanceId} is using an AMI that has a status of: {amiState}",
                     "Remediation": {
                         "Recommendation": {
@@ -1180,7 +1199,7 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
-                    "Title": "[EC2.6] EC2 Instances should use AMIs that are currently registered",
+                    "Title": "[EC2.6] Amazon EC2 Instances should use AMIs that are currently registered",
                     "Description": f"EC2 Instance {instanceId} is using an AMI that has a status of: {amiState}",
                     "Remediation": {
                         "Recommendation": {
@@ -1251,7 +1270,7 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
-                    "Title": "[EC2.6] EC2 Instances should use AMIs that are currently registered",
+                    "Title": "[EC2.6] Amazon EC2 Instances should use AMIs that are currently registered",
                     "Description": f"EC2 Instance {instanceId} is using an AMI that has a status of: {amiState}",
                     "Remediation": {
                         "Recommendation": {
@@ -1322,7 +1341,7 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[EC2.6] EC2 Instances should use AMIs that are currently registered",
+                "Title": "[EC2.6] Amazon EC2 Instances should use AMIs that are currently registered",
                 "Description": f"EC2 Instance {instanceId} is using an AMI that has a status of: deregistered",
                 "Remediation": {
                     "Recommendation": {
@@ -1380,12 +1399,15 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
 
 @registry.register_check("ec2")
 def ec2_concentration_risk(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EC2.8] EC2 Instances should be deployed across multiple Availability Zones"""
+    """[EC2.8] Amazon EC2 Instances should be deployed across multiple Availability Zones"""
     ec2 = session.client("ec2")
     # Create empty list to hold unique Subnet IDs - for future lookup against AZs
     uSubnets = []
     # Create another empty list to hold unique AZs based on Subnets
     uAzs = []
+    # This list contains regions which have a smaller amount of AZs to begin with - only us-west-1 and the SC2C/C2C regions
+    lowerAZRegions = ["us-west-1", "us-isob-east-1", "us-isob-west-1", "us-iso-east-1", "us-iso-west-1"]
+
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     assetB64 = None
@@ -1406,7 +1428,7 @@ def ec2_concentration_risk(cache: dict, session, awsAccountId: str, awsRegion: s
             continue
     # Final judgement - need to handle North Cali (us-west-1) separately
     # this is a failing check
-    if (awsRegion == "us-west-1" and len(uAzs) < 1):
+    if awsRegion not in lowerAZRegions and len(uAzs) < 2:
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": f"{awsAccountId}:{awsRegion}/ec2-az-resilience-check",
@@ -1419,7 +1441,7 @@ def ec2_concentration_risk(cache: dict, session, awsAccountId: str, awsRegion: s
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "LOW"},
             "Confidence": 99,
-            "Title": "[EC2.7] EC2 Instances should be deployed across multiple Availability Zones",
+            "Title": "[EC2.7] Amazon EC2 Instances should be deployed across multiple Availability Zones",
             "Description": f"AWS Account {awsAccountId} in AWS Region {awsRegion} only utilizes {len(uAzs)} Availability Zones for all currently Running and stopped EC2 Instances. To maintain a higher standard of cyber resilience you should use at least 3 (or 2 in North California) to host your workloads on. If your applications required higher cyber resilience standards refer to the remediation instructions for more information.",
             "Remediation": {
                 "Recommendation": {
@@ -1468,7 +1490,7 @@ def ec2_concentration_risk(cache: dict, session, awsAccountId: str, awsRegion: s
         }
         yield finding
     # this is a failing check
-    elif (awsRegion != "us-west-1" and len(uAzs) < 2):
+    elif awsRegion in lowerAZRegions and len(uAzs) < 1:
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": f"{awsAccountId}:{awsRegion}/ec2-az-resilience-check",
@@ -1481,7 +1503,7 @@ def ec2_concentration_risk(cache: dict, session, awsAccountId: str, awsRegion: s
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "LOW"},
             "Confidence": 99,
-            "Title": "[EC2.7] EC2 Instances should be deployed across multiple Availability Zones",
+            "Title": "[EC2.7] Amazon EC2 Instances should be deployed across multiple Availability Zones",
             "Description": f"AWS Account {awsAccountId} in AWS Region {awsRegion} only utilizes {len(uAzs)} Availability Zones for all currently Running and stopped EC2 Instances. To maintain a higher standard of cyber resilience you should use at least 3 (or 2 in North California) to host your workloads on. If your applications required higher cyber resilience standards refer to the remediation instructions for more information.",
             "Remediation": {
                 "Recommendation": {
@@ -1543,7 +1565,7 @@ def ec2_concentration_risk(cache: dict, session, awsAccountId: str, awsRegion: s
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[EC2.7] EC2 Instances should be deployed across multiple Availability Zones",
+            "Title": "[EC2.7] Amazon EC2 Instances should be deployed across multiple Availability Zones",
             "Description": f"AWS Account {awsAccountId} in AWS Region {awsRegion} utilizes {len(uAzs)} Availability Zones for all currently Running and stopped EC2 Instances which can help maintain a higher standard of cyber resilience.",
             "Remediation": {
                 "Recommendation": {
@@ -1591,3 +1613,656 @@ def ec2_concentration_risk(cache: dict, session, awsAccountId: str, awsRegion: s
             "RecordState": "ARCHIVED"
         }
         yield finding
+
+@registry.register_check("ec2")
+def ec2_instance_ssm_managed_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2.9] Amazon EC2 instances should be managed by AWS Systems Manager"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for i in describe_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(i,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        instanceId = str(i["InstanceId"])
+        instanceArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
+        instanceType = str(i["InstanceType"])
+        instanceImage = str(i["ImageId"])
+        subnetId = str(i["SubnetId"])
+        vpcId = str(i["VpcId"])
+        try:
+            instanceLaunchedAt = str(i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"])
+        except KeyError:
+            instanceLaunchedAt = str(i["LaunchTime"])
+
+        # We added the information for SSM DescribeInstanceInformation to each instance in Cache, if the list is empty
+        # that means they are not managed at all due to a variety of reasons detailed in the finding...
+        if not i["ManagedInstanceInformation"]:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": instanceArn + "/ec2-managed-by-ssm-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": instanceArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[EC2.9] Amazon EC2 instances should be managed by AWS Systems Manager",
+                "Description": f"EC2 Instance {instanceId} is not managed by AWS Systems Manager. Systems Manager (SSM) enables automated activities such as patching, configuration management, software inventory management and more. Not having instances managed by SSM can degrade the effectiveness of important security processes. This status can be due to the Instance being stopped or hibernated for too long and being removed from SSM tracking, lacking an instance profile that provides permissions to the SSM APIs, or having an SSM Agent that is deprecated. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To learn how to configure Systems Manager and associated instances refer to the Setting Up AWS Systems Manager section of the AWS Systems Manager User Guide",
+                        "Url": "https://docs.aws.amazon.com/en_us/systems-manager/latest/userguide/systems-manager-setting-up.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2Instance",
+                        "Id": instanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2Instance": {
+                                "Type": instanceType,
+                                "ImageId": instanceImage,
+                                "VpcId": vpcId,
+                                "SubnetId": subnetId,
+                                "LaunchedAt": parse(instanceLaunchedAt).isoformat()
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": instanceArn + "/ec2-managed-by-ssm-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": instanceArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[EC2.9] Amazon EC2 instances should be managed by AWS Systems Manager",
+                "Description": f"EC2 Instance {instanceId} is managed by AWS Systems Manager.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To learn how to configure Systems Manager and associated instances refer to the Setting Up AWS Systems Manager section of the AWS Systems Manager User Guide",
+                        "Url": "https://docs.aws.amazon.com/en_us/systems-manager/latest/userguide/systems-manager-setting-up.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2Instance",
+                        "Id": instanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2Instance": {
+                                "Type": instanceType,
+                                "ImageId": instanceImage,
+                                "VpcId": vpcId,
+                                "SubnetId": subnetId,
+                                "LaunchedAt": parse(instanceLaunchedAt).isoformat()
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("ec2")
+def ssm_instace_agent_update_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2.SystemsManager.2] EC2 Linux Instances managed by Systems Manager should have the latest SSM Agent installed"""
+    ssm = session.client("ssm",config=config)
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for i in describe_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(i,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        instanceId = str(i["InstanceId"])
+        instanceArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
+        instanceType = str(i["InstanceType"])
+        instanceImage = str(i["ImageId"])
+        subnetId = str(i["SubnetId"])
+        vpcId = str(i["VpcId"])
+        try:
+            instanceLaunchedAt = str(i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"])
+        except KeyError:
+            instanceLaunchedAt = str(i["LaunchTime"])
+        # Check specific metadata
+        r = ssm.describe_instance_information(
+            Filters=[
+                {
+                    'Key': 'InstanceIds',
+                    'Values': [instanceId]
+                }
+            ]
+        )["InstanceInformationList"]
+        if not r:
+            continue
+        else:
+            for x in r:
+                if str(x['PlatformType']) != 'Linux':
+                    continue
+                else:
+                    if str(x["IsLatestVersion"]) == "False":
+                        # this is a failing check
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": instanceArn + "/ec2-ssm-agent-latest-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": instanceArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "LOW"},
+                            "Confidence": 99,
+                            "Title": "[EC2.SystemsManager.2] EC2 Linux Instances managed by Systems Manager should have the latest SSM Agent installed",
+                            "Description": f"EC2 Instance {instanceId} is a Linux-based platform which does not have the latest SSM Agent installed. Not having the latest SSM Agent can lead to issues with patching, configuration management, inventory management, and/or vulnerability management activities. Refer to the remediation instructions if this configuration is not intended.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "For information on automating updates to the SSM Agent refer to the Automate Updates to SSM Agent section of the AWS Systems Manager User Guide",
+                                    "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent-automatic-updates.html",
+                                }
+                            },
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon EC2",
+                                "AssetComponent": "Instance"
+                            },
+                            "Resources": [
+                                {
+                                    "Type": "AwsEc2Instance",
+                                    "Id": instanceArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsEc2Instance": {
+                                            "Type": instanceType,
+                                            "ImageId": instanceImage,
+                                            "VpcId": vpcId,
+                                            "SubnetId": subnetId,
+                                            "LaunchedAt": parse(instanceLaunchedAt).isoformat()
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "FAILED",
+                                "RelatedRequirements": [
+                                    "NIST CSF V1.1 ID.AM-2",
+                                    "NIST SP 800-53 Rev. 4 CM-8",
+                                    "NIST SP 800-53 Rev. 4 PM-5",
+                                    "AICPA TSC CC3.2",
+                                    "AICPA TSC CC6.1",
+                                    "ISO 27001:2013 A.8.1.1",
+                                    "ISO 27001:2013 A.8.1.2",
+                                    "ISO 27001:2013 A.12.5.1"
+                                ]
+                            },
+                            "Workflow": {"Status": "NEW"},
+                            "RecordState": "ACTIVE"
+                        }
+                        yield finding
+                    else:
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": instanceArn + "/ec2-ssm-agent-latest-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": instanceArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "INFORMATIONAL"},
+                            "Confidence": 99,
+                            "Title": "[EC2.SystemsManager.2] EC2 Linux Instances managed by Systems Manager should have the latest SSM Agent installed",
+                            "Description": f"EC2 Instance {instanceId} is a Linux-based platform and has the latest SSM Agent installed.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "For information on automating updates to the SSM Agent refer to the Automate Updates to SSM Agent section of the AWS Systems Manager User Guide",
+                                    "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent-automatic-updates.html",
+                                }
+                            },
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon EC2",
+                                "AssetComponent": "Instance"
+                            },
+                            "Resources": [
+                                {
+                                    "Type": "AwsEc2Instance",
+                                    "Id": instanceArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsEc2Instance": {
+                                            "Type": instanceType,
+                                            "ImageId": instanceImage,
+                                            "VpcId": vpcId,
+                                            "SubnetId": subnetId,
+                                            "LaunchedAt": parse(instanceLaunchedAt).isoformat()
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "PASSED",
+                                "RelatedRequirements": [
+                                    "NIST CSF V1.1 ID.AM-2",
+                                    "NIST SP 800-53 Rev. 4 CM-8",
+                                    "NIST SP 800-53 Rev. 4 PM-5",
+                                    "AICPA TSC CC3.2",
+                                    "AICPA TSC CC6.1",
+                                    "ISO 27001:2013 A.8.1.1",
+                                    "ISO 27001:2013 A.8.1.2",
+                                    "ISO 27001:2013 A.12.5.1"
+                                ]
+                            },
+                            "Workflow": {"Status": "RESOLVED"},
+                            "RecordState": "ARCHIVED"
+                        }
+                        yield finding
+
+@registry.register_check("ec2")
+def ssm_instance_association_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2.SystemsManager.3] Running EC2 instances managed by Systems Manager should have a successful Association status"""
+    ssm = session.client("ssm",config=config)
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for i in describe_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(i,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        instanceId = str(i["InstanceId"])
+        instanceArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
+        instanceType = str(i["InstanceType"])
+        instanceImage = str(i["ImageId"])
+        subnetId = str(i["SubnetId"])
+        vpcId = str(i["VpcId"])
+        try:
+            instanceLaunchedAt = str(i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"])
+        except KeyError:
+            instanceLaunchedAt = str(i["LaunchTime"])
+        # Check specific metadata
+        r = ssm.describe_instance_information(
+            Filters=[
+                {
+                    'Key': 'InstanceIds',
+                    'Values': [instanceId]
+                }
+            ]
+        )["InstanceInformationList"]
+        if not r:
+            continue
+        else:
+            for x in r:
+                associationStatusCheck = str(x["AssociationStatus"])
+                if associationStatusCheck != "Success":
+                    # this is a failing check
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": instanceArn + "/ec2-ssm-association-success-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": instanceArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "LOW"},
+                        "Confidence": 99,
+                        "Title": "[EC2.SystemsManager.3] Running EC2 instances managed by Systems Manager should have a successful Association status",
+                        "Description": f"EC2 Instance {instanceId} has failed its last Systems Manager State Manager Association. Associations are State Manager automation constructs which encapsulate execution of SSM Documents such as Patching, software configuration, and SSM Agent updates onto an instance. A failed Association can represent the failure of a critical process and should be reviewed. Refer to the remediation instructions for more information on working with State Manager Associations.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For information on Systems Manager Associations refer to the Working with Associations in Systems Manager section of the AWS Systems Manager User Guide",
+                                "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-associations.html",
+                            }
+                        },
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Compute",
+                            "AssetService": "Amazon EC2",
+                            "AssetComponent": "Instance"
+                        },
+                        "Resources": [
+                            {
+                                "Type": "AwsEc2Instance",
+                                "Id": instanceArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsEc2Instance": {
+                                        "Type": instanceType,
+                                        "ImageId": instanceImage,
+                                        "VpcId": vpcId,
+                                        "SubnetId": subnetId,
+                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat()
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF V1.1 ID.AM-2",
+                                "NIST SP 800-53 Rev. 4 CM-8",
+                                "NIST SP 800-53 Rev. 4 PM-5",
+                                "AICPA TSC CC3.2",
+                                "AICPA TSC CC6.1",
+                                "ISO 27001:2013 A.8.1.1",
+                                "ISO 27001:2013 A.8.1.2",
+                                "ISO 27001:2013 A.12.5.1"
+                            ]
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE"
+                    }
+                    yield finding
+                else:
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": instanceArn + "/ec2-ssm-association-success-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": instanceArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[EC2.SystemsManager.3] Running EC2 instances managed by Systems Manager should have a successful Association status",
+                        "Description": f"EC2 Instance {instanceId} has passed its last Systems Manager State Manager Association.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For information on Systems Manager Associations refer to the Working with Associations in Systems Manager section of the AWS Systems Manager User Guide",
+                                "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-associations.html",
+                            }
+                        },
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Compute",
+                            "AssetService": "Amazon EC2",
+                            "AssetComponent": "Instance"
+                        },
+                        "Resources": [
+                            {
+                                "Type": "AwsEc2Instance",
+                                "Id": instanceArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsEc2Instance": {
+                                        "Type": instanceType,
+                                        "ImageId": instanceImage,
+                                        "VpcId": vpcId,
+                                        "SubnetId": subnetId,
+                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat()
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF V1.1 ID.AM-2",
+                                "NIST SP 800-53 Rev. 4 CM-8",
+                                "NIST SP 800-53 Rev. 4 PM-5",
+                                "AICPA TSC CC3.2",
+                                "AICPA TSC CC6.1",
+                                "ISO 27001:2013 A.8.1.1",
+                                "ISO 27001:2013 A.8.1.2",
+                                "ISO 27001:2013 A.12.5.1"
+                            ]
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED"
+                    }
+                    yield finding
+
+@registry.register_check("ec2")
+def ssm_instance_patch_state_state(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2.SystemsManager.4] Running EC2 instances managed by Systems Manager should have the latest patches installed by Patch Manager"""
+    ssm = session.client("ssm",config=config)
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for i in describe_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(i,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        instanceId = str(i["InstanceId"])
+        instanceArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
+        instanceType = str(i["InstanceType"])
+        instanceImage = str(i["ImageId"])
+        subnetId = str(i["SubnetId"])
+        vpcId = str(i["VpcId"])
+        try:
+            instanceLaunchedAt = str(i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"])
+        except KeyError:
+            instanceLaunchedAt = str(i["LaunchTime"])
+        # Check specific metadata
+        r = ssm.describe_instance_patches(InstanceId=instanceId)              
+        if not r["Patches"]:
+            # This is a failing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": instanceArn + "/ec2-patch-manager-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": instanceArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[EC2.SystemsManager.4] Running EC2 instances managed by Systems Manager should have the latest patches installed by Patch Manager",
+                "Description": f"EC2 Instance {instanceId} does not have any patch information recorded and is likely not managed by Patch Manager. Patch Manager automates the installation and application of security, performance, and major version upgrades and KBs onto your instances, reducing exposure to vulnerabilities and other weaknesses. Without automatic patching at scale, vulnerabilities can quickly manifest within a given cloud environment leading to potential avenues of attack for adversaries and other unauthorized actors. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on Patch Manager refer to the AWS Systems Manager Patch Manager section of the AWS Systems Manager User Guide",
+                        "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-patch.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2Instance",
+                        "Id": instanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2Instance": {
+                                "Type": instanceType,
+                                "ImageId": instanceImage,
+                                "VpcId": vpcId,
+                                "SubnetId": subnetId,
+                                "LaunchedAt": parse(instanceLaunchedAt).isoformat()
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": instanceArn + "/ec2-patch-manager-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": instanceArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[EC2.SystemsManager.4] Running EC2 instances managed by Systems Manager should have the latest patches installed by Patch Manager",
+                "Description": f"EC2 Instance {instanceId} has patches applied by AWS Systems Manager Patch Manager. You should still review Patch Compliance information to ensure that all required patches were successfully applied.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on Patch Manager refer to the AWS Systems Manager Patch Manager section of the AWS Systems Manager User Guide",
+                        "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-patch.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2Instance",
+                        "Id": instanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2Instance": {
+                                "Type": instanceType,
+                                "ImageId": instanceImage,
+                                "VpcId": vpcId,
+                                "SubnetId": subnetId,
+                                "LaunchedAt": parse(instanceLaunchedAt).isoformat()
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+## END ??

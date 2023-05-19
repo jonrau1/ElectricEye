@@ -24,6 +24,15 @@ from dateutil.parser import parse
 from check_register import CheckRegister
 import base64
 import json
+from botocore.config import Config
+
+# Adding backoff and retries for SSM - this API gets throttled a lot
+config = Config(
+   retries = {
+      'max_attempts': 10,
+      'mode': 'adaptive'
+   }
+)
 
 registry = CheckRegister()
 
@@ -39,21 +48,38 @@ def describe_volumes(cache, session):
     )
     return cache["describe_volumes"]
 
-# loop through *running & stopped& EC2 instances
 def describe_instances(cache, session):
-    ec2 = session.client("ec2")
-    instanceList = []
-    response = cache.get("instances")
+    response = cache.get("describe_instances")
     if response:
         return response
-    paginator = ec2.get_paginator("describe_instances")
-    if paginator:
-        for page in paginator.paginate(Filters=[{"Name": "instance-state-name","Values": ["running","stopped"]}]):
-            for r in page["Reservations"]:
-                for i in r["Instances"]:
-                    instanceList.append(i)
-        cache["instances"] = instanceList
-        return cache["instances"]
+    
+    instanceList = []
+    
+    ec2 = session.client("ec2")
+    ssm = session.client("ssm", config=config)
+    # Enrich EC2 with SSM details - this is done for the EC2 Auditor - all others using EC2 don't matter too much
+    managedInstances = ssm.describe_instance_information()["InstanceInformationList"]
+
+    for page in ec2.get_paginator("describe_instances").paginate(
+            Filters=[
+                {
+                    "Name": "instance-state-name",
+                    "Values": [ 
+                        "running",
+                        "stopped" 
+                    ]
+                }
+            ]
+        ):
+        for r in page["Reservations"]:
+            for i in r["Instances"]:
+                # Use a list comprehension to attempt to get SSM info for the instance
+                managedInstanceInfo = [mnginst for mnginst in managedInstances if mnginst["InstanceId"] == i["InstanceId"]]
+                i["ManagedInstanceInformation"] = managedInstanceInfo
+                instanceList.append(i)
+
+        cache["describe_instances"] = instanceList
+        return cache["describe_instances"]
 
 # loop through DynamoDB tables
 def list_tables(cache, session):
