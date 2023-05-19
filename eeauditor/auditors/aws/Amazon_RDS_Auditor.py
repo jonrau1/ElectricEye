@@ -1485,16 +1485,16 @@ def rds_instance_cloudwatch_logging_check(cache: dict, session, awsAccountId: st
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 DE.AE-3",
-                        "NIST SP 800-53 Rev. 4 AU-6",
-                        "NIST SP 800-53 Rev. 4 CA-7",
-                        "NIST SP 800-53 Rev. 4 IR-4",
-                        "NIST SP 800-53 Rev. 4 IR-5",
-                        "NIST SP 800-53 Rev. 4 IR-8",
-                        "NIST SP 800-53 Rev. 4 SI-4",
-                        "AICPA TSC CC7.2",
-                        "ISO 27001:2013 A.12.4.1",
-                        "ISO 27001:2013 A.16.1.7"
+                        "NIST CSF V1.1 PR.MA-1",
+                        "NIST SP 800-53 Rev. 4 MA-2",
+                        "NIST SP 800-53 Rev. 4 MA-3",
+                        "NIST SP 800-53 Rev. 4 MA-5",
+                        "NIST SP 800-53 Rev. 4 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -1555,16 +1555,16 @@ def rds_instance_cloudwatch_logging_check(cache: dict, session, awsAccountId: st
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 DE.AE-3",
-                        "NIST SP 800-53 Rev. 4 AU-6",
-                        "NIST SP 800-53 Rev. 4 CA-7",
-                        "NIST SP 800-53 Rev. 4 IR-4",
-                        "NIST SP 800-53 Rev. 4 IR-5",
-                        "NIST SP 800-53 Rev. 4 IR-8",
-                        "NIST SP 800-53 Rev. 4 SI-4",
-                        "AICPA TSC CC7.2",
-                        "ISO 27001:2013 A.12.4.1",
-                        "ISO 27001:2013 A.16.1.7"
+                        "NIST CSF V1.1 PR.MA-1",
+                        "NIST SP 800-53 Rev. 4 MA-2",
+                        "NIST SP 800-53 Rev. 4 MA-3",
+                        "NIST SP 800-53 Rev. 4 MA-5",
+                        "NIST SP 800-53 Rev. 4 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
