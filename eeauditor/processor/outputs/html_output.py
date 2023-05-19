@@ -422,7 +422,7 @@ class HtmlProvider(object):
         # Compliance Passed v Failed
         totalPassed = [finding for finding in processedData if finding["ComplianceStatus"] == "PASSED"]
         totalFailed = [finding for finding in processedData if finding["ComplianceStatus"] == "FAILED"]
-        totalFailedCount = len(totalFailed)
+
         failingPercentage = (len(totalPassed) / totalFindings) * 100
         roundedPercentage = f"{round(failingPercentage, 2)}%"
         # Severity Status
@@ -436,6 +436,7 @@ class HtmlProvider(object):
         uniqueResource = list(set(d.get("ResourceId") for d in processedData))
         # Assets
         #allServices = [d.get("AssetService") for d in processedData]
+        uniqueClasses = list(set(d.get("AssetClass") for d in processedData))
         uniqueServices = list(set(d.get("AssetService") for d in processedData))
         #allComponents = [d.get("AssetComponent") for d in processedData]
         uniqueComponents = list(set(d.get("AssetComponent") for d in processedData))
@@ -447,7 +448,7 @@ class HtmlProvider(object):
         executiveReport = f'ElectricEye Auditors scanned {len(uniqueResource)} total Assets across {len(uniqueAccounts)} Provider Account(s) in {len(uniqueRegions)} Region(s)/Zone(s) \
             and generated {totalFindings} Findings. Of all findings, {len(totalFailed)} failed and {len(totalPassed)} passed for an ElectricEye Findings Passing Score of {roundedPercentage}. \
             Of these findings the severities are {len(criticalsFindings)} Critical, {len(highFindings)} High, {len(mediumFindings)} Medium, {len(lowFindings)} Low, and {len(infoFindings)} Informational. \
-            There are {len(allResources)} resources across the Provider Accounts & Regions, comprising {len(uniqueServices)} distinct Asset Services and {len(uniqueComponents)} distinct \
+            There are {len(uniqueClasses)} Asset Classes (categories) across the Provider Accounts & Regions, comprising {len(uniqueServices)} distinct Asset Services and {len(uniqueComponents)} distinct \
             Asset Components. It is recommended to work backwards from resources with the highest amount of failed findings and Assets with important business- or mission-criticality.'
         
         return executiveReport

@@ -59,7 +59,9 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 
 - Outputs to AWS Security Hub, AWS DocumentDB, JSON, CSV, HTML Reports, Slack (via Slack App Bots), MongoDB, Amazon SQS, PostgreSQL, Amazon Simple Queue Service (SQS), and [**FireMon Cloud Defense**](https://www.firemon.com/introducing-disruptops/).
 
-ElectricEye's core concept is the **Auditor** which are sets of Python scripts that run **Checks** per Service dedicated to a specific SaaS vendor or public cloud service provider called an **Assessment Target**. You can run an entire Assessment Target, a specific Auditor, or a specific Check within an Auditor. After ElectricEye is done with evaluations, it supports over a dozen types of **Outputs** ranging from an HTML executive report to AWS DocumentDB clusters. ElectricEye also uses other tools such as Shodan, `detect-secrets`, and NMAP for carrying out its Checks. While mainly a security tool, ElectricEye can be used for Cloud Asset Management use cases such as discovery and inventory and has Checks aligned to several best-practice regimes that cover resiliency, recovery, performance optimization, monitoring, as well as several 100 security checks against your cloud infrastructure and identities.
+ElectricEye's core concept is the **Auditor** which are sets of Python scripts that run **Checks** per Service dedicated to a specific SaaS vendor or public cloud service provider called an **Assessment Target**.  You can run an entire Assessment Target, a specific Auditor, or a specific Check within an Auditor. After ElectricEye is done with evaluations, it supports over a dozen types of **Outputs** ranging from an HTML executive report to AWS DocumentDB clusters - you can run multiple Outputs as you see fit.
+
+ElectricEye also uses utilizes other tools such as [Shodan](https://www.shodan.io/), [`detect-secrets`](https://pypi.org/project/detect-secrets/), [VirusTotal](https://www.virustotal.com/gui/home/upload), and [NMAP](https://nmap.org/) for carrying out its Checks and enriching their findings.
 
 1. First, clone this repository and install the requirements using `pip3`: `pip3 install -r requirements.txt`.
 
@@ -86,15 +88,16 @@ Options:
   -d, --delay INTEGER             Time in seconds to sleep between Auditors
                                   being ran, defaults to 0
   -o, --outputs TEXT              A list of Outputs (files, APIs, databases)
-                                  to send ElectricEye Findings - can provide
-                                  more than one  [default: stdout]
+                                  to send ElectricEye Findings, specify
+                                  multiple with additional arguments, e.g., -o
+                                  csv -o postgresql  [default: stdout]
   --output-file TEXT              For file outputs such as JSON and CSV, the
                                   name of the file, DO NOT SPECIFY .file_type
                                   [default: output]
   --list-options                  Lists all valid Output options
-  --list-checks                   List all Checks, Assets, and Check
-                                  Description within every Auditor for a
-                                  specific Assessment Target
+  --list-checks                   Prints a table of Auditors, Checks, and
+                                  Check descriptions to stdout - use this for
+                                  -a or -c args
   --create-insights               Create SecurityHub insights for ElectricEye.
                                   This only needs to be done once per Security
                                   Hub instance
