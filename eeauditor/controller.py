@@ -127,7 +127,7 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
 @click.option(
     "--list-checks",
     is_flag=True,
-    help="List all Checks, Assets, and Check Description within every Auditor for a specific Assessment Target"
+    help="Prints a table of Auditors, Checks, and Check descriptions to stdout - use this for -a or -c args"
 )
 # Insights
 @click.option(

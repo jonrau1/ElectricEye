@@ -410,7 +410,7 @@ class EEAuditor(object):
     def print_checks_md(self):
         table = []
         table.append(
-            "| Auditor File Name                      | Scanned Resource Plugin Name         | Auditor Scan Description                                                               |"
+            "| Auditor Name                           | Check Name                    | Check Description                                                                      |"
         )
         table.append(
             "|----------------------------------------|-------------------------------|----------------------------------------------------------------------------------------|"
@@ -428,7 +428,7 @@ class EEAuditor(object):
                 auditorName = auditorFile.split(".py")[0]
                 
                 table.append(
-                    f"| {auditorName} | {serviceName} | {description} "
+                    f"| {auditorName} | {check.__name__} | {description} |"
                 )
 
         print("\n".join(table))
