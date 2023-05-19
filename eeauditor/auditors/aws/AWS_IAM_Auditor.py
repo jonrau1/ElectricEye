@@ -27,11 +27,13 @@ import json
 registry = CheckRegister()
 
 def list_users(cache, session):
-    iam = session.client("iam")
     response = cache.get("list_users")
     if response:
         return response
-    cache["list_users"] = iam.list_users(MaxItems=1000)
+    
+    iam = session.client("iam")
+
+    cache["list_users"] = iam.list_users(MaxItems=1000)["Users"]
     return cache["list_users"]
 
 @registry.register_check("iam")
@@ -40,7 +42,7 @@ def iam_access_key_age_check(cache: dict, session, awsAccountId: str, awsRegion:
     iam = session.client("iam")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for users in list_users(cache, session)["Users"]:
+    for users in list_users(cache, session):
         userName = str(users["UserName"])
         userArn = str(users["Arn"])
         # Get keys per User
@@ -235,14 +237,14 @@ def user_permission_boundary_check(cache: dict, session, awsAccountId: str, awsR
     """[IAM.2] IAM users should have permissions boundaries attached"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for users in list_users(cache, session)["Users"]:
+    for users in list_users(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(users,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         userName = str(users["UserName"])
         userArn = str(users["Arn"])
         try:
-            # this value isn't actually going to be used - we need to check if it there
+            # this value isn"t actually going to be used - we need to check if it there
             users["PermissionsBoundary"]["PermissionsBoundaryArn"]
             hasPermBoundary = True
         except KeyError:
@@ -388,7 +390,7 @@ def user_mfa_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
     iam = session.client("iam")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for users in list_users(cache, session)["Users"]:
+    for users in list_users(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(users,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -646,7 +648,7 @@ def user_inline_policy_check(cache: dict, session, awsAccountId: str, awsRegion:
     iam = session.client("iam")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for users in list_users(cache, session)["Users"]:
+    for users in list_users(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(users,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -818,7 +820,7 @@ def user_direct_attached_policy_check(cache: dict, session, awsAccountId: str, a
     iam = session.client("iam")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for users in list_users(cache, session)["Users"]:
+    for users in list_users(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(users,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -1177,7 +1179,7 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccoun
     # this is a failing check
     except botocore.exceptions.ClientError as error:
         # Handle "NoSuchEntity" exception which means the PW policy does not exist
-        if error.response['Error']['Code'] == 'NoSuchEntity':
+        if error.response["Error"]["Code"] == "NoSuchEntity":
             # B64 encode all of the details for the Asset
             assetB64 = None
             finding = {
@@ -1427,44 +1429,44 @@ def iam_created_managed_policy_least_priv_check(cache: dict, session, awsAccount
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
-        for mpolicy in iam.list_policies(Scope='Local')['Policies']:
+        for mpolicy in iam.list_policies(Scope="Local")["Policies"]:
             # B64 encode all of the details for the Asset
             assetJson = json.dumps(mpolicy,default=str).encode("utf-8")
             assetB64 = base64.b64encode(assetJson)
-            policyArn = mpolicy['Arn']
-            versionId = mpolicy['DefaultVersionId']
+            policyArn = mpolicy["Arn"]
+            versionId = mpolicy["DefaultVersionId"]
             policyDocument = iam.get_policy_version(
                 PolicyArn=policyArn,
                 VersionId=versionId
-            )['PolicyVersion']['Document']
+            )["PolicyVersion"]["Document"]
             #handle policies docs returned as strings
             if type(policyDocument) == str:
                 policyDocument = json.loads(policyDocument)
 
-            leastPrivilegeRating = 'passing'
-            for statement in policyDocument['Statement']:
-                if statement["Effect"] == 'Allow':
-                    if statement.get('Condition') == None: 
+            leastPrivilegeRating = "passing"
+            for statement in policyDocument["Statement"]:
+                if statement["Effect"] == "Allow":
+                    if statement.get("Condition") == None: 
                         # action structure could be a string or a list
-                        if type(statement['Action']) == list: 
-                            if len(['True' for x in statement['Action'] if ":*" in x or '*' == x]) > 0:
-                                if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                    leastPrivilegeRating = 'failedHigh'
+                        if type(statement["Action"]) == list: 
+                            if len(["True" for x in statement["Action"] if ":*" in x or "*" == x]) > 0:
+                                if type(statement["Resource"]) == str and statement["Resource"] == "*":
+                                    leastPrivilegeRating = "failedHigh"
                                     # Means that an initial failure will not be overwritten by a lower finding later
                                     next
-                                elif type(statement['Resource']) == list: 
-                                    leastPrivilegeRating = 'failedLow'
+                                elif type(statement["Resource"]) == list: 
+                                    leastPrivilegeRating = "failedLow"
 
                         # Single action in a statement
-                        elif type(statement['Action']) == str:
-                            if ":*" in statement['Action'] or statement['Action'] == '*':
-                                if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                    leastPrivilegeRating = 'failedHigh'
+                        elif type(statement["Action"]) == str:
+                            if ":*" in statement["Action"] or statement["Action"] == "*":
+                                if type(statement["Resource"]) == str and statement["Resource"] == "*":
+                                    leastPrivilegeRating = "failedHigh"
                                     # Means that an initial failure will not be overwritten by a lower finding later
                                     next
-                                elif type(statement['Resource']) == list: 
-                                    leastPrivilegeRating = 'failedLow'
-            if leastPrivilegeRating == 'passing':
+                                elif type(statement["Resource"]) == list: 
+                                    leastPrivilegeRating = "failedLow"
+            if leastPrivilegeRating == "passing":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": f"{policyArn}/mpolicy_least_priv",
@@ -1530,7 +1532,7 @@ def iam_created_managed_policy_least_priv_check(cache: dict, session, awsAccount
                     "RecordState": "ARCHIVED",
                 }
                 yield finding
-            elif leastPrivilegeRating == 'failedLow':
+            elif leastPrivilegeRating == "failedLow":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": f"{policyArn}/mpolicy_least_priv",
@@ -1596,7 +1598,7 @@ def iam_created_managed_policy_least_priv_check(cache: dict, session, awsAccount
                     "RecordState": "ACTIVE",
                 }
                 yield finding
-            elif leastPrivilegeRating == 'failedHigh':
+            elif leastPrivilegeRating == "failedHigh":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": f"{policyArn}/mpolicy_least_priv",
@@ -1671,52 +1673,52 @@ def iam_user_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
     """[IAM.9] User inline policies should follow least privilege principles"""
     iam = session.client("iam")
     try:
-        for users in list_users(cache, session)["Users"]:
+        for users in list_users(cache, session):
             # B64 encode all of the details for the Asset
             assetJson = json.dumps(users,default=str).encode("utf-8")
             assetB64 = base64.b64encode(assetJson)
-            userArn = users['Arn']
-            userName = users['UserName']
+            userArn = users["Arn"]
+            userName = users["UserName"]
 
             policyNames = iam.list_user_policies(
                 UserName=userName
-            )['PolicyNames']
+            )["PolicyNames"]
             for policyName in policyNames:
                 policyDocument = iam.get_user_policy(
                     UserName=userName,
                     PolicyName=policyName
-                )['PolicyDocument']
+                )["PolicyDocument"]
 
                 #handle policies docs returned as strings
                 if type(policyDocument) == str:
                     policyDocument = json.loads(policyDocument)
 
-                leastPrivilegeRating = 'passing'
-                for statement in policyDocument['Statement']:
-                    if statement["Effect"] == 'Allow':
-                        if statement.get('Condition') == None: 
+                leastPrivilegeRating = "passing"
+                for statement in policyDocument["Statement"]:
+                    if statement["Effect"] == "Allow":
+                        if statement.get("Condition") == None: 
                             # action structure could be a string or a list
-                            if type(statement['Action']) == list: 
-                                if len(['True' for x in statement['Action'] if ":*" in x or '*' == x]) > 0:
-                                    if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        leastPrivilegeRating = 'failedHigh'
+                            if type(statement["Action"]) == list: 
+                                if len(["True" for x in statement["Action"] if ":*" in x or "*" == x]) > 0:
+                                    if type(statement["Resource"]) == str and statement["Resource"] == "*":
+                                        leastPrivilegeRating = "failedHigh"
                                         # Means that an initial failure will not be overwritten by a lower finding later
                                         next
-                                    elif type(statement['Resource']) == list: 
-                                        leastPrivilegeRating = 'failedLow'
+                                    elif type(statement["Resource"]) == list: 
+                                        leastPrivilegeRating = "failedLow"
 
                             # Single action in a statement
-                            elif type(statement['Action']) == str:
-                                if ":*" in statement['Action'] or statement['Action'] == '*':
-                                    if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        leastPrivilegeRating = 'failedHigh'
+                            elif type(statement["Action"]) == str:
+                                if ":*" in statement["Action"] or statement["Action"] == "*":
+                                    if type(statement["Resource"]) == str and statement["Resource"] == "*":
+                                        leastPrivilegeRating = "failedHigh"
                                         # Means that an initial failure will not be overwritten by a lower finding later
                                         next
-                                    elif type(statement['Resource']) == list: 
-                                        leastPrivilegeRating = 'failedLow'
+                                    elif type(statement["Resource"]) == list: 
+                                        leastPrivilegeRating = "failedLow"
 
                 iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-                if leastPrivilegeRating == 'passing':
+                if leastPrivilegeRating == "passing":
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": f"{userArn}/user_policy_least_priv",
@@ -1787,7 +1789,7 @@ def iam_user_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                         "RecordState": "ARCHIVED",
                     }
                     yield finding
-                elif leastPrivilegeRating == 'failedLow':
+                elif leastPrivilegeRating == "failedLow":
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": f"{userArn}/user_policy_least_priv",
@@ -1858,7 +1860,7 @@ def iam_user_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                         "RecordState": "ACTIVE",
                     }
                     yield finding
-                elif leastPrivilegeRating == 'failedHigh':
+                elif leastPrivilegeRating == "failedHigh":
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": f"{userArn}/user_policy_least_priv",
@@ -1939,52 +1941,52 @@ def iam_group_policy_least_priv_check(cache: dict, session, awsAccountId: str, a
     iam = session.client("iam")
     try:
         Groups = iam.list_groups()
-        for group in Groups['Groups']:
+        for group in Groups["Groups"]:
             # B64 encode all of the details for the Asset
             assetJson = json.dumps(group,default=str).encode("utf-8")
             assetB64 = base64.b64encode(assetJson)
-            groupArn = group['Arn']
-            groupName = group['GroupName']
+            groupArn = group["Arn"]
+            groupName = group["GroupName"]
 
             policyNames = iam.list_group_policies(
                 GroupName=groupName
-            )['PolicyNames']
+            )["PolicyNames"]
             for policyName in policyNames:
                 policyDocument = iam.get_group_policy(
                     GroupName=groupName,
                     PolicyName=policyName
-                )['PolicyDocument']
+                )["PolicyDocument"]
 
                 #handle policies docs returned as strings
                 if type(policyDocument) == str:
                     policyDocument = json.loads(policyDocument)
 
-                leastPrivilegeRating = 'passing'
-                for statement in policyDocument['Statement']:
-                    if statement["Effect"] == 'Allow':
-                        if statement.get('Condition') == None: 
+                leastPrivilegeRating = "passing"
+                for statement in policyDocument["Statement"]:
+                    if statement["Effect"] == "Allow":
+                        if statement.get("Condition") == None: 
                             # action structure could be a string or a list
-                            if type(statement['Action']) == list: 
-                                if len(['True' for x in statement['Action'] if ":*" in x or '*' == x]) > 0:
-                                    if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        leastPrivilegeRating = 'failedHigh'
+                            if type(statement["Action"]) == list: 
+                                if len(["True" for x in statement["Action"] if ":*" in x or "*" == x]) > 0:
+                                    if type(statement["Resource"]) == str and statement["Resource"] == "*":
+                                        leastPrivilegeRating = "failedHigh"
                                         # Means that an initial failure will not be overwritten by a lower finding later
                                         next
-                                    elif type(statement['Resource']) == list: 
-                                        leastPrivilegeRating = 'failedLow'
+                                    elif type(statement["Resource"]) == list: 
+                                        leastPrivilegeRating = "failedLow"
 
                             # Single action in a statement
-                            elif type(statement['Action']) == str:
-                                if ":*" in statement['Action'] or statement['Action'] == '*':
-                                    if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        leastPrivilegeRating = 'failedHigh'
+                            elif type(statement["Action"]) == str:
+                                if ":*" in statement["Action"] or statement["Action"] == "*":
+                                    if type(statement["Resource"]) == str and statement["Resource"] == "*":
+                                        leastPrivilegeRating = "failedHigh"
                                         # Means that an initial failure will not be overwritten by a lower finding later
                                         next
-                                    elif type(statement['Resource']) == list: 
-                                        leastPrivilegeRating = 'failedLow'
+                                    elif type(statement["Resource"]) == list: 
+                                        leastPrivilegeRating = "failedLow"
 
                 iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-                if leastPrivilegeRating == 'passing':
+                if leastPrivilegeRating == "passing":
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": f"{groupArn}/group_policy_least_priv",
@@ -2055,7 +2057,7 @@ def iam_group_policy_least_priv_check(cache: dict, session, awsAccountId: str, a
                         "RecordState": "ARCHIVED",
                     }
                     yield finding
-                elif leastPrivilegeRating == 'failedLow':
+                elif leastPrivilegeRating == "failedLow":
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": f"{groupArn}/group_policy_least_priv",
@@ -2126,7 +2128,7 @@ def iam_group_policy_least_priv_check(cache: dict, session, awsAccountId: str, a
                         "RecordState": "ACTIVE",
                     }
                     yield finding
-                elif leastPrivilegeRating == 'failedHigh':
+                elif leastPrivilegeRating == "failedHigh":
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": f"{groupArn}/group_policy_least_priv",
@@ -2208,51 +2210,51 @@ def iam_role_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
         Roles = iam.list_roles()
-        for role in Roles['Roles']:
+        for role in Roles["Roles"]:
             # B64 encode all of the details for the Asset
             assetJson = json.dumps(role,default=str).encode("utf-8")
             assetB64 = base64.b64encode(assetJson)
-            roleArn = role['Arn']
-            roleName = role['RoleName']
+            roleArn = role["Arn"]
+            roleName = role["RoleName"]
 
             policyNames = iam.list_role_policies(
                 RoleName=roleName
-            )['PolicyNames']
+            )["PolicyNames"]
             for policyName in policyNames:
                 policyDocument = iam.get_role_policy(
                     RoleName=roleName,
                     PolicyName=policyName
-                )['PolicyDocument']
+                )["PolicyDocument"]
 
                 #handle policies docs returned as strings
                 if type(policyDocument) == str:
                     policyDocument = json.loads(policyDocument)
 
-                leastPrivilegeRating = 'passing'
-                for statement in policyDocument['Statement']:
-                    if statement["Effect"] == 'Allow':
-                        if statement.get('Condition') == None: 
+                leastPrivilegeRating = "passing"
+                for statement in policyDocument["Statement"]:
+                    if statement["Effect"] == "Allow":
+                        if statement.get("Condition") == None: 
                             # action structure could be a string or a list
-                            if type(statement['Action']) == list: 
-                                if len(['True' for x in statement['Action'] if ":*" in x or '*' == x]) > 0:
-                                    if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        leastPrivilegeRating = 'failedHigh'
+                            if type(statement["Action"]) == list: 
+                                if len(["True" for x in statement["Action"] if ":*" in x or "*" == x]) > 0:
+                                    if type(statement["Resource"]) == str and statement["Resource"] == "*":
+                                        leastPrivilegeRating = "failedHigh"
                                         # Means that an initial failure will not be overwritten by a lower finding later
                                         next
-                                    elif type(statement['Resource']) == list: 
-                                        leastPrivilegeRating = 'failedLow'
+                                    elif type(statement["Resource"]) == list: 
+                                        leastPrivilegeRating = "failedLow"
 
                             # Single action in a statement
-                            elif type(statement['Action']) == str:
-                                if ":*" in statement['Action'] or statement['Action'] == '*':
-                                    if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        leastPrivilegeRating = 'failedHigh'
+                            elif type(statement["Action"]) == str:
+                                if ":*" in statement["Action"] or statement["Action"] == "*":
+                                    if type(statement["Resource"]) == str and statement["Resource"] == "*":
+                                        leastPrivilegeRating = "failedHigh"
                                         # Means that an initial failure will not be overwritten by a lower finding later
                                         next
-                                    elif type(statement['Resource']) == list: 
-                                        leastPrivilegeRating = 'failedLow'
+                                    elif type(statement["Resource"]) == list: 
+                                        leastPrivilegeRating = "failedLow"
                 
-                if leastPrivilegeRating == 'passing':
+                if leastPrivilegeRating == "passing":
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": f"{roleArn}/role_policy_least_priv",
@@ -2323,7 +2325,7 @@ def iam_role_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                         "RecordState": "ARCHIVED",
                     }
                     yield finding
-                elif leastPrivilegeRating == 'failedLow':
+                elif leastPrivilegeRating == "failedLow":
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": f"{roleArn}/role_policy_least_priv",
@@ -2394,7 +2396,7 @@ def iam_role_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                         "RecordState": "ACTIVE",
                     }
                     yield finding
-                elif leastPrivilegeRating == 'failedHigh':
+                elif leastPrivilegeRating == "failedHigh":
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": f"{roleArn}/role_policy_least_priv",
