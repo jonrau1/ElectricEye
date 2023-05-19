@@ -7,6 +7,7 @@
             "Action": [
                 "athena:GetWorkGroup",
                 "athena:ListWorkGroups",
+                "account:GetAlternateContact",
                 "airflow:GetEnvironment",
                 "airflow:ListEnvironments",
                 "autoscaling:DescribeAutoScalingGroups",
@@ -80,6 +81,9 @@
                 "securityhub:GetFindings",
                 "codebuild:ListProjects",
                 "codebuild:ListSourceCredentials",
+                "codedeploy:GetDeploymentGroup",
+				"codedeploy:ListDeploymentGroups",
+				"codedeploy:ListApplications",
                 "workspaces:DescribeWorkspaces",
                 "ecr:GetLifecyclePolicy",
                 "sns:ListSubscriptionsByTopic",

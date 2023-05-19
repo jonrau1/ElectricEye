@@ -200,7 +200,7 @@ python3 eeauditor/controller.py -t AWS -a ElectricEye_AttackSurface_Auditor -o j
 
 ## AWS Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **556 Checks** across **77 Auditors** that support the secure configuration of **103 services/components**
+These are the following services and checks perform by each Auditor, there are currently **562 Checks** across **79 Auditors** that support the secure configuration of **105 services/components**
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service**: AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
@@ -494,6 +494,9 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_Xray_Auditor | XRay Encryption Config | Is KMS CMK encryption used |
 | AMI_Auditor | Amazon Machine Image (AMI) | Are owned AMIs public |
 | AMI_Auditor | Amazon Machine Image (AMI) | Are owned AMIs encrypted |
+| AWS_Accounts_Auditor | AWS Account alternate contacts | Is a Billing alternative contact identified |
+| AWS_Accounts_Auditor | AWS Account alternate contacts | Is a Operations alternative contact identified |
+| AWS_Accounts_Auditor | AWS Account alternate contacts | Is a Security alternative contact identified |
 | AWS_ACM_Auditor | ACM Certificate | Are certificates revoked |
 | AWS_ACM_Auditor | ACM Certificate | Are certificates in use |
 | AWS_ACM_Auditor | ACM Certificate | Is certificate transparency logging enabled |
@@ -533,6 +536,9 @@ These are the following services and checks perform by each Auditor, there are c
 | AWS_CodeBuild_Auditor | CodeBuild project | Does CodeBuild store PATs or Basic Auth creds |
 | AWS_CodeBuild_Auditor | CodeBuild project | Is the CodeBuild project public |
 | AWS_CodeBuild_Auditor | CodeBuild project | Are CodeBuild projects using privileged containers |
+| AWS_CodeDeploy_Auditor | CodeDeploy deployment group | Are CloudWatch alarms configured for state changes |
+| AWS_CodeDeploy_Auditor | CodeDeploy deployment group | Are SNS topic notifications configured for event changes |
+| AWS_CodeDeploy_Auditor | CodeDeploy deployment group | Is there an auto-rollback policy enabled |
 | AWS_Directory_Service_Auditor | DS Directory | Is RADIUS enabled |
 | AWS_Directory_Service_Auditor | DS Directory | Is CloudWatch log forwarding enabled |
 | AWS_DMS_Auditor | DMS Replication Instance | Are DMS instances publicly accessible |

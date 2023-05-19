@@ -244,9 +244,9 @@ In total there are:
 
 - **3** Supported Public CSPs: `AWS`, `GCP`, `OCI`
 - **1** Supported SaaS Provider: `ServiceNow`
-- **911** ElectricEye Checks
-- **131** Supported CSP & SaaS Asset Components across all Services
-- **104** ElectricEye Auditors
+- **917** ElectricEye Checks
+- **133** Supported CSP & SaaS Asset Components across all Services
+- **106** ElectricEye Auditors
 
 The tables of supported Services and Checks have been migrated to the respective per-Provider setup documentation linked above in [Using ElectricEye](#configuring-electricey).
 
