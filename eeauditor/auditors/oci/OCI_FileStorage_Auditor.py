@@ -128,7 +128,7 @@ def get_file_storage_mount_targets(cache, ociTenancyId, ociUserId, ociRegionName
 @registry.register_check("oci.filestorage")
 def oci_file_storage_file_system_cmk_mek_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
     """
-    [OCI.FileStorage.1] File Storage file systems should be encrypted with a Customer-managed Master Encryption Key
+    [OCI.FileStorage.1] File Storage file systems should be encrypted with a Customer-managed Master Encryption Key (MEK)
     """
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -156,8 +156,8 @@ def oci_file_storage_file_system_cmk_mek_check(cache, awsAccountId, awsRegion, a
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[OCI.FileStorage.1] File Storage file systems should be encrypted with a Customer-managed Master Encryption Key",
-                "Description": f"Oracle File Storage file system {filesysName} in Compartment {compartmentId} in {ociRegionName} does not use a Customer-managed Master Encryption Key. File Storage file systems use Oracle-managed keys by default, which leaves all encryption-related matters to Oracle. Optionally, you can encrypt the data in a file system using your own Vault encryption key. Be sure to back up your vaults and keys. Deleting a vault and key otherwise means losing the ability to decrypt any resource or data that the key was used to encrypt. Using a Customer-managed MEK can help satisify regulatory or industry requirements that require you to have control of your own cryptographic material or where you want to ensure different customers or business units use different keys to limit 'data blast radius'. Refer to the remediation instructions if this configuration is not intended.",
+                "Title": "[OCI.FileStorage.1] File Storage file systems should be encrypted with a Customer-managed Master Encryption Key (MEK)",
+                "Description": f"Oracle File Storage file system {filesysName} in Compartment {compartmentId} in {ociRegionName} does not use a Customer-managed Master Encryption Key (MEK). File Storage file systems use Oracle-managed keys by default, which leaves all encryption-related matters to Oracle. Optionally, you can encrypt the data in a file system using your own Vault encryption key. Be sure to back up your vaults and keys. Deleting a vault and key otherwise means losing the ability to decrypt any resource or data that the key was used to encrypt. Using a Customer-managed MEK can help satisify regulatory or industry requirements that require you to have control of your own cryptographic material or where you want to ensure different customers or business units use different keys to limit 'data blast radius'. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on using a customer-managed MEK for your file system refer to the Encrypting a File System section of the Oracle Cloud Infrastructure Documentation for File Storage.",
@@ -223,8 +223,8 @@ def oci_file_storage_file_system_cmk_mek_check(cache, awsAccountId, awsRegion, a
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[OCI.FileStorage.1] File Storage file systems should be encrypted with a Customer-managed Master Encryption Key",
-                "Description": f"Oracle File Storage file system {filesysName} in Compartment {compartmentId} in {ociRegionName} does use a Customer-managed Master Encryption Key.",
+                "Title": "[OCI.FileStorage.1] File Storage file systems should be encrypted with a Customer-managed Master Encryption Key (MEK)",
+                "Description": f"Oracle File Storage file system {filesysName} in Compartment {compartmentId} in {ociRegionName} does use a Customer-managed Master Encryption Key (MEK).",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on using a customer-managed MEK for your file system refer to the Encrypting a File System section of the Oracle Cloud Infrastructure Documentation for File Storage.",

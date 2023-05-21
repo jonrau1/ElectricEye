@@ -256,7 +256,7 @@ python3 eeauditor/controller.py -t AWS -a ElectricEye_AttackSurface_OCI_Auditor 
 
 ## Oracle Cloud Infrastructure Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **210 Checks** across **17 Auditors** that support the secure configuration of **23 services/components**
+These are the following services and checks perform by each Auditor, there are currently **219 Checks** across **18 Auditors** that support the secure configuration of **25 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
@@ -321,6 +321,15 @@ These are the following services and checks perform by each Auditor, there are c
 | OCI_FileStorage_Auditor | Oracle File Storage file system | File Storage file systems should enforce secure export options by requiring that NFS clients use privileged source ports |
 | OCI_FileStorage_Auditor | Oracle File Storage file system | File Storage file systems should enforce secure export options by configuring NFS identity squashing |
 | OCI_FileStorage_Auditor | Oracle File Storage mount target | File Storage Mount Targets should have at least one Network Security Group (NSG) assigned |
+| OCI_GoldenGate_Auditor | Oracle GoldenGate deployment | Deployments should autoscale |
+| OCI_GoldenGate_Auditor | Oracle GoldenGate deployment | Deployments should report as healthy |
+| OCI_GoldenGate_Auditor | Oracle GoldenGate deployment | Deployments should not be public-facing |
+| OCI_GoldenGate_Auditor | Oracle GoldenGate deployment | Deployments should upgrade to the latest version, if possible |
+| OCI_GoldenGate_Auditor | Oracle GoldenGate deployment | Deployments should have at least one NSG assigned |
+| OCI_GoldenGate_Auditor | Oracle GoldenGate connection | Connections should utilize private endpoints for network connectivity |
+| OCI_GoldenGate_Auditor | Oracle GoldenGate connection | Connections should be encrypted with a Vault Customer-managed MEK |
+| OCI_GoldenGate_Auditor | Oracle GoldenGate connection | Connections should have at least one NSG assigned |
+| OCI_GoldenGate_Auditor | Oracle GoldenGate connection | Connects should protect connections with TLS or mTLS |
 | OCI_KubernetesEngine_Auditor | OKE cluster | OKE cluster API servers should not be accessible from the internet |
 | OCI_KubernetesEngine_Auditor | OKE cluster | OKE cluster should have at least one Network Security Group (NSG) assigned |
 | OCI_KubernetesEngine_Auditor | OKE cluster | OKE clusters should enable image verification policies |
