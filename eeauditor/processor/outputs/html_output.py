@@ -19,10 +19,8 @@
 #under the License.
 
 import os
-import json
 from datetime import datetime
 import yaml
-from botocore.exceptions import ClientError
 from processor.outputs.output_base import ElectricEyeOutput
 
 # Get the absolute path of the current directory
@@ -266,10 +264,9 @@ class HtmlProvider(object):
         }
 
         td img {
-            width: 36px;
-            height: 36px;
+            width: 64px;
+            height: 64px;
             margin-right: .5rem;
-
             vertical-align: middle;
         }
 
