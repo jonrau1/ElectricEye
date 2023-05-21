@@ -865,14 +865,16 @@ def oci_oke_cluster_latest_k8s_version_check(cache, awsAccountId, awsRegion, aws
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 ID.AM-2",
-                        "NIST SP 800-53 Rev. 4 CM-8",
-                        "NIST SP 800-53 Rev. 4 PM-5",
-                        "AICPA TSC CC3.2",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.1.1",
-                        "ISO 27001:2013 A.8.1.2",
-                        "ISO 27001:2013 A.12.5.1"
+                        "NIST CSF V1.1 PR.MA-1",
+                        "NIST SP 800-53 Rev. 4 MA-2",
+                        "NIST SP 800-53 Rev. 4 MA-3",
+                        "NIST SP 800-53 Rev. 4 MA-5",
+                        "NIST SP 800-53 Rev. 4 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -933,14 +935,16 @@ def oci_oke_cluster_latest_k8s_version_check(cache, awsAccountId, awsRegion, aws
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 ID.AM-2",
-                        "NIST SP 800-53 Rev. 4 CM-8",
-                        "NIST SP 800-53 Rev. 4 PM-5",
-                        "AICPA TSC CC3.2",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.1.1",
-                        "ISO 27001:2013 A.8.1.2",
-                        "ISO 27001:2013 A.12.5.1"
+                        "NIST CSF V1.1 PR.MA-1",
+                        "NIST SP 800-53 Rev. 4 MA-2",
+                        "NIST SP 800-53 Rev. 4 MA-3",
+                        "NIST SP 800-53 Rev. 4 MA-5",
+                        "NIST SP 800-53 Rev. 4 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -1019,14 +1023,16 @@ def oci_oke_cluster_deprecated_k8s_version_check(cache, awsAccountId, awsRegion,
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 ID.AM-2",
-                        "NIST SP 800-53 Rev. 4 CM-8",
-                        "NIST SP 800-53 Rev. 4 PM-5",
-                        "AICPA TSC CC3.2",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.1.1",
-                        "ISO 27001:2013 A.8.1.2",
-                        "ISO 27001:2013 A.12.5.1"
+                        "NIST CSF V1.1 PR.MA-1",
+                        "NIST SP 800-53 Rev. 4 MA-2",
+                        "NIST SP 800-53 Rev. 4 MA-3",
+                        "NIST SP 800-53 Rev. 4 MA-5",
+                        "NIST SP 800-53 Rev. 4 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -1087,14 +1093,16 @@ def oci_oke_cluster_deprecated_k8s_version_check(cache, awsAccountId, awsRegion,
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 ID.AM-2",
-                        "NIST SP 800-53 Rev. 4 CM-8",
-                        "NIST SP 800-53 Rev. 4 PM-5",
-                        "AICPA TSC CC3.2",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.1.1",
-                        "ISO 27001:2013 A.8.1.2",
-                        "ISO 27001:2013 A.12.5.1"
+                        "NIST CSF V1.1 PR.MA-1",
+                        "NIST SP 800-53 Rev. 4 MA-2",
+                        "NIST SP 800-53 Rev. 4 MA-3",
+                        "NIST SP 800-53 Rev. 4 MA-5",
+                        "NIST SP 800-53 Rev. 4 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -1819,14 +1827,16 @@ def oci_oke_node_pool_latest_k8s_version_check(cache, awsAccountId, awsRegion, a
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 ID.AM-2",
-                        "NIST SP 800-53 Rev. 4 CM-8",
-                        "NIST SP 800-53 Rev. 4 PM-5",
-                        "AICPA TSC CC3.2",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.1.1",
-                        "ISO 27001:2013 A.8.1.2",
-                        "ISO 27001:2013 A.12.5.1"
+                        "NIST CSF V1.1 PR.MA-1",
+                        "NIST SP 800-53 Rev. 4 MA-2",
+                        "NIST SP 800-53 Rev. 4 MA-3",
+                        "NIST SP 800-53 Rev. 4 MA-5",
+                        "NIST SP 800-53 Rev. 4 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -1887,14 +1897,16 @@ def oci_oke_node_pool_latest_k8s_version_check(cache, awsAccountId, awsRegion, a
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 ID.AM-2",
-                        "NIST SP 800-53 Rev. 4 CM-8",
-                        "NIST SP 800-53 Rev. 4 PM-5",
-                        "AICPA TSC CC3.2",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.1.1",
-                        "ISO 27001:2013 A.8.1.2",
-                        "ISO 27001:2013 A.12.5.1"
+                        "NIST CSF V1.1 PR.MA-1",
+                        "NIST SP 800-53 Rev. 4 MA-2",
+                        "NIST SP 800-53 Rev. 4 MA-3",
+                        "NIST SP 800-53 Rev. 4 MA-5",
+                        "NIST SP 800-53 Rev. 4 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -1973,14 +1985,16 @@ def oci_oke_node_pool_deprecated_k8s_version_check(cache, awsAccountId, awsRegio
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 ID.AM-2",
-                        "NIST SP 800-53 Rev. 4 CM-8",
-                        "NIST SP 800-53 Rev. 4 PM-5",
-                        "AICPA TSC CC3.2",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.1.1",
-                        "ISO 27001:2013 A.8.1.2",
-                        "ISO 27001:2013 A.12.5.1"
+                        "NIST CSF V1.1 PR.MA-1",
+                        "NIST SP 800-53 Rev. 4 MA-2",
+                        "NIST SP 800-53 Rev. 4 MA-3",
+                        "NIST SP 800-53 Rev. 4 MA-5",
+                        "NIST SP 800-53 Rev. 4 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -2041,14 +2055,16 @@ def oci_oke_node_pool_deprecated_k8s_version_check(cache, awsAccountId, awsRegio
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 ID.AM-2",
-                        "NIST SP 800-53 Rev. 4 CM-8",
-                        "NIST SP 800-53 Rev. 4 PM-5",
-                        "AICPA TSC CC3.2",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.1.1",
-                        "ISO 27001:2013 A.8.1.2",
-                        "ISO 27001:2013 A.12.5.1"
+                        "NIST CSF V1.1 PR.MA-1",
+                        "NIST SP 800-53 Rev. 4 MA-2",
+                        "NIST SP 800-53 Rev. 4 MA-3",
+                        "NIST SP 800-53 Rev. 4 MA-5",
+                        "NIST SP 800-53 Rev. 4 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -2451,14 +2467,16 @@ def oci_oke_virtual_node_pool_latest_k8s_check(cache, awsAccountId, awsRegion, a
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 ID.AM-2",
-                        "NIST SP 800-53 Rev. 4 CM-8",
-                        "NIST SP 800-53 Rev. 4 PM-5",
-                        "AICPA TSC CC3.2",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.1.1",
-                        "ISO 27001:2013 A.8.1.2",
-                        "ISO 27001:2013 A.12.5.1"
+                        "NIST CSF V1.1 PR.MA-1",
+                        "NIST SP 800-53 Rev. 4 MA-2",
+                        "NIST SP 800-53 Rev. 4 MA-3",
+                        "NIST SP 800-53 Rev. 4 MA-5",
+                        "NIST SP 800-53 Rev. 4 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -2519,14 +2537,16 @@ def oci_oke_virtual_node_pool_latest_k8s_check(cache, awsAccountId, awsRegion, a
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 ID.AM-2",
-                        "NIST SP 800-53 Rev. 4 CM-8",
-                        "NIST SP 800-53 Rev. 4 PM-5",
-                        "AICPA TSC CC3.2",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.1.1",
-                        "ISO 27001:2013 A.8.1.2",
-                        "ISO 27001:2013 A.12.5.1"
+                        "NIST CSF V1.1 PR.MA-1",
+                        "NIST SP 800-53 Rev. 4 MA-2",
+                        "NIST SP 800-53 Rev. 4 MA-3",
+                        "NIST SP 800-53 Rev. 4 MA-5",
+                        "NIST SP 800-53 Rev. 4 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -2605,14 +2625,16 @@ def oci_oke_virtual_node_pool_deprecated_k8s_check(cache, awsAccountId, awsRegio
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 ID.AM-2",
-                        "NIST SP 800-53 Rev. 4 CM-8",
-                        "NIST SP 800-53 Rev. 4 PM-5",
-                        "AICPA TSC CC3.2",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.1.1",
-                        "ISO 27001:2013 A.8.1.2",
-                        "ISO 27001:2013 A.12.5.1"
+                        "NIST CSF V1.1 PR.MA-1",
+                        "NIST SP 800-53 Rev. 4 MA-2",
+                        "NIST SP 800-53 Rev. 4 MA-3",
+                        "NIST SP 800-53 Rev. 4 MA-5",
+                        "NIST SP 800-53 Rev. 4 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -2673,14 +2695,16 @@ def oci_oke_virtual_node_pool_deprecated_k8s_check(cache, awsAccountId, awsRegio
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 ID.AM-2",
-                        "NIST SP 800-53 Rev. 4 CM-8",
-                        "NIST SP 800-53 Rev. 4 PM-5",
-                        "AICPA TSC CC3.2",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.1.1",
-                        "ISO 27001:2013 A.8.1.2",
-                        "ISO 27001:2013 A.12.5.1"
+                        "NIST CSF V1.1 PR.MA-1",
+                        "NIST SP 800-53 Rev. 4 MA-2",
+                        "NIST SP 800-53 Rev. 4 MA-3",
+                        "NIST SP 800-53 Rev. 4 MA-5",
+                        "NIST SP 800-53 Rev. 4 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
