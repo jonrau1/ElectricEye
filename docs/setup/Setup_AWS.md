@@ -190,7 +190,7 @@ sudo docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/electriceye:v
 
 4. Navigate to the ECR console and copy the `URI` of your Docker image.
 
-## AWS External Attack Surface Reporting
+## AWS Attack Surface Monitoring
 
 If you only wanted to run Attack Surface Monitoring checks use the following command which show an example of outputting the ASM checks into a JSON file for consumption into SIEM or BI tools.
 

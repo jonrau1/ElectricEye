@@ -8,7 +8,7 @@ This documentation is dedicated to using ElectricEye for evaluation of Oracle Cl
 - [Configuring TOML](#configuring-toml)
 - [Use ElectricEye for OCI](#use-electriceye-for-oci)
 - [Configuring Security List & NSG Auditors](#configuring-security-list--nsg-auditors)
-- [OCI External Attack Surface Reporting](#oci-external-attack-surface-reporting)
+- [OCI Attack Surface Monitoring](#oci-external-attack-surface-reporting)
 - [Oracle Cloud Infrastructure Checks & Services](#oracle-cloud-infrastructure-checks--services)
 
 ## Setting up OCI Permissions
@@ -246,7 +246,7 @@ An all lowercase, dash-separated string that is appended to the `Id` and `Genera
 
 A descriptor of what the protocol & port service is, this is added into the `Description` field within the AWS Security Finding Format and can be anything you want as long as it does not contain double-quotes (`""`)
 
-## OCI External Attack Surface Reporting
+## OCI Attack Surface Monitoring
 
 If you only wanted to run Attack Surface Monitoring checks use the following command which show an example of outputting the ASM checks into a JSON file for consumption into SIEM or BI tools.
 

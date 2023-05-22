@@ -116,7 +116,7 @@ pip3 install --user -r requirements.txt
     python3 eeauditor/controller.py -t GCP -c cloudsql_instance_public_check
     ```
 
-## GCP External Attack Surface Reporting
+## GCP Attack Surface Monitoring
 
 If you only wanted to run Attack Surface Monitoring checks use the following command which show an example of outputting the ASM checks into a JSON file for consumption into SIEM or BI tools.
 

@@ -4,7 +4,7 @@
   <img src="./screenshots/logo.svg" width="420" height="420">
 </p>
 
-ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Management supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to NIST CSF, 800-53, 800-171, ISO 27001, AICPA TSC (SOC2), and more!
+ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to NIST CSF, 800-53, 800-171, ISO 27001, AICPA TSC (SOC2), and more!
 
 ![VulnScan](https://github.com/jonrau1/ElectricEye/actions/workflows/sbom-vulns.yml/badge.svg)  ![CodeQL](https://github.com/jonrau1/ElectricEye/actions/workflows/codeql-analysis.yml/badge.svg) ![EcrBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-ecr-public.yml/badge.svg) ![OcrBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-ocr-public.yml/badge.svg) ![DockerHubBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-docker-hub.yml/badge.svg)
 
@@ -49,19 +49,19 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 
 ## Quick Run Down :running: :running:
 
-- ElectricEye is a Python CLI tool that offers cross-Account, cross-Region, multi-Cloud & SaaS Asset Management, Security Posture Management, and Attack Surface Management capabilities across AWS, GCP, Oracle Cloud Infrastructure (OCI), and ServiceNow (*with more on the way!*). All Partitions are supported for AWS!
+- ElectricEye is a Python CLI tool that offers cross-Account, cross-Region, multi-Cloud & SaaS Asset Management, Security Posture Management, and Attack Surface Monitoring capabilities across AWS, GCP, Oracle Cloud Infrastructure (OCI), ServiceNow, and M365 (*with more on the way!*). All Partitions are supported for AWS!
 
 - ElectricEye offers over 800 checks for security, reliability, monitoring, and exposure across 100 CSP & SaaS services, including atypical services not supported by AWS Config/Google Cloud Asset API or mainstream CSPM & CNAPP tools.
 
 - All checks are currently mapped to NIST Cybersecurity Framework V1.1, NIST Special Publication 800-53 Revision 4, AICPA 2020 Trust Service Criteria (TSCs), and ISO 27001:2013 Annex A controls.
 
-- The EASM module uses NMAP for service discovery and reachability assessment of over 20 highly-dangerous ports and protocols for nearly every public-facing CSP service
+- The Attack Surface Monitoring module uses NMAP for service discovery and reachability assessment of over 20 highly-dangerous ports and protocols for nearly every public-facing CSP service
 
-- Outputs to AWS Security Hub, AWS DocumentDB, JSON, CSV, HTML Reports, Slack (via Slack App Bots), MongoDB, Amazon SQS, PostgreSQL, Amazon Simple Queue Service (SQS), and [**FireMon Cloud Defense**](https://www.firemon.com/introducing-disruptops/).
+- Outputs to AWS Security Hub, AWS DocumentDB, JSON, CSV, HTML Reports, Slack (via Slack App Bots), MongoDB, Amazon SQS, PostgreSQL, [Slack](https://slack.com/), and [**FireMon Cloud Defense**](https://www.firemon.com/introducing-disruptops/).
 
 ElectricEye's core concept is the **Auditor** which are sets of Python scripts that run **Checks** per Service dedicated to a specific SaaS vendor or public cloud service provider called an **Assessment Target**.  You can run an entire Assessment Target, a specific Auditor, or a specific Check within an Auditor. After ElectricEye is done with evaluations, it supports over a dozen types of **Outputs** ranging from an HTML executive report to AWS DocumentDB clusters - you can run multiple Outputs as you see fit.
 
-ElectricEye also uses utilizes other tools such as [Shodan](https://www.shodan.io/), [`detect-secrets`](https://pypi.org/project/detect-secrets/), [VirusTotal](https://www.virustotal.com/gui/home/upload), and [NMAP](https://nmap.org/) for carrying out its Checks and enriching their findings.
+ElectricEye also uses utilizes other tools such as [Shodan](https://www.shodan.io/), [`detect-secrets`](https://pypi.org/project/detect-secrets/), [VirusTotal](https://www.virustotal.com/gui/home/upload), the United States Cyber and Infrastructure Security Agency (CISA) Known Exploited Vulnerability (KEV) Catalog, and [NMAP](https://nmap.org/) for carrying out its Checks and enriching their findings.
 
 1. First, clone this repository and install the requirements using `pip3`: `pip3 install -r requirements.txt`.
 
@@ -117,14 +117,24 @@ Refer to sub-headings for per-CSP or per-SaaS setup instructions. Go to [Outputs
 - [For Amazon Web Services (AWS)](./docs/setup/Setup_AWS.md)
 - [For Google Cloud Platform (GCP)](./docs/setup/Setup_GCP.md)
 - [For Oracle Cloud Infrastructure](./docs/setup/Setup_OCI.md)
+
+The following Cloud Service Providers are on the Roadmap
+
 - [For Microsoft Azure (*Coming Soon*)](./docs/setup/Setup_Azure.md)
+- [For Alibaba Cloud (*Coming Soon*)](./docs/setup/Setup_AlibabaCloud.md)
+- [For VMWare Cloud on AWS (*Coming Soon*)](./docs/setup/Setup_VMC.md)
 
 ### Software-as-a-Service (SaaS) Providers
 
 - [For ServiceNow](./docs/setup/Setup_ServiceNow.md)
-- [For Microsoft M365 (E5) (*Coming Soon*)](./docs//Setup_M365.md)
+- [For Microsoft M365](./docs//Setup_M365.md)
+
+The following SaaS Providers are on the Roadmap
+
 - [For Workday ERP (*Coming Soon*)](./docs/setup/Setup_WorkDay.md)
 - [For GitHub (*Coming Soon*)](./docs/setup/Setup_GitHub.md)
+- [For Google Workspaces (*Coming Soon*)](./docs/setup/Setup_Google_Workspaces.md)
+- [For Salesforce (*Coming Soon*)](./docs//setup/Setup_Salesforce.md)
 
 ## ElectricEye on Docker
 
