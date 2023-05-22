@@ -1212,7 +1212,7 @@ def m365_security_center_recommendations_accounts_for_win10_check(cache, awsAcco
             "Resources": [
                 {
                     "Type": "M365DefenderRecommendation",
-                    "Id": f"{tenantId}/Recommendations/Win10SAccounts",
+                    "Id": f"{tenantId}/Recommendations/Win10Accounts",
                     "Partition": awsPartition,
                     "Region": awsRegion,
                     "Details": {
@@ -1290,7 +1290,7 @@ def m365_security_center_recommendations_accounts_for_win10_check(cache, awsAcco
             "Resources": [
                 {
                     "Type": "M365DefenderRecommendation",
-                    "Id": f"{tenantId}/Recommendations/Win10SAccounts",
+                    "Id": f"{tenantId}/Recommendations/Win10Accounts",
                     "Partition": awsPartition,
                     "Region": awsRegion,
                     "Details": {
@@ -1391,7 +1391,7 @@ def m365_security_center_recommendations_network_for_win10_check(cache, awsAccou
             "Resources": [
                 {
                     "Type": "M365DefenderRecommendation",
-                    "Id": f"{tenantId}/Recommendations/Win10SNetwork",
+                    "Id": f"{tenantId}/Recommendations/Win10Network",
                     "Partition": awsPartition,
                     "Region": awsRegion,
                     "Details": {
@@ -1469,7 +1469,7 @@ def m365_security_center_recommendations_network_for_win10_check(cache, awsAccou
             "Resources": [
                 {
                     "Type": "M365DefenderRecommendation",
-                    "Id": f"{tenantId}/Recommendations/Win10SNetwork",
+                    "Id": f"{tenantId}/Recommendations/Win10Network",
                     "Partition": awsPartition,
                     "Region": awsRegion,
                     "Details": {
