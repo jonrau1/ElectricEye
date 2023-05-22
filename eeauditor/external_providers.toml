@@ -10,18 +10,18 @@ title = "ElectricEye Configuration"
 
     aws_multi_account_target_type = "Accounts" # VALID CHOICES: Accounts | OU | Organization
 
-    # Specifies the location of where credentials are stored and will be retrieved from
-    # if you specify "CONFIG_FILE" that means you can provide the value within the option itself
+    # Specifies the location of where ALL credentials are stored and will be retrieved from
+    # if you specify "CONFIG_FILE" that means you can provide the value within the parameter itself
 
     credentials_location = "AWS_SSM" # VALID CHOICES: AWS_SSM | AWS_SECRETS_MANAGER | CONFIG_FILE
 
-    # The location (or actual contents) of your Shodan.io API Key
+    # The location (or actual contents) of your Shodan.io API Key - limits are not respected!!
     # this location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then
     # the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
 
     shodan_api_key_value = ""
 
-    # The location (or actual contents) of your VirusTotal (VT) API Key
+    # The location (or actual contents) of your VirusTotal (VT) API Key - limits are not respected!!
     # this location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then
     # the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
 
@@ -77,6 +77,10 @@ title = "ElectricEye Configuration"
     # of [global.credentials_location], for instance, if you specified "AWS_SSM" ensure that the '_value' option is the name
     # of an AWS SecureString Parameter that contains the value to be retrieved
 
+    ########################
+    # ~~CSPM CREDENTIALS~~ #
+    ########################
+
     [credentials.azure]
 
         azure_sp_client_id_value = ""
@@ -106,15 +110,28 @@ title = "ElectricEye Configuration"
 
         oci_user_api_key_private_key_pem_contents_value = ""
 
-    [credentials.github]
-
-        gh_personal_access_token_value = ""
+    ########################
+    # ~~SSPM CREDENTIALS~~ #
+    ########################
 
     [credentials.m365]
 
+        # The location (or actual contents) of your M365 Enterprise Application Client ID this location must match the value 
+        # of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should 
+        # be the name of the AWS Systems Manager Parameter Store SecureString Parameter 
+
         m365_ent_app_client_id_value = ""
 
+        # The location (or actual contents) of your M365 Enterprise Application Tenant (Directory) ID this location must match the value 
+        # of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should 
+        # be the name of the AWS Systems Manager Parameter Store SecureString Parameter 
+
         m365_ent_app_tenant_id_value = ""
+
+        # The location (or actual contents) of your M365 Enterprise Application Secret ID, this must be the VALUE
+        # of the Secret when you generate the Secret for the App, not the actual "Secret ID" of it
+        # this location must match the value  of `global.credentials_location` e.g., if you specify "AWS_SSM" 
+        # then the value for this variable should  be the name of the AWS Systems Manager Parameter Store SecureString Parameter 
 
         m365_ent_app_client_secret_id_value = ""
 
