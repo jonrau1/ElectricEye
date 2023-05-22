@@ -20,8 +20,6 @@
 
 from check_register import CheckRegister
 import datetime
-import base64
-import json
 import botocore
 
 registry = CheckRegister()
@@ -38,23 +36,14 @@ def get_account_alternate_contacts(cache, session):
     try:
         accountClient.get_alternate_contact(AlternateContactType="BILLING")
         accountAlternateContacts.append("BILLING")
-    except botocore.exceptions.ClientError as error:
-        print(f"Cannot access Account API because {error}")
-
-    try:
         accountClient.get_alternate_contact(AlternateContactType="OPERATIONS")
         accountAlternateContacts.append("OPERATIONS")
-    except botocore.exceptions.ClientError as error:
-        print(f"Cannot access Account API because {error}")
-
-    try:
         accountClient.get_alternate_contact(AlternateContactType="SECURITY")
         accountAlternateContacts.append("SECURITY")
+        cache["get_account_alternate_contacts"] = accountAlternateContacts
+        return cache["get_account_alternate_contacts"]
     except botocore.exceptions.ClientError as error:
-        print(f"Cannot access Account API because {error}")
-
-    cache["get_account_alternate_contacts"] = accountAlternateContacts
-    return cache["get_account_alternate_contacts"]
+        return {}
 
 @registry.register_check("account")
 def aws_accounts_billing_dedicated_contact_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
