@@ -840,12 +840,12 @@ def shield_advanced_drt_access_check(cache: dict, session, awsAccountId: str, aw
     shield = session.client("shield", region_name="us-east-1")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    response = shield.describe_drt_access()
-    # B64 encode all of the details for the Asset
-    assetJson = json.dumps(response,default=str).encode("utf-8")
-    assetB64 = base64.b64encode(assetJson)
-    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    
     try:
+        response = shield.describe_drt_access()
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         # this is a passing check
         drtRole = str(response["RoleArn"])
         finding = {
@@ -945,7 +945,7 @@ def shield_advanced_drt_access_check(cache: dict, session, awsAccountId: str, aw
                 "ProviderType": "CSP",
                 "ProviderAccountId": awsAccountId,
                 "AssetRegion": awsRegion,
-                "AssetDetails": assetB64,
+                "AssetDetails": None,
                 "AssetClass": "Security Services",
                 "AssetService": "Amazon Shield Advanced",
                 "AssetComponent": "Account Configuration"
@@ -989,12 +989,12 @@ def shield_advanced_drt_access_check(cache: dict, session, awsAccountId: str, aw
 def shield_advanced_drt_s3_bucket_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ShieldAdvanced.7] The DDoS Response Team (DRT) should be authorized to view your AWS Web Application Firewall (WAF) logging buckets"""
     shield = session.client("shield", region_name="us-east-1")
-    response = shield.describe_drt_access()
-    # B64 encode all of the details for the Asset
-    assetJson = json.dumps(response,default=str).encode("utf-8")
-    assetB64 = base64.b64encode(assetJson)
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
+        response = shield.describe_drt_access()
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         logBucketList = str(response["LogBucketList"])
         print(logBucketList)
         finding = {
@@ -1092,7 +1092,7 @@ def shield_advanced_drt_s3_bucket_check(cache: dict, session, awsAccountId: str,
                 "ProviderType": "CSP",
                 "ProviderAccountId": awsAccountId,
                 "AssetRegion": awsRegion,
-                "AssetDetails": assetB64,
+                "AssetDetails": None,
                 "AssetClass": "Security Services",
                 "AssetService": "Amazon Shield Advanced",
                 "AssetComponent": "Account Configuration"
@@ -1138,12 +1138,14 @@ def shield_advanced_subscription_autorenew_check(cache: dict, session, awsAccoun
     shield = session.client("shield", region_name="us-east-1")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    response = shield.describe_subscription()
-    # B64 encode all of the details for the Asset
-    assetJson = json.dumps(response,default=str).encode("utf-8")
-    assetB64 = base64.b64encode(assetJson)
-    renewCheck = str(response["Subscription"]["AutoRenew"])
-    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    try:
+        response = shield.describe_subscription()
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        renewCheck = str(response["Subscription"]["AutoRenew"])
+    except:
+        renewCheck = "DISABLED"
     if renewCheck != "ENABLED":
         finding = {
             "SchemaVersion": "2018-10-08",
