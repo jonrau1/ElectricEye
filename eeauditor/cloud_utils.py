@@ -252,7 +252,7 @@ class CloudConfig(object):
             os.environ["SNOW_FAILED_LOGIN_BREACHING_RATE"] = snowUserLoginBreachRate
 
         # M365
-        elif assessmentTarget == "Servicenow":
+        elif assessmentTarget == "M365":
             # Process data["credentials"]["servicenow"] - values need to be assigned to self
             m365Values = data["credentials"]["m365"]
 
