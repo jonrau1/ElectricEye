@@ -2776,7 +2776,7 @@ def m365_security_center_recommendations_security_controls_for_linux_check(cache
 
     # Use a list comprehension to scope down what we want to assess based on Active recommendations for a specified category and platform ("relatedComponent")
     reccCategory = "Security controls"
-    relatedComponent = "Mac Os"
+    relatedComponent = "Linux"
     checkReccs = [
         recc for recc in reccs if recc["recommendationCategory"] == reccCategory and recc["relatedComponent"] == relatedComponent and recc["status"] == "Active"
     ]
@@ -2955,7 +2955,7 @@ def m365_security_center_recommendations_accounts_for_linux_check(cache, awsAcco
 
     # Use a list comprehension to scope down what we want to assess based on Active recommendations for a specified category and platform ("relatedComponent")
     reccCategory = "Accounts"
-    relatedComponent = "Mac Os"
+    relatedComponent = "Linux"
     checkReccs = [
         recc for recc in reccs if recc["recommendationCategory"] == reccCategory and recc["relatedComponent"] == relatedComponent and recc["status"] == "Active"
     ]
@@ -3134,7 +3134,7 @@ def m365_security_center_recommendations_network_for_linux_check(cache, awsAccou
 
     # Use a list comprehension to scope down what we want to assess based on Active recommendations for a specified category and platform ("relatedComponent")
     reccCategory = "Network"
-    relatedComponent = "Mac Os"
+    relatedComponent = "Linux"
     checkReccs = [
         recc for recc in reccs if recc["recommendationCategory"] == reccCategory and recc["relatedComponent"] == relatedComponent and recc["status"] == "Active"
     ]
@@ -3313,7 +3313,7 @@ def m365_security_center_recommendations_os_for_linux_check(cache, awsAccountId,
 
     # Use a list comprehension to scope down what we want to assess based on Active recommendations for a specified category and platform ("relatedComponent")
     reccCategory = "OS"
-    relatedComponent = "Mac Os"
+    relatedComponent = "Linux"
     checkReccs = [
         recc for recc in reccs if recc["recommendationCategory"] == reccCategory and recc["relatedComponent"] == relatedComponent and recc["status"] == "Active"
     ]
@@ -3492,7 +3492,7 @@ def m365_security_center_recommendations_network_assessment_for_linux_check(cach
 
     # Use a list comprehension to scope down what we want to assess based on Active recommendations for a specified category and platform ("relatedComponent")
     reccCategory = "Network assessments"
-    relatedComponent = "Mac Os"
+    relatedComponent = "Linux"
     checkReccs = [
         recc for recc in reccs if recc["recommendationCategory"] == reccCategory and recc["relatedComponent"] == relatedComponent and recc["status"] == "Active"
     ]

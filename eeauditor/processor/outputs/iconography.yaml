@@ -223,5 +223,5 @@
 ########
 # M365 #
 ########
-- AssetService: System Plugins
+- AssetService: Microsoft 365 Defender
   ImageTag: <img src="https://iconography.electriceye.lol/M365/microsoft_defender_atp_adapter.png">
