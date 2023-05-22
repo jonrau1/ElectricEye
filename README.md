@@ -1,7 +1,7 @@
 # ElectricEye
 
 <p align="center">
-  <img src="./screenshots/logo.svg" width="375" height="375">
+  <img src="./screenshots/logo.svg" width="420" height="420">
 </p>
 
 ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Management supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to NIST CSF, 800-53, 800-171, ISO 27001, AICPA TSC (SOC2), and more!
@@ -19,7 +19,7 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 
 <p align="center">
   <a href="https://gallery.ecr.aws/t4o3u7t2/electriceye"><img width="150" height=40" alt="AWS ECR Gallery" src="https://user-images.githubusercontent.com/3985464/151531396-b6535a68-c907-44eb-95a1-a09508178616.png"></a>
-  <a href="https://hub.docker.com/repository/docker/electriceye/electriceye/general"><img width="150" height=40" alt="AWS ECR Gallery" src="https://www.unixtutorial.org/images/software/docker-hub.png"></a>
+  <a href="https://hub.docker.com/repository/docker/electriceye/electriceye/general"><img width="150" height=40" alt="Docker Hub" src="https://www.unixtutorial.org/images/software/docker-hub.png"></a>
 </p>
 
 ***Up here in space***<br/>
