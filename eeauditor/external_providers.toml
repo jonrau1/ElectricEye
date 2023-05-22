@@ -122,18 +122,24 @@ title = "ElectricEye Configuration"
 
         m365_ent_app_client_id_value = ""
 
-        # The location (or actual contents) of your M365 Enterprise Application Tenant (Directory) ID this location must match the value 
-        # of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should 
-        # be the name of the AWS Systems Manager Parameter Store SecureString Parameter 
-
-        m365_ent_app_tenant_id_value = ""
-
         # The location (or actual contents) of your M365 Enterprise Application Secret ID, this must be the VALUE
         # of the Secret when you generate the Secret for the App, not the actual "Secret ID" of it
         # this location must match the value  of `global.credentials_location` e.g., if you specify "AWS_SSM" 
         # then the value for this variable should  be the name of the AWS Systems Manager Parameter Store SecureString Parameter 
 
         m365_ent_app_client_secret_id_value = ""
+
+        # The location (or actual contents) of your M365 Enterprise Application Tenant (Directory) ID this location must match the value 
+        # of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should 
+        # be the name of the AWS Systems Manager Parameter Store SecureString Parameter 
+
+        m365_ent_app_tenant_id_value = ""
+
+        # The country code / location of your M365 tenant. In the future this value will be used to populate API endpoints
+        # that are regionally co-located for reduced latency - it will totally save tons of milliseconds
+        # Check it here https://portal.office.com/adminportal#/Settings/OrganizationProfile in Data Location
+
+        m365_tenant_location = "EU" # "US" "EU" "US-GOV" ?
 
     [credentials.servicenow]
 

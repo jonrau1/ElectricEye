@@ -25,7 +25,7 @@ from time import sleep
 import traceback
 import json
 import requests
-from check_register import CheckRegister, accumulate_paged_results
+from check_register import CheckRegister
 from cloud_utils import CloudConfig
 from pluginbase import PluginBase
 
@@ -44,7 +44,10 @@ class EEAuditor(object):
         self.registry = CheckRegister()
         self.name = assessmentTarget
         self.plugin_base = PluginBase(package="electriceye")
-        
+        ##################################
+        # PUBLIC CLOUD SERVICE PROVIDERS #
+        ##################################
+        # AWS
         if assessmentTarget == "AWS":
             searchPath = "./auditors/aws"
             utils = CloudConfig(assessmentTarget)
@@ -52,17 +55,13 @@ class EEAuditor(object):
             self.awsAccountTargets = utils.awsAccountTargets
             self.awsRegionsSelection = utils.awsRegionsSelection
             self.aws_electric_eye_iam_role_name = utils.electricEyeRoleName
-
-        elif assessmentTarget == "Azure":
-            searchPath = "./auditors/azure"
-            utils = CloudConfig(assessmentTarget)
-
+        # GCP
         elif assessmentTarget == "GCP":
             searchPath = "./auditors/gcp"
             utils = CloudConfig(assessmentTarget)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.gcpProjectIds = utils.gcp_project_ids
-
+        # OCI
         elif assessmentTarget == "OCI":
             searchPath = "./auditors/oci"
             utils = CloudConfig(assessmentTarget)
@@ -72,13 +71,46 @@ class EEAuditor(object):
             self.ociRegionName = utils.ociRegionName
             self.ociCompartments = utils.ociCompartments
             self.ociUserApiKeyFingerprint = utils.ociUserApiKeyFingerprint
-
+        # Azure
+        elif assessmentTarget == "Azure":
+            searchPath = "./auditors/azure"
+            utils = CloudConfig(assessmentTarget)
+        # Alibaba
+        elif assessmentTarget == "Alibaba":
+            searchPath = "./auditors/alibabacloud"
+            utils = CloudConfig(assessmentTarget)
+        # VMWare Cloud on AWS
+        elif assessmentTarget == "VMC":
+            searchPath = "./auditors/vmwarecloud"
+            utils = CloudConfig(assessmentTarget)
+        
+        ###################################
+        # SOFTWARE-AS-A-SERVICE PROVIDERS #
+        ###################################
+        # Servicenow
+        elif assessmentTarget == "Servicenow":
+            searchPath = "./auditors/servicenow"
+            utils = CloudConfig(assessmentTarget)
+        # M365
+        elif assessmentTarget == "M365":
+            searchPath = "./auditors/m365"
+            utils = CloudConfig(assessmentTarget)
+            # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
+            self.m365TenantLocation = utils.m365TenantLocation
+            self.m365ClientId = utils.m365ClientId
+            self.m365SecretId = utils.m365SecretId
+            self.m365TenantId = utils.m365TenantId
+        # GitHub
         elif assessmentTarget == "GitHub":
             searchPath = "./auditors/github"
             utils = CloudConfig(assessmentTarget)
-
-        elif assessmentTarget == "Servicenow":
-            searchPath = "./auditors/servicenow"
+        # Google Workspaces
+        elif assessmentTarget == "GoogleWorkspaces":
+            searchPath = "./auditors/google_workspaces"
+            utils = CloudConfig(assessmentTarget)
+        # Workday ERP
+        elif assessmentTarget == "Workday":
+            searchPath = "./auditors/workday_erp"
             utils = CloudConfig(assessmentTarget)
 
         # Search path for Auditors
@@ -347,7 +379,68 @@ class EEAuditor(object):
                         print(traceback.format_exc())
                         print(f"Failed to execute check {checkName} with exception {e}")
             # optional sleep if specified - defaults to 0 seconds
-            sleep(delay)    
+            sleep(delay)
+
+    # Called from eeauditor/controller.py run_auditor()
+    def run_m365_checks(self, pluginName=None, delay=0):
+        """
+        Runs M365 Auditors using Client Secret credentials from an Enterprise Application
+        """
+
+        # These details are needed for the ASFF...
+        import boto3
+
+        sts = boto3.client("sts")
+
+        region = boto3.Session().region_name
+        account = sts.get_caller_identity()["Account"]
+
+        # GovCloud partition override
+        if region in ["us-gov-east-1", "us-gov-west-1"]:
+            partition = "aws-us-gov"
+        # China partition override
+        elif region in ["cn-north-1", "cn-northwest-1"]:
+            partition = "aws-cn"
+        # AWS Secret Region override - sc2s.sgov.gov
+        elif region in ["us-isob-east-1", "us-isob-west-1"]:
+            partition = "aws-isob"
+        # AWS Top Secret Region override - c2s.ic.gov
+        elif region in ["us-iso-east-1", "us-iso-west-1"]:
+            partition = "aws-iso"
+        # UK GCHQ Classified Region override - cloud.adc-e.uk
+        elif region in ["eu-isoe-west-1", "eu-isoe-west-2"]:
+            partition = "aws-isoe"
+        else:
+            partition = "aws"
+
+        for serviceName, checkList in self.registry.checks.items():
+            # Pass the Cache at the "serviceName" level aka Plugin
+            auditorCache = {}
+            for checkName, check in checkList.items():
+                # if a specific check is requested, only run that one check
+                if (
+                    not pluginName
+                    or pluginName
+                    and pluginName == checkName
+                ):
+                    try:
+                        print(f"Executing Check {checkName} for M365 Tenant {self.m365TenantId}")
+                        for finding in check(
+                            cache=auditorCache,
+                            awsAccountId=account,
+                            awsRegion=region,
+                            awsPartition=partition,
+                            tenantId=self.m365TenantId,
+                            clientId=self.m365ClientId,
+                            clientSecret=self.m365SecretId,
+                            tenantLocation=self.m365TenantLocation,
+                        ):
+                            yield finding
+                    except Exception:
+                        print(traceback.format_exc())
+                        print(f"Failed to execute check {checkName}")
+            # optional sleep if specified - defaults to 0 seconds
+            sleep(delay)
     
     # Called from eeauditor/controller.py run_auditor()
     def run_non_aws_checks(self, pluginName=None, delay=0):

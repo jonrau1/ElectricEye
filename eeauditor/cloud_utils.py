@@ -60,6 +60,9 @@ class CloudConfig(object):
             sys.exit(2)
         self.credentialsLocation = data["global"]["credentials_location"]
 
+        ##################################
+        # PUBLIC CLOUD SERVICE PROVIDERS #
+        ##################################
         
         # AWS
         if assessmentTarget == "AWS":
@@ -129,50 +132,6 @@ class CloudConfig(object):
                 )
             self.setup_gcp_credentials(self.gcpServiceAccountJsonPayloadValue)
         
-        # ServiceNow
-        elif assessmentTarget == "Servicenow":
-            # Process data["credentials"]["servicenow"] - nothing needs to be assigned to `self`
-            serviceNowValues = data["credentials"]["servicenow"]
-
-            snowInstanceName = serviceNowValues["servicenow_instance_name"]
-            snowInstanceRegion = serviceNowValues["servicenow_instance_region"]
-            snowUserName = serviceNowValues["servicenow_sspm_username"]
-            snowUserLoginBreachRate = serviceNowValues["servicenow_failed_login_breaching_rate"]
-
-            if any(
-                # Check to make sure none of the variables pulled from TOML are emtpy
-                not var for var in [
-                    snowInstanceName, snowInstanceRegion, snowUserName, snowUserLoginBreachRate
-                    ]
-                ):
-                print(f"One of your ServiceNow TOML entries in [credentials.servicenow] is empty!")
-                sys.exit(2)
-            
-            # Retrieve ServiceNow ElectricEye user password
-            serviceNowPwVal = serviceNowValues["servicenow_sspm_password_value"]
-            if self.credentialsLocation == "CONFIG_FILE":
-                os.environ["SNOW_SSPM_PASSWORD"] = serviceNowPwVal
-            elif self.credentialsLocation == "AWS_SSM":
-                os.environ["SNOW_SSPM_PASSWORD"] = self.get_credential_from_aws_ssm(
-                    serviceNowPwVal,
-                    "servicenow_sspm_password_value"
-                )
-            elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
-                os.environ["SNOW_SSPM_PASSWORD"] = self.get_credential_from_aws_secrets_manager(
-                    serviceNowPwVal,
-                    "servicenow_sspm_password_value"
-                )
-            # All other ServiceNow Values are written as environment variables and either provided
-            # to PySnow Clients or to ProductFields{} within the ASFF per Finding
-            os.environ["SNOW_INSTANCE_NAME"] = snowInstanceName
-            os.environ["SNOW_INSTANCE_REGION"] = snowInstanceRegion
-            os.environ["SNOW_SSPM_USERNAME"] = snowUserName
-            os.environ["SNOW_FAILED_LOGIN_BREACHING_RATE"] = snowUserLoginBreachRate
-        
-        # Azure
-        elif assessmentTarget == "Azure":
-            print("Coming soon!")
-        
         # Oracle Cloud Infrastructure (OCI)
         elif assessmentTarget == "OCI":
             ociValues = data["regions_and_accounts"]["oci"]
@@ -236,6 +195,124 @@ class CloudConfig(object):
             # Create the PEM file and save the location of it to os.environ
             self.setup_oci_credentials(ociUserApiKeyPemLocation)
 
+        # Azure
+        elif assessmentTarget == "Azure":
+            print("Coming soon!")
+
+        # Alibaba Cloud
+        elif assessmentTarget == "Alibaba":
+            print("Coming soon!")
+
+        # VMWare Cloud on AWS
+        elif assessmentTarget == "VMC":
+            print("Coming soon!")
+
+        ###################################
+        # SOFTWARE-AS-A-SERVICE PROVIDERS #
+        ###################################
+
+        # ServiceNow
+        elif assessmentTarget == "Servicenow":
+            # Process data["credentials"]["servicenow"] - nothing needs to be assigned to `self`
+            serviceNowValues = data["credentials"]["servicenow"]
+
+            snowInstanceName = serviceNowValues["servicenow_instance_name"]
+            snowInstanceRegion = serviceNowValues["servicenow_instance_region"]
+            snowUserName = serviceNowValues["servicenow_sspm_username"]
+            snowUserLoginBreachRate = serviceNowValues["servicenow_failed_login_breaching_rate"]
+
+            if any(
+                # Check to make sure none of the variables pulled from TOML are emtpy
+                not var for var in [
+                    snowInstanceName, snowInstanceRegion, snowUserName, snowUserLoginBreachRate
+                    ]
+                ):
+                print(f"One of your ServiceNow TOML entries in [credentials.servicenow] is empty!")
+                sys.exit(2)
+            
+            # Retrieve ServiceNow ElectricEye user password
+            serviceNowPwVal = serviceNowValues["servicenow_sspm_password_value"]
+            if self.credentialsLocation == "CONFIG_FILE":
+                os.environ["SNOW_SSPM_PASSWORD"] = serviceNowPwVal
+            elif self.credentialsLocation == "AWS_SSM":
+                os.environ["SNOW_SSPM_PASSWORD"] = self.get_credential_from_aws_ssm(
+                    serviceNowPwVal,
+                    "servicenow_sspm_password_value"
+                )
+            elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
+                os.environ["SNOW_SSPM_PASSWORD"] = self.get_credential_from_aws_secrets_manager(
+                    serviceNowPwVal,
+                    "servicenow_sspm_password_value"
+                )
+            # All other ServiceNow Values are written as environment variables and either provided
+            # to PySnow Clients or to ProductFields{} within the ASFF per Finding
+            os.environ["SNOW_INSTANCE_NAME"] = snowInstanceName
+            os.environ["SNOW_INSTANCE_REGION"] = snowInstanceRegion
+            os.environ["SNOW_SSPM_USERNAME"] = snowUserName
+            os.environ["SNOW_FAILED_LOGIN_BREACHING_RATE"] = snowUserLoginBreachRate
+
+        # M365
+        elif assessmentTarget == "Servicenow":
+            # Process data["credentials"]["servicenow"] - values need to be assigned to self
+            m365Values = data["credentials"]["m365"]
+
+            m365ClientId = m365Values["m365_ent_app_client_id_value"]
+            m365SecretId = m365Values["m365_ent_app_client_secret_id_value"]
+            m365TenantId = m365Values["m365_ent_app_tenant_id_value"]
+            m365TenantLocation = m365Values["m365_tenant_location"]
+
+            if any(
+                # Check to make sure none of the variables pulled from TOML are emtpy
+                not var for var in [
+                    m365ClientId, m365SecretId, m365TenantId, m365TenantLocation
+                    ]
+                ):
+                print(f"One of your M365 TOML entries in [credentials.m365] is empty!")
+                sys.exit(2)
+
+            # This value (tenant location) will always be in plaintext
+            self.m365TenantLocation = m365TenantLocation
+
+            # Retrieve the values for the M365 Enterprise Application Client ID, Secret Value & Tenant ID
+            if self.credentialsLocation == "CONFIG_FILE":
+                self.m365ClientId = m365ClientId
+                self.m365SecretId = m365SecretId
+                self.m365TenantId = m365TenantId
+            # SSM
+            elif self.credentialsLocation == "AWS_SSM":
+                # Client ID
+                self.m365ClientId = self.get_credential_from_aws_ssm(
+                    m365ClientId,
+                    "m365_ent_app_client_id_value"
+                )
+                # Secret Value
+                self.m365SecretId = self.get_credential_from_aws_ssm(
+                    m365SecretId,
+                    "m365_ent_app_client_secret_id_value"
+                )
+                # Tenant ID
+                self.m365TenantId = self.get_credential_from_aws_ssm(
+                    m365TenantId,
+                    "m365_ent_app_tenant_id_value"
+                )
+            # AWS Secrets Manager
+            elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
+                # Client ID
+                self.m365ClientId = self.get_credential_from_aws_secrets_manager(
+                    m365ClientId,
+                    "m365_ent_app_client_id_value"
+                )
+                # Secret Value
+                self.m365SecretId = self.get_credential_from_aws_secrets_manager(
+                    m365SecretId,
+                    "m365_ent_app_client_secret_id_value"
+                )
+                # Tenant ID
+                self.m365TenantId = self.get_credential_from_aws_secrets_manager(
+                    m365TenantId,
+                    "m365_ent_app_tenant_id_value"
+                )
+    
     def get_aws_regions(self):
         """
         Uses EC2 DescribeRegions API to get a list of opted-in AWS Regions
