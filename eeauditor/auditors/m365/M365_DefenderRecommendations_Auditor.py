@@ -181,6 +181,7 @@ def m365_security_center_recommendations_security_controls_for_macos_check(cache
         }
         yield finding
     else:
+        assetB64 = None
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": f"{tenantId}/m365-security-center-recommendations-security-controls-for-macos-check",
@@ -207,7 +208,7 @@ def m365_security_center_recommendations_security_controls_for_macos_check(cache
                 "ProviderType": "SaaS",
                 "ProviderAccountId": tenantId,
                 "AssetRegion": tenantLocation,
-                "AssetDetails": None,
+                "AssetDetails": assetB64,
                 "AssetClass": "Security Services",
                 "AssetService": "Microsoft 365 Defender",
                 "AssetComponent": "Recommendation"
