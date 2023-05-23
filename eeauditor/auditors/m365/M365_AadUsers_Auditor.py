@@ -194,7 +194,7 @@ def get_identity_protection_risky_users(token):
     else:
         return json.loads(r.text)["value"]
     
-@registry.register_check("m365.mde")
+@registry.register_check("m365.aadusers")
 def m365_aad_user_mfa_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
     """
     [M365.AadUser.1] Azure Active Directory users should have at least one Multi-factor Authentication (MFA) device registered
