@@ -765,7 +765,7 @@ def m365_aad_user_active_identity_protection_risky_user_check(cache, awsAccountI
         # Risky User information is written as a dictionary, if it is empty then they're not a risky user. If they are a Risky User we need to check their riskLevel and riskState
         # there is likely overlap here between Risk Detections as well but...you never know with Microsoft, deadass yo word to your mother
         if user["identityProtectionRiskyUser"]:
-            if user["identityProtectionRiskyUser"]["riskState"] == "atRisk" and user["identityProtectionRiskyUser"]["riskState"] == ("high" or "medium"):
+            if user["identityProtectionRiskyUser"]["riskState"] == "atRisk" and user["identityProtectionRiskyUser"]["riskState"] == "high" or "medium":
                 isRiskyUser = True
             else:
                 isRiskyUser = False
