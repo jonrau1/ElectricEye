@@ -57,7 +57,7 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 
 - The Attack Surface Monitoring module uses NMAP for service discovery and reachability assessment of over 20 highly-dangerous ports and protocols for nearly every public-facing CSP service
 
-- Outputs to AWS Security Hub, AWS DocumentDB, JSON, CSV, HTML Reports, Slack (via Slack App Bots), MongoDB, Amazon SQS, PostgreSQL, [Slack](https://slack.com/), and [**FireMon Cloud Defense**](https://www.firemon.com/introducing-disruptops/).
+- Outputs to [AWS Security Hub](https://aws.amazon.com/security-hub/), [AWS DocumentDB](https://aws.amazon.com/documentdb/), JSON, CSV, HTML Reports, [MongoDB](https://www.mongodb.com/), [Amazon SQS](https://aws.amazon.com/sqs/), [PostgreSQL](https://www.postgresql.org/), [Slack](https://slack.com/) (via Slack App Bots), and [FireMon Cloud Defense](https://www.firemon.com/introducing-disruptops/).
 
 ElectricEye's core concept is the **Auditor** which are sets of Python scripts that run **Checks** per Service dedicated to a specific SaaS vendor or public cloud service provider called an **Assessment Target**.  You can run an entire Assessment Target, a specific Auditor, or a specific Check within an Auditor. After ElectricEye is done with evaluations, it supports over a dozen types of **Outputs** ranging from an HTML executive report to AWS DocumentDB clusters - you can run multiple Outputs as you see fit.
 
@@ -74,7 +74,7 @@ $ python3 eeauditor/controller.py --help
 Usage: controller.py [OPTIONS]
 
 Options:
-  -t, --target-provider [AWS|Azure|OCI|GCP|Servicenow]
+  -t, --target-provider [AWS|Azure|OCI|GCP|Servicenow|M365]
                                   CSP or SaaS Vendor Assessment Target, ensure
                                   that any -a or -c arg maps to your target
                                   provider e.g., -t AWS -a
@@ -87,10 +87,11 @@ Options:
                                   name. Defaults to ALL Checks
   -d, --delay INTEGER             Time in seconds to sleep between Auditors
                                   being ran, defaults to 0
-  -o, --outputs TEXT              A list of Outputs (files, APIs, databases)
-                                  to send ElectricEye Findings, specify
-                                  multiple with additional arguments, e.g., -o
-                                  csv -o postgresql  [default: stdout]
+  -o, --outputs TEXT              A list of Outputs (files, APIs, databases,
+                                  ChatOps) to send ElectricEye Findings,
+                                  specify multiple with additional arguments:
+                                  -o csv -o postgresql -o slack  [default:
+                                  stdout]
   --output-file TEXT              For file outputs such as JSON and CSV, the
                                   name of the file, DO NOT SPECIFY .file_type
                                   [default: output]
@@ -98,11 +99,11 @@ Options:
   --list-checks                   Prints a table of Auditors, Checks, and
                                   Check descriptions to stdout - use this for
                                   -a or -c args
-  --create-insights               Create SecurityHub insights for ElectricEye.
-                                  This only needs to be done once per Security
-                                  Hub instance
-  --list-controls                 Lists all Controls (Check Titles) for an
-                                  Assessment Target, used for mapping...
+  --create-insights               Create AWS Security Hub Insights for
+                                  ElectricEye. This only needs to be done once
+                                  per Account per Region for Security Hub
+  --list-controls                 Lists all ElectricEye Controls (e.g. Check
+                                  Titles) for an Assessment Target
   --help                          Show this message and exit.
 ```
 
@@ -150,13 +151,13 @@ cd ElectricEye
 docker build -t electriceye:local .
 ```
 
-From here you can push to your repository of chocie, be sure to change the tag from `local` to whichever tag your repository is expected.
+From here you can push to your repository of chocie, be sure to change the tag from `local` to whichever tag your repository is expecting or whatever you prefer. Maybe just latest, like a chad?
 
 ### Pulling Images
 
 You can also pull an ElectricEye image from the various repositories, a `latest` image tag will always be pushed alongside an image tagged with the SHA hash of the workflow `${{ github.sha }}` and can be viewed within the various GitHub Action Workflows within the `Print Image` step.
 
-To pull from the various repositories, use these commands, you can replace `latest` as you see fit. The dependencies within ElectricEye stay relatively stable until a new cloud or major integration is added. Check the PR release notes for more information.
+To pull from the various repositories, use these commands, you can replace `latest` as you see fit. The dependencies within ElectricEye stay relatively stable until a new cloud or major integration is added. Check the Pull Requests for more information to be sure.
 
 - Amazon Elastic Container Registry (ECR) Public: `docker pull public.ecr.aws/t4o3u7t2/electriceye:latest` 
 
@@ -256,8 +257,8 @@ For more information on ElectricEye's CAM concept of operations and schema, refe
 In total there are:
 
 - **3** Supported Public CSPs: `AWS`, `GCP`, `OCI`
-- **1** Supported SaaS Provider: `ServiceNow`
-- **926** ElectricEye Checks
+- **2** Supported SaaS Provider: `ServiceNow`, `M365`
+- **926** ElectricEye Checks (reminder: we didnt add any M365 to the count)
 - **135** Supported CSP & SaaS Asset Components across all Services
 - **107** ElectricEye Auditors
 

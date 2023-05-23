@@ -119,7 +119,7 @@ To configure the TOML file, you need to modify the values of the variables in th
 
 - `credentials_location`: Set this variable to specify the location of where credentials are stored and will be retrieved from. You can choose from AWS Systems Manager Parameter Store (`AWS_SSM`), AWS Secrets Manager (`AWS_SECRETS_MANAGER`), or from the TOML file itself (`CONFIG_FILE`) which is **NOT** recommended.
 
-**NOTE** When retrieving from SSM or Secrets Manager, your current Profile / Boto3 Session is used and *NOT* the ElectricEye Role that is specified in `aws_electric_eye_iam_role_name`. Ensure you have `ssm:GetParameter`, `secretsmanager:GetSecretValue`, and relevant `kms` permissions as needed to retrieve this values.
+**NOTE** When retrieving from SSM or Secrets Manager, your current Profile / Boto3 Session is used and *NOT* the ElectricEye Role that is specified in `aws_electric_eye_iam_role_name`. Ensure you have `ssm:GetParameter`, `secretsmanager:GetSecretValue`, and relevant `kms` permissions as needed to retrieve your stored secrets.
 
 - `virustotal_api_key_value`: The location (or actual contents) of your VirusTotal (VT) API Key, this location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter. VirusTotal is used for the **OCI_ArtifactRegistry_Auditor** to check individual SHA256 hashes of artifacts against VirusTotal for malware. The logic is currently hard-coded that if 5 or more detectors report `suspicious` or that 2 or more detectors report `malicious` then the artifact is considered malicious.
 
@@ -139,7 +139,7 @@ It's important to note that this setting is a sensitive credential, and as such,
 
 ## Use ElectricEye for OCI
 
-1. With >=Python 3.6 installed, install and upgrade `pip3` and setup `virtualenv`.
+1. With >=Python 3.7 installed, install and upgrade `pip3` and setup `virtualenv`.
 
 ```bash
 sudo apt install -y python3-pip
@@ -177,7 +177,7 @@ pip3 install --user -r requirements.txt
     python3 eeauditor/controller.py --help
     ```
 
-    - 4B. Evaluate your entire OCI environment, for a specific Project.
+    - 4B. Evaluate your entire OCI Tenancy.
 
     ```bash
     python3 eeauditor/controller.py -t OCI
