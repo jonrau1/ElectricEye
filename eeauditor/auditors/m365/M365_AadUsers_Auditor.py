@@ -92,7 +92,7 @@ def get_aad_users_with_enrichment(cache, tenantId, clientId, clientSecret):
 
     print(f"{len(userList)} AD Users found. Attempting to retrieve MFA device & Identity Protection information.")
 
-    userList = check_user_mfa_and_risk(userList)
+    userList = check_user_mfa_and_risk(token, userList)
     
     # Print the len() again just in case there was an issue, not like there is anything to do about it though
     print(f"Done retrieving MFA details for {len(userList)} users!")
@@ -312,6 +312,205 @@ def m365_aad_user_mfa_check(cache, awsAccountId, awsRegion, awsPartition, tenant
                     "Recommendation": {
                         "Text": "For more information on setting up multi-factor authentication refer to the Multifactor authentication for Microsoft 365 section of the Microsoft 365 admin center documentation.",
                         "Url": "https://learn.microsoft.com/en-us/microsoft-365/admin/security-and-compliance/multi-factor-authentication-microsoft-365?view=o365-worldwide"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "M365",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": tenantId,
+                    "AssetRegion": tenantLocation,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Azure Active Directory",
+                    "AssetComponent": "User"
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureActiveDirectoryUser",
+                        "Id": f"{tenantId}/{userId}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenantId": tenantId,
+                                "Id": userId,
+                                "DisplayName": displayName,
+                                "UserPrincipalName": userPrincipalName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-3",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-6",
+                        "NIST SP 800-53 Rev. 4 IA-7",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 IA-9",
+                        "NIST SP 800-53 Rev. 4 IA-10",
+                        "NIST SP 800-53 Rev. 4 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("m365.aadusers")
+def m365_aad_user_phishing_resistant_mfa_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+    """
+    [M365.AadUser.2] Azure Active Directory users should have a phishing-resistant Multi-factor Authentication (MFA) device registered
+    """
+    phishingResistantFactors = [
+        "fido2AuthenticationMethod",
+        "microsoftAuthenticatorAuthenticationMethod",
+        "windowsHelloForBusinessAuthenticationMethod"
+    ]
+
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for user in get_aad_users_with_enrichment(cache, tenantId, clientId, clientSecret):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(user,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+
+        userId = user["id"]
+        displayName = user["displayName"]
+        userPrincipalName = user["userPrincipalName"]
+
+        # Microsoft considers Windows Hello, Hardware MFA (FIDO2) and Microsoft Authenticator TOTP to be "strong" or "phishing resistant"
+        # Loop the list of factores, splitting the weird ass title that Microsoft gives it and check if it's one of good ones listed above
+        # will fill a list so we can use it like a list comprehension and check if it has any entries
+        userStrongMfa = []
+        for factor in user["authenticationMethods"]:
+            # the factors always start with "#microsoft.graph."
+            mfaType = factor["@odata.type"].split("#microsoft.graph.")[1]
+            if mfaType in phishingResistantFactors:
+                userStrongMfa.append(mfaType)
+            else:
+                continue
+
+        # If there are not any entries it means that either the user only has a Password ([M365.AadUser.1] checks for that) or they dont have strong MFA
+        # I mean, some MFA is better than none, but still why not check for this before setting up Conditional Access Policies that'll absolutely fuck everyone up?!
+        if not userStrongMfa:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{tenantId}/{userId}/azure-ad-user-phishing-resistant-mfa-registered-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{tenantId}/{userId}/azure-ad-user-phishing-resistant-mfa-registered-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[M365.AadUser.2] Azure Active Directory users should have a phishing-resistant Multi-factor Authentication (MFA) device registered",
+                "Description": f"Azure Active Directory user {userPrincipalName} in M365 Tenant {tenantId} does not have phishing-resistant Multi-factor Authentication (MFA) device registered. The US Office of Management and Budget (OMB) M 22-09 Memorandum for the Heads of Executive Departments and Agencies requirements are that employees use enterprise-managed identities to access applications, and that multifactor authentication protects employees from sophisticated online attacks, such as phishing. This attack method attempts to obtain and compromise credentials, with links to inauthentic sites. Multifactor authentication prevents unauthorized access to accounts and data. The memo requirements cite multifactor authentication with phishing-resistant methods: authentication processes designed to detect and prevent disclosure of authentication secrets and outputs to a website or application masquerading as a legitimate system. Microsoft recommends (based on the Memo) using FIDO2, Windows Hello, or Microsoft Authenticator - as well as Certificates or CAC/PIV devices - which are out of scope for this Electriceye Check. Ensure you understand the context behind the user, some Users may be setup just for their email and may not require MFA. That said, consider using Service Principals or Email Aliases for those purposes instead of creating an entirely new user as it can also consume license capacity and lead to higher costs and more failing findings (like this one!). Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on setting up phishing-resistant multi-factor authentication refer to the Meet multifactor authentication requirements of memorandum 22-09 section of the Microsoft 365 Standards documentation.",
+                        "Url": "https://learn.microsoft.com/en-us/azure/active-directory/standards/memo-22-09-multi-factor-authentication"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "M365",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": tenantId,
+                    "AssetRegion": tenantLocation,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Azure Active Directory",
+                    "AssetComponent": "User"
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureActiveDirectoryUser",
+                        "Id": f"{tenantId}/{userId}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenantId": tenantId,
+                                "Id": userId,
+                                "DisplayName": displayName,
+                                "UserPrincipalName": userPrincipalName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-3",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-6",
+                        "NIST SP 800-53 Rev. 4 IA-7",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 IA-9",
+                        "NIST SP 800-53 Rev. 4 IA-10",
+                        "NIST SP 800-53 Rev. 4 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{tenantId}/{userId}/azure-ad-user-phishing-resistant-mfa-registered-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{tenantId}/{userId}/azure-ad-user-phishing-resistant-mfa-registered-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[M365.AadUser.2] Azure Active Directory users should have a phishing-resistant Multi-factor Authentication (MFA) device registered",
+                "Description": f"Azure Active Directory user {userPrincipalName} in M365 Tenant {tenantId} does have a phishing-resistant Multi-factor Authentication (MFA) device registered. MFA factors should still be reviewed to ensure they are in compliance with your Policies and are functioning.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on setting up phishing-resistant multi-factor authentication refer to the Meet multifactor authentication requirements of memorandum 22-09 section of the Microsoft 365 Standards documentation.",
+                        "Url": "https://learn.microsoft.com/en-us/azure/active-directory/standards/memo-22-09-multi-factor-authentication"
                     }
                 },
                 "ProductFields": {
