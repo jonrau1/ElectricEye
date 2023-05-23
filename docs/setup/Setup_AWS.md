@@ -1,6 +1,6 @@
 # ElectricEye Cloud Security Posture Management for AWS
 
-This documentation is dedicated to using ElectricEye for evaluation of AWS Environments using CSPM and External Attack Surface Management (EASM) capabilities.
+This documentation is dedicated to using ElectricEye for evaluation of AWS Environments using CSPM and Attack Surface Monitoring capabilities.
 
 ## Table of Contents
 
@@ -8,7 +8,7 @@ This documentation is dedicated to using ElectricEye for evaluation of AWS Envir
 - [Use ElectricEye for AWS](#use-electriceye-for-aws)
 - [Configuring the AWS Security Group Auditor](#configuring-the-aws-security-group-auditor)
 - [Building & Pushing ElectricEye Docker Image to ECR](#build-and-push-the-docker-image-to-ecr)
-- [AWS EASM Reporting](#aws-external-attack-surface-reporting)
+- [AWS Attack Surface Monitoring](#aws-attack-surface-monitoring)
 - [AWS Checks & Services](#aws-checks--services)
 
 ## Configuring TOML
@@ -197,6 +197,8 @@ If you only wanted to run Attack Surface Monitoring checks use the following com
 ```bash
 python3 eeauditor/controller.py -t AWS -a ElectricEye_AttackSurface_Auditor -o json_normalized --output-file ElectricASM
 ```
+
+The ASM Module uses NMAP at its core and will be expanded to include ZAP and Shodan workflows in the future.
 
 ## AWS Checks & Services
 

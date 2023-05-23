@@ -128,7 +128,7 @@ The following Cloud Service Providers are on the Roadmap
 ### Software-as-a-Service (SaaS) Providers
 
 - [For ServiceNow](./docs/setup/Setup_ServiceNow.md)
-- [For Microsoft M365](./docs//Setup_M365.md)
+- [For Microsoft M365](./docs/setup/Setup_M365.md)
 
 The following SaaS Providers are on the Roadmap
 

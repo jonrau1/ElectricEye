@@ -1,6 +1,6 @@
 # ElectricEye Cloud Security Posture Management for Oracle Cloud Infrastructure (OCI)
 
-This documentation is dedicated to using ElectricEye for evaluation of Oracle Cloud Environments using CSPM and External Attack Surface Management (EASM) capabilities.
+This documentation is dedicated to using ElectricEye for evaluation of Oracle Cloud Environments using CSPM and Attack Surface Monitoring capabilities.
 
 ## Table of Contents
 
