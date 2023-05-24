@@ -21,6 +21,7 @@
 import os
 import oci
 from oci.config import validate_config
+import requests
 import datetime
 import base64
 import json
@@ -54,7 +55,6 @@ def get_container_repos(cache, ociTenancyId, ociUserId, ociRegionName, ociCompar
         "region": ociRegionName,
         "fingerprint": ociUserApiKeyFingerprint,
         "key_file": os.environ["OCI_PEM_FILE_PATH"],
-        
     }
     validate_config(config)
 
@@ -117,7 +117,6 @@ def get_repository_images(cache, ociTenancyId, ociUserId, ociRegionName, ociComp
         "region": ociRegionName,
         "fingerprint": ociUserApiKeyFingerprint,
         "key_file": os.environ["OCI_PEM_FILE_PATH"],
-        
     }
     validate_config(config)
 
@@ -137,6 +136,84 @@ def get_repository_images(cache, ociTenancyId, ociUserId, ociRegionName, ociComp
 
     cache["get_repository_images"] = containerRegistryImages
     return cache["get_repository_images"]
+
+def get_cisa_kev():
+    """
+    Retrieves the U.S. CISA's Known Exploitable Vulnerabilities (KEV) Catalog and returns a list of CVE ID's
+    """
+
+    rawKev = json.loads(requests.get("https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json").text)["vulnerabilities"]
+
+    kevCves = [cve["cveID"] for cve in rawKev]
+
+    return kevCves
+
+def get_container_images_with_exploitable_vulns(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    response = cache.get("get_container_images_with_exploitable_vulns")
+    if response:
+        return response
+
+    # Create & Validate OCI Creds - do this after cache check to avoid doing it a lot
+    config = {
+        "tenancy": ociTenancyId,
+        "user": ociUserId,
+        "region": ociRegionName,
+        "fingerprint": ociUserApiKeyFingerprint,
+        "key_file": os.environ["OCI_PEM_FILE_PATH"],
+    }
+    validate_config(config)
+
+    vssClient = oci.vulnerability_scanning.VulnerabilityScanningClient(config)
+    artifactClient = oci.artifacts.ArtifactsClient(config)
+    # Bring in the list of CISA KEV catalog CVEs
+    kev = get_cisa_kev()
+    # This will contain a deduplicated list of Image OCIDs
+    impactedContainerImagesOcidMasterList = []
+
+    # Pull in all of the vulns, these should technically be on item per-CVE
+    for compartment in ociCompartments:
+        vulns = process_response(
+            vssClient.list_vulnerabilities(
+                compartment_id=compartment,
+                vulnerability_type="CVE",
+                limit=100000
+            ).data
+        )["items"]
+        # Use a list comprehension to process the vulnerabilities by ensuring that the "state" is OPEN and that
+        # the "vulnerability_reference" is actually a CVE ID, though we filter for it within the API
+        # then, ensure that the vulns actually impact the Images within the current Compartment
+        # finally, see if the vulns are in the KEV
+        activeCves = [
+            vuln for vuln in vulns if vuln["state"] == "OPEN" 
+            and vuln["vulnerability_reference"].startswith("CVE-")
+            and vuln["impacted_resources_count"]["image_count"] > 0
+            and cve["vulnerability_reference"] in kev
+        ]
+        # For each CVE in the list of active, container-impacted, and exploitable vulnerabilities get the containers
+        for cve in activeCves:
+            impactedContainers = process_response(
+                vssClient.list_vulnerability_impacted_containers(
+                    vulnerability_id=cve["id"]
+                ).data
+            )["items"]
+            for container in impactedContainers:
+                # We can get the OCID by adding args of the repo name and image version tag to the call to ListContainerImages API
+                repoName = container["repository"]
+                imageVersion = container["image"]
+                # Get the OCID of the Image
+                containerId = process_response(
+                    artifactClient.list_container_images(
+                        compartment_id=compartment,
+                        repository_name=repoName,
+                        version=imageVersion
+                    ).data
+                )["items"][0]["id"]
+                # Write the OCID to the list if it's not there already
+                if containerId not in impactedContainerImagesOcidMasterList:
+                    impactedContainerImagesOcidMasterList.append(containerId)
+
+    cache["get_container_images_with_exploitable_vulns"] = impactedContainerImagesOcidMasterList
+    return cache["get_container_images_with_exploitable_vulns"]
 
 @registry.register_check("oci.containerregistry")
 def oci_container_registry_review_public_repos_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
@@ -621,6 +698,172 @@ def oci_container_registry_images_signed_check(cache, awsAccountId, awsRegion, a
                         "ISO 27001:2013 A.14.1.3",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.15.2.2"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("oci.containerregistry")
+def oci_container_registry_images_exploitable_vulnerabilities_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.ContainerRegistry.4] Oracle Container Registry images with exploitable vulnerabilities should be immediately patched
+    """
+    # Bring in the list of OCIDs impacted by explotiable vulneraiblities
+    exploitableImages = get_container_images_with_exploitable_vulns(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint)
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for image in get_repository_images(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(image,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        compartmentId = image["compartment_id"]
+        imageId = image["id"]
+        imageName = image["display_name"]
+        repoId = image["repository_id"]
+        repoName = image["repository_name"]
+        lifecycleState = image["lifecycle_state"]
+        createdAt = str(image["time_created"])
+
+        if imageId in exploitableImages:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{imageId}/oci-container-registry-image-exploitable-vulns-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{imageId}/oci-container-registry-image-exploitable-vulns-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "CRITICAL"},
+                "Confidence": 99,
+                "Title": "[OCI.ContainerRegistry.4] Oracle Container Registry images with exploitable vulnerabilities should be immediately patched",
+                "Description": f"Oracle Container Registry image {imageName} from Repository {repoName} in Compartment {compartmentId} in {ociRegionName} has at least one active and exploitable vulnerability and should be immediately remediated. It is not uncommon for the operating system packages included in images to have vulnerabilities. Managing these vulnerabilities enables you to strengthen the security posture of your system, and respond quickly when new vulnerabilities are discovered. You enable image scanning by adding an image scanner to a repository. From then on, any images pushed to the repository are scanned for vulnerabilities by the image scanner. If the repository already contains images, the four most recently pushed images are immediately scanned for vulnerabilities. ElectricEye uses the United States Cyber and Infrastructure Security Agency's (CISA's) Known Explotiable Vulnerability (KEV) Catalog to compare to CVE IDs scanned by Oracle VSS. Due to the way Oracle VSS APIs function, you cannot easily get a list of exact vulnerabilities for a specific Container, this finding only triggers if at least one of the CVEs show up on the KEV Catalog. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on setting up Oracle Vulnerability Scanning Service and having your Container Registry Repositories scanned for CVEs see the Container Image Targets section of the Oracle Cloud Infrastructure Documentation for Vulnerability Scanning.",
+                        "Url": "https://docs.oracle.com/iaas/scanning/using/managing-image-targets.htm",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Container Registry",
+                    "AssetComponent": "Image"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciContainerRegistryImage",
+                        "Id": imageId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": imageName,
+                                "Id": imageId,
+                                "LifecycleState": lifecycleState,
+                                "RepositoryId": repoId,
+                                "RepositoryName": repoName,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.AE-4",
+                        "NIST CSF V1.1 DE.CM-8",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 RA-3",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.1",
+                        "AICPA TSC CC7.3",
+                        "ISO 27001:2013 A.12.6.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{imageId}/oci-container-registry-image-exploitable-vulns-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{imageId}/oci-container-registry-image-exploitable-vulns-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.ContainerRegistry.4] Oracle Container Registry images with exploitable vulnerabilities should be immediately patched",
+                "Description": f"Oracle Container Registry image {imageName} from Repository {repoName} in Compartment {compartmentId} in {ociRegionName} does not have an exploitable vulnerability. While there may not be any exploitable vulnerabilities, it does not mean that there are not any vulnerabilities at all. Always use multiple sources of exploit data such as Vulners, PacketStorm, ExploitDB, Metasploit, and EPSS scoring to help prioritize vulnerability remediation and risk treatment efforts.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on setting up Oracle Vulnerability Scanning Service and having your Container Registry Repositories scanned for CVEs see the Container Image Targets section of the Oracle Cloud Infrastructure Documentation for Vulnerability Scanning.",
+                        "Url": "https://docs.oracle.com/iaas/scanning/using/managing-image-targets.htm",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Oracle Container Registry",
+                    "AssetComponent": "Image"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciContainerRegistryImage",
+                        "Id": imageId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": imageName,
+                                "Id": imageId,
+                                "LifecycleState": lifecycleState,
+                                "RepositoryId": repoId,
+                                "RepositoryName": repoName,
+                                "CreatedAt": createdAt
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.AE-4",
+                        "NIST CSF V1.1 DE.CM-8",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 RA-3",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.1",
+                        "AICPA TSC CC7.3",
+                        "ISO 27001:2013 A.12.6.1"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
