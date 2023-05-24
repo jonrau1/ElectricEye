@@ -187,7 +187,7 @@ def get_container_images_with_exploitable_vulns(cache, ociTenancyId, ociUserId, 
             vuln for vuln in vulns if vuln["state"] == "OPEN" 
             and vuln["vulnerability_reference"].startswith("CVE-")
             and vuln["impacted_resources_count"]["image_count"] > 0
-            and cve["vulnerability_reference"] in kev
+            and vuln["vulnerability_reference"] in kev
         ]
         # For each CVE in the list of active, container-impacted, and exploitable vulnerabilities get the containers
         for cve in activeCves:
