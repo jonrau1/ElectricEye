@@ -49,7 +49,7 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 
 ## Quick Run Down :running: :running:
 
-- ElectricEye is a Python CLI tool that offers cross-Account, cross-Region, multi-Cloud & SaaS Asset Management, Security Posture Management, and Attack Surface Monitoring capabilities across AWS, GCP, Oracle Cloud Infrastructure (OCI), ServiceNow, and M365 (*with more on the way!*). All Partitions are supported for AWS!
+- ElectricEye is a Python CLI tool that offers cross-Account, cross-Region, multi-Cloud & SaaS Asset Management, Security Posture Management, and Attack Surface Monitoring capabilities across AWS, GCP, Oracle Cloud Infrastructure (OCI), ServiceNow, and M365 (*with more on the way*). All Partitions are supported for AWS!
 
 - ElectricEye offers over 800 checks for security, reliability, monitoring, and exposure across 100 CSP & SaaS services, including atypical services not supported by AWS Config/Google Cloud Asset API or mainstream CSPM & CNAPP tools.
 
@@ -258,9 +258,9 @@ In total there are:
 
 - **3** Supported Public CSPs: `AWS`, `GCP`, `OCI`
 - **2** Supported SaaS Provider: `ServiceNow`, `M365`
-- **926** ElectricEye Checks (reminder: we didnt add any M365 to the count)
-- **135** Supported CSP & SaaS Asset Components across all Services
-- **107** ElectricEye Auditors
+- **963** ElectricEye Checks
+- **139** Supported CSP & SaaS Asset Components across all Services
+- **111** ElectricEye Auditors
 
 The tables of supported Services and Checks have been migrated to the respective per-Provider setup documentation linked above in [Using ElectricEye](#configuring-electricey).
 

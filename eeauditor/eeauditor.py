@@ -501,20 +501,16 @@ class EEAuditor(object):
     # Called from eeauditor/controller.py print_checks()
     def print_checks_md(self):
         table = []
-        table.append(
-            "| Auditor Name                           | Check Name                    | Check Description                                                                      |"
-        )
-        table.append(
-            "|----------------------------------------|-------------------------------|----------------------------------------------------------------------------------------|"
-        )
-
+        table.append("| Auditor Name | Check Name | Check Description |")
+        table.append("|---|---|---|")
+        # Just use some built-in functions to get the function name (__name__) and the Description/docstring (__doc__)
         for serviceName, checkList in self.registry.checks.items():
             for checkName, check in checkList.items():
                 doc = check.__doc__
                 if doc:
-                    description = (check.__doc__).replace("\n", "")
+                    description = (check.__doc__).replace("\n", "").replace("    ", "")
                 else:
-                    description = ""
+                    description = "TELL_THE_MAINTAINER_TO_FIX_ME_PLZ"
 
                 auditorFile = inspect.getfile(check).rpartition('/')[2]
                 auditorName = auditorFile.split(".py")[0]
@@ -524,7 +520,8 @@ class EEAuditor(object):
                 )
 
         print("\n".join(table))
-
+    
+    # Called from eeauditor/controller.py print_checks()
     def print_controls_json(self):
         controlPrinter = []
 
@@ -532,10 +529,9 @@ class EEAuditor(object):
             for checkName, check in checkList.items():
                 doc = check.__doc__
                 if doc:
-                    description = (check.__doc__).replace("\n", "")
+                    description = (check.__doc__).replace("\n", "").replace("    ", "")
                 else:
-                    description = ""
-                
+                    description = "TELL_THE_MAINTAINER_TO_FIX_ME_PLZ"
                 
                 controlPrinter.append(description)
 
