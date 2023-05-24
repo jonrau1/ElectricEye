@@ -4,7 +4,7 @@
   <img src="./screenshots/logo.svg" width="420" height="420">
 </p>
 
-ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to NIST CSF, 800-53, 800-171, ISO 27001, AICPA TSC (SOC2), and more!
+ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to NIST CSF, 800-53, ISO 27001, AICPA TSC (SOC2), and more!
 
 ![VulnScan](https://github.com/jonrau1/ElectricEye/actions/workflows/sbom-vulns.yml/badge.svg)  ![CodeQL](https://github.com/jonrau1/ElectricEye/actions/workflows/codeql-analysis.yml/badge.svg) ![EcrBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-ecr-public.yml/badge.svg) ![OcrBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-ocr-public.yml/badge.svg) ![DockerHubBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-docker-hub.yml/badge.svg)
 
@@ -32,9 +32,9 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 
 - [Workflow](#workflow)
 - [Quick Run Down](#quick-run-down-running-running)
-- [Configuring ElectricEye](#configuring-electricey)
+- [Configuring ElectricEye](#configuring-electriceye)
 - [ElectricEye on Docker](#electriceye-on-docker)
-- [Cloud Asset Management](./docs/asset_management/ASSET_MANAGEMENT.md)
+- [Cloud Asset Management](#cloud-asset-management-cam)
 - [Outputs](./docs/outputs/OUTPUTS.md)
 - [FAQ](./docs/faq/FAQ.md)
 - [Supported Services and Checks](#supported-services-and-checks)
@@ -49,13 +49,13 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 
 ## Quick Run Down :running: :running:
 
-- ElectricEye is a Python CLI tool that offers cross-Account, cross-Region, multi-Cloud & SaaS Asset Management, Security Posture Management, and Attack Surface Monitoring capabilities across AWS, GCP, Oracle Cloud Infrastructure (OCI), ServiceNow, and M365 (*with more on the way*). All Partitions are supported for AWS!
+- ElectricEye is a Python CLI tool that offers cross-Account, cross-Region, multi-Cloud & SaaS Asset Management, Security Posture Management, and Attack Surface Monitoring capabilities across [AWS, all Partitions supported!](https://aws.amazon.com/), [GCP](https://cloud.google.com/), [Oracle Cloud Infrastructure (OCI)](https://www.oracle.com/cloud/), [ServiceNow](https://www.servicenow.com/), and [Microsoft 365 Enterprise (*M365*)](https://www.microsoft.com/en-us/microsoft-365/compare-microsoft-365-enterprise-plans) *with more on the way*.
 
-- ElectricEye offers over 800 checks for security, reliability, monitoring, and exposure across 100 CSP & SaaS services, including atypical services not supported by AWS Config/Google Cloud Asset API or mainstream CSPM & CNAPP tools.
+- ElectricEye offers over *900* checks for security, reliability, monitoring, and exposure across more than 100 CSP & SaaS services, including atypical services not supported by AWS Config/Google Cloud Asset API or mainstream CSPM & CNAPP tools.
 
-- All checks are currently mapped to NIST Cybersecurity Framework V1.1, NIST Special Publication 800-53 Revision 4, AICPA 2020 Trust Service Criteria (TSCs), and ISO 27001:2013 Annex A controls.
+- All checks are currently mapped to NIST Cybersecurity Framework V1.1, NIST Special Publication 800-53 Revision 4, AICPA 2020 Trust Service Criteria (TSCs), and ISO 27001:2013 Annex A controls for Audit Readiness and internal GRC requirements.
 
-- The Attack Surface Monitoring module uses NMAP for service discovery and reachability assessment of over 20 highly-dangerous ports and protocols for nearly every public-facing CSP service
+- Multi-faceted Attack Surface Monitoring uses tools such as VirusTotal, Nmap, Shodan.io, Detect-Secrets, and CISA's KEV to locate assets indexed on the internet, find exposed services, locate exploitable vulnerabilities, and malicious packages in artifact repositories.
 
 - Outputs to [AWS Security Hub](https://aws.amazon.com/security-hub/), [AWS DocumentDB](https://aws.amazon.com/documentdb/), JSON, CSV, HTML Reports, [MongoDB](https://www.mongodb.com/), [Amazon SQS](https://aws.amazon.com/sqs/), [PostgreSQL](https://www.postgresql.org/), [Slack](https://slack.com/) (via Slack App Bots), and [FireMon Cloud Defense](https://www.firemon.com/introducing-disruptops/).
 
@@ -262,7 +262,7 @@ In total there are:
 - **139** Supported CSP & SaaS Asset Components across all Services
 - **111** ElectricEye Auditors
 
-The tables of supported Services and Checks have been migrated to the respective per-Provider setup documentation linked above in [Using ElectricEye](#configuring-electricey).
+The tables of supported Services and Checks have been migrated to the respective per-Provider setup documentation linked above in [Configuring ElectricEye](#configuring-electriceye).
 
 ## Contributing
 
