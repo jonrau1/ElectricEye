@@ -21,6 +21,7 @@
 import os
 import oci
 from oci.config import validate_config
+import requests
 import datetime
 import base64
 import json
@@ -100,6 +101,73 @@ def get_compute_instance_vnic(ociTenancyId, ociUserId, ociRegionName, ociUserApi
     vnicData = vncClient.get_vnic(vnic_id=vnicId).data
 
     return process_response(vnicData)
+
+def get_cisa_kev():
+    """
+    Retrieves the U.S. CISA's Known Exploitable Vulnerabilities (KEV) Catalog and returns a list of CVE ID's
+    """
+
+    rawKev = json.loads(requests.get("https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json").text)["vulnerabilities"]
+
+    kevCves = [cve["cveID"] for cve in rawKev]
+
+    return kevCves
+
+def get_exploitable_compute_instances(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    
+    response = cache.get("get_exploitable_compute_instances")
+    if response:
+        return response
+
+    # Create & Validate OCI Creds - do this after cache check to avoid doing it a lot
+    config = {
+        "tenancy": ociTenancyId,
+        "user": ociUserId,
+        "region": ociRegionName,
+        "fingerprint": ociUserApiKeyFingerprint,
+        "key_file": os.environ["OCI_PEM_FILE_PATH"],
+        
+    }
+    validate_config(config)
+
+    vssClient = oci.vulnerability_scanning.VulnerabilityScanningClient(config)
+
+    kev = get_cisa_kev()
+
+    impactedInstancesMasterList = []
+
+    for compartment in ociCompartments:
+        vulns = process_response(
+            vssClient.list_vulnerabilities(
+                compartment_id=compartment,
+                vulnerability_type="CVE",
+                limit=100000
+            ).data
+        )["items"]
+        # Use a list comprehension to process the vulnerabilities by ensuring that the "state" is OPEN and that
+        # the "vulnerability_reference" is actually a CVE ID, though we filter for it within the API
+        # then, ensure that the vulns actually impact the Instances within the current Compartment
+        # finally, see if the vulns are in the KEV
+        activeCves = [
+            vuln for vuln in vulns if vuln["state"] == "OPEN" 
+            and vuln["vulnerability_reference"].startswith("CVE-")
+            and vuln["impacted_resources_count"]["host_count"] > 0
+            and vuln["vulnerability_reference"] in kev
+        ]
+        # For each CVE in the list of active, Instance-impacting, and exploitable vulnerabilities get the Instances
+        for cve in activeCves:
+            impactedInstances = process_response(
+                vssClient.list_vulnerability_impacted_hosts(
+                    vulnerability_id=cve["id"]
+                ).data
+            )["items"]
+
+            for instance in impactedInstances:
+                if instance["instance_id"] not in impactedInstancesMasterList:
+                    impactedInstancesMasterList.append(instance["instance_id"])
+
+    cache["get_exploitable_compute_instances"] = impactedInstancesMasterList
+    return cache["get_exploitable_compute_instances"]
 
 @registry.register_check("oci.computeinstances")
 def oci_cloud_compute_secure_boot_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
@@ -1915,6 +1983,169 @@ def oci_cloud_compute_instance_nsg_assigned_check(cache, awsAccountId, awsRegion
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
                         "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("oci.computeinstances")
+def oci_cloud_compute_instance_exploitable_vulns_check(cache, awsAccountId, awsRegion, awsPartition, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+    """
+    [OCI.ComputeInstance.12] Cloud Compute instances with known exploitable vulnerabilities should be immediately remediated
+    """
+    # Pull in the instances with exploitable vulnerabilities
+    exploitableInstances = get_exploitable_compute_instances(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint)
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for instance in get_oci_compute_instances(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(instance,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        instanceId = instance["id"]
+        instanceName = instance["display_name"]
+        compartmentId = instance["compartment_id"]
+        imageId = instance["image_id"]
+        shape = instance["shape"]
+        lifecycleState = instance["lifecycle_state"]
+        
+        if instanceId in exploitableInstances:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{instanceId}/oci-instance-exploitable-vulnerabilities-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId":  f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{instanceId}/oci-instance-exploitable-vulnerabilities-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "CRITICAL"},
+                "Confidence": 99,
+                "Title": "[OCI.ComputeInstance.12] Cloud Compute instances with known exploitable vulnerabilities should be immediately remediated",
+                "Description": f"Oracle Cloud Compute instance {instanceName} in Compartment {compartmentId} in {ociRegionName} has at least one active and exploitable vulnerability and should be immediately remediated. It is not uncommon for the operating system packages included in images to have vulnerabilities. Managing these vulnerabilities enables you to strengthen the security posture of your system, and respond quickly when new vulnerabilities are discovered. Oracle Cloud Infrastructure Vulnerability Scanning Service helps improve your security posture by routinely checking hosts and container images for potential vulnerabilities. The service gives developers, operations, and security administrators comprehensive visibility into misconfigured or vulnerable resources, and generates reports with metrics and details about these vulnerabilities including remediation information. ElectricEye uses the United States Cyber and Infrastructure Security Agency's (CISA's) Known Explotiable Vulnerability (KEV) Catalog to compare to CVE IDs scanned by Oracle VSS. Due to the way Oracle VSS APIs function, you cannot easily get a list of exact vulnerabilities for a specific Container, this finding only triggers if at least one of the CVEs show up on the KEV Catalog. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on how VSS works for Instances and potential remediation options refer to the Scanning Overview section of the Oracle Cloud Infrastructure Documentation for Management Agents.",
+                        "Url": "https://docs.oracle.com/iaas/scanning/using/overview.htm",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Oracle Cloud Compute",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciCloudComputeInstance",
+                        "Id": instanceId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": instanceName,
+                                "Id": instanceId,
+                                "ImageId": imageId,
+                                "Shape": shape,
+                                "LifecycleState": lifecycleState
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.AE-4",
+                        "NIST CSF V1.1 DE.CM-8",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 RA-3",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.1",
+                        "AICPA TSC CC7.3",
+                        "ISO 27001:2013 A.12.6.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{instanceId}/oci-instance-exploitable-vulnerabilities-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId":  f"{ociTenancyId}/{ociRegionName}/{compartmentId}/{instanceId}/oci-instance-exploitable-vulnerabilities-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[OCI.ComputeInstance.12] Cloud Compute instances with known exploitable vulnerabilities should be immediately remediated",
+                "Description": f"Oracle Cloud Compute instance {instanceName} in Compartment {compartmentId} in {ociRegionName} does not have an exploitable vulnerability. While there may not be any exploitable vulnerabilities, it does not mean that there are not any vulnerabilities at all. Always use multiple sources of exploit data such as Vulners, PacketStorm, ExploitDB, Metasploit, and EPSS scoring to help prioritize vulnerability remediation and risk treatment efforts.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on how VSS works for Instances and potential remediation options refer to the Scanning Overview section of the Oracle Cloud Infrastructure Documentation for Management Agents.",
+                        "Url": "https://docs.oracle.com/iaas/scanning/using/overview.htm",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "OCI",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": ociTenancyId,
+                    "AssetRegion": ociRegionName,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Oracle Cloud Compute",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "OciCloudComputeInstance",
+                        "Id": instanceId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "TenancyId": ociTenancyId,
+                                "CompartmentId": compartmentId,
+                                "Region": ociRegionName,
+                                "Name": instanceName,
+                                "Id": instanceId,
+                                "ImageId": imageId,
+                                "Shape": shape,
+                                "LifecycleState": lifecycleState
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.AE-4",
+                        "NIST CSF V1.1 DE.CM-8",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 RA-3",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.1",
+                        "AICPA TSC CC7.3",
+                        "ISO 27001:2013 A.12.6.1"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
