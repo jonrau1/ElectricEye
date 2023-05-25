@@ -60,6 +60,17 @@ def describe_instances(cache, session):
         ):
         for r in page["Reservations"]:
             for i in r["Instances"]:
+                # Skip Spot Instances, based on the fleet ID or status
+                try:
+                    if i["InstanceLifecycle"] == "spot":
+                        continue
+                except KeyError:
+                    pass
+                try:
+                    i["SpotInstanceRequestId"]
+                    continue
+                except KeyError:
+                    pass
                 # Use a list comprehension to attempt to get SSM info for the instance
                 managedInstanceInfo = [mnginst for mnginst in managedInstances if mnginst["InstanceId"] == i["InstanceId"]]
                 i["ManagedInstanceInformation"] = managedInstanceInfo
