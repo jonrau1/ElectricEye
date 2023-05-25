@@ -232,11 +232,13 @@ class EEAuditor(object):
                         if CloudConfig.get_aws_support_eligiblity is False:
                             print(f"{account} cannot access Trusted Advisor Checks due to not having Business, Enterprise or Enterprise On-Ramp Support.")
                             globalAuditorsCompleted.append(serviceName)
+                            continue
 
                     if serviceName == "shield":
                         if CloudConfig.get_aws_shield_advanced_eligiblity is False:
                             print(f"{account} cannot access Shield Advanced Checks due to not having an active Subscription.")
                             globalAuditorsCompleted.append(serviceName)
+                            continue
                     
                     # add the global services to the "globalAuditorsCompleted" so they can be skipped after they run once
                     # in the `session` for each of these, the Auditor will override with the "parent region" as some endpoints
