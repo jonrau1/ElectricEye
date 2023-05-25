@@ -19,10 +19,10 @@
 #under the License.
 
 import boto3
-import tomli
-import sys
-import os
-import re
+from tomli import load as tomload
+from sys import exit
+from os import environ, path
+from re import compile
 import json
 from botocore.exceptions import ClientError
 
@@ -43,21 +43,21 @@ class CloudConfig(object):
     """
 
     def __init__(self, assessmentTarget):
-        here = os.path.abspath(os.path.dirname(__file__))
+        here = path.abspath(path.dirname(__file__))
         tomlFile = f"{here}/external_providers.toml"
 
         with open(tomlFile, "rb") as f:
-            data = tomli.load(f)
+            data = tomload(f)
 
         # From TOML [global]
         if data["global"]["aws_multi_account_target_type"] not in AWS_MULTI_ACCOUNT_TARGET_TYPE_CHOICES:
             print("Invalid option for [global.aws_multi_account_target_type].")
-            sys.exit(2)
+            exit(2)
         self.awsMultiAccountTargetType = data["global"]["aws_multi_account_target_type"]
 
         if data["global"]["credentials_location"] not in CREDENTIALS_LOCATION_CHOICES:
             print(f"Invalid option for [global.credentials_location]. Must be one of {str(CREDENTIALS_LOCATION_CHOICES)}.")
-            sys.exit(2)
+            exit(2)
         self.credentialsLocation = data["global"]["credentials_location"]
 
         ##################################
@@ -76,13 +76,13 @@ class CloudConfig(object):
             elif self.awsMultiAccountTargetType == "OU":
                 if not awsAccountTargets:
                     print("OU was specified but targets were not specified.")
-                    sys.exit(2)
+                    exit(2)
                 # Regex to check for Valid OUs
-                ouIdRegex = re.compile(r"^ou-[0-9a-z]{4,32}-[a-z0-9]{8,32}$")
+                ouIdRegex = compile(r"^ou-[0-9a-z]{4,32}-[a-z0-9]{8,32}$")
                 for ou in awsAccountTargets:
                     if not ouIdRegex.match(ou):
                         print(f"Invalid Organizational Unit ID {ou}.")
-                        sys.exit(2)
+                        exit(2)
                 self.awsAccountTargets = self.get_aws_accounts_from_organizational_units(awsAccountTargets)
             elif self.awsMultiAccountTargetType == "Organization":
                 self.awsAccountTargets = self.get_aws_accounts_from_organization()
@@ -103,7 +103,7 @@ class CloudConfig(object):
             electricEyeRoleName = data["regions_and_accounts"]["aws"]["aws_electric_eye_iam_role_name"]
             if electricEyeRoleName == (None or ""):
                 print(f"A value for ['aws_electric_eye_iam_role_name'] was not provided. Fix the TOML file and run ElectricEye again.")
-                sys.exit(2)
+                exit(2)
             self.electricEyeRoleName = electricEyeRoleName
         
         # GCP
@@ -112,7 +112,7 @@ class CloudConfig(object):
             gcpProjects = data["regions_and_accounts"]["gcp"]["gcp_project_ids"]
             if not gcpProjects:
                 print("No GCP Projects were provided in [regions_and_accounts.gcp.gcp_project_ids].")
-                sys.exit(2)
+                exit(2)
             else:
                 self.gcpProjectIds = gcpProjects
             
@@ -152,7 +152,7 @@ class CloudConfig(object):
                     ]
                 ):
                 print(f"One of your Oracle Cloud TOML entries in [regions_and_accounts.oci] or [credentials.oci] is empty!")
-                sys.exit(2)
+                exit(2)
 
             # Assign ["regions_and_accounts"]["oci"] values to `self`
             self.ociTenancyId = ociTenancyId
@@ -192,7 +192,7 @@ class CloudConfig(object):
                     "oci_user_api_key_private_key_pem_contents_value"
                 )
 
-            # Create the PEM file and save the location of it to os.environ
+            # Create the PEM file and save the location of it to environ
             self.setup_oci_credentials(ociUserApiKeyPemLocation)
 
         # Azure
@@ -228,28 +228,28 @@ class CloudConfig(object):
                     ]
                 ):
                 print(f"One of your ServiceNow TOML entries in [credentials.servicenow] is empty!")
-                sys.exit(2)
+                exit(2)
             
             # Retrieve ServiceNow ElectricEye user password
             serviceNowPwVal = serviceNowValues["servicenow_sspm_password_value"]
             if self.credentialsLocation == "CONFIG_FILE":
-                os.environ["SNOW_SSPM_PASSWORD"] = serviceNowPwVal
+                environ["SNOW_SSPM_PASSWORD"] = serviceNowPwVal
             elif self.credentialsLocation == "AWS_SSM":
-                os.environ["SNOW_SSPM_PASSWORD"] = self.get_credential_from_aws_ssm(
+                environ["SNOW_SSPM_PASSWORD"] = self.get_credential_from_aws_ssm(
                     serviceNowPwVal,
                     "servicenow_sspm_password_value"
                 )
             elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
-                os.environ["SNOW_SSPM_PASSWORD"] = self.get_credential_from_aws_secrets_manager(
+                environ["SNOW_SSPM_PASSWORD"] = self.get_credential_from_aws_secrets_manager(
                     serviceNowPwVal,
                     "servicenow_sspm_password_value"
                 )
             # All other ServiceNow Values are written as environment variables and either provided
             # to PySnow Clients or to ProductFields{} within the ASFF per Finding
-            os.environ["SNOW_INSTANCE_NAME"] = snowInstanceName
-            os.environ["SNOW_INSTANCE_REGION"] = snowInstanceRegion
-            os.environ["SNOW_SSPM_USERNAME"] = snowUserName
-            os.environ["SNOW_FAILED_LOGIN_BREACHING_RATE"] = snowUserLoginBreachRate
+            environ["SNOW_INSTANCE_NAME"] = snowInstanceName
+            environ["SNOW_INSTANCE_REGION"] = snowInstanceRegion
+            environ["SNOW_SSPM_USERNAME"] = snowUserName
+            environ["SNOW_FAILED_LOGIN_BREACHING_RATE"] = snowUserLoginBreachRate
 
         # M365
         elif assessmentTarget == "M365":
@@ -268,7 +268,7 @@ class CloudConfig(object):
                     ]
                 ):
                 print(f"One of your M365 TOML entries in [credentials.m365] is empty!")
-                sys.exit(2)
+                exit(2)
 
             # This value (tenant location) will always be in plaintext
             self.m365TenantLocation = m365TenantLocation
@@ -336,7 +336,7 @@ class CloudConfig(object):
         # Check that a value was provided
         if value == (None or ""):
             print(f"A value for {configurationName} was not provided. Fix the TOML file and run ElectricEye again.")
-            sys.exit(2)
+            exit(2)
 
         # Retrieve the credential from SSM Parameter Store
         try:
@@ -357,7 +357,7 @@ class CloudConfig(object):
         # Check that a value was provided
         if value == (None or ""):
             print(f"A value for {configurationName} was not provided. Fix the TOML file and run ElectricEye again.")
-            sys.exit(2)
+            exit(2)
 
         # Retrieve the credential from AWS Secrets Manager
         try:
@@ -449,6 +449,36 @@ class CloudConfig(object):
 
         return partition
 
+    # This function is called outside of this Class
+    def get_aws_support_eligiblity(session):
+        support = session.client("support")
+
+        try:
+            support.describe_trusted_advisor_checks(language='en')
+            supportEligible = True
+        except ClientError as e:
+            if str(e) == "An error occurred (SubscriptionRequiredException) when calling the DescribeTrustedAdvisorChecks operation: Amazon Web Services Premium Support Subscription is required to use this service.":
+                supportEligible = False
+            else:
+                raise e
+
+        return supportEligible
+
+    # This function is called outside of this Class
+    def get_aws_shield_advanced_eligiblity(session):
+        shield = session.client("shield")
+
+        try:
+            shield.describe_subscription()
+            shieldEligible = True
+        except ClientError as e:
+            if str(e) == "An error occurred (ResourceNotFoundException) when calling the DescribeSubscription operation: The subscription does not exist.":
+                shieldEligible = False
+            else:
+                raise e
+
+        return shieldEligible
+
     def setup_gcp_credentials(self, credentialValue):
         """
         The Python Google Client SDK defaults to checking for credentials in the "GOOGLE_APPLICATION_CREDENTIALS"
@@ -459,7 +489,7 @@ class CloudConfig(object):
         This function simply takes the value of the TOML configuration ["gcp_service_account_json_payload_value"] derived 
         by this overall Class (CloudConfig), writes it to a JSON file, and specifies that location as the environment variable "GOOGLE_APPLICATION_CREDENTIALS"
         """
-        here = os.path.abspath(os.path.dirname(__file__))
+        here = path.abspath(path.dirname(__file__))
         # Write the result of ["gcp_service_account_json_payload_value"] to file
         with open(f"{here}/gcp_cred.json", 'w') as jsonfile:
             json.dump(
@@ -471,20 +501,20 @@ class CloudConfig(object):
             )
         # Set Cred global path
         print(f"{here}/gcp_cred.json saved to environment variable")
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = f"{here}/gcp_cred.json"
+        environ["GOOGLE_APPLICATION_CREDENTIALS"] = f"{here}/gcp_cred.json"
 
     def setup_oci_credentials(self, credentialValue):
         """
         Oracle Cloud Python SDK Config object can be created and requires the path to a PEM file, we can save the PEM
         contents to a file and save the location to an environment variable to be used
         """
-        here = os.path.abspath(os.path.dirname(__file__))
+        here = path.abspath(path.dirname(__file__))
         # Write the result of ["oci_user_api_key_private_key_pem_contents_value"] to file
         with open(f"{here}/oci_api_key.pem", "w") as f:
             f.write(credentialValue)
 
         # Set the location
         print(f"{here}/oci_api_key.pem saved to environment variable")
-        os.environ["OCI_PEM_FILE_PATH"] = f"{here}/oci_api_key.pem"
+        environ["OCI_PEM_FILE_PATH"] = f"{here}/oci_api_key.pem"
         
 ## EOF

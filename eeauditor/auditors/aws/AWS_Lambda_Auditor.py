@@ -570,6 +570,160 @@ def aws_public_lambda_layer_check(cache: dict, session, awsAccountId: str, awsRe
                 LayerName=layerName,
                 VersionNumber=layerVersion
             )["Policy"])
+            # Evaluate layer Policy
+            for s in layerPolicy["Statement"]:
+                principal = s["Principal"]
+                effect = s["Effect"]
+                try:
+                    conditionalPolicy = s["Condition"]["StringEquals"]["aws:PrincipalOrgID"]
+                    hasCondition = True
+                    del conditionalPolicy
+                except KeyError:
+                    hasCondition = False
+                # this evaluation logic is a failing check
+                if (principal == "*" and effect == "Allow" and hasCondition == False):
+                    # this is a failing check
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": f"{layerArn}/public-lambda-layer-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": layerArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices",
+                            "Effects/Data Exposure",
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "HIGH"},
+                        "Confidence": 99,
+                        "Title": "[Lambda.4] Lambda layers should not be publicly shared",
+                        "Description": f"Lambda layer {layerName} is publicly shared without specifying a conditional access policy. Inadvertently sharing Lambda layers can potentially expose business logic or sensitive details within the Layer depending on how it is configured and thus all Layer sharing should be carefully reviewed. Refer to the remediation instructions if this configuration is not intended.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For more information on sharing Lambda Layers and modifiying their permissions refer to the Configuring layer permissions section of the Amazon Lambda Developer Guide",
+                                "Url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html#configuration-layers-permissions"
+                            }
+                        },
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Compute",
+                            "AssetService": "AWS Lambda",
+                            "AssetComponent": "Layer"
+                        },
+                        "Resources": [
+                            {
+                                "Type": "AwsLambdaLayerVersion",
+                                "Id": layerArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsLambdaLayerVersion": {
+                                        "Version": layerVersion,
+                                        "CompatibleRuntimes": compatibleRuntimes,
+                                        "CreatedDate": createDate
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF V1.1 PR.AC-3",
+                                "NIST SP 800-53 Rev. 4 AC-1",
+                                "NIST SP 800-53 Rev. 4 AC-17",
+                                "NIST SP 800-53 Rev. 4 AC-19",
+                                "NIST SP 800-53 Rev. 4 AC-20",
+                                "NIST SP 800-53 Rev. 4 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1"
+                            ]
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE"
+                    }
+                    yield finding
+                else:
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": f"{layerArn}/public-lambda-layer-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": layerArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices",
+                            "Effects/Data Exposure",
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[Lambda.4] Lambda layers should not be publicly shared",
+                        "Description": f"Lambda layer {layerName} is not publicly shared.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For more information on sharing Lambda Layers and modifiying their permissions refer to the Configuring layer permissions section of the Amazon Lambda Developer Guide",
+                                "Url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html#configuration-layers-permissions"
+                            }
+                        },
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Compute",
+                            "AssetService": "AWS Lambda",
+                            "AssetComponent": "Layer"
+                        },
+                        "Resources": [
+                            {
+                                "Type": "AwsLambdaLayerVersion",
+                                "Id": layerArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsLambdaLayerVersion": {
+                                        "Version": layerVersion,
+                                        "CompatibleRuntimes": compatibleRuntimes,
+                                        "CreatedDate": createDate
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF V1.1 PR.AC-3",
+                                "NIST SP 800-53 Rev. 4 AC-1",
+                                "NIST SP 800-53 Rev. 4 AC-17",
+                                "NIST SP 800-53 Rev. 4 AC-19",
+                                "NIST SP 800-53 Rev. 4 AC-20",
+                                "NIST SP 800-53 Rev. 4 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1"
+                            ]
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED"
+                    }
+                    yield finding
         except Exception:
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -641,160 +795,6 @@ def aws_public_lambda_layer_check(cache: dict, session, awsAccountId: str, awsRe
                 "RecordState": "ACTIVE"
             }
             yield finding
-        # Evaluate layer Policy
-        for s in layerPolicy["Statement"]:
-            principal = s["Principal"]
-            effect = s["Effect"]
-            try:
-                conditionalPolicy = s["Condition"]["StringEquals"]["aws:PrincipalOrgID"]
-                hasCondition = True
-                del conditionalPolicy
-            except KeyError:
-                hasCondition = False
-            # this evaluation logic is a failing check
-            if (principal == "*" and effect == "Allow" and hasCondition == False):
-                # this is a failing check
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": f"{layerArn}/public-lambda-layer-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": layerArn,
-                    "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices",
-                        "Effects/Data Exposure",
-                    ],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "HIGH"},
-                    "Confidence": 99,
-                    "Title": "[Lambda.4] Lambda layers should not be publicly shared",
-                    "Description": f"Lambda layer {layerName} is publicly shared without specifying a conditional access policy. Inadvertently sharing Lambda layers can potentially expose business logic or sensitive details within the Layer depending on how it is configured and thus all Layer sharing should be carefully reviewed. Refer to the remediation instructions if this configuration is not intended.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For more information on sharing Lambda Layers and modifiying their permissions refer to the Configuring layer permissions section of the Amazon Lambda Developer Guide",
-                            "Url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html#configuration-layers-permissions"
-                        }
-                    },
-                    "ProductFields": {
-                        "ProductName": "ElectricEye",
-                        "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
-                        "AssetClass": "Compute",
-                        "AssetService": "AWS Lambda",
-                        "AssetComponent": "Layer"
-                    },
-                    "Resources": [
-                        {
-                            "Type": "AwsLambdaLayerVersion",
-                            "Id": layerArn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {
-                                "AwsLambdaLayerVersion": {
-                                    "Version": layerVersion,
-                                    "CompatibleRuntimes": compatibleRuntimes,
-                                    "CreatedDate": createDate
-                                }
-                            }
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "FAILED",
-                        "RelatedRequirements": [
-                            "NIST CSF V1.1 PR.AC-3",
-                            "NIST SP 800-53 Rev. 4 AC-1",
-                            "NIST SP 800-53 Rev. 4 AC-17",
-                            "NIST SP 800-53 Rev. 4 AC-19",
-                            "NIST SP 800-53 Rev. 4 AC-20",
-                            "NIST SP 800-53 Rev. 4 SC-15",
-                            "AICPA TSC CC6.6",
-                            "ISO 27001:2013 A.6.2.1",
-                            "ISO 27001:2013 A.6.2.2",
-                            "ISO 27001:2013 A.11.2.6",
-                            "ISO 27001:2013 A.13.1.1",
-                            "ISO 27001:2013 A.13.2.1"
-                        ]
-                    },
-                    "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE"
-                }
-                yield finding
-            else:
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": f"{layerArn}/public-lambda-layer-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": layerArn,
-                    "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices",
-                        "Effects/Data Exposure",
-                    ],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "INFORMATIONAL"},
-                    "Confidence": 99,
-                    "Title": "[Lambda.4] Lambda layers should not be publicly shared",
-                    "Description": f"Lambda layer {layerName} is not publicly shared.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For more information on sharing Lambda Layers and modifiying their permissions refer to the Configuring layer permissions section of the Amazon Lambda Developer Guide",
-                            "Url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html#configuration-layers-permissions"
-                        }
-                    },
-                    "ProductFields": {
-                        "ProductName": "ElectricEye",
-                        "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
-                        "AssetClass": "Compute",
-                        "AssetService": "AWS Lambda",
-                        "AssetComponent": "Layer"
-                    },
-                    "Resources": [
-                        {
-                            "Type": "AwsLambdaLayerVersion",
-                            "Id": layerArn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {
-                                "AwsLambdaLayerVersion": {
-                                    "Version": layerVersion,
-                                    "CompatibleRuntimes": compatibleRuntimes,
-                                    "CreatedDate": createDate
-                                }
-                            }
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "PASSED",
-                        "RelatedRequirements": [
-                            "NIST CSF V1.1 PR.AC-3",
-                            "NIST SP 800-53 Rev. 4 AC-1",
-                            "NIST SP 800-53 Rev. 4 AC-17",
-                            "NIST SP 800-53 Rev. 4 AC-19",
-                            "NIST SP 800-53 Rev. 4 AC-20",
-                            "NIST SP 800-53 Rev. 4 SC-15",
-                            "AICPA TSC CC6.6",
-                            "ISO 27001:2013 A.6.2.1",
-                            "ISO 27001:2013 A.6.2.2",
-                            "ISO 27001:2013 A.11.2.6",
-                            "ISO 27001:2013 A.13.1.1",
-                            "ISO 27001:2013 A.13.2.1"
-                        ]
-                    },
-                    "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED"
-                }
-                yield finding
 
 @registry.register_check("lambda")
 def aws_public_lambda_function_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:

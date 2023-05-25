@@ -19,18 +19,18 @@
 #under the License.
 
 from functools import partial
-import inspect
-import os
+from inspect import getfile
+from os import path
 from time import sleep
-import traceback
+from traceback import format_exc
 import json
-import requests
+from requests import get
 from check_register import CheckRegister
 from cloud_utils import CloudConfig
 from pluginbase import PluginBase
 
-here = os.path.abspath(os.path.dirname(__file__))
-getPath = partial(os.path.join, here)
+here = path.abspath(path.dirname(__file__))
+getPath = partial(path.join, here)
 
 class EEAuditor(object):
     """
@@ -199,7 +199,7 @@ class EEAuditor(object):
         
         # Retrieve the endpoints.json data to prevent multiple outbound calls
         endpointData = json.loads(
-            requests.get(
+            get(
                 "https://raw.githubusercontent.com/boto/botocore/develop/botocore/data/endpoints.json"
             ).text
         )
@@ -207,7 +207,7 @@ class EEAuditor(object):
         for account in self.awsAccountTargets:
 
             # This list will contain the "global" services so they're not run multiple times
-            globalServiceCompletedList = []
+            globalAuditorsCompleted = []
 
             for region in self.awsRegionsSelection:
                 for serviceName, checkList in self.registry.checks.items():
@@ -223,18 +223,29 @@ class EEAuditor(object):
                         self.aws_electric_eye_iam_role_name
                     )
                     # Check service availability, not always accurate
-                    if self.check_service_endpoint_availability(endpointData, partition, serviceName, region) == False:
+                    if self.check_service_endpoint_availability(endpointData, partition, serviceName, region) is False:
                         print(f"{serviceName} is not available in {region}")
                         continue
+
+                    # For Support & Shield (Advanced) Auditors, check if the Account in question has the proper Support level and/or an active Shield Advanced Subscription
+                    if serviceName == "support":
+                        if CloudConfig.get_aws_support_eligiblity is False:
+                            print(f"{account} cannot access Trusted Advisor Checks due to not having Business, Enterprise or Enterprise On-Ramp Support.")
+                            globalAuditorsCompleted.append(serviceName)
+
+                    if serviceName == "shield":
+                        if CloudConfig.get_aws_shield_advanced_eligiblity is False:
+                            print(f"{account} cannot access Shield Advanced Checks due to not having an active Subscription.")
+                            globalAuditorsCompleted.append(serviceName)
                     
-                    # add the global services to the "globalServiceCompletedList" so they can be skipped after they run once
+                    # add the global services to the "globalAuditorsCompleted" so they can be skipped after they run once
                     # in the `session` for each of these, the Auditor will override with the "parent region" as some endpoints
                     # are not smart enough to do that - for instance, CloudFront and Health won't respond outside of us-east-1 but IAM will
                     if serviceName in globalAuditors:
-                        if serviceName not in globalServiceCompletedList:
-                            globalServiceCompletedList.append(serviceName)
+                        if serviceName not in globalAuditorsCompleted:
+                            globalAuditorsCompleted.append(serviceName)
                         else:
-                            print(f"{serviceName.capitalize()} Auditor was already run for AWS Account {account}. Global Auditors only need to run once per Account.")
+                            print(f"{serviceName.capitalize()} Auditor was either already run or ineligble to run for AWS Account {account}. Global Auditors only need to run once per Account.")
                             continue
 
                     for checkName, check in checkList.items():
@@ -256,7 +267,7 @@ class EEAuditor(object):
                                     yield finding
                             except Exception:
                                 print(f"Failed to execute check {checkName}")
-                                print(traceback.format_exc())
+                                print(format_exc())
                         
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
@@ -315,7 +326,7 @@ class EEAuditor(object):
                             ):
                                 yield finding
                         except Exception:
-                            print(traceback.format_exc())
+                            print(format_exc())
                             print(f"Failed to execute check {checkName}")
                 # optional sleep if specified - defaults to 0 seconds
                 sleep(delay)
@@ -376,7 +387,7 @@ class EEAuditor(object):
                         ):
                             yield finding
                     except Exception as e:
-                        print(traceback.format_exc())
+                        print(format_exc())
                         print(f"Failed to execute check {checkName} with exception {e}")
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
@@ -437,7 +448,7 @@ class EEAuditor(object):
                         ):
                             yield finding
                     except Exception:
-                        print(traceback.format_exc())
+                        print(format_exc())
                         print(f"Failed to execute check {checkName}")
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
@@ -493,7 +504,7 @@ class EEAuditor(object):
                         ):
                             yield finding
                     except Exception as e:
-                        print(traceback.format_exc())
+                        print(format_exc())
                         print(f"Failed to execute check {checkName} with exception {e}")
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
@@ -512,7 +523,7 @@ class EEAuditor(object):
                 else:
                     description = "TELL_THE_MAINTAINER_TO_FIX_ME_PLZ"
 
-                auditorFile = inspect.getfile(check).rpartition('/')[2]
+                auditorFile = getfile(check).rpartition('/')[2]
                 auditorName = auditorFile.split(".py")[0]
                 
                 table.append(
