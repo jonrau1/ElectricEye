@@ -27,14 +27,14 @@ import json
 registry = CheckRegister()
 
 def describe_trusted_advisor_checks(cache, session):
-    support = session.client("support", region_name="us-east-1")
     response = cache.get("describe_trusted_advisor_checks")
-    
     if response:
         return response
     
+    support = session.client("support", region_name="us-east-1")
+    
     try:
-        cache["describe_trusted_advisor_checks"] = support.describe_trusted_advisor_checks(language='en')
+        cache["describe_trusted_advisor_checks"] = support.describe_trusted_advisor_checks(language='en')["checks"]
     except botocore.exceptions.ClientError as error:
         if error.response['Error']['Code'] == 'SubscriptionRequiredException':
             print('You are not subscribed to AWS Premium Support - cannot use the Trusted Advisor Auditor')
@@ -48,7 +48,7 @@ def trusted_advisor_failing_root_mfa_check(cache: dict, session, awsAccountId: s
     support = session.client("support", region_name="us-east-1")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
-        for t in describe_trusted_advisor_checks(cache, session)["checks"]:
+        for t in describe_trusted_advisor_checks(cache, session):
             if str(t["name"]) == "MFA on Root Account":
                 checkId = str(t["id"])
                 category = str(t["category"])
@@ -303,7 +303,7 @@ def trusted_advisor_failing_elb_listener_security_check(cache: dict, session, aw
     support = session.client("support", region_name="us-east-1")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
-        for t in describe_trusted_advisor_checks(cache, session)["checks"]:
+        for t in describe_trusted_advisor_checks(cache, session):
             if str(t["name"]) == "ELB Listener Security":
                 checkId = str(t["id"])
                 category = str(t["category"])
@@ -519,7 +519,7 @@ def trusted_advisor_failing_cloudfront_ssl_cert_iam_certificate_store_check(cach
     support = session.client("support", region_name="us-east-1")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
-        for t in describe_trusted_advisor_checks(cache, session)["checks"]:
+        for t in describe_trusted_advisor_checks(cache, session):
             if str(t["name"]) == "CloudFront Custom SSL Certificates in the IAM Certificate Store":
                 checkId = str(t["id"])
                 category = str(t["category"])
@@ -735,7 +735,7 @@ def trusted_advisor_failing_cloudfront_ssl_cert_on_origin_check(cache: dict, ses
     support = session.client("support", region_name="us-east-1")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
-        for t in describe_trusted_advisor_checks(cache, session)["checks"]:
+        for t in describe_trusted_advisor_checks(cache, session):
             if str(t["name"]) == "CloudFront SSL Certificate on the Origin Server":
                 checkId = str(t["id"])
                 category = str(t["category"])
@@ -951,7 +951,7 @@ def trusted_advisor_failing_exposed_access_keys_check(cache: dict, session, awsA
     support = session.client("support", region_name="us-east-1")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
-        for t in describe_trusted_advisor_checks(cache, session)["checks"]:
+        for t in describe_trusted_advisor_checks(cache, session):
             if str(t["name"]) == "Exposed Access Keys":
                 checkId = str(t["id"])
                 category = str(t["category"])
