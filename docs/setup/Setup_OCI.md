@@ -256,7 +256,7 @@ python3 eeauditor/controller.py -t AWS -a ElectricEye_AttackSurface_OCI_Auditor 
 
 ## Oracle Cloud Infrastructure Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **219 Checks** across **18 Auditors** that support the secure configuration of **25 services/components**
+These are the following services and checks perform by each Auditor, there are currently **221 Checks** across **18 Auditors** that support the secure configuration of **25 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
@@ -294,6 +294,7 @@ These are the following services and checks perform by each Auditor, there are c
 | OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have the Vulnerability Scanning plugin enabled |
 | OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should not be publicly discoverable on the internet |
 | OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should have at least one Network Security Group (NSG) assigned |
+| OCI_ComputeInstance_Auditor | Oracle Cloud Compute instance | Instances should not have any exploitable vulnerabilities |
 | OCI_ComputeManagement_Auditor | Oracle Cloud Compute instance configuration | Instance configurations should enable the Vulnerability Scanning agent |
 | OCI_ComputeManagement_Auditor | Oracle Cloud Compute instance configuration | Instance configurations should enable the OS Management Service Agent |
 | OCI_ComputeManagement_Auditor | Oracle Cloud Compute instance configuration | Instance configurations should enable the Management Agent |
@@ -311,6 +312,7 @@ These are the following services and checks perform by each Auditor, there are c
 | OCI_ContainerRegistry_Auditor | Oracle Container Registry repository | Repositories that are public should be reviewed |
 | OCI_ContainerRegistry_Auditor | Oracle Container Registry repository | Repositories should have an Oracle Vulnerability Scanning Service (VSS) target association | 
 | OCI_ContainerRegistry_Auditor | Oracle Container Registry image | Images should be signed with an image signature |
+| OCI_ContainerRegistry_Auditor | Oracle Container Registry image | Images should not have any exploitable vulnerabilities |
 | OCI_CloudFunctions_Auditor | Oracle Cloud Functions application | Applications should have NSGs assigned |
 | OCI_CloudFunctions_Auditor | Oracle Cloud Functions application | Applications should enforce the usage of signing images |
 | OCI_CloudFunctions_Auditor | Oracle Cloud Functions application | Applications should be configured to use more than 1 subnet for high availability |
