@@ -41,7 +41,7 @@ def get_inspector_account_status(cache, session):
         "packagePaths": dpiConfig["packagePaths"],
         "status": dpiConfig["status"]
     }
-    accountStatus["ec2DeepInspectionConfiguration"] = ec2DeepInspectionPayload
+    accountStatus["resourceState"]["ec2DeepInspectionConfiguration"] = ec2DeepInspectionPayload
 
     cache["get_inspector_account_status"] = accountStatus
     return cache["get_inspector_account_status"]
@@ -181,7 +181,7 @@ def aws_inspector2_ec2_scanning_enabled_in_region_check(cache: dict, session, aw
     inspectorArn = f"arn:{awsPartition}:inspector2:{awsRegion}:{awsAccountId}:ec2"
     assetJson = json.dumps(status, default=str).encode("utf-8")
     assetB64 = base64.b64encode(assetJson)
-    if status["ec2"]["status"] == "DISABLED":
+    if status["resourceState"]["ec2"]["status"] == "DISABLED":
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": f"{inspectorArn}/inspector2-ec2-scanning-in-region-check",
@@ -221,7 +221,7 @@ def aws_inspector2_ec2_scanning_enabled_in_region_check(cache: dict, session, aw
                     "Region": awsRegion,
                     "Details": {
                         "Other": {
-                            "Status": status["ec2"]["status"]
+                            "Status": status["resourceState"]["ec2"]["status"]
                         }
                     }
                 }
@@ -279,7 +279,7 @@ def aws_inspector2_ec2_scanning_enabled_in_region_check(cache: dict, session, aw
                     "Region": awsRegion,
                     "Details": {
                         "Other": {
-                            "Status": status["ec2"]["status"]
+                            "Status": status["resourceState"]["ec2"]["status"]
                         }
                     }
                 }
@@ -307,7 +307,7 @@ def aws_inspector2_ecr_scanning_enabled_in_region_check(cache: dict, session, aw
     inspectorArn = f"arn:{awsPartition}:inspector2:{awsRegion}:{awsAccountId}:ecr"
     assetJson = json.dumps(status, default=str).encode("utf-8")
     assetB64 = base64.b64encode(assetJson)
-    if status["ecr"]["status"] == "DISABLED":
+    if status["resourceState"]["ecr"]["status"] == "DISABLED":
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": f"{inspectorArn}/inspector2-ecr-scanning-in-region-check",
@@ -347,7 +347,7 @@ def aws_inspector2_ecr_scanning_enabled_in_region_check(cache: dict, session, aw
                     "Region": awsRegion,
                     "Details": {
                         "Other": {
-                            "Status": status["ecr"]["status"]
+                            "Status": status["resourceState"]["ecr"]["status"]
                         }
                     }
                 }
@@ -405,7 +405,7 @@ def aws_inspector2_ecr_scanning_enabled_in_region_check(cache: dict, session, aw
                     "Region": awsRegion,
                     "Details": {
                         "Other": {
-                            "Status": status["ecr"]["status"]
+                            "Status": status["resourceState"]["ecr"]["status"]
                         }
                     }
                 }
@@ -433,7 +433,7 @@ def aws_inspector2_lambda_scanning_enabled_in_region_check(cache: dict, session,
     inspectorArn = f"arn:{awsPartition}:inspector2:{awsRegion}:{awsAccountId}:lambda"
     assetJson = json.dumps(status, default=str).encode("utf-8")
     assetB64 = base64.b64encode(assetJson)
-    if status["lambda"]["status"] == "DISABLED":
+    if status["resourceState"]["lambda"]["status"] == "DISABLED":
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": f"{inspectorArn}/inspector2-lambda-scanning-in-region-check",
@@ -473,7 +473,7 @@ def aws_inspector2_lambda_scanning_enabled_in_region_check(cache: dict, session,
                     "Region": awsRegion,
                     "Details": {
                         "Other": {
-                            "Status": status["lambda"]["status"]
+                            "Status": status["resourceState"]["lambda"]["status"]
                         }
                     }
                 }
@@ -531,7 +531,7 @@ def aws_inspector2_lambda_scanning_enabled_in_region_check(cache: dict, session,
                     "Region": awsRegion,
                     "Details": {
                         "Other": {
-                            "Status": status["lambda"]["status"]
+                            "Status": status["resourceState"]["lambda"]["status"]
                         }
                     }
                 }
@@ -559,7 +559,7 @@ def aws_inspector2_ec2_deep_inspection_scanning_enabled_in_region_check(cache: d
     inspectorArn = f"arn:{awsPartition}:inspector2:{awsRegion}:{awsAccountId}:ec2deepinspection"
     assetJson = json.dumps(status, default=str).encode("utf-8")
     assetB64 = base64.b64encode(assetJson)
-    if status["ec2DeepInspectionConfiguration"]["status"] == "DISABLED":
+    if status["resourceState"]["ec2DeepInspectionConfiguration"]["status"] == "DISABLED":
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": f"{inspectorArn}/inspector2-ec2-deep-inspection-scanning-in-region-check",
@@ -599,7 +599,7 @@ def aws_inspector2_ec2_deep_inspection_scanning_enabled_in_region_check(cache: d
                     "Region": awsRegion,
                     "Details": {
                         "Other": {
-                            "Status": status["ec2DeepInspectionConfiguration"]["status"]
+                            "Status": status["resourceState"]["ec2DeepInspectionConfiguration"]["status"]
                         }
                     }
                 }
@@ -657,7 +657,7 @@ def aws_inspector2_ec2_deep_inspection_scanning_enabled_in_region_check(cache: d
                     "Region": awsRegion,
                     "Details": {
                         "Other": {
-                            "Status": status["ec2DeepInspectionConfiguration"]["status"]
+                            "Status": status["resourceState"]["ec2DeepInspectionConfiguration"]["status"]
                         }
                     }
                 }
