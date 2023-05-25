@@ -149,7 +149,7 @@ def ec2_imdsv2_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                                     "ImageId": instanceImage,
                                     "VpcId": vpcId,
                                     "SubnetId": subnetId,
-                                    "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                    "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat(),
                                 }
                             }
                         }
@@ -228,7 +228,7 @@ def ec2_imdsv2_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                                     "ImageId": instanceImage,
                                     "VpcId": vpcId,
                                     "SubnetId": subnetId,
-                                    "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                    "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat(),
                                 }
                             },
                         }
@@ -331,7 +331,7 @@ def ec2_secure_enclave_check(cache: dict, session, awsAccountId: str, awsRegion:
                                 "ImageId": instanceImage,
                                 "VpcId": vpcId,
                                 "SubnetId": subnetId,
-                                "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat(),
                             }
                         },
                     }
@@ -411,7 +411,7 @@ def ec2_secure_enclave_check(cache: dict, session, awsAccountId: str, awsRegion:
                                 "ImageId": instanceImage,
                                 "VpcId": vpcId,
                                 "SubnetId": subnetId,
-                                "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat(),
                             }
                         },
                     }
@@ -513,7 +513,7 @@ def ec2_public_facing_check(cache: dict, session, awsAccountId: str, awsRegion: 
                                 "ImageId": instanceImage,
                                 "VpcId": vpcId,
                                 "SubnetId": subnetId,
-                                "LaunchedAt": parse(instanceLaunchedAt).isoformat()
+                                "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat()
                             }
                         },
                     }
@@ -589,7 +589,7 @@ def ec2_public_facing_check(cache: dict, session, awsAccountId: str, awsRegion: 
                                 "ImageId": instanceImage,
                                 "VpcId": vpcId,
                                 "SubnetId": subnetId,
-                                "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat(),
                             }
                         },
                     }
@@ -685,7 +685,7 @@ def ec2_source_dest_verification_check(cache: dict, session, awsAccountId: str, 
                                 "ImageId": instanceImage,
                                 "VpcId": vpcId,
                                 "SubnetId": subnetId,
-                                "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat(),
                             }
                         },
                     }
@@ -760,7 +760,7 @@ def ec2_source_dest_verification_check(cache: dict, session, awsAccountId: str, 
                                 "ImageId": instanceImage,
                                 "VpcId": vpcId,
                                 "SubnetId": subnetId,
-                                "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat(),
                             }
                         },
                     }
@@ -1002,7 +1002,7 @@ def ec2_ami_age_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
                                     "ImageId": instanceImage,
                                     "VpcId": vpcId,
                                     "SubnetId": subnetId,
-                                    "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                    "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat(),
                                 }
                             }
                         }
@@ -1072,7 +1072,7 @@ def ec2_ami_age_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
                                     "ImageId": instanceImage,
                                     "VpcId": vpcId,
                                     "SubnetId": subnetId,
-                                    "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                    "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat(),
                                 }
                             }
                         }
@@ -1170,7 +1170,7 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
                                     "ImageId": instanceImage,
                                     "VpcId": vpcId,
                                     "SubnetId": subnetId,
-                                    "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                    "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat(),
                                 }
                             }
                         }
@@ -1240,7 +1240,7 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
                                     "ImageId": instanceImage,
                                     "VpcId": vpcId,
                                     "SubnetId": subnetId,
-                                    "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                    "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat(),
                                 }
                             }
                         }
@@ -1311,7 +1311,7 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
                                     "ImageId": instanceImage,
                                     "VpcId": vpcId,
                                     "SubnetId": subnetId,
-                                    "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                    "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat(),
                                 }
                             }
                         }
@@ -1382,7 +1382,7 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
                                 "ImageId": instanceImage,
                                 "VpcId": vpcId,
                                 "SubnetId": subnetId,
-                                "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat(),
                             }
                         }
                     }
@@ -1690,7 +1690,7 @@ def ec2_instance_ssm_managed_check(cache: dict, session, awsAccountId: str, awsR
                                 "ImageId": instanceImage,
                                 "VpcId": vpcId,
                                 "SubnetId": subnetId,
-                                "LaunchedAt": parse(instanceLaunchedAt).isoformat()
+                                "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat()
                             }
                         }
                     }
@@ -1756,7 +1756,7 @@ def ec2_instance_ssm_managed_check(cache: dict, session, awsAccountId: str, awsR
                                 "ImageId": instanceImage,
                                 "VpcId": vpcId,
                                 "SubnetId": subnetId,
-                                "LaunchedAt": parse(instanceLaunchedAt).isoformat()
+                                "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat()
                             }
                         }
                     }
@@ -1853,7 +1853,7 @@ def ssm_instace_agent_update_check(cache: dict, session, awsAccountId: str, awsR
                                 "ImageId": instanceImage,
                                 "VpcId": vpcId,
                                 "SubnetId": subnetId,
-                                "LaunchedAt": parse(instanceLaunchedAt).isoformat()
+                                "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat()
                             }
                         }
                     }
@@ -1919,7 +1919,7 @@ def ssm_instace_agent_update_check(cache: dict, session, awsAccountId: str, awsR
                                 "ImageId": instanceImage,
                                 "VpcId": vpcId,
                                 "SubnetId": subnetId,
-                                "LaunchedAt": parse(instanceLaunchedAt).isoformat()
+                                "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat()
                             }
                         }
                     }
@@ -2011,7 +2011,7 @@ def ssm_instance_association_check(cache: dict, session, awsAccountId: str, awsR
                                 "ImageId": instanceImage,
                                 "VpcId": vpcId,
                                 "SubnetId": subnetId,
-                                "LaunchedAt": parse(instanceLaunchedAt).isoformat()
+                                "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat()
                             }
                         }
                     }
@@ -2077,7 +2077,7 @@ def ssm_instance_association_check(cache: dict, session, awsAccountId: str, awsR
                                 "ImageId": instanceImage,
                                 "VpcId": vpcId,
                                 "SubnetId": subnetId,
-                                "LaunchedAt": parse(instanceLaunchedAt).isoformat()
+                                "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat()
                             }
                         }
                     }
@@ -2167,7 +2167,7 @@ def ssm_instance_patch_state_state(cache: dict, session, awsAccountId: str, awsR
                                 "ImageId": instanceImage,
                                 "VpcId": vpcId,
                                 "SubnetId": subnetId,
-                                "LaunchedAt": parse(instanceLaunchedAt).isoformat()
+                                "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat()
                             }
                         }
                     }
@@ -2235,7 +2235,7 @@ def ssm_instance_patch_state_state(cache: dict, session, awsAccountId: str, awsR
                                 "ImageId": instanceImage,
                                 "VpcId": vpcId,
                                 "SubnetId": subnetId,
-                                "LaunchedAt": parse(instanceLaunchedAt).isoformat()
+                                "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat()
                             }
                         }
                     }
