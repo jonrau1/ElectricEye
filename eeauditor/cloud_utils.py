@@ -374,7 +374,7 @@ class CloudConfig(object):
         Uses Organizations ListAccounts API to get a list of "ACTIVE" AWS Accounts in the entire Organization
         """
         try:
-            accounts = [account["Id"] for account in org.list_accounts() if account["Status"] == "ACTIVE"]
+            accounts = [account["Id"] for account in org.list_accounts()["Accounts"] if account["Status"] == "ACTIVE"]
         except ClientError as e:
             raise e
         
@@ -385,13 +385,18 @@ class CloudConfig(object):
         Uses Organizations ListAccountsForParent API to get a list of "ACTIVE" AWS Accounts for specified OUs
         """
         accounts = []
+        # Sometimes the caller Account may not be in the OU, add them in
+        accounts.append(sts.get_caller_identity()["Account"])
 
         for parent in targets:
             print(f"Processing accounts for Organizational Unit {parent}.")
             try:
                 for account in org.list_accounts_for_parent(ParentId=parent)["Accounts"]:
                     if account["Status"] == "ACTIVE":
-                        accounts.append(account["Id"])
+                        if account["Id"] not in accounts:
+                            accounts.append(account["Id"])
+                        else:
+                            continue
             except ClientError as e:
                 raise e
         
