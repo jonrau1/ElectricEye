@@ -875,8 +875,7 @@ def shield_advanced_drt_access_check(cache: dict, session, awsAccountId: str, aw
             "RecordState": "ARCHIVED",
         }
         yield finding
-    except:
-        assetJson = None
+    except ClientError:
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": f"{srtArn}/shield-adv-drt-iam-access-check",
@@ -903,7 +902,7 @@ def shield_advanced_drt_access_check(cache: dict, session, awsAccountId: str, aw
                 "ProviderType": "CSP",
                 "ProviderAccountId": awsAccountId,
                 "AssetRegion": awsRegion,
-                "AssetDetails": assetB64,
+                "AssetDetails": None,
                 "AssetClass": "Security Services",
                 "AssetService": "Amazon Shield Advanced",
                 "AssetComponent": "Shield Response Team Access"
@@ -946,7 +945,9 @@ def shield_advanced_drt_access_check(cache: dict, session, awsAccountId: str, aw
 @registry.register_check("shield")
 def shield_advanced_subscription_autorenew_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ShieldAdvanced.7] Shield Advanced subscription should be set to auto-renew"""
-    shield = session.client("shield", region_name="us-east-1")
+    subscriptionArn = f"arn:{awsPartition}:shield::{awsAccountId}:protection"
+
+    shield = session.client("shield")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
@@ -955,15 +956,15 @@ def shield_advanced_subscription_autorenew_check(cache: dict, session, awsAccoun
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         renewCheck = str(response["Subscription"]["AutoRenew"])
-    except:
+    except ClientError:
         renewCheck = "DISABLED"
-        assetJson = None
-    if renewCheck != "ENABLED":
+
+    if renewCheck == "DISABLED":
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": awsAccountId + "/shield-adv-subscription-auto-renew-check",
+            "Id": f"{subscriptionArn}/shield-adv-subscription-auto-renew-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": awsAccountId,
+            "GeneratorId": f"{subscriptionArn}/shield-adv-subscription-auto-renew-check",
             "AwsAccountId": awsAccountId,
             "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
             "FirstObservedAt": iso8601Time,
@@ -972,9 +973,7 @@ def shield_advanced_subscription_autorenew_check(cache: dict, session, awsAccoun
             "Severity": {"Label": "LOW"},
             "Confidence": 99,
             "Title": "[ShieldAdvanced.7] Shield Advanced subscription should be set to auto-renew",
-            "Description": "The Shield Advanced subscription for "
-            + awsAccountId
-            + " is not set to auto-renew. Refer to the remediation instructions if this configuration is not intended.",
+            "Description": f"The Shield Advanced subscription for {awsAccountId} is not set to auto-renew, or there is not an existing Subscription at all. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
                     "Text": "To update the subscription renewel use the UpdateSubscription API, refer to the link for more details.",
@@ -987,7 +986,7 @@ def shield_advanced_subscription_autorenew_check(cache: dict, session, awsAccoun
                 "ProviderType": "CSP",
                 "ProviderAccountId": awsAccountId,
                 "AssetRegion": awsRegion,
-                "AssetDetails": assetB64,
+                "AssetDetails": None,
                 "AssetClass": "Security Services",
                 "AssetService": "Amazon Shield Advanced",
                 "AssetComponent": "Subscription"
@@ -995,7 +994,7 @@ def shield_advanced_subscription_autorenew_check(cache: dict, session, awsAccoun
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_Shield_Advanced_Subscription",
+                    "Id": subscriptionArn,
                     "Partition": awsPartition,
                     "Region": awsRegion,
                 }
@@ -1020,9 +1019,9 @@ def shield_advanced_subscription_autorenew_check(cache: dict, session, awsAccoun
     else:
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": awsAccountId + "/shield-adv-subscription-auto-renew-check",
+            "Id": f"{subscriptionArn}/shield-adv-subscription-auto-renew-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": awsAccountId,
+            "GeneratorId": f"{subscriptionArn}/shield-adv-subscription-auto-renew-check",
             "AwsAccountId": awsAccountId,
             "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
             "FirstObservedAt": iso8601Time,
@@ -1031,9 +1030,7 @@ def shield_advanced_subscription_autorenew_check(cache: dict, session, awsAccoun
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
             "Title": "[ShieldAdvanced.7] Shield Advanced subscription should be set to auto-renew",
-            "Description": "The Shield Advanced subscription for "
-            + awsAccountId
-            + " is set to auto-renew",
+            "Description": f"The Shield Advanced subscription for {awsAccountId} is set to auto-renew.",
             "Remediation": {
                 "Recommendation": {
                     "Text": "To update the subscription renewal use the UpdateSubscription API, refer to the link for more details.",
@@ -1054,7 +1051,7 @@ def shield_advanced_subscription_autorenew_check(cache: dict, session, awsAccoun
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_Shield_Advanced_Subscription",
+                    "Id": subscriptionArn,
                     "Partition": awsPartition,
                     "Region": awsRegion,
                 }
