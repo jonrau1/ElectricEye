@@ -281,7 +281,7 @@ def ec2_secure_enclave_check(cache: dict, session, awsAccountId: str, awsRegion:
         except KeyError:
             instanceLaunchedAt = i["LaunchTime"]
         # Check specific metadata
-        if i["EnclaveOptions"]["Enabled"] == False:
+        if i["EnclaveOptions"]["Enabled"] is False:
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -636,7 +636,7 @@ def ec2_source_dest_verification_check(cache: dict, session, awsAccountId: str, 
         except KeyError:
             instanceLaunchedAt = i["LaunchTime"]
         # Check specific metadata
-        if i["SourceDestCheck"] == False:
+        if i["SourceDestCheck"] is False:
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -794,16 +794,17 @@ def ec2_serial_console_access_check(cache: dict, session, awsAccountId: str, aws
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     serialDetail = ec2.get_serial_console_access_status()
+    serialConsoleArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:serialconsole"
     # B64 encode all of the details for the Asset
     assetJson = json.dumps(serialDetail,default=str).encode("utf-8")
     assetB64 = base64.b64encode(assetJson)
     # This is a failing check
-    if serialDetail["SerialConsoleAccessEnabled"] == True:
+    if serialDetail["SerialConsoleAccessEnabled"] is True:
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": awsAccountId + awsRegion + "/ec2-serial-port-access-check",
+            "Id": f"{serialConsoleArn}/ec2-serial-port-access-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": awsAccountId + awsRegion,
+            "GeneratorId": f"{serialConsoleArn}/ec2-serial-port-access-check",
             "AwsAccountId": awsAccountId,
             "Types": [
                 "Software and Configuration Checks/AWS Security Best Practices",
@@ -831,12 +832,12 @@ def ec2_serial_console_access_check(cache: dict, session, awsAccountId: str, aws
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "Amazon EC2",
-                "AssetComponent": "Account Configuration"
+                "AssetComponent": "Serial Console Access"
             },
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/EC2_Serial_Port_Access_Setting",
+                    "Id": serialConsoleArn,
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -866,9 +867,9 @@ def ec2_serial_console_access_check(cache: dict, session, awsAccountId: str, aws
         # create Sec Hub finding
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": awsAccountId + awsRegion + "/ec2-serial-port-access-check",
+            "Id": f"{serialConsoleArn}/ec2-serial-port-access-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": awsAccountId + awsRegion,
+            "GeneratorId": f"{serialConsoleArn}/ec2-serial-port-access-check",
             "AwsAccountId": awsAccountId,
             "Types": [
                 "Software and Configuration Checks/AWS Security Best Practices",
@@ -896,12 +897,12 @@ def ec2_serial_console_access_check(cache: dict, session, awsAccountId: str, aws
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "Amazon EC2",
-                "AssetComponent": "Account Configuration"
+                "AssetComponent": "Serial Console Access"
             },
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/EC2_Serial_Port_Access_Setting",
+                    "Id": serialConsoleArn,
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }

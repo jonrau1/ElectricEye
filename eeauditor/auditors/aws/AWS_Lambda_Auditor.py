@@ -27,33 +27,57 @@ import json
 
 registry = CheckRegister()
 
+# Supported Runtimes
+SUPPORTED_LAMBDA_RUNTIMES = [
+    'nodejs18.x',
+    'nodejs16.x',
+    'nodejs14.x',
+    'python3.10',
+    'python3.9',
+    'python3.8',
+    'python3.7',
+    'ruby3.2', # doesn't exist...yet
+    'ruby2.7', # deprecates 15 NOV 2023
+    'java11',
+    'java8',
+    'java8.al2',
+    'go1.x',
+    'dotnet7',
+    'dotnet6',
+    'dotnet5.0',
+    'provided.al2',
+    'provided'
+]
+
 def get_lambda_functions(cache, session):
-    lambdas = session.client("lambda")
-    lambdaFunctions = []
     response = cache.get("get_lambda_functions")
     if response:
         return response
-    paginator = lambdas.get_paginator('list_functions')
-    if paginator:
-        for page in paginator.paginate():
-            for function in page["Functions"]:
-                lambdaFunctions.append(function)
-        cache["get_lambda_functions"] = lambdaFunctions
-        return cache["get_lambda_functions"]
+    
+    lambdas = session.client("lambda")
+    lambdaFunctions = []
+
+    for page in lambdas.get_paginator('list_functions').paginate():
+        for function in page["Functions"]:
+            lambdaFunctions.append(function)
+
+    cache["get_lambda_functions"] = lambdaFunctions
+    return cache["get_lambda_functions"]
 
 def get_lambda_layers(cache, session):
-    lambdas = session.client("lambda")
-    lambdaLayers = []
     response = cache.get("get_lambda_layers")
     if response:
         return response
-    paginator = lambdas.get_paginator('list_layers')
-    if paginator:
-        for page in paginator.paginate():
-            for layer in page["Layers"]:
-                lambdaLayers.append(layer)
-        cache["get_lambda_layers"] = lambdaLayers
-        return cache["get_lambda_layers"]
+    
+    lambdas = session.client("lambda")
+    lambdaLayers = []
+
+    for page in lambdas.get_paginator('list_layers').paginate():
+        for layer in page["Layers"]:
+            lambdaLayers.append(layer)
+
+    cache["get_lambda_layers"] = lambdaLayers
+    return cache["get_lambda_layers"]
 
 @registry.register_check("lambda")
 def aws_lambda_unused_function_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -65,8 +89,8 @@ def aws_lambda_unused_function_check(cache: dict, session, awsAccountId: str, aw
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(function,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        functionName = str(function["FunctionName"])
-        lambdaArn = str(function["FunctionArn"])
+        functionName = function["FunctionName"]
+        lambdaArn = function["FunctionArn"]
         metricResponse = cloudwatch.get_metric_data(
             MetricDataQueries=[
                 {
@@ -85,11 +109,11 @@ def aws_lambda_unused_function_check(cache: dict, session, awsAccountId: str, aw
             StartTime=datetime.datetime.now() - datetime.timedelta(days=30),
             EndTime=datetime.datetime.now(),
         )
-        metrics = metricResponse["MetricDataResults"]
-        for metric in metrics:
-            modify_date = parser.parse(function["LastModified"])
-            date_delta = datetime.datetime.now(datetime.timezone.utc) - modify_date
-            if len(metric["Values"]) > 0 or date_delta.days < 30:
+        for metric in metricResponse["MetricDataResults"]:
+            modifiedDate = parser.parse(function["LastModified"])
+            dateDelta = datetime.datetime.now(datetime.timezone.utc) - modifiedDate
+
+            if len(metric["Values"]) > 0 or dateDelta.days < 30:
                 # this is a passing check
                 finding = {
                     "SchemaVersion": "2018-10-08",
@@ -224,8 +248,8 @@ def aws_lambda_function_tracing_check(cache: dict, session, awsAccountId: str, a
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(function,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        functionName = str(function["FunctionName"])
-        lambdaArn = str(function["FunctionArn"])
+        functionName = function["FunctionName"]
+        lambdaArn = function["FunctionArn"]
         # This is a passing check
         if str(function["TracingConfig"]["Mode"]) == "Active":
             finding = {
@@ -375,8 +399,8 @@ def aws_lambda_function_code_signer_check(cache: dict, session, awsAccountId: st
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(function,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        functionName = str(function["FunctionName"])
-        lambdaArn = str(function["FunctionArn"])
+        functionName = function["FunctionName"]
+        lambdaArn = function["FunctionArn"]
         # This is a passing check
         try:
             signingJobArn = str(function["SigningJobArn"])
@@ -782,8 +806,8 @@ def aws_public_lambda_function_check(cache: dict, session, awsAccountId: str, aw
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(function,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        functionName = str(function["FunctionName"])
-        lambdaArn = str(function["FunctionArn"])
+        functionName = function["FunctionName"]
+        lambdaArn = function["FunctionArn"]
         # Get function policy
         try:
             funcPolicy = json.loads(lambdas.get_policy(FunctionName=functionName)["Policy"])
@@ -1014,37 +1038,16 @@ def aws_public_lambda_function_check(cache: dict, session, awsAccountId: str, aw
 @registry.register_check("lambda")
 def aws_lambda_supported_runtimes_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Lambda.6] Lambda functions should use supported runtimes"""
-    # Supported Runtimes
-    supportedRuntimes = [
-        'nodejs18.x',
-        'nodejs16.x',
-        'nodejs14.x',
-        'python3.10',
-        'python3.9',
-        'python3.8',
-        'python3.7',
-        'ruby3.2', # doesn't exist...yet
-        'ruby2.7', # deprecates 15 NOV 2023
-        'java11',
-        'java8',
-        'java8.al2',
-        'go1.x',
-        'dotnet7',
-        'dotnet6',
-        'dotnet5.0',
-        'provided.al2',
-        'provided'
-    ]
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for function in get_lambda_functions(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(function,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        functionName = str(function["FunctionName"])
-        lambdaArn = str(function["FunctionArn"])
+        functionName = function["FunctionName"]
+        lambdaArn = function["FunctionArn"]
         lambdaRuntime = str(function["Runtime"])
-        if lambdaRuntime not in supportedRuntimes:
+        if lambdaRuntime not in SUPPORTED_LAMBDA_RUNTIMES:
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -1193,8 +1196,8 @@ def lambda_vpc_ha_subnets_check(cache: dict, session, awsAccountId: str, awsRegi
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(function,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        functionName = str(function["FunctionName"])
-        lambdaArn = str(function["FunctionArn"])
+        functionName = function["FunctionName"]
+        lambdaArn = function["FunctionArn"]
         # check specific metadata
         try:
             # append unique Subnets to the "uSubnets" list
@@ -1412,3 +1415,168 @@ def lambda_vpc_ha_subnets_check(cache: dict, session, awsAccountId: str, awsRegi
                 "RecordState": "ARCHIVED"
             }
             yield finding
+
+@registry.register_check("lambda")
+def aws_lambda_supported_runtimes_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Lambda.8] Lambda functions should be scanned for vulnerabilities by Amazon Inspector V2"""
+    inspector = session.client("inspector2")
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for function in get_lambda_functions(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(function,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        functionName = function["FunctionName"]
+        lambdaArn = function["FunctionArn"]
+
+        coverage = inspector.list_coverage(
+                filterCriteria={
+                    "lambdaFunctionName": [
+                        {
+                            "comparison": "EQUALS",
+                            "value": functionName
+                        }
+                    ]
+                }
+            )["coveredResources"]
+
+        # Lambda's are one of the few resources that throw specific errors for Inspector
+        if not coverage:
+            resourceScanned = False
+            reason = "Inspector coverage is not activated in the Region"
+            severityLabel = "MEDIUM"
+        else:
+            if coverage[0]["scanStatus"]["statusCode"] == "ACTIVE":
+                resourceScanned = True
+                reason = ""
+                severityLabel = "INFORMATIONAL"
+            else:
+                if coverage[0]["scanStatus"]["statusCode"] == "UNSUPPORTED_RUNTIME":
+                    resourceScanned = False
+                    reason = "Inspector does not have support for the function's Runtime"
+                    severityLabel = "LOW"
+                else:
+                    resourceScanned = False
+                    reason = "Inspector is not configured to scan this function"
+                    severityLabel = "MEDIUM"
+
+        if resourceScanned is False:
+            # this is a failing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{lambdaArn}/lambda-vulnerability-scanning-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": lambdaArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": severityLabel},
+                "Confidence": 99,
+                "Title": "[Lambda.8] Lambda functions should be scanned for vulnerabilities by Amazon Inspector V2",
+                "Description": f"Lambda function {functionName} is not being scanned for vulnerabilities by Amazon Inspector V2 because {reason}. AWS Lambda provides runtimes that run your function code in an Amazon Linux-based execution environment. Lambda is responsible for keeping software in the runtime and execution environment up to date, releasing new runtimes for new languages and frameworks, and deprecating runtimes when the underlying software is no longer supported. If you use additional libraries with your function, you're responsible for updating the libraries. You can use Amazon Inspector to detect security vulnerabilities in your Lambda functions and layers. Amazon Inspector is an automated vulnerability scanning service that discovers and reports vulnerabilities based on its vulnerability intelligence database. The Amazon Inspector vulnerability intelligence database sources data from internal AWS security research teams, paid vendor feeds, and industry-standard security advisories. Amazon Inspector automatically creates an inventory of your active Lambda functions and layers then continuously monitors them for software package vulnerabilities. When Amazon Inspector discovers a vulnerability, it generates a finding that contains details about the security issue, and how to remediate the issue. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on the customer side of the shared responsbility model for vulnerability management and using Amazon Inspector V2 for your functions and layers refer to the Configuration and vulnerability analysis in AWS Lambda section of the Amazon Lambda Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/lambda/latest/dg/security-configuration.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "AWS Lambda",
+                    "AssetComponent": "Function"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsLambdaFunction",
+                        "Id": lambdaArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsLambdaFunction": {
+                                "FunctionName": functionName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.CM-8",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.6.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            # this is a passing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{lambdaArn}/lambda-vulnerability-scanning-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": lambdaArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": severityLabel},
+                "Confidence": 99,
+                "Title": "[Lambda.8] Lambda functions should be scanned for vulnerabilities by Amazon Inspector V2",
+                "Description": f"Lambda function {functionName} is being scanned for vulnerabilities by Amazon Inspector V2.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on the customer side of the shared responsbility model for vulnerability management and using Amazon Inspector V2 for your functions and layers refer to the Configuration and vulnerability analysis in AWS Lambda section of the Amazon Lambda Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/lambda/latest/dg/security-configuration.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "AWS Lambda",
+                    "AssetComponent": "Function"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsLambdaFunction",
+                        "Id": lambdaArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsLambdaFunction": {
+                                "FunctionName": functionName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.CM-8",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.6.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+# EOF

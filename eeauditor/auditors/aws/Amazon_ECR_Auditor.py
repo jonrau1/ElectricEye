@@ -89,7 +89,7 @@ def ecr_repo_vuln_scan_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[ECR.1] ECR repositories should be scanned for vulnerabilities by either Amazon Inspector V2 or Amazon ECR built-in scanning",
-                "Description": f"ECR repository {repoName} is not configured to be scanned for vulnerabilities by either Amazon Inspector V2 or Amazon ECR built-in scanning.  Refer to the remediation instructions if this configuration is not intended",
+                "Description": f"ECR repository {repoName} is not configured to be scanned for vulnerabilities by either Amazon Inspector V2 or Amazon ECR built-in scanning. Amazon ECR image scanning helps in identifying software vulnerabilities in your container images. The following scanning types are offered. With Enhanced scanning Amazon ECR integrates with Amazon Inspector to provide automated, continuous scanning of your repositories and your container images are scanned for both operating systems and programing language package vulnerabilities. With Basic scanning Amazon ECR uses the Common Vulnerabilities and Exposures (CVEs) database from the open-source Clair project. With basic scanning, you configure your repositories to scan on push or you can perform manual scans and Amazon ECR provides a list of scan findings. Refer to the remediation instructions if this configuration is not intended",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your repository should be configured to scan on push refer to the Image Scanning section in the Amazon ECR User Guide",
@@ -143,9 +143,7 @@ def ecr_repo_vuln_scan_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[ECR.1] ECR repositories should be scanned for vulnerabilities by either Amazon Inspector V2 or Amazon ECR built-in scanning",
-                "Description": "ECR repository "
-                + repoName
-                + " is configured to scan images on push.",
+                "Description": f"ECR repository {repoName} is configured to be scanned for vulnerabilities by either Amazon Inspector V2 or Amazon ECR built-in scanning.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your repository should be configured to scan on push refer to the Image Scanning section in the Amazon ECR User Guide",
