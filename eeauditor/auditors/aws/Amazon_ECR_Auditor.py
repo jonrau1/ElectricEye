@@ -33,21 +33,49 @@ def describe_repositories(cache, session):
     response = cache.get("describe_repositories")
     if response:
         return response
-    cache["describe_repositories"] = ecr.describe_repositories(maxResults=1000)
+    cache["describe_repositories"] = ecr.describe_repositories(maxResults=1000)["repositories"]
     return cache["describe_repositories"]
 
 @registry.register_check("ecr")
 def ecr_repo_vuln_scan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[ECR.1] ECR repositories should be configured to scan images on push"""
-    for repo in describe_repositories(cache, session)["repositories"]:
+    """[ECR.1] ECR repositories should be scanned for vulnerabilities by either Amazon Inspector V2 or Amazon ECR built-in scanning"""
+    inspector = session.client("inspector2")
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for repo in describe_repositories(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(repo,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        repoArn = str(repo["repositoryArn"])
-        repoName = str(repo["repositoryName"])
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        repoArn = repo["repositoryArn"]
+        repoName = repo["repositoryName"]
+
+        # Determine if a Repository is scanned by checking both for Basic (ECR built-in) and Enhanced (Inspector V2) scanning
+        # built-in
         if repo["imageScanningConfiguration"]["scanOnPush"] == False:
+            basicScan = False
+        else:
+            basicScan = True
+        # inspector
+        coverage = inspector.list_coverage(
+            filterCriteria={
+                "ecrRepositoryName": [
+                    {
+                        "comparison": "EQUALS",
+                        "value": repoName
+                    }
+                ]
+            }
+        )["coveredResources"]
+        if not coverage:
+            enhancedScan = False
+        else:
+            if coverage[0]["scanStatus"]["statusCode"] == "ACTIVE":
+                enhancedScan = True
+            else:
+                enhancedScan = False
+
+        # If neither scanning is active, this is a failing check
+        if basicScan and enhancedScan == False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": repoArn + "/ecr-no-scan",
@@ -60,10 +88,8 @@ def ecr_repo_vuln_scan_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[ECR.1] ECR repositories should be configured to scan images on push",
-                "Description": "ECR repository "
-                + repoName
-                + " is not configured to scan images on push. Refer to the remediation instructions if this configuration is not intended",
+                "Title": "[ECR.1] ECR repositories should be scanned for vulnerabilities by either Amazon Inspector V2 or Amazon ECR built-in scanning",
+                "Description": f"ECR repository {repoName} is not configured to be scanned for vulnerabilities by either Amazon Inspector V2 or Amazon ECR built-in scanning.  Refer to the remediation instructions if this configuration is not intended",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your repository should be configured to scan on push refer to the Image Scanning section in the Amazon ECR User Guide",
@@ -116,7 +142,7 @@ def ecr_repo_vuln_scan_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[ECR.1] ECR repositories should be configured to scan images on push",
+                "Title": "[ECR.1] ECR repositories should be scanned for vulnerabilities by either Amazon Inspector V2 or Amazon ECR built-in scanning",
                 "Description": "ECR repository "
                 + repoName
                 + " is configured to scan images on push.",
@@ -164,12 +190,12 @@ def ecr_repo_vuln_scan_check(cache: dict, session, awsAccountId: str, awsRegion:
 def ecr_repo_image_lifecycle_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ECR.2] ECR repositories should be have an image lifecycle policy configured"""
     ecr = session.client("ecr")
-    for repo in describe_repositories(cache, session)["repositories"]:
+    for repo in describe_repositories(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(repo,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        repoArn = str(repo["repositoryArn"])
-        repoName = str(repo["repositoryName"])
+        repoArn = repo["repositoryArn"]
+        repoName = repo["repositoryName"]
         # ISO Time
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
@@ -296,12 +322,12 @@ def ecr_repo_image_lifecycle_policy_check(cache: dict, session, awsAccountId: st
 def ecr_repo_permission_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ECR.3] ECR repositories should be have a repository policy configured"""
     ecr = session.client("ecr")
-    for repo in describe_repositories(cache, session)["repositories"]:
+    for repo in describe_repositories(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(repo,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        repoArn = str(repo["repositoryArn"])
-        repoName = str(repo["repositoryName"])
+        repoArn = repo["repositoryArn"]
+        repoName = repo["repositoryName"]
         # ISO Time
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
@@ -452,10 +478,10 @@ def ecr_latest_image_vuln_check(cache: dict, session, awsAccountId: str, awsRegi
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     ecr = session.client("ecr")
-    for repo in describe_repositories(cache, session)["repositories"]:
+    for repo in describe_repositories(cache, session):
         # B64 encode all of the details for the Asset
-        repoArn = str(repo["repositoryArn"])
-        repoName = str(repo["repositoryName"])
+        repoArn = repo["repositoryArn"]
+        repoName = repo["repositoryName"]
         if repo["imageScanningConfiguration"]["scanOnPush"] == True:
             try:
                 for images in ecr.describe_images(repositoryName=repoName, filter={"tagStatus": "TAGGED"}, maxResults=1000,)["imageDetails"]:

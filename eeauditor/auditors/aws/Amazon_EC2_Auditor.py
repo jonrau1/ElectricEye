@@ -88,21 +88,19 @@ def ec2_imdsv2_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(i,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        instanceId = str(i["InstanceId"])
-        instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
-        instanceType = str(i["InstanceType"])
-        instanceImage = str(i["ImageId"])
-        subnetId = str(i["SubnetId"])
-        vpcId = str(i["VpcId"])
+        instanceId = i["InstanceId"]
+        instanceArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
+        instanceType = i["InstanceType"]
+        instanceImage = i["ImageId"]
+        subnetId = i["SubnetId"]
+        vpcId = i["VpcId"]
         try:
-            instanceLaunchedAt = str(i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"])
+            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
         except KeyError:
-            instanceLaunchedAt = str(i["LaunchTime"])
+            instanceLaunchedAt = i["LaunchTime"]
         # Check specific metadata
-        metadataServiceCheck = str(i["MetadataOptions"]["HttpEndpoint"])
-        if metadataServiceCheck == "enabled":
-            imdsv2Check = str(i["MetadataOptions"]["HttpTokens"])
-            if imdsv2Check != "required":
+        if i["MetadataOptions"]["HttpEndpoint"] == "enabled":
+            if i["MetadataOptions"]["HttpTokens"] != "required":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": instanceArn + "/ec2-imdsv2-check",
@@ -272,16 +270,16 @@ def ec2_secure_enclave_check(cache: dict, session, awsAccountId: str, awsRegion:
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(i,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        instanceId = str(i["InstanceId"])
-        instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
-        instanceType = str(i["InstanceType"])
-        instanceImage = str(i["ImageId"])
-        subnetId = str(i["SubnetId"])
-        vpcId = str(i["VpcId"])
+        instanceId = i["InstanceId"]
+        instanceArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
+        instanceType = i["InstanceType"]
+        instanceImage = i["ImageId"]
+        subnetId = i["SubnetId"]
+        vpcId = i["VpcId"]
         try:
-            instanceLaunchedAt = str(i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"])
+            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
         except KeyError:
-            instanceLaunchedAt = str(i["LaunchTime"])
+            instanceLaunchedAt = i["LaunchTime"]
         # Check specific metadata
         if i["EnclaveOptions"]["Enabled"] == False:
             # this is a failing check
@@ -453,16 +451,16 @@ def ec2_public_facing_check(cache: dict, session, awsAccountId: str, awsRegion: 
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(i,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        instanceId = str(i["InstanceId"])
-        instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
-        instanceType = str(i["InstanceType"])
-        instanceImage = str(i["ImageId"])
-        subnetId = str(i["SubnetId"])
-        vpcId = str(i["VpcId"])
+        instanceId = i["InstanceId"]
+        instanceArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
+        instanceType = i["InstanceType"]
+        instanceImage = i["ImageId"]
+        subnetId = i["SubnetId"]
+        vpcId = i["VpcId"]
         try:
-            instanceLaunchedAt = str(i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"])
+            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
         except KeyError:
-            instanceLaunchedAt = str(i["LaunchTime"])
+            instanceLaunchedAt = i["LaunchTime"]
         # Check specific metadata
         # If the Public DNS is not empty that means there is an entry, and that is is public facing
         if str(i["PublicDnsName"]) != "":
@@ -627,16 +625,16 @@ def ec2_source_dest_verification_check(cache: dict, session, awsAccountId: str, 
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(i,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        instanceId = str(i["InstanceId"])
-        instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
-        instanceType = str(i["InstanceType"])
-        instanceImage = str(i["ImageId"])
-        subnetId = str(i["SubnetId"])
-        vpcId = str(i["VpcId"])
+        instanceId = i["InstanceId"]
+        instanceArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
+        instanceType = i["InstanceType"]
+        instanceImage = i["ImageId"]
+        subnetId = i["SubnetId"]
+        vpcId = i["VpcId"]
         try:
-            instanceLaunchedAt = str(i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"])
+            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
         except KeyError:
-            instanceLaunchedAt = str(i["LaunchTime"])
+            instanceLaunchedAt = i["LaunchTime"]
         # Check specific metadata
         if i["SourceDestCheck"] == False:
             # this is a failing check
@@ -940,16 +938,16 @@ def ec2_ami_age_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(i,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        instanceId = str(i["InstanceId"])
-        instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
-        instanceType = str(i["InstanceType"])
-        instanceImage = str(i["ImageId"])
-        subnetId = str(i["SubnetId"])
-        vpcId = str(i["VpcId"])
+        instanceId = i["InstanceId"]
+        instanceArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
+        instanceType = i["InstanceType"]
+        instanceImage = i["ImageId"]
+        subnetId = i["SubnetId"]
+        vpcId = i["VpcId"]
         try:
-            instanceLaunchedAt = str(i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"])
+            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
         except KeyError:
-            instanceLaunchedAt = str(i["LaunchTime"])
+            instanceLaunchedAt = i["LaunchTime"]
         # Check specific metadata
         # Extract the creation date.  As there is only 1 ImageId, there will only be 1 entry. 
         try:
@@ -1110,16 +1108,16 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(i,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        instanceId = str(i["InstanceId"])
-        instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
-        instanceType = str(i["InstanceType"])
-        instanceImage = str(i["ImageId"])
-        subnetId = str(i["SubnetId"])
-        vpcId = str(i["VpcId"])
+        instanceId = i["InstanceId"]
+        instanceArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
+        instanceType = i["InstanceType"]
+        instanceImage = i["ImageId"]
+        subnetId = i["SubnetId"]
+        vpcId = i["VpcId"]
         try:
-            instanceLaunchedAt = str(i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"])
+            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
         except KeyError:
-            instanceLaunchedAt = str(i["LaunchTime"])
+            instanceLaunchedAt = i["LaunchTime"]
         try:
             amiState = ec2.describe_images(ImageIds=[instanceImage])["Images"][0]["State"]
             if (amiState == "invalid" or
@@ -1424,7 +1422,7 @@ def ec2_concentration_risk(cache: dict, session, awsAccountId: str, awsRegion: s
     assetB64 = None
     # Evaluation time - grab all unique subnets per EC2 instance in Region
     for i in describe_instances(cache, session):
-        subnetId = str(i["SubnetId"])
+        subnetId = i["SubnetId"]
         # write subnets to list if it"s not there
         if subnetId not in uSubnets:
             uSubnets.append(subnetId)
@@ -1634,16 +1632,16 @@ def ec2_instance_ssm_managed_check(cache: dict, session, awsAccountId: str, awsR
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(i,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        instanceId = str(i["InstanceId"])
+        instanceId = i["InstanceId"]
         instanceArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
-        instanceType = str(i["InstanceType"])
-        instanceImage = str(i["ImageId"])
-        subnetId = str(i["SubnetId"])
-        vpcId = str(i["VpcId"])
+        instanceType = i["InstanceType"]
+        instanceImage = i["ImageId"]
+        subnetId = i["SubnetId"]
+        vpcId = i["VpcId"]
         try:
-            instanceLaunchedAt = str(i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"])
+            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
         except KeyError:
-            instanceLaunchedAt = str(i["LaunchTime"])
+            instanceLaunchedAt = i["LaunchTime"]
 
         # We added the information for SSM DescribeInstanceInformation to each instance in Cache, if the list is empty
         # that means they are not managed at all due to a variety of reasons detailed in the finding...
@@ -1789,16 +1787,16 @@ def ssm_instace_agent_update_check(cache: dict, session, awsAccountId: str, awsR
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(i,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        instanceId = str(i["InstanceId"])
+        instanceId = i["InstanceId"]
         instanceArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
-        instanceType = str(i["InstanceType"])
-        instanceImage = str(i["ImageId"])
-        subnetId = str(i["SubnetId"])
-        vpcId = str(i["VpcId"])
+        instanceType = i["InstanceType"]
+        instanceImage = i["ImageId"]
+        subnetId = i["SubnetId"]
+        vpcId = i["VpcId"]
         try:
-            instanceLaunchedAt = str(i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"])
+            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
         except KeyError:
-            instanceLaunchedAt = str(i["LaunchTime"])
+            instanceLaunchedAt = i["LaunchTime"]
         # Try to get the platform detail from EC2 directly
         try:
             platform = i["PlatformDetails"]
@@ -1952,16 +1950,16 @@ def ssm_instance_association_check(cache: dict, session, awsAccountId: str, awsR
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(i,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        instanceId = str(i["InstanceId"])
+        instanceId = i["InstanceId"]
         instanceArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
-        instanceType = str(i["InstanceType"])
-        instanceImage = str(i["ImageId"])
-        subnetId = str(i["SubnetId"])
-        vpcId = str(i["VpcId"])
+        instanceType = i["InstanceType"]
+        instanceImage = i["ImageId"]
+        subnetId = i["SubnetId"]
+        vpcId = i["VpcId"]
         try:
-            instanceLaunchedAt = str(i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"])
+            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
         except KeyError:
-            instanceLaunchedAt = str(i["LaunchTime"])
+            instanceLaunchedAt = i["LaunchTime"]
 
         # We added the information for SSM DescribeInstanceInformation to each instance in Cache, we can
         # use it to build a list comprehension to create a failing or passing state and not ignore all instances
@@ -2111,16 +2109,16 @@ def ssm_instance_patch_state_state(cache: dict, session, awsAccountId: str, awsR
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(i,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        instanceId = str(i["InstanceId"])
+        instanceId = i["InstanceId"]
         instanceArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
-        instanceType = str(i["InstanceType"])
-        instanceImage = str(i["ImageId"])
-        subnetId = str(i["SubnetId"])
-        vpcId = str(i["VpcId"])
+        instanceType = i["InstanceType"]
+        instanceImage = i["ImageId"]
+        subnetId = i["SubnetId"]
+        vpcId = i["VpcId"]
         try:
-            instanceLaunchedAt = str(i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"])
+            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
         except KeyError:
-            instanceLaunchedAt = str(i["LaunchTime"])
+            instanceLaunchedAt = i["LaunchTime"]
         # Check specific metadata
         r = ssm.describe_instance_patches(InstanceId=instanceId)              
         if not r["Patches"]:
