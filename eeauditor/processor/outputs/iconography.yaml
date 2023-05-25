@@ -163,6 +163,8 @@
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Analytics/32/Arch_Amazon-Redshift_32.svg">
 - AssetService: Amazon Elastic MapReduce Serverless
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Analytics/32/Arch_Amazon-EMR_32.svg">
+- AssetService: Amazon Inspector V2
+  ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Security-Identity-Compliance/32/Arch_Amazon-Inspector_32.svg">
 #########################################
 # AWS - ASSET_SERVICE + COMPONENT ICONS #
 #########################################
