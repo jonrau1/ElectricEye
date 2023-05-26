@@ -4,12 +4,35 @@ This documentation is dedicated to using ElectricEye for evaluation of AWS Envir
 
 ## Table of Contents
 
+- [AWS IAM Permissions](#aws-iam-permissions)
 - [Configuring TOML](#configuring-toml)
 - [Use ElectricEye for AWS](#use-electriceye-for-aws)
 - [Configuring the AWS Security Group Auditor](#configuring-the-aws-security-group-auditor)
 - [Building & Pushing ElectricEye Docker Image to ECR](#build-and-push-the-docker-image-to-ecr)
 - [AWS Attack Surface Monitoring](#aws-attack-surface-monitoring)
 - [AWS Checks & Services](#aws-checks--services)
+
+## AWS IAM Permissions
+
+ElectricEye separates the logic of the Auditors from that of retreiving credentials, looking up OUs and Accounts within your AWS Organization (if you're a Delegated Administrator for any Organizations service), and AWS-native Outputs (e.g., Amazon SQS, Amazon DynamoDB, AWS Security Hub).
+
+All AWS API interactivity is handled by `boto3` (and to a lesser extent lower-level APIs in `botocore`) which both use your [available AWS credentials](https://docs.aws.amazon.com/sdkref/latest/guide/standardized-credentials.html) from wherever they can be available from. For instance, `boto3` will first look for static credentials (AWS IAM User Access Keys) in `~/.aws/credentials`, and then look for AWS credential environment variables, then look for Session credentials from EC2 Instance Profiles or your IAM Role, Federated credentials, and so on. These first credentials are what are responsible for performing lookups against Systems Manager, Secrets Manager, and sending findings to cloud-native resources as previously stated. The below table details the API permissions required based on the interactivity.
+
+| ElectricEye Interactivity | AWS IAM Permission | Absolutely Required? | Extra Considerations |
+|---|---|---|---|
+| Assuming the `aws_electric_eye_iam_role_name` Roles to use the AWS Auditors | `sts:AssumeRole` | **YES** | Ensure you meet all of your `condition` keys if you customize the Trust flow for the remote Roles |
+| Retrieving Accounts from your AWS Organization | `organizations:ListAccounts` | **NO** | You must either be in your Organizations Management Account or you must be a Delegated Administrator for an Organizations-enabled Service such as AWS Firewall Manager or Amazon GuardDuty |
+| Retrieving Accounts from one or more of your AWS Organizational Units | `organizations:ListAccountsForParent` | **NO** | You must either be in your Organizations Management Account or you must be a Delegated Administrator for an Organizations-enabled Service such as AWS Firewall Manager or Amazon GuardDuty |
+| Sending findings to AWS Security Hub | `securityhub:BatchImportFindings` | **NO** | N/A |
+| Sending findings to Amazon SQS | `sqs:SendMessage` | **NO** | Ensure that your SQS Queue's Resource Policy also allows your IAM principal to `sqs:SendMessage` to it. </br> You will also require `kms:Decrypt` permissions and access to the key (via Key Policy) if you encrypt your Queue with a Customer Managed Key. |
+| Sending findings to Amazon DynamoDB | `dynamodb:PutItem` | **NO** | You will also require `kms:Decrypt` permissions and access to the key (via Key Policy) if you encrypt your Table with a Customer Managed Key |
+| Retrieving credentials from AWS Systems Manager Parameter Store | `ssm:GetParameter*` | **NO** | You will also require `kms:Decrypt` permissions and access to the key (via Key Policy) if you encrypt your SecureString Parameters with a Customer Managed Key |
+| Retrieving credentials from AWS Secrets Manager | `secretsmanager:GetSecretValue` | **NO** | You will also require `kms:Decrypt` permissions and access to the key (via Key Policy) if you encrypt your Secrets with a Customer Managed Key |
+| If you run ElectricEye within a container without a seperate block device or file share managed, you will need to send file-based Outputs to S3, maybe | `s3:PutObject` | **NO** | If you do use S3, ensure that your Bucket Policy allows you to perform `s3:PutObject`. </br> You will also require `kms:Decrypt` permissions and access to the key (via Key Policy) if you encrypt your Bucket with a Customer Managed Key. |
+
+For executing the actually AWS Auditors (and their Checks), ElectricEye will Assume an IAM Role that trusts whichever IAM Princpal you run ElectricEye from (e.g., an EC2 Instance Profile's IAM Role, ECS Execution Role, IAM Roles Anywhere Certifcate on local machines, etc.) which is why you must provide an IAM Role name within the TOML even if you are only conducting assessments in your own Account. This is done to keep the Auditor-specific activity of ElectricEye easily, well, auditable as well as provide an easy-to-operate method of parallelizing ElectricEye across multiple Accounts without having to grant write or privileged read permissions to those Roles by virtue of keeping the setup logic out of the Auditor logic.
+
+The easiest way to set up this Role and permissions is either creating a StackSet from the [CloudFormation template](../../cloudformation/ElectricEye_Organizations_StackSet.yaml) or using the [standalone JSON policy](../../policies/ElectricEye_AWS_Policy.json) within your own provisioning logic - be it JSON-based CFN, Pulumi, Terraform or otherwise. By default the CloudFormation stack will create an IAM Role that Trusts whichever Account you will centrally operate ElectricEye from - however - you can modify this to trust specific IAM Principals and add conditions such as SourceIP constraints if ElectricEye will operate behind NAT Gateways with Elastic IPs or from within another trusted network.
 
 ## Configuring TOML
 
@@ -37,7 +60,7 @@ By configuring these variables in the TOML file, you can customize ElectricEye's
 
 ## Use ElectricEye for AWS
 
-1. Navigate to the IAM console and select on **Policies** under **Access management**. Select **Create policy** and under the JSON tab, copy and paste the contents [Instance Profile IAM Policy](../policies/ElectricEye_AWS_Policy.json). Select **Review policy**, create a name, and then select **Create policy**. This Policy can be attached as to EC2 Instance Profiles, ECS Task Policies, and other locations.
+1. Before beginning ensure you have review the [Permissions section](#aws-iam-permissions) section to understand which AWS IAM Permissions your current profile requires and to setup the AWS IAM Roles that ElectricEye will assume to use the Auditors.
 
 2. With >=Python 3.6 installed, install & upgrade `pip3` and setup `virtualenv`.
 
@@ -89,7 +112,7 @@ pip3 install --user -r requirements.txt
     python3 eeauditor/controller.py -t AWS -a AWS_IAM_Auditor
     ```
 
-    - 5D. Evaluate your AWS environment against a specific Check within any Auditor, it is ***not required*** to specify the Auditor name as well. The below examples runs the "[Athena.1] Athena workgroups should be configured to enforce query result encryption" check.
+    - 5D. Evaluate your AWS environment against a specific Check within any Auditor, it is ***not required*** to specify the Auditor name as well. The below examples runs the `[Athena.1] Athena workgroups should be configured to enforce query result encryption` check.
 
     ```bash
     python3 eeauditor/controller.py -t AWS -c athena_workgroup_encryption_check
@@ -202,7 +225,7 @@ The ASM Module uses NMAP at its core and will be expanded to include ZAP and Sho
 
 ## AWS Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **562 Checks** across **79 Auditors** that support the secure configuration of **105 services/components**
+These are the following services and checks perform by each Auditor, there are currently **561 Checks** across **79 Auditors** that support the secure configuration of **105 services/components**
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service**: AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
@@ -266,7 +289,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_DocumentDB_Auditor | DocDB Snapshot | Are docdb cluster snapshots public |
 | Amazon_DynamoDB_Auditor | DynamoDB Table | Do tables use KMS CMK for encryption |
 | Amazon_DynamoDB_Auditor | DynamoDB Table | Do tables have PITR enabled |
-| ~~Amazon_DynamoDB_Auditor~~ | ~~DynamoDB Table~~ | ~~Do tables have TTL enabled~~ **THIS FINDING HAS BEEN RETIRED** |
+| ~~Amazon_DynamoDB_Auditor~~ | ~~DynamoDB Table~~ | ~~Do tables have TTL enabled~~ </br> **THIS FINDING HAS BEEN RETIRED** |
 | Amazon_DAX_Auditor | DAX Cluster | Do clusters encrypt data at rest |
 | Amazon_DAX_Auditor | DAX Cluster | Do clusters encrypt data in transit |
 | Amazon_DAX_Auditor | DAX Cluster | Do clusters have cache item TTL defined |
@@ -409,7 +432,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_Neptune_Auditor | Neptune instance | Is Neptune instance storage encrypted |
 | Amazon_Neptune_Auditor | Neptune instance | Does Neptune instance use IAM DB Auth |
 | Amazon_Neptune_Auditor | Neptune cluster | Is SSL connection enforced |
-| ~~Amazon_Neptune_Auditor~~ | ~~Neptune cluster~~ | ~~Is audit logging enabled~~ **THIS FINDING HAS BEEN RETIRED** |
+| ~~Amazon_Neptune_Auditor~~ | ~~Neptune cluster~~ | ~~Is audit logging enabled~~ </br> **THIS FINDING HAS BEEN RETIRED** |
 | Amazon_Neptune_Auditor | Neptune instance | Does Neptune instance export audit logs |
 | Amazon_Neptune_Auditor | Neptune instance | Is Neptune instance deletion protected |
 | Amazon_Neptune_Auditor | Neptune instance | Does Neptune instance automatically update minor versions |
@@ -474,7 +497,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_Shield_Advanced_Auditor | Elastic IP | Are EIPs protected by Shield Adv |
 | Amazon_Shield_Advanced_Auditor | CloudFront Distribution | Are CF Distros protected by Shield Adv |
 | Amazon_Shield_Advanced_Auditor | Account (DRT IAM Role) | Does the DRT have account authZ via IAM role |
-| Amazon_Shield_Advanced_Auditor | Account (DRT S3 Access) | Does the DRT have access to WAF logs S3 buckets |
+| ~~Amazon_Shield_Advanced_Auditor~~ | ~~Account (DRT S3 Access)~~ | ~~Does the DRT have access to WAF logs S3 buckets~~ </br> **THIS FINDING HAS BEEN RETIRED** |
 | Amazon_Shield_Advanced_Auditor | Account (Shield subscription) | Is Shield Adv subscription on auto renew |
 | Amazon_Shield_Advanced_Auditor | Global Accelerator Accelerator | Are GA Accelerators protected by Shield Adv |
 | Amazon_Shield_Advanced_Auditor | Account | Has Shield Adv mitigated any attacks in the last 7 days |
@@ -602,8 +625,8 @@ These are the following services and checks perform by each Auditor, there are c
 | AWS_Security_Services_Auditor | GuardDuty (Account) | Is GuardDuty enabled |
 | AWS_Security_Services_Auditor | Detective (Account) | Is Detective enabled |
 | AWS_Security_Services_Auditor | Macie2 | Is Macie enabled |
-| ~~AWS_Security_Services_Auditor~~ | ~~AWS WAFv2 (Regional)~~ | ~~Are Regional Web ACLs configured~~ **THIS FINDING HAS BEEN RETIRED** |
-| ~~AWS_Security_Services_Auditor~~ | ~~AWS WAFv2 (Global)~~ | ~~Are Global Web ACLs (for CloudFront) configured~~ **THIS FINDING HAS BEEN RETIRED** |
+| ~~AWS_Security_Services_Auditor~~ | ~~AWS WAFv2 (Regional)~~ | ~~Are Regional Web ACLs configured~~ </br> **THIS FINDING HAS BEEN RETIRED** |
+| ~~AWS_Security_Services_Auditor~~ | ~~AWS WAFv2 (Global)~~ | ~~Are Global Web ACLs (for CloudFront) configured~~ </br> **THIS FINDING HAS BEEN RETIRED** |
 | AWS_Systems_Manager_Auditor | SSM Document | Are self owned SSM Documents publicly shared |
 | AWS_Systems_Manager_Auditor | SSM Association | Does an SSM Association that targets all Instances conduct SSM Agent updates |
 | AWS_Systems_Manager_Auditor | SSM Association | Does an SSM Association that targets all Instances conduct patching |
