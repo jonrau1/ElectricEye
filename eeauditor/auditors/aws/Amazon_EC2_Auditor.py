@@ -2482,7 +2482,7 @@ def ec2_instance_scanned_by_inspector_check(cache: dict, session, awsAccountId: 
             yield finding
 
 @registry.register_check("ec2")
-def ec2_instance_scanned_by_inspector_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ec2_instance_exploitable_vulnerability_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EC2.14] Amazon EC2 instances with known exploitable vulnerabilities should be immediately remediated"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
