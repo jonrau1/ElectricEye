@@ -123,8 +123,9 @@ def find_exploitable_vulnerabilities_for_instance(session, instanceId):
         exploitableCves = []
     # Use a list comprehension to pull out any Inspector vulnerabilities which are tagged as explotiable or that are in the KEV and extend the list above
     exploitableCves = [
-        finding["packageVulnerabilityDetails"]["vulnerabilityId"] for finding in inspectorFindings 
-        if finding["exploitAvailable"] == "YES"
+        finding["packageVulnerabilityDetails"]["vulnerabilityId"] for finding in inspectorFindings
+        if finding["status"] == "ACTIVE" 
+        and finding["exploitAvailable"] == "YES"
         or finding["packageVulnerabilityDetails"]["vulnerabilityId"] in kev
     ]
     if not exploitableCves:
