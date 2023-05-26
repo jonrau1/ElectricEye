@@ -18,6 +18,7 @@
 #specific language governing permissions and limitations
 #under the License.
 
+import requests
 import datetime
 from dateutil.parser import parse
 from check_register import CheckRegister
@@ -78,6 +79,61 @@ def describe_instances(cache, session):
 
         cache["describe_instances"] = instanceList
         return cache["describe_instances"]
+
+def get_cisa_kev():
+    """
+    Retrieves the U.S. CISA's Known Exploitable Vulnerabilities (KEV) Catalog and returns a list of CVE ID's
+    """
+
+    rawKev = json.loads(requests.get("https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json").text)["vulnerabilities"]
+
+    kevCves = [cve["cveID"] for cve in rawKev]
+
+    return kevCves
+
+def find_exploitable_vulnerabilities_for_instance(session, instanceId):
+    """
+    This function uses the CISA KEV and Amazon Inspector V2 to determine if an EC2 Instance has any vulnerabilities
+    and if it does, if they are exploitable. A Bool for the exploitability, a reason for not having any, and a list
+    of explotiable vulnerabilities are returned
+    """
+    inspector = session.client("inspector2")
+
+    kev = get_cisa_kev()
+
+    # Filter Inspector findings to the specific Instance and for Package Vulnerabilities only (ignore Reachability)
+    inspectorFindings = inspector.list_findings(
+        filterCriteria={
+            "resourceId": [
+                {
+                    "comparison": "EQUALS",
+                    "value": instanceId
+                }
+            ],
+            "findingType": [
+                {
+                    "comparison": "EQUALS",
+                    "value": "PACKAGE_VULNERABILITY"
+                }
+            ]
+        }
+    )["findings"]
+    if not inspectorFindings:
+        exploitable = False
+        exploitableCves = []
+    # Use a list comprehension to pull out any Inspector vulnerabilities which are tagged as explotiable or that are in the KEV and extend the list above
+    exploitableCves = [
+        finding["packageVulnerabilityDetails"]["vulnerabilityId"] for finding in inspectorFindings 
+        if finding["exploitAvailable"] == "YES"
+        or finding["packageVulnerabilityDetails"]["vulnerabilityId"] in kev
+    ]
+    if not exploitableCves:
+        exploitable = False
+        exploitableCves = []
+    else:
+        exploitable = True
+
+    return exploitable, exploitableCves
 
 @registry.register_check("ec2")
 def ec2_imdsv2_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -1780,7 +1836,7 @@ def ec2_instance_ssm_managed_check(cache: dict, session, awsAccountId: str, awsR
             yield finding
 
 @registry.register_check("ec2")
-def ssm_instace_agent_update_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ec2_instance_linux_latest_ssm_agent_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EC2.10] Amazon EC2 Linux instances managed by Systems Manager should have the latest SSM Agent installed"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -1943,7 +1999,7 @@ def ssm_instace_agent_update_check(cache: dict, session, awsAccountId: str, awsR
             yield finding
 
 @registry.register_check("ec2")
-def ssm_instance_association_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ec2_instance_ssm_association_successful_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EC2.11] Amazon EC2 instances managed by Systems Manager should have a successful Association status"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -2101,8 +2157,8 @@ def ssm_instance_association_check(cache: dict, session, awsAccountId: str, awsR
             yield finding
 
 @registry.register_check("ec2")
-def ssm_instance_patch_state_state(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EC2.12] Amazon EC2 instances should be be actively managed by and reporting patch information to AWS Systems Manager Patch Manager"""
+def ec2_instance_patch_manager_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2.12] Amazon EC2 instances should be actively managed by and reporting patch information to AWS Systems Manager Patch Manager"""
     ssm = session.client("ssm",config=config)
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -2120,9 +2176,9 @@ def ssm_instance_patch_state_state(cache: dict, session, awsAccountId: str, awsR
             instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
         except KeyError:
             instanceLaunchedAt = i["LaunchTime"]
-        # Check specific metadata
-        r = ssm.describe_instance_patches(InstanceId=instanceId)              
-        if not r["Patches"]:
+        
+        # Check if there any patches at all       
+        if not ssm.describe_instance_patches(InstanceId=instanceId)["Patches"]:
             # This is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -2136,7 +2192,7 @@ def ssm_instance_patch_state_state(cache: dict, session, awsAccountId: str, awsR
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[EC2.12] Amazon EC2 instances should be be actively managed by and reporting patch information to AWS Systems Manager Patch Manager",
+                "Title": "[EC2.12] Amazon EC2 instances should be actively managed by and reporting patch information to AWS Systems Manager Patch Manager",
                 "Description": f"EC2 Instance {instanceId} does not have any patch information recorded and is likely not managed by Patch Manager. Patch Manager automates the installation and application of security, performance, and major version upgrades and KBs onto your instances, reducing exposure to vulnerabilities and other weaknesses. Without automatic patching at scale, vulnerabilities can quickly manifest within a given cloud environment leading to potential avenues of attack for adversaries and other unauthorized actors. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -2204,7 +2260,7 @@ def ssm_instance_patch_state_state(cache: dict, session, awsAccountId: str, awsR
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[EC2.12] Amazon EC2 instances should be be actively managed by and reporting patch information to AWS Systems Manager Patch Manager",
+                "Title": "[EC2.12] Amazon EC2 instances should be actively managed by and reporting patch information to AWS Systems Manager Patch Manager",
                 "Description": f"EC2 Instance {instanceId} has patches applied by AWS Systems Manager Patch Manager. You should still review Patch Compliance information to ensure that all required patches were successfully applied.",
                 "Remediation": {
                     "Recommendation": {
@@ -2257,5 +2313,174 @@ def ssm_instance_patch_state_state(cache: dict, session, awsAccountId: str, awsR
                 "RecordState": "ARCHIVED"
             }
             yield finding
+
+@registry.register_check("ec2")
+def ec2_instance_scanned_by_inspector_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2.13] Amazon EC2 instances should should be scanned for vulnerabilities by Amazon Inspector V2"""
+    inspector = session.client("inspector2",config=config)
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for i in describe_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(i,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        instanceId = i["InstanceId"]
+        instanceArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
+        instanceType = i["InstanceType"]
+        instanceImage = i["ImageId"]
+        subnetId = i["SubnetId"]
+        vpcId = i["VpcId"]
+        try:
+            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
+        except KeyError:
+            instanceLaunchedAt = i["LaunchTime"]
+
+        # Check if the EC2 instance is being scanned - sure, this will fail if Inspector isn't enabled for EC2
+        # but sometimes some bonehead may not scan it. Also it'll fail if the instance is stopped for too long
+        coverage = inspector.list_coverage(
+            filterCriteria={
+                "resourceId": [
+                    {
+                        "comparison": "EQUALS",
+                        "value": instanceId
+                    }
+                ]
+            }
+        )["coveredResources"]
+
+        if not coverage:
+            resourceScanned = False
+        else:
+            if coverage[0]["scanStatus"]["statusCode"] == "ACTIVE":
+                resourceScanned = True
+            else:
+                resourceScanned = False
+           
+        if resourceScanned is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{instanceArn}/ec2-vulnerability-scanning-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{instanceArn}/ec2-vulnerability-scanning-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[EC2.13] Amazon EC2 instances should should be scanned for vulnerabilities by Amazon Inspector V2",
+                "Description": f"EC2 Instance {instanceId} is not being scanned for vulnerabilities by Amazon Inspector V2. Amazon Inspector scans operating system packages and programming language packages installed on your Amazon EC2 instances for vulnerabilities. Amazon Inspector also scans your EC2 instances for network reachability issues. To perform an EC2 scan Amazon Inspector extracts software package metadata from your EC2 instances. Then, Amazon Inspector compares this metadata against rules collected from security advisories to produce findings. Amazon Inspector uses AWS Systems Manager (SSM) and the SSM Agent to collect information about the software application inventory of your EC2 instances. This data is then scanned by Amazon Inspector for software vulnerabilities. Amazon Inspector can only scan for software vulnerabilities in operating systems supported by Systems Manager. Additionally, using EC2 Deep Inspection Amazon Inspector can detect package vulnerabilities for application programming language packages in your Linux-based Amazon EC2 instances. Amazon Inspector scans default paths for programming language package libraries. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on how Inspector V2 works for EC2 instance vulnerability management and how to configure it refer to the Scanning Amazon EC2 instances with Amazon Inspector section of the AWS Systems Manager User Guide",
+                        "Url": "https://docs.aws.amazon.com/inspector/latest/user/scanning-ec2.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2Instance",
+                        "Id": instanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2Instance": {
+                                "Type": instanceType,
+                                "ImageId": instanceImage,
+                                "VpcId": vpcId,
+                                "SubnetId": subnetId,
+                                "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat()
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.CM-8",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.6.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{instanceArn}/ec2-vulnerability-scanning-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{instanceArn}/ec2-vulnerability-scanning-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[EC2.13] Amazon EC2 instances should should be scanned for vulnerabilities by Amazon Inspector V2",
+                "Description": f"EC2 Instance {instanceId} is being scanned for vulnerabilities by Amazon Inspector V2.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on how Inspector V2 works for EC2 instance vulnerability management and how to configure it refer to the Scanning Amazon EC2 instances with Amazon Inspector section of the AWS Systems Manager User Guide",
+                        "Url": "https://docs.aws.amazon.com/inspector/latest/user/scanning-ec2.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2Instance",
+                        "Id": instanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2Instance": {
+                                "Type": instanceType,
+                                "ImageId": instanceImage,
+                                "VpcId": vpcId,
+                                "SubnetId": subnetId,
+                                "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat()
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.CM-8",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.6.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+# [EC2.13] Amazon EC2 instances with explotiable vulnerabilities should be immediately remediated
 
 ## END ??

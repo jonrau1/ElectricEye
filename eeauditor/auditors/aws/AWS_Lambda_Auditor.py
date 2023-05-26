@@ -1417,7 +1417,7 @@ def lambda_vpc_ha_subnets_check(cache: dict, session, awsAccountId: str, awsRegi
             yield finding
 
 @registry.register_check("lambda")
-def aws_lambda_supported_runtimes_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def aws_lambda_scanned_by_inspector_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Lambda.8] Lambda functions should be scanned for vulnerabilities by Amazon Inspector V2"""
     inspector = session.client("inspector2")
     # ISO Time
@@ -1430,15 +1430,15 @@ def aws_lambda_supported_runtimes_check(cache: dict, session, awsAccountId: str,
         lambdaArn = function["FunctionArn"]
 
         coverage = inspector.list_coverage(
-                filterCriteria={
-                    "lambdaFunctionName": [
-                        {
-                            "comparison": "EQUALS",
-                            "value": functionName
-                        }
-                    ]
-                }
-            )["coveredResources"]
+            filterCriteria={
+                "lambdaFunctionName": [
+                    {
+                        "comparison": "EQUALS",
+                        "value": functionName
+                    }
+                ]
+            }
+        )["coveredResources"]
 
         # Lambda's are one of the few resources that throw specific errors for Inspector
         if not coverage:

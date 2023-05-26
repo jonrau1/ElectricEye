@@ -28,11 +28,12 @@ registry = CheckRegister()
 
 # loop through ECR repos
 def describe_repositories(cache, session):
-    ecr = session.client("ecr")
-
     response = cache.get("describe_repositories")
     if response:
         return response
+    
+    ecr = session.client("ecr")
+
     cache["describe_repositories"] = ecr.describe_repositories(maxResults=1000)["repositories"]
     return cache["describe_repositories"]
 
@@ -478,7 +479,6 @@ def ecr_latest_image_vuln_check(cache: dict, session, awsAccountId: str, awsRegi
     ecr = session.client("ecr")
     for repo in describe_repositories(cache, session):
         # B64 encode all of the details for the Asset
-        repoArn = repo["repositoryArn"]
         repoName = repo["repositoryName"]
         if repo["imageScanningConfiguration"]["scanOnPush"] == True:
             try:
@@ -920,3 +920,6 @@ def ecr_registry_backup_rules_check(cache: dict, session, awsAccountId: str, aws
             "RecordState": "ARCHIVED"
         }
         yield finding
+
+
+## EOF
