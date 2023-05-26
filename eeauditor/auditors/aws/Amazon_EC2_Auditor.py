@@ -2481,6 +2481,165 @@ def ec2_instance_scanned_by_inspector_check(cache: dict, session, awsAccountId: 
             }
             yield finding
 
-# [EC2.13] Amazon EC2 instances with explotiable vulnerabilities should be immediately remediated
+@registry.register_check("ec2")
+def ec2_instance_scanned_by_inspector_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2.14] Amazon EC2 instances with known exploitable vulnerabilities should be immediately remediated"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for i in describe_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(i,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        instanceId = i["InstanceId"]
+        instanceArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
+        instanceType = i["InstanceType"]
+        instanceImage = i["ImageId"]
+        subnetId = i["SubnetId"]
+        vpcId = i["VpcId"]
+        try:
+            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
+        except KeyError:
+            instanceLaunchedAt = i["LaunchTime"]
+
+        # Call helper function to see if the instance has explotiable vulns, and if so, which ones
+        exploitInfo = find_exploitable_vulnerabilities_for_instance(session, instanceId)        
+           
+        if exploitInfo[0] is True:
+            cveSentence = ", ".join(exploitInfo[1])
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{instanceArn}/ec2-exploitable-vulnerabilities-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{instanceArn}/ec2-exploitable-vulnerabilities-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "CRITICAL"},
+                "Confidence": 99,
+                "Title": "[EC2.14] Amazon EC2 instances with known exploitable vulnerabilities should be immediately remediated",
+                "Description": f"EC2 Instance {instanceId} has at least one active and exploitable vulnerability and should be immediately remediated. The following CVEs are exploitable: {cveSentence}. Amazon Inspector scans operating system packages and programming language packages installed on your Amazon EC2 instances for vulnerabilities. Amazon Inspector also scans your EC2 instances for network reachability issues. To perform an EC2 scan Amazon Inspector extracts software package metadata from your EC2 instances. Then, Amazon Inspector compares this metadata against rules collected from security advisories to produce findings. Amazon Inspector uses AWS Systems Manager (SSM) and the SSM Agent to collect information about the software application inventory of your EC2 instances. This data is then scanned by Amazon Inspector for software vulnerabilities. Amazon Inspector can only scan for software vulnerabilities in operating systems supported by Systems Manager. Additionally, using EC2 Deep Inspection Amazon Inspector can detect package vulnerabilities for application programming language packages in your Linux-based Amazon EC2 instances. Amazon Inspector scans default paths for programming language package libraries. ElectricEye uses the Amazon Inspector Vulnerability Intelligence Database and the CISA KEV catalog to determine if a CVE is exploitable. Exploitable vulnerabilities that are public have a higher chance of being actively targeted by adversaries and can cause irreperable harm to your organization. These vulnerabilities should be remediated or otherwise countered as soon as possible. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on how Inspector V2 works for EC2 instance vulnerability management and how to configure it refer to the Scanning Amazon EC2 instances with Amazon Inspector section of the AWS Systems Manager User Guide",
+                        "Url": "https://docs.aws.amazon.com/inspector/latest/user/scanning-ec2.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2Instance",
+                        "Id": instanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2Instance": {
+                                "Type": instanceType,
+                                "ImageId": instanceImage,
+                                "VpcId": vpcId,
+                                "SubnetId": subnetId,
+                                "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat()
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.AE-4",
+                        "NIST CSF V1.1 DE.CM-8",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 RA-3",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.1",
+                        "AICPA TSC CC7.3",
+                        "ISO 27001:2013 A.12.6.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{instanceArn}/ec2-exploitable-vulnerabilities-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{instanceArn}/ec2-exploitable-vulnerabilities-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[EC2.14] Amazon EC2 instances with known exploitable vulnerabilities should be immediately remediated",
+                "Description": f"EC2 Instance {instanceId} does not have any exploitable vulnerabilities. This can be because Amazon Inspector V2 is not enabled, is not enabled to scan EC2 instances, or because this particular instance is not being scanned due to exigent circumstances or just because someone on your vulnerability management team messed up. They done goofed, yo! Anyway...if your instance does have vulnerabilities without public exploits does not mean your should not triage and treat them for remediation or other mitigating controls. Use multiple additional sources of intelligence such as ExploitDB, deceptive technologies, Packet Storm, as well as EPSS to help drive your remediation prioritization efforts.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on how Inspector V2 works for EC2 instance vulnerability management and how to configure it refer to the Scanning Amazon EC2 instances with Amazon Inspector section of the AWS Systems Manager User Guide",
+                        "Url": "https://docs.aws.amazon.com/inspector/latest/user/scanning-ec2.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2Instance",
+                        "Id": instanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2Instance": {
+                                "Type": instanceType,
+                                "ImageId": instanceImage,
+                                "VpcId": vpcId,
+                                "SubnetId": subnetId,
+                                "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat()
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.AE-4",
+                        "NIST CSF V1.1 DE.CM-8",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 RA-3",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.1",
+                        "AICPA TSC CC7.3",
+                        "ISO 27001:2013 A.12.6.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 ## END ??
