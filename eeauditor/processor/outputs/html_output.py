@@ -420,8 +420,8 @@ class HtmlProvider(object):
         totalPassed = [finding for finding in processedData if finding["ComplianceStatus"] == "PASSED"]
         totalFailed = [finding for finding in processedData if finding["ComplianceStatus"] == "FAILED"]
 
-        failingPercentage = (len(totalPassed) / totalFindings) * 100
-        roundedPercentage = f"{round(failingPercentage, 2)}%"
+        passingPercentage = (len(totalPassed) / totalFindings) * 100
+        roundedPercentage = f"{round(passingPercentage, 2)}%"
         # Severity Status
         criticalsFindings = [finding for finding in processedData if finding["Severity"] == "CRITICAL"]
         highFindings = [finding for finding in processedData if finding["Severity"] == "HIGH"]
@@ -429,7 +429,7 @@ class HtmlProvider(object):
         lowFindings = [finding for finding in processedData if finding["Severity"] == "LOW"]
         infoFindings = [finding for finding in processedData if finding["Severity"] == "INFORMATIONAL"]
         # Resource IDs
-        allResources = [d.get("ResourceId") for d in processedData]
+        #allResources = [d.get("ResourceId") for d in processedData]
         uniqueResource = list(set(d.get("ResourceId") for d in processedData))
         # Assets
         #allServices = [d.get("AssetService") for d in processedData]
