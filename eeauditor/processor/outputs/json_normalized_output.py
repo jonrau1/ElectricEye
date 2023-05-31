@@ -19,6 +19,9 @@
 #under the License.
 import json
 from processor.outputs.output_base import ElectricEyeOutput
+from os import path
+
+here = path.abspath(path.dirname(__file__))
 
 @ElectricEyeOutput
 class JsonProvider(object):
@@ -36,7 +39,7 @@ class JsonProvider(object):
         print(f"Writing {len(findings)} findings to Normalized JSON file (final total may be different due to dedupe)")
         
         # create output file based on inputs
-        jsonfile = f"{output_file}_normalized.json"
+        jsonfile = f"{here}/{output_file}_normalized.json"
         print(f"Output file named: {jsonfile}")
 
         # Use another list comprehension to remove `ProductFields.AssetDetails` from non-Asset reporting outputs

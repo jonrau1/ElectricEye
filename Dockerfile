@@ -31,25 +31,33 @@ ENV PYTHONUNBUFFERED=1
 
 COPY requirements-docker.txt /tmp/requirements-docker.txt
 
-# NOTE: This will copy all application files and auditors to the container
-# IMPORTANT: ADD YOUR TOML CONFIGURATIONS BEFORE YOU BUILD THIS! - or use docker run -v options to override
-
-COPY ./eeauditor /eeauditor
-
 # Installing dependencies
 RUN \
     apk update && \
-    apk add --no-cache python3 postgresql-libs bash nmap py3-pandas py3-matplotlib && \
+    apk add --no-cache python3 postgresql-libs && \
     apk add --no-cache --virtual .build-deps gcc zlib-dev python3-dev musl-dev postgresql-dev && \
     python3 -m ensurepip && \
     pip3 install --no-cache --upgrade pip setuptools wheel && \
     rm -r /usr/lib/python*/ensurepip && \
     pip3 install -r /tmp/requirements-docker.txt --no-cache-dir && \
     apk --purge del .build-deps && \
+    rm -rf /tmp/* && \
     rm -f /var/cache/apk/*
 
-# new stage to bring in Labels and Permissions
-FROM builder as electriceye
+# latest hash as of 9 MAY 2023 - Alpine 3.18.0 / alpine:latest
+# https://hub.docker.com/layers/library/alpine/3.18.0/images/sha256-c0669ef34cdc14332c0f1ab0c2c01acb91d96014b172f1a76f3a39e63d1f0bda?context=explore
+FROM alpine@sha256:c0669ef34cdc14332c0f1ab0c2c01acb91d96014b172f1a76f3a39e63d1f0bda as electriceye
+
+COPY --from=builder /usr /usr
+
+# NOTE: This will copy all application files and auditors to the container
+# IMPORTANT: ADD YOUR TOML CONFIGURATIONS BEFORE YOU BUILD THIS! - or use docker run -v options to override
+
+COPY ./eeauditor /eeauditor
+
+RUN \
+    apk add --no-cache bash nmap py3-pandas py3-matplotlib && \
+    rm -f /var/cache/apk/*
 
 LABEL \ 
     maintainer="opensource@electriceye.cloud" \

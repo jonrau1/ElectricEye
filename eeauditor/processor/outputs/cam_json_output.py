@@ -21,6 +21,9 @@
 from processor.outputs.output_base import ElectricEyeOutput
 import json
 import base64
+from os import path
+
+here = path.abspath(path.dirname(__file__))
 
 @ElectricEyeOutput
 class CamJsonProvider(object):
@@ -36,7 +39,7 @@ class CamJsonProvider(object):
         del findings
     
         # create output file based on inputs
-        jsonfile = f"ElectricEyeCAM_{output_file}.json"
+        jsonfile = f"{here}/ElectricEyeCAM_{output_file}.json"
         print(f"Output file named: {jsonfile}")
         
         with open(jsonfile, "w") as jsonfile:

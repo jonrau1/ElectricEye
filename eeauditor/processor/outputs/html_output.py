@@ -22,6 +22,9 @@ import os
 from datetime import datetime
 import yaml
 from processor.outputs.output_base import ElectricEyeOutput
+from os import path
+
+here = path.abspath(path.dirname(__file__))
 
 # Get the absolute path of the current directory
 currentDir = os.path.abspath(os.path.dirname(__file__))
@@ -120,7 +123,7 @@ class HtmlProvider(object):
                 </body>
             </html>
             """
-        with open(f"{output_file}_executive_report.html", "w") as f:
+        with open(f"{here}/{output_file}_executive_report.html", "w") as f:
             f.write(html)
 
         print("HTML executive report created!")
