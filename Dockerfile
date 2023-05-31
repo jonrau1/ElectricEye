@@ -40,7 +40,7 @@ COPY ./eeauditor /eeauditor
 RUN \
     apk update && \
     apk add --no-cache python3 postgresql-libs bash nmap py3-pandas py3-matplotlib && \
-    apk add --no-cache --virtual .build-deps linux-headers gcc g++ zlib-dev make python3-dev musl-dev postgresql-dev jpeg-dev && \
+    apk add --no-cache --virtual .build-deps gcc zlib-dev python3-dev musl-dev postgresql-dev && \
     python3 -m ensurepip && \
     pip3 install --no-cache --upgrade pip setuptools wheel && \
     rm -r /usr/lib/python*/ensurepip && \
