@@ -33,7 +33,7 @@ To review the list of possible Output providers, use the following ElectricEye c
 
 ```bash
 $ python3 eeauditor/controller.py --list-options
-['cam_json', 'cam_mongodb', 'cam_postgresql', 'csv', 'ddb_backend', 'firemon_cloud_defense', 'html', 'html_compliance', 'json', 'json_normalized', 'mongodb', 'postgresql', 'sechub', 'slack', 'stdout']
+['amazon_sqs', 'cam_json', 'cam_mongodb', 'cam_postgresql', 'csv', 'ddb_backend', 'firemon_cloud_defense', 'html', 'html_compliance', 'json', 'json_normalized', 'mongodb', 'postgresql', 'sechub', 'slack', 'stdout']
 ```
 
 #### IMPORTANT NOTE!! You can specify multiple Outputs by providing the `-o` or `--outputs` argument multiple times, for instance: `python3 eeauditor/controller.py -t AWS -o json -o csv -o postgresql`
@@ -852,7 +852,40 @@ Additionally, values within the `[outputs.postgresql]` section of the TOML file 
 
 ## Amazon Simple Queue Service (SQS) Output
 
-*Coming Soon*
+The Amazon SQS Output selection will write all ElectricEye findings to an Amazon Simple Queue Service (SQS) queue by using `json.dumps()` to insert messages into the queue with a one-second delay. To make use of the messages in the queue, ensure you are parsing the `["body"]` using `json.loads()`, or using another library in your preferred language to load the stringified JSON back into a proper JSON object. Using Amazon SQS is a great way to distribute ElectricEye findings to many other locations using various messaging service architectures with Lambda or Amazon Simple Notification Service (SNS) topics.
+
+This Output will provide the `ProductFields.AssetDetails` information.
+
+To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o amazon_sqs`
+
+### Example Amazon Simple Queue Service (SQS) Output
+
+**NOTE**: The schema will look exactly like the [JSON Output Example](#example-json-output), however, the below example shows how it would look like to an AWS Lambda function that subscribes to the SQS queue.
+
+```
+{
+    "Records": [
+        {
+            "messageId": "7e23824d-EXAMPLEEXAMPLE-895f18577f72",
+            "receiptHandle": "AQEBOduIJm5ObZao9VF9aPM66S1AvbRIh5JhrEXAMPLEEXAMPLEfbqsfCFQfLDMn2GcE4LG1Y49+fQL8hZDxrE6UT3mS8fDfpfM6IEXz2/ez9ud9Y3qT0JTGjr4NWJscGHauEKnHxxjhPzVgygcPjcAXw+ylbyrTbqLpeUpoW/ZNw7SvmCO59t841J3vM2MkSmg0PKr7IpMVd0cJAyqUMuU652dcYVghkeqCB1J9UECIk+9f8RzLI9OESsch9KSAyiEWMTvxW6WtHbwXbeePn/JJBxDEXAMPLEEXAMPLEoRmej5STwkpZG64en4B1KWrw==",
+            "body": "{\"SchemaVersion\": \"2018-10-08\", \"Id\": \"arn:aws-cn:ec2:cn-northwest-1:456456456456:instance/i-04f4EXAMPLEEXAMPLEa9f186/ec2-public-facing-check\", \"ProductArn\": \"arn:aws-cn:securityhub:cn-northwest-1:456456456456:product/456456456456/default\", \"GeneratorId\": \"arn:aws-cn:ec2:cn-northwest-1:456456456456:instance/i-04f4EXAMPLEEXAMPLEa9f186\", \"AwsAccountId\": \"456456456456\", \"Types\": [\"Software and Configuration Checks/AWS Security Best Practices\", \"Effects/Data Exposure\"], \"Compliance\": {\"Status\": \"PASSED\", \"RelatedRequirements\": [\"NIST CSF V1.1 PR.AC-3\", \"NIST SP 800-53 Rev. 4 AC-1\", \"NIST SP 800-53 Rev. 4 AC-17\", \"NIST SP 800-53 Rev. 4 AC-19\", \"NIST SP 800-53 Rev. 4 AC-20\", \"NIST SP 800-53 Rev. 4 SC-15\", \"AICPA TSC CC6.6\", \"ISO 27001:2013 A.6.2.1\", \"ISO 27001:2013 A.6.2.2\", \"ISO 27001:2013 A.11.2.6\", \"ISO 27001:2013 A.13.1.1\", \"ISO 27001:2013 A.13.2.1\"]}, \"Workflow\": {\"Status\": \"RESOLVED\"}, \"RecordState\": \"ARCHIVED\"}",
+            "attributes": {
+                "ApproximateReceiveCount": "1",
+                "SentTimestamp": "16855989149",
+                "SenderId": "ARRRRRRRRRRRRRRRRR:i-123412341234",
+                "ApproximateFirstReceiveTimestamp": "16855989149"
+            },
+            "messageAttributes": {},
+            "md5OfBody": "16bb6daEXAMPLEEXAMPLE65a6dfc4e9",
+            "eventSource": "aws:sqs",
+            "eventSourceARN": "arn:aws-cn:sqs:cn-northwest-1:123412341234:EXAMPLEEXAMPLE",
+            "awsRegion": "cn-northwest-1"
+        },
+        {...}
+    ]
+}
+
+```
 
 ## Slack Output
 
