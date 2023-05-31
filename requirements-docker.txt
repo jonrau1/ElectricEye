@@ -1,0 +1,13 @@
+awscli
+boto3
+click
+detect-secrets
+pluginbase
+psycopg2-binary
+pymongo
+python3-nmap
+tomli
+pysnow
+google-api-python-client
+oci
+vt-py

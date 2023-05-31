@@ -22,7 +22,10 @@ from processor.outputs.output_base import ElectricEyeOutput
 import json
 import pandas as pd
 import matplotlib.pyplot as plt
+from os import path
 from datetime import datetime
+
+here = path.abspath(path.dirname(__file__))
 
 @ElectricEyeOutput
 class JsonProvider(object):
@@ -60,7 +63,7 @@ class JsonProvider(object):
         # Get the aggregated pass/fail info per control
         controlsAggregation = self.generate_controls_aggregation(uniqueControls, processedFindings)
 
-        self.html_creation(processedFindings, controlsAggregation, assetDataPerControlWithPercentage)
+        self.html_creation(processedFindings, controlsAggregation, assetDataPerControlWithPercentage, output_file)
 
         print("Created HTML Compliance report!")
 
@@ -217,13 +220,13 @@ class JsonProvider(object):
         print(f"Generating a table of controls objectives and aggregated asset information for {len(controls)} controls in {framework}")
 
         if framework == "NIST CSF V1.1":
-            filepath = "./nist_csfv1_1.json"
+            filepath = f"{here}/nist_csfv1_1.json"
         elif framework == "NIST SP 800-53 Rev. 4":
-            filepath = "./nist_800_53_r4.json"
+            filepath = f"{here}/nist_800_53_r4.json"
         elif framework == "AICPA TSC":
-            filepath = "./aicpa_tscs.json"
+            filepath = f"{here}/aicpa_tscs.json"
         elif framework == "ISO 27001:2013":
-            filepath = "./iso27001_2013.json"
+            filepath = f"{here}/iso27001_2013.json"
         else:
             return []
         
@@ -414,8 +417,8 @@ class JsonProvider(object):
             plt.rcParams["axes.facecolor"]="f9f9f9"
 
             # Save the charts as a SVG and then read out the contents to pass to HTML
-            fig.savefig(f"./{frameworkSavefile}.svg", format="svg")
-            with open(f"./{frameworkSavefile}.svg", "r") as f:
+            fig.savefig(f"{here}/{frameworkSavefile}.svg", format="svg")
+            with open(f"{here}/{frameworkSavefile}.svg", "r") as f:
                 svgImageContents = f.read()
 
             yield tableContent, svgImageContents, framework
@@ -656,7 +659,7 @@ class JsonProvider(object):
 
         return frameworkHeader
 
-    def html_creation(self, processedFindings, controlsAggregation, assetDataPerControl):
+    def html_creation(self, processedFindings, controlsAggregation, assetDataPerControl, outputFile):
         """
         This function assembles an HTML Report of matplotlib SVGs and tables
         """
@@ -758,7 +761,6 @@ class JsonProvider(object):
 
         htmlPrefix += htmlEnd
 
-        outputFile = "./outputv2"
         with open(f"{outputFile}_audit_readiness_report.html", "w") as f:
             f.write(htmlPrefix)
 

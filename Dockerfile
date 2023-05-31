@@ -29,7 +29,7 @@ LABEL org.opencontainers.image.source="https://github.com/alpinelinux/docker-alp
 # See: https://github.com/Docker-Hub-frolvlad/docker-alpine-python3/pull/13
 ENV PYTHONUNBUFFERED=1
 
-COPY requirements.txt /tmp/requirements.txt
+COPY requirements-docker.txt /tmp/requirements-docker.txt
 
 # NOTE: This will copy all application files and auditors to the container
 # IMPORTANT: ADD YOUR TOML CONFIGURATIONS BEFORE YOU BUILD THIS! - or use docker run -v options to override
@@ -39,12 +39,12 @@ COPY ./eeauditor /eeauditor
 # Installing dependencies
 RUN \
     apk update && \
-    apk add --no-cache python3 postgresql-libs bash nmap && \
-    apk add --no-cache --virtual .build-deps gcc python3-dev musl-dev postgresql-dev && \
+    apk add --no-cache python3 postgresql-libs bash nmap py3-pandas py3-matplotlib && \
+    apk add --no-cache --virtual .build-deps linux-headers gcc g++ zlib-dev make python3-dev musl-dev postgresql-dev jpeg-dev && \
     python3 -m ensurepip && \
     pip3 install --no-cache --upgrade pip setuptools wheel && \
     rm -r /usr/lib/python*/ensurepip && \
-    pip3 install -r /tmp/requirements.txt --no-cache-dir && \
+    pip3 install -r /tmp/requirements-docker.txt --no-cache-dir && \
     apk --purge del .build-deps && \
     rm -f /var/cache/apk/*
 
