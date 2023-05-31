@@ -20,7 +20,7 @@
 
 from processor.outputs.output_base import ElectricEyeOutput
 import json
-import base64
+from base64 import b64decode
 
 @ElectricEyeOutput
 class JsonProvider(object):
@@ -47,7 +47,7 @@ class JsonProvider(object):
         """
         decodedFindings = [
             {**d, "ProductFields": {**d["ProductFields"],
-                "AssetDetails": json.loads(base64.b64decode(d["ProductFields"]["AssetDetails"]).decode("utf-8"))
+                "AssetDetails": json.loads(b64decode(d["ProductFields"]["AssetDetails"]).decode("utf-8"))
                     if d["ProductFields"]["AssetDetails"] is not None
                     else None
             }} if "AssetDetails" in d["ProductFields"]

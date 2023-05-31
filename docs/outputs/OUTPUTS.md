@@ -8,6 +8,7 @@ This documentation is all about Outputs supported by ElectricEye and how to conf
 - [`stdout` Output](#stdout-output)
 - [JSON Output](#json-output)
 - [HTML Output](#html-output)
+- [HTML Compliance Output](#html-compliance-output)
 - [Normalized JSON Output](#json-normalized-output)
 - [Cloud Asset Management JSON Output](#json-cloud-asset-management-cam-output)
 - [CSV Output](#csv-output)
@@ -32,7 +33,7 @@ To review the list of possible Output providers, use the following ElectricEye c
 
 ```bash
 $ python3 eeauditor/controller.py --list-options
-['cam_json', 'cam_mongodb', 'cam_postgresql', 'csv', 'ddb_backend', 'firemon_cloud_defense', 'html', 'json', 'json_normalized', 'mongodb', 'postgresql', 'sechub', 'slack', 'stdout']
+['cam_json', 'cam_mongodb', 'cam_postgresql', 'csv', 'ddb_backend', 'firemon_cloud_defense', 'html', 'html_compliance', 'json', 'json_normalized', 'mongodb', 'postgresql', 'sechub', 'slack', 'stdout']
 ```
 
 #### IMPORTANT NOTE!! You can specify multiple Outputs by providing the `-o` or `--outputs` argument multiple times, for instance: `python3 eeauditor/controller.py -t AWS -o json -o csv -o postgresql`
@@ -128,6 +129,40 @@ To use this Output include the following arguments in your ElectricEye CLI: `pyt
 **NOTE** This was screen-captured on a 3840x2160 screen at 67% zoom, so it looks like shit, sorry.
 
 ![HTML JPG](../../screenshots/outputs/html_output.jpg)
+
+## HTML Compliance Output
+
+The HTML "Compliance" Output produces a graphical HTML report consisting of `matplotlib` horizontal bar charts and pie charts which denote the pass vs. fail of each major compliance/best practice framework covered by ElectricEye as well as a per-control status per Framework. In addition, each control status is enriched with aggregated asset data including how many resources in total were assessed for a control, how many unique Asset Classes, Services, and Components, and the control objectives from the framework/standard authors is also provided. This report will provide a high-level summary of what was scanned which goes into much further detail than the regular `html` output while sacrificing per-Asset and per-Finding granularity.
+
+The generated Table supports dyanmic scrolling, hidden scroll bars, and will use [iconography.yaml](../../eeauditor/processor/outputs/iconography.yaml) to generate in-line `<img>` tags for each Framework and will also use several JSON files locally saved within this repository to populate the control objectives such as [this one for AICPA TSCs](../../eeauditor/processor/outputs/aicpa_tscs.json).
+
+The Table format follows this schema in HTML
+
+```html
+<thead>
+    <tr>
+        <th>Control Title</th>
+        <th>Control Objective</th>
+        <th>Control Passing Score</th>
+        <th>Unique Asset Classes Impacted</th>
+        <th>Unique Asset Services Impacted</th>
+        <th>Unique Asset Components Impacted</th>
+        <th>Total Check Evaluations in Scope</th>
+        <th>Passing Controls</th>
+        <th>Failing Controls</th>
+    </tr>
+</thead>
+```
+
+To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o html_compliance --output-file my_file_name_here`
+
+### Example HTML Compliance Report
+
+![HTML Compliance 1](../../screenshots/outputs/html_compliance_1.jpg)
+
+![HTML Compliance 2](../../screenshots/outputs/html_compliance_2.jpg)
+
+![HTML Compliance 3](../../screenshots/outputs/html_compliance_3.jpg)
 
 ## JSON Output
 
