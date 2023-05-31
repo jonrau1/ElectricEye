@@ -761,7 +761,7 @@ class JsonProvider(object):
 
         htmlPrefix += htmlEnd
 
-        with open(f"{outputFile}_audit_readiness_report.html", "w") as f:
+        with open(f"{here}/{outputFile}_audit_readiness_report.html", "w") as f:
             f.write(htmlPrefix)
 
         print("Finished creating HTML report for audit readiness")

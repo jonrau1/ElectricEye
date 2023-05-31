@@ -1,4 +1,4 @@
-name: "ElectricEye on OCR Public"
+name: "ElectricEye on OCI Container Registry"
 
 on:
   push:
