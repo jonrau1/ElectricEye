@@ -98,7 +98,7 @@
 - AssetService: Amazon Elastic Block Storage
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Storage/64/Arch_Amazon-Elastic-Block-Store_64.svg">
 - AssetService: Amazon Elastic Container Registry
-  ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Containers/64/	Arch_Amazon-Elastic-Container-Registry_64.svg">
+  ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Containers/64/Arch_Amazon-Elastic-Container-Registry_64.svg">
 - AssetService: Amazon Elastic Container Service
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Containers/64/Arch_Amazon-Elastic-Container-Service_64.svg">
 - AssetService: Amazon Elastic File System
