@@ -19,7 +19,7 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 
 <p align="center">
   <a href="https://gallery.ecr.aws/t4o3u7t2/electriceye"><img width="150" height=40" alt="AWS ECR Gallery" src="https://user-images.githubusercontent.com/3985464/151531396-b6535a68-c907-44eb-95a1-a09508178616.png"></a>
-  <a href="https://hub.docker.com/repository/docker/electriceye/electriceye/general"><img width="150" height=40" alt="Docker Hub" src="https://www.unixtutorial.org/images/software/docker-hub.png"></a>
+  <a href="https://hub.docker.com/r/electriceye/electriceye"><img width="150" height=40" alt="Docker Hub" src="https://www.unixtutorial.org/images/software/docker-hub.png"></a>
 </p>
 
 ***Up here in space***<br/>
@@ -151,7 +151,7 @@ cd ElectricEye
 docker build -t electriceye:local .
 ```
 
-From here you can push to your repository of chocie, be sure to change the tag from `local` to whichever tag your repository is expecting or whatever you prefer. Maybe just latest, like a chad?
+From here you can push to your repository of choice, be sure to change the tag from `local` to whichever tag your repository is expecting or whatever you prefer. Maybe just `latest`, like a decabillionaire sigma grindset gigachad?
 
 ### Pulling Images
 
