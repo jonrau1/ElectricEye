@@ -10,16 +10,22 @@ title = "ElectricEye Configuration"
 
     aws_multi_account_target_type = "Accounts" # VALID CHOICES: Accounts | OU | Organization
 
-    # Specifies the location of where credentials are stored and will be retrieved from
-    # if you specify "CONFIG_FILE" that means you can provide the value within the option itself
+    # Specifies the location of where ALL credentials are stored and will be retrieved from
+    # if you specify "CONFIG_FILE" that means you can provide the value within the parameter itself
 
     credentials_location = "AWS_SSM" # VALID CHOICES: AWS_SSM | AWS_SECRETS_MANAGER | CONFIG_FILE
 
-    # The location (or actual contents) of your Shodan.io API Key
+    # The location (or actual contents) of your Shodan.io API Key - limits are not respected!!
     # this location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then
     # the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
 
     shodan_api_key_value = ""
+
+    # The location (or actual contents) of your VirusTotal (VT) API Key - limits are not respected!!
+    # this location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then
+    # the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+
+    virustotal_api_key_value = ""
 
 [regions_and_accounts]
 
@@ -35,7 +41,7 @@ title = "ElectricEye Configuration"
         aws_regions_selection = [] # VALID CHOICES: [] | ["All"] | list of regions e.g., ["us-east-1", "us-east-2"]
 
         # The NAME of the AWS IAM Role deployed to aws_account_targets - must be the same for all Accounts
-        # does not need to be provided for your own Account
+        # THIS ALSO NEEDS TO BE SUPPLIED FOR YOUR OWN ACCOUNT
         
         aws_electric_eye_iam_role_name = ""
 
@@ -45,12 +51,35 @@ title = "ElectricEye Configuration"
         
         gcp_project_ids = []
 
+    [regions_and_accounts.oci]
+
+        # Provide your Oracle Cloud Infrastructure Tenancy OCID that is associated with your OCI credentials
+
+        oci_tenancy_ocid = ""
+
+        # Provide your Oracle Cloud Infrastructure User OCID that is associated with your OCI credentials within your provided tenancy
+
+        oci_user_ocid = ""
+
+        # Provide the subscribed Region for your Oracle Cloud Infrastructure Tenancy & User
+
+        oci_region_name = ""
+
+        # Provide a list of Compartment OCIDs that your User has access to, this requires Tenancy-scoped permissions 
+        # to be able to access all Compartments
+
+        oci_compartment_ocids = []
+
 [credentials]
 
     # ***IMPORTANT*** 
     # all passwords, API keys, and sensitive credentials (that end with '_value') should match the value
     # of [global.credentials_location], for instance, if you specified "AWS_SSM" ensure that the '_value' option is the name
     # of an AWS SecureString Parameter that contains the value to be retrieved
+
+    ########################
+    # ~~CSPM CREDENTIALS~~ #
+    ########################
 
     [credentials.azure]
 
@@ -68,17 +97,49 @@ title = "ElectricEye Configuration"
 
         gcp_service_account_json_payload_value = ""
 
-    [credentials.github]
+    [credentials.oci]
 
-        gh_personal_access_token_value = ""
+        # The location (or actual contents) of your OCI User API Key Fingerprint this location must match the value 
+        # of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should 
+        # be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+
+        oci_user_api_key_fingerprint_value = ""
+
+        # The location (or actual contents) of your OCI User API Key Private Key PEM. This must be the CONTENTS not the file path
+        # this location must match the value  of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+
+        oci_user_api_key_private_key_pem_contents_value = ""
+
+    ########################
+    # ~~SSPM CREDENTIALS~~ #
+    ########################
 
     [credentials.m365]
 
+        # The location (or actual contents) of your M365 Enterprise Application Client ID this location must match the value 
+        # of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should 
+        # be the name of the AWS Systems Manager Parameter Store SecureString Parameter 
+
         m365_ent_app_client_id_value = ""
+
+        # The location (or actual contents) of your M365 Enterprise Application Secret ID, this must be the VALUE
+        # of the Secret when you generate the Secret for the App, not the actual "Secret ID" of it
+        # this location must match the value  of `global.credentials_location` e.g., if you specify "AWS_SSM" 
+        # then the value for this variable should  be the name of the AWS Systems Manager Parameter Store SecureString Parameter 
+
+        m365_ent_app_client_secret_id_value = ""
+
+        # The location (or actual contents) of your M365 Enterprise Application Tenant (Directory) ID this location must match the value 
+        # of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should 
+        # be the name of the AWS Systems Manager Parameter Store SecureString Parameter 
 
         m365_ent_app_tenant_id_value = ""
 
-        m365_ent_app_client_secret_id_value = ""
+        # The country code / location of your M365 tenant. In the future this value will be used to populate API endpoints
+        # that are regionally co-located for reduced latency - it will totally save tons of milliseconds
+        # Check it here https://portal.office.com/adminportal#/Settings/OrganizationProfile in Data Location
+
+        m365_tenant_location = "EU" # "US" "EU" "US-GOV" ?
 
     [credentials.servicenow]
 
@@ -226,3 +287,42 @@ title = "ElectricEye Configuration"
         # Batch
 
         amazon_sqs_batch_size = 10 # This must be an integer
+
+    [outputs.microsoft_teams]
+
+        # The location (or actual contents) of the Webhook for your MS Teams Channel
+        # this location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then
+        # the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+        
+        microsoft_teams_webhook_value = ""
+
+    [outputs.slack]
+
+        # The location (or actual contents) of the Slack Bot Token associated with your Slack App - ensure that
+        # your App is added into the Channel you will specify and that it has "chat:write" Bot Token Scopes
+        # this location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then
+        # the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+
+        slack_app_bot_token_value = ""
+
+        # The name or identifier for your Slack Channel you want ElectricEye to send findings to. Ensure that you
+        # Slack App has been added to this channel as well.
+
+        slack_channel_identifier = ""
+
+        # The type of output you want sent to Slack by ElectricEye. The "Summary" selection will send an aggregation
+        # of the total count of findings, types of assets, number of Regions and Accounts, pass vs failing, finding breakdown
+        # and the "Findings" selection will send each finding based on your filter values for `electric_eye_slack_severity_filter`
+        # and for `electric_eye_slack_finding_state_filter - this defaults to "Summary"
+
+        electric_eye_slack_message_type = "Summary" # VALID VALUES: "Summary" | "Findings"
+
+        # A list of ElectricEye Severities (matching the ASFF Severity.Label) that you want sent to Slack if your selection for
+        # `electric_eye_slack_message_type` is "Findings". This defaults to ["HIGH", "CRITICAL"]
+
+        electric_eye_slack_severity_filter = ["HIGH", "CRITICAL"] # VALID VALUES | "INFORMATIONAL", "LOW", "MEDIUM", "HIGH", "CRITICAL"
+
+        # A list of ElectricEye Finding States (matching the ASFF RecordState) that you want sent to slack if your selection for
+        # `electric_eye_slack_message_type` is "FindingS". This defaults to ["ACTIVE"]
+
+        electric_eye_slack_finding_state_filter = ["ACTIVE"] # VALID VALUES | "ACTIVE", "ARCHIVED"

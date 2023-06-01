@@ -26,7 +26,7 @@ import json
 
 registry = CheckRegister()
 
-@registry.register_check("accessanalyzer")
+@registry.register_check("access-analyzer")
 def iam_access_analyzer_detector_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SecSvcs.1] Amazon IAM Access Analyzer should be enabled"""
     accessanalyzer = session.client("accessanalyzer")
@@ -66,7 +66,7 @@ def iam_access_analyzer_detector_check(cache: dict, session, awsAccountId: str, 
                 "ProviderAccountId": awsAccountId,
                 "AssetRegion": awsRegion,
                 "AssetDetails": assetB64,
-                "AssetClass": "Management & Governance",
+                "AssetClass": "Security Services",
                 "AssetService": "AWS IAM Access Analyzer",
                 "AssetComponent": "Account Activation"
             },
@@ -86,7 +86,7 @@ def iam_access_analyzer_detector_check(cache: dict, session, awsAccountId: str, 
                     "NIST SP 800-53 Rev. 4 CA-7",
                     "NIST SP 800-53 Rev. 4 IR-4",
                     "NIST SP 800-53 Rev. 4 SI-4",
-                    "AICPA TSC 7.2",
+                    "AICPA TSC CC7.2",
                     "ISO 27001:2013 A.12.4.1",
                     "ISO 27001:2013 A.16.1.1",
                     "ISO 27001:2013 A.16.1.4"
@@ -124,7 +124,7 @@ def iam_access_analyzer_detector_check(cache: dict, session, awsAccountId: str, 
                 "ProviderAccountId": awsAccountId,
                 "AssetRegion": awsRegion,
                 "AssetDetails": assetB64,
-                "AssetClass": "Management & Governance",
+                "AssetClass": "Security Services",
                 "AssetService": "AWS IAM Access Analyzer",
                 "AssetComponent": "Account Activation"
             },
@@ -144,7 +144,7 @@ def iam_access_analyzer_detector_check(cache: dict, session, awsAccountId: str, 
                     "NIST SP 800-53 Rev. 4 CA-7",
                     "NIST SP 800-53 Rev. 4 IR-4",
                     "NIST SP 800-53 Rev. 4 SI-4",
-                    "AICPA TSC 7.2",
+                    "AICPA TSC CC7.2",
                     "ISO 27001:2013 A.12.4.1",
                     "ISO 27001:2013 A.16.1.1",
                     "ISO 27001:2013 A.16.1.4"
@@ -195,7 +195,7 @@ def guard_duty_detector_check(cache: dict, session, awsAccountId: str, awsRegion
                 "ProviderAccountId": awsAccountId,
                 "AssetRegion": awsRegion,
                 "AssetDetails": assetB64,
-                "AssetClass": "Management & Governance",
+                "AssetClass": "Security Services",
                 "AssetService": "Amazon GuardDuty",
                 "AssetComponent": "Account Activation"
             },
@@ -215,7 +215,7 @@ def guard_duty_detector_check(cache: dict, session, awsAccountId: str, awsRegion
                     "NIST SP 800-53 Rev. 4 CA-7",
                     "NIST SP 800-53 Rev. 4 IR-4",
                     "NIST SP 800-53 Rev. 4 SI-4",
-                    "AICPA TSC 7.2",
+                    "AICPA TSC CC7.2",
                     "ISO 27001:2013 A.12.4.1",
                     "ISO 27001:2013 A.16.1.1",
                     "ISO 27001:2013 A.16.1.4"
@@ -253,7 +253,7 @@ def guard_duty_detector_check(cache: dict, session, awsAccountId: str, awsRegion
                 "ProviderAccountId": awsAccountId,
                 "AssetRegion": awsRegion,
                 "AssetDetails": assetB64,
-                "AssetClass": "Management & Governance",
+                "AssetClass": "Security Services",
                 "AssetService": "Amazon GuardDuty",
                 "AssetComponent": "Account Activation"
             },
@@ -273,7 +273,7 @@ def guard_duty_detector_check(cache: dict, session, awsAccountId: str, awsRegion
                     "NIST SP 800-53 Rev. 4 CA-7",
                     "NIST SP 800-53 Rev. 4 IR-4",
                     "NIST SP 800-53 Rev. 4 SI-4",
-                    "AICPA TSC 7.2",
+                    "AICPA TSC CC7.2",
                     "ISO 27001:2013 A.12.4.1",
                     "ISO 27001:2013 A.16.1.1",
                     "ISO 27001:2013 A.16.1.4"
@@ -327,7 +327,7 @@ def detective_graph_check(cache: dict, session, awsAccountId: str, awsRegion: st
                 "ProviderAccountId": awsAccountId,
                 "AssetRegion": awsRegion,
                 "AssetDetails": assetB64,
-                "AssetClass": "Management & Governance",
+                "AssetClass": "Security Services",
                 "AssetService": "Amazon Detective",
                 "AssetComponent": "Account Activation"
             },
@@ -347,7 +347,7 @@ def detective_graph_check(cache: dict, session, awsAccountId: str, awsRegion: st
                     "NIST SP 800-53 Rev. 4 CA-7",
                     "NIST SP 800-53 Rev. 4 IR-4",
                     "NIST SP 800-53 Rev. 4 SI-4",
-                    "AICPA TSC 7.2",
+                    "AICPA TSC CC7.2",
                     "ISO 27001:2013 A.12.4.1",
                     "ISO 27001:2013 A.16.1.1",
                     "ISO 27001:2013 A.16.1.4"
@@ -387,7 +387,7 @@ def detective_graph_check(cache: dict, session, awsAccountId: str, awsRegion: st
                 "ProviderAccountId": awsAccountId,
                 "AssetRegion": awsRegion,
                 "AssetDetails": assetB64,
-                "AssetClass": "Management & Governance",
+                "AssetClass": "Security Services",
                 "AssetService": "Amazon Detective",
                 "AssetComponent": "Account Activation"
             },
@@ -407,7 +407,7 @@ def detective_graph_check(cache: dict, session, awsAccountId: str, awsRegion: st
                     "NIST SP 800-53 Rev. 4 CA-7",
                     "NIST SP 800-53 Rev. 4 IR-4",
                     "NIST SP 800-53 Rev. 4 SI-4",
-                    "AICPA TSC 7.2",
+                    "AICPA TSC CC7.2",
                     "ISO 27001:2013 A.12.4.1",
                     "ISO 27001:2013 A.16.1.1",
                     "ISO 27001:2013 A.16.1.4"
@@ -467,7 +467,7 @@ def macie_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
                 "ProviderAccountId": awsAccountId,
                 "AssetRegion": awsRegion,
                 "AssetDetails": assetB64,
-                "AssetClass": "Management & Governance",
+                "AssetClass": "Security Services",
                 "AssetService": "Amazon Macie",
                 "AssetComponent": "Account Activation"
             },
@@ -487,11 +487,11 @@ def macie_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
                     "NIST SP 800-53 Rev. 4 CA-7",
                     "NIST SP 800-53 Rev. 4 IR-4",
                     "NIST SP 800-53 Rev. 4 SI-4",
-                    "AICPA TSC 7.2",
+                    "AICPA TSC CC7.2",
                     "ISO 27001:2013 A.12.4.1",
                     "ISO 27001:2013 A.16.1.1",
-                    "ISO 27001:2013 A.16.1.4",
-                ],
+                    "ISO 27001:2013 A.16.1.4"
+                ]
             },
             "Workflow": {"Status": "RESOLVED"},
             "RecordState": "ARCHIVED",
@@ -527,7 +527,7 @@ def macie_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
                 "ProviderAccountId": awsAccountId,
                 "AssetRegion": awsRegion,
                 "AssetDetails": assetB64,
-                "AssetClass": "Management & Governance",
+                "AssetClass": "Security Services",
                 "AssetService": "Amazon Macie",
                 "AssetComponent": "Account Activation"
             },
@@ -547,7 +547,7 @@ def macie_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
                     "NIST SP 800-53 Rev. 4 CA-7",
                     "NIST SP 800-53 Rev. 4 IR-4",
                     "NIST SP 800-53 Rev. 4 SI-4",
-                    "AICPA TSC 7.2",
+                    "AICPA TSC CC7.2",
                     "ISO 27001:2013 A.12.4.1",
                     "ISO 27001:2013 A.16.1.1",
                     "ISO 27001:2013 A.16.1.4",

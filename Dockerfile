@@ -18,44 +18,53 @@
 #specific language governing permissions and limitations
 #under the License.
 
-# latest hash as of 5 MAY 2023 - Alpine 3.17.3 / alpine:latest
-# https://hub.docker.com/layers/library/alpine/3.17.3/images/sha256-b6ca290b6b4cdcca5b3db3ffa338ee0285c11744b4a6abaa9627746ee3291d8d?context=explore
+# latest hash as of 9 MAY 2023 - Alpine 3.18.0 / alpine:latest
+# https://hub.docker.com/layers/library/alpine/3.18.0/images/sha256-c0669ef34cdc14332c0f1ab0c2c01acb91d96014b172f1a76f3a39e63d1f0bda?context=explore
 # use as builder image to pull in required deps
-FROM alpine@sha256:b6ca290b6b4cdcca5b3db3ffa338ee0285c11744b4a6abaa9627746ee3291d8d AS builder
+FROM alpine@sha256:c0669ef34cdc14332c0f1ab0c2c01acb91d96014b172f1a76f3a39e63d1f0bda AS builder
+
+LABEL org.opencontainers.image.source="https://github.com/alpinelinux/docker-alpine"
 
 # This hack is widely applied to avoid python printing issues in docker containers.
 # See: https://github.com/Docker-Hub-frolvlad/docker-alpine-python3/pull/13
 ENV PYTHONUNBUFFERED=1
 
-COPY requirements.txt /tmp/requirements.txt
-
-# NOTE: This will copy all application files and auditors to the container
-# IMPORTANT: ADD YOUR TOML CONFIGURATIONS BEFORE YOU BUILD THIS!
-
-COPY ./eeauditor/ /eeauditor/
+COPY requirements-docker.txt /tmp/requirements-docker.txt
 
 # Installing dependencies
 RUN \
     apk update && \
-    apk add --no-cache python3 postgresql-libs bash nmap git && \
-    apk add --no-cache --virtual .build-deps gcc python3-dev musl-dev postgresql-dev && \
+    apk add --no-cache python3 postgresql-libs && \
+    apk add --no-cache --virtual .build-deps gcc zlib-dev python3-dev musl-dev postgresql-dev && \
     python3 -m ensurepip && \
     pip3 install --no-cache --upgrade pip setuptools wheel && \
     rm -r /usr/lib/python*/ensurepip && \
-    pip3 install -r /tmp/requirements.txt --no-cache-dir && \
+    pip3 install -r /tmp/requirements-docker.txt --no-cache-dir && \
     apk --purge del .build-deps && \
+    rm -rf /tmp/* && \
     rm -f /var/cache/apk/*
 
-# new stage to bring in Labels and ENV Vars
-FROM builder as electriceye
+# latest hash as of 9 MAY 2023 - Alpine 3.18.0 / alpine:latest
+# https://hub.docker.com/layers/library/alpine/3.18.0/images/sha256-c0669ef34cdc14332c0f1ab0c2c01acb91d96014b172f1a76f3a39e63d1f0bda?context=explore
+FROM alpine@sha256:c0669ef34cdc14332c0f1ab0c2c01acb91d96014b172f1a76f3a39e63d1f0bda as electriceye
 
-ENV SHODAN_API_KEY_PARAM=SHODAN_API_KEY_PARAM
+COPY --from=builder /usr /usr
+
+# NOTE: This will copy all application files and auditors to the container
+# IMPORTANT: ADD YOUR TOML CONFIGURATIONS BEFORE YOU BUILD THIS! - or use docker run -v options to override
+
+COPY ./eeauditor /eeauditor
+
+RUN \
+    apk add --no-cache bash nmap py3-pandas py3-matplotlib && \
+    rm -f /var/cache/apk/*
 
 LABEL \ 
-    maintainer="https://github.com/jonrau1" \
+    maintainer="opensource@electriceye.cloud" \
     version="3.0" \
     license="Apache-2.0" \
-    description="ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management, and External Attack Surface Management supporting 100s of services and evaluations to harden your public cloud & SaaS environments."
+    org.opencontainers.image.source="https://github.com/jonrau1/ElectricEye" \
+    description="ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Management supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapping for NIST CSF, 800-53, 800-171, ISO 27001, AICPA TSC (SOC2), and more!"
 
 # Create a System Group and User for ElectricEye so we don't run as root
 RUN \

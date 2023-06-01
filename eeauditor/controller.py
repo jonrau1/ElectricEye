@@ -49,6 +49,10 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
         findings = list(app.run_aws_checks(pluginName=pluginName, delay=delay))
     elif assessmentTarget == "GCP":
         findings = list(app.run_gcp_checks(pluginName=pluginName, delay=delay))
+    elif assessmentTarget == "OCI":
+        findings = list(app.run_oci_checks(pluginName=pluginName, delay=delay))
+    elif assessmentTarget == "M365":
+        findings = list(app.run_m365_checks(pluginName=pluginName, delay=delay))
     else:
         findings = list(app.run_non_aws_checks(pluginName=pluginName, delay=delay))
 
@@ -71,9 +75,10 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
         [
             "AWS",
             "Azure",
-            "OracleCloud",
+            "OCI",
             "GCP",
-            "Servicenow"
+            "Servicenow",
+            "M365"
         ],
         case_sensitive=True
     ),
@@ -106,7 +111,7 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
     multiple=True,
     default=(["stdout"]),
     show_default=True,
-    help="A list of Outputs (files, APIs, databases) to send ElectricEye Findings - can provide more than one",
+    help="A list of Outputs (files, APIs, databases, ChatOps) to send ElectricEye Findings, specify multiple with additional arguments: -o csv -o postgresql -o slack",
 )
 # Output File Name
 @click.option(
@@ -125,19 +130,19 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
 @click.option(
     "--list-checks",
     is_flag=True,
-    help="List all Checks, Assets, and Check Description within every Auditor for a specific Assessment Target"
+    help="Prints a table of Auditors, Checks, and Check descriptions to stdout - use this for -a or -c args"
 )
 # Insights
 @click.option(
     "--create-insights",
     is_flag=True,
-    help="Create SecurityHub insights for ElectricEye. This only needs to be done once per Security Hub instance",
+    help="Create AWS Security Hub Insights for ElectricEye. This only needs to be done once per Account per Region for Security Hub",
 )
 # Controls (Description)
 @click.option(
     "--list-controls",
     is_flag=True,
-    help="Lists all Controls (Check Titles) for an Assessment Target, used for mapping..."
+    help="Lists all ElectricEye Controls (e.g. Check Titles) for an Assessment Target"
 )
 
 def main(

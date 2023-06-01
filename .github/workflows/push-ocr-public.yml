@@ -1,0 +1,52 @@
+name: "ElectricEye on OCI Container Registry"
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  ElectricEyeOnOcrPublic:
+    runs-on: ubuntu-latest
+
+    # All 5 of these OCI_ tags must match exactly
+    # https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/clienvironmentvariables.htm
+    env:
+      OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
+      OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
+      OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
+      OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+      OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
+      IMAGE_TAG: ${{ github.sha }}
+
+    steps:
+      # Checkout le branch
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Get OCR Repo Information
+      - name: Get OCR Repository
+        uses: oracle-actions/get-ocir-repository@v1.2.1
+        id: get-ocir-repository
+        with:
+          name: electriceye
+          compartment: ${{ secrets.OCI_COMPARTMENT_OCID }}
+
+      # Log into OCR with AuthKey
+      - name: OCR Login
+        uses: oracle-actions/login-ocir@v1.2.1
+        id: login-ocir
+        with:
+          auth_token: ${{ secrets.OCR_AUTHKEY }}
+
+      # Build, Tag, Push to OCR
+      - name: Build, Tag, Push Image to OCR
+        id: tag-and-push-image
+        run: |
+          docker build -t ${{ steps.get-ocir-repository.outputs.repo_path }}:$IMAGE_TAG .
+          docker tag ${{ steps.get-ocir-repository.outputs.repo_path }}:$IMAGE_TAG ${{ steps.get-ocir-repository.outputs.repo_path }}:latest
+          docker push ${{ steps.get-ocir-repository.outputs.repo_path }}:$IMAGE_TAG
+          docker push ${{ steps.get-ocir-repository.outputs.repo_path }}:latest
+
+      # Print the location
+      - name: Print Image
+        run: echo "${{ steps.get-ocir-repository.outputs.repo_path }}:$IMAGE_TAG"

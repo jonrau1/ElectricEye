@@ -27,11 +27,13 @@ registry = CheckRegister()
 
 # Get all Athena work groups
 def list_work_groups(cache, session):
-    athena = session.client("athena")
     response = cache.get("list_work_groups")
     if response:
         return response
-    cache["list_work_groups"] = athena.list_work_groups()
+    
+    athena = session.client("athena")
+
+    cache["list_work_groups"] = athena.list_work_groups()["WorkGroups"]
     return cache["list_work_groups"]
 
 @registry.register_check("athena")
@@ -41,7 +43,7 @@ def athena_workgroup_encryption_check(cache: dict, session, awsAccountId: str, a
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # loop work groups from cache
-    for wgroup in list_work_groups(cache, session)["WorkGroups"]:
+    for wgroup in list_work_groups(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(wgroup,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -265,7 +267,7 @@ def athena_encrypted_workgroup_client_override_check(cache: dict, session, awsAc
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # loop work groups from cache
-    for wgroup in list_work_groups(cache, session)["WorkGroups"]:
+    for wgroup in list_work_groups(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(wgroup,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -494,7 +496,7 @@ def athena_workgroup_metrics_check(cache: dict, session, awsAccountId: str, awsR
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # loop work groups from cache
-    for wgroup in list_work_groups(cache, session)["WorkGroups"]:
+    for wgroup in list_work_groups(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(wgroup,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -649,7 +651,7 @@ def athena_workgroup_engine_autoupdate_check(cache: dict, session, awsAccountId:
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # loop work groups from cache
-    for wgroup in list_work_groups(cache, session)["WorkGroups"]:
+    for wgroup in list_work_groups(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(wgroup,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)

@@ -171,7 +171,7 @@ def secret_scan_codebuild_envvar_check(cache: dict, session, awsAccountId: str, 
                 + cbName
                 + " has at least one secret in Plaintext environment variables. Detect-secrets is reporting it as "
                 + secretType
-                + " secrets in plaintext can be leaked or exploited by unauthroized personnel who have permissions to access them and read the data. Refer to the remediation instructions if this configuration is not intended.",
+                + " secrets in plaintext can be leaked or exploited by external adversaries or other external adversaries or other unauthorized personnel who have permissions to access them and read the data. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your project should not contain plaintext environment variables refer to the Buildspec File Name and Storage Location section of the AWS CodeBuild User Guide.",
@@ -378,7 +378,7 @@ def secret_scan_cloudformation_parameters_check(cache: dict, session, awsAccount
                         + sn
                         + " has at least one secret in Plaintext parameters. Detect-secrets is reporting it as "
                         + secretType
-                        + " secrets in plaintext can be leaked or exploited by unauthroized personnel who have permissions to access them and read the data. Refer to the remediation instructions if this configuration is not intended.",
+                        + " secrets in plaintext can be leaked or exploited by external adversaries or other external adversaries or other unauthorized personnel who have permissions to access them and read the data. Refer to the remediation instructions if this configuration is not intended.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "To learn more about parameters refer to the Parameters section of the AWS CloudFormation User Guide.",
@@ -518,7 +518,7 @@ def secret_scan_ecs_task_def_envvar_check(cache: dict, session, awsAccountId: st
                         "AssetRegion": awsRegion,
                         "AssetDetails": assetB64,
                         "AssetClass": "Containers",
-                        "AssetService": "Amazon Elastic Container Service (ECS)",
+                        "AssetService": "Amazon Elastic Container Service",
                         "AssetComponent": "Task Definition"
                     },
                     "Resources": [
@@ -588,7 +588,7 @@ def secret_scan_ecs_task_def_envvar_check(cache: dict, session, awsAccountId: st
                     + cdefName
                     + " has at least one secret in Plaintext environment variables. Detect-secrets is reporting it as "
                     + secretType
-                    + " secrets in plaintext can be leaked or exploited by unauthroized personnel who have permissions to access them and read the data. Refer to the remediation instructions if this configuration is not intended.",
+                    + " secrets in plaintext can be leaked or exploited by external adversaries or other external adversaries or other unauthorized personnel who have permissions to access them and read the data. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "To learn more about environmental variables for ECS refer to the Specifying environment variables section of the Amazon Elastic Container Service Developer Guide.",
@@ -603,7 +603,7 @@ def secret_scan_ecs_task_def_envvar_check(cache: dict, session, awsAccountId: st
                         "AssetRegion": awsRegion,
                         "AssetDetails": assetB64,
                         "AssetClass": "Containers",
-                        "AssetService": "Amazon Elastic Container Service (ECS)",
+                        "AssetService": "Amazon Elastic Container Service",
                         "AssetComponent": "Task Definition"
                     },
                     "Resources": [
@@ -794,7 +794,7 @@ def secret_scan_ec2_userdata_check(cache: dict, session, awsAccountId: str, awsR
                         + instanceId
                         + " has at least one secret in Plaintext environment variables. Detect-secrets is reporting it as "
                         + secretType
-                        + " secrets in plaintext can be leaked or exploited by unauthroized personnel who have permissions to access them and read the data. Refer to the remediation instructions if this configuration is not intended.",
+                        + " secrets in plaintext can be leaked or exploited by external adversaries or other external adversaries or other unauthorized personnel who have permissions to access them and read the data. Refer to the remediation instructions if this configuration is not intended.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "To learn more about working with Instance User Data refer to the Work with instance user data section of the Amazon Elastic Compute Cloud User Guide.",

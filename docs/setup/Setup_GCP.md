@@ -8,14 +8,17 @@ This documentation is dedicated to using ElectricEye for evaluation of GCP Envir
 - [Use ElectricEye for GCP](#use-electriceye-for-gcp)
 - [GCP EASM Reporting](#gcp-external-attack-surface-reporting)
 - [GCP Multi-Project Service Account Support](#gcp-multi-project-service-account-support)
+- [GCP Checks & Services](#gcp-checks--services)
 
 ## Configuring TOML
 
-This section explains how to configure ElectricEye, a Python CLI tool that supports Cloud Asset Management (CAM), Cloud Security Posture Management (CSPM), SaaS Security Posture Management (SSPM), and External Attack Surface Management (EASM) capabilities across AWS, GCP, and ServiceNow, using a TOML configuration file. The configuration file contains settings for credentials, regions, accounts, and global settings and is located [here](../../eeauditor/external_providers.toml).
+This section explains how to configure ElectricEye using a TOML configuration file. The configuration file contains settings for credentials, regions, accounts, and global settings and is located [here](../../eeauditor/external_providers.toml).
 
 To configure the TOML file, you need to modify the values of the variables in the `[global]`, `[regions_and_accounts.gcp]`, and `[credentials.gcp]` sections of the file. Here's an overview of the key variables you need to configure:
 
 - `credentials_location`: Set this variable to specify the location of where credentials are stored and will be retrieved from. You can choose from AWS Systems Manager Parameter Store (`AWS_SSM`), AWS Secrets Manager (`AWS_SECRETS_MANAGER`), or from the TOML file itself (`CONFIG_FILE`) which is **NOT** recommended.
+
+**NOTE** When retrieving from SSM or Secrets Manager, your current Profile / Boto3 Session is used and *NOT* the ElectricEye Role that is specified in `aws_electric_eye_iam_role_name`. Ensure you have `ssm:GetParameter`, `secretsmanager:GetSecretValue`, and relevant `kms` permissions as needed to retrieve this values.
 
 - `gcp_project_ids`: Set this variable to specify a list of GCP Project IDs, ensure you only specify the GCP Projects which the Service Account specified in `gcp_service_account_json_payload_value` has access to.
 
@@ -26,8 +29,6 @@ It's important to note that this setting is a sensitive credential, and as such,
 Refer [here](#gcp-multi-project-service-account-support) for information on adding permissions for your Service Account to other Projects.
 
 ## Use ElectricEye for GCP
-
-**Note** In the future these GCP-specific docs, as well as the core ElectricEye Controller logic, will be changed to reflect using evaluating an entire GCP Organization
 
 1. Enable the following APIs for all GCP Projects you wish to assess with ElectricEye.
 
@@ -42,7 +43,7 @@ Refer [here](#gcp-multi-project-service-account-support) for information on addi
 > - Security Reviewer
 > - Project Viewer
 
-**NOTE!** For evaluating multiple GCP Projects, you only need ONE Service Account, refer to [GCP Multi-Project Service Account Support](#gcp-multi-project-service-account-support) for more information on adding permissions to other Projects.
+#### NOTE: For evaluating multiple GCP Projects, you only need ONE Service Account, refer to [GCP Multi-Project Service Account Support](#gcp-multi-project-service-account-support) for more information on adding permissions to other Projects.
 
 3. Create a **JSON Private Key** and upload the full JSON contents to AWS Systems Manager Parameter store as a SecureString. When added into your Parameter Store, you can delete the Private Key JSON file so you do not give it to someone...unsavory.
 
@@ -55,9 +56,9 @@ aws ssm put-parameter \
     --value $PLACEHOLDER
 ```
 
-**NOTE!** You can also save this value as an AWS Secrets Manager Secret!
+#### NOTE: You can also save this value as an AWS Secrets Manager Secret!
 
-**Pro Tip**: Rotate your JSON Private Key as often as your internal SOPs dictate, you can even change the entire Parameter as long as you remember to update the `.toml`
+#### NOTE: Rotate your JSON Private Key as often as your internal SOPs dictate, you can even change the entire Parameter as long as you remember to update the `.toml`
 
 4. With >=Python 3.6 installed, install and upgrade `pip3` and setup `virtualenv`.
 
@@ -100,25 +101,22 @@ pip3 install --user -r requirements.txt
     - 7B. Evaluate your entire GCP environment, for a specific Project.
 
     ```bash
-    export GCP_PROJECT_ID='<My_project_id>'
     python3 eeauditor/controller.py -t GCP
     ```
 
     - 7C. Evaluate your GCP environment against a specifc Auditor (runs all Checks within the Auditor).
 
     ```bash
-    export GCP_PROJECT_ID='<My_project_id>'
     python3 eeauditor/controller.py -t GCP -a GCP_ComputeEngine_Auditor
     ```
 
     - 7D. Evaluate your GCP environment against a specific Check within any Auditor, it is ***not required*** to specify the Auditor name as well. The below examples runs the "[GCP.CloudSQL.1] CloudSQL Instances should not be publicly reachable" check.
 
     ```bash
-    export GCP_PROJECT_ID='<My_project_id>'
     python3 eeauditor/controller.py -t GCP -c cloudsql_instance_public_check
     ```
 
-## GCP External Attack Surface Reporting
+## GCP Attack Surface Monitoring
 
 If you only wanted to run Attack Surface Monitoring checks use the following command which show an example of outputting the ASM checks into a JSON file for consumption into SIEM or BI tools.
 
@@ -149,3 +147,64 @@ do
   gcloud projects add-iam-policy-binding $project_id --member=$SERVICE_ACCOUNT_EMAIL --role=roles/viewer
 done
 ```
+
+## GCP Checks & Services
+
+These are the following services and checks perform by each Auditor, there are currently **53 Checks** across **3 Auditors** that support the secure configuration of **2 services/components**
+
+| Auditor File Name | Scanned Resource Name | Auditor Scan Description |
+|---|---|---|
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is deletion protection enabled |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is IP forwarding disabled |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is auto-restart enabled |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is Secure Boot enabled |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is Virtual Trusted Platform Module enabled |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is Instance Integrity Monitoring enabled |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is Secure Integrity Monitoring Auto-learning Policy set to Update |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is Serial Port access disabled |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Are Linux VM Instances access with OS Logon |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Are Linux VM Instances acessed with OS Logon using 2FA/MFA |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Are project-wide SSH keys blocked from access VM instances |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Are instances publicly facing |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Are instances publicly facing |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances enabled auto-backup |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do MySQL instances enable PITR |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do PostgreSQL instances enable PITR |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a private network enabled |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances allowe GCP services connectivity |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a password policy enabled |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a password min length |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a password reuse check |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a configuration to disallow usernames in the password |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a password change interval check |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have storage auto-resize enabled |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have deletion protection enabled |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have query insights enabled |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have SSL/TLS Enforcement enabled |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a FTP service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a SSH service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Telnet service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a SMTP service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a HTTP service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a POP3 service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Win NetBIOS service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a SMB service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a RDP service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a MSSQL service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a MySQL/MariaDB service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a NFS service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Docker API service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a OracleDB service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a PostgreSQL service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Kibana service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a VMWARE ESXi service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a HTTP Proxy service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a SplunkD service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Kubernetes API Server service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Redis service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Kafka service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a MongoDB/DocDB service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Rabbit/AmazonMQ service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a SparkUI service publicly accessible |
+
+Continue to check this section for information on active, retired, and renamed checks or using the `--list-checks` command in the CLI!

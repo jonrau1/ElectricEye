@@ -116,7 +116,7 @@ def dedicated_master_check(cache: dict, session, awsAccountId: str, awsRegion: s
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -186,7 +186,7 @@ def dedicated_master_check(cache: dict, session, awsAccountId: str, awsRegion: s
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -263,7 +263,7 @@ def cognito_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPa
                                 "DomainName": esDomainName,
                                 "EngineVersion": esVersion,
                             }
-                        },
+                        }
                     }
                 ],
                 "Compliance": {
@@ -285,11 +285,11 @@ def cognito_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPa
                         "NIST SP 800-53 Rev. 4 PS-3",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.7.1.1",
-                        "ISO 27001:2013 A.9.2.1",
-                    ],
+                        "ISO 27001:2013 A.9.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
         else:
@@ -338,7 +338,7 @@ def cognito_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPa
                                 "DomainName": esDomainName,
                                 "EngineVersion": esVersion,
                             }
-                        },
+                        }
                     }
                 ],
                 "Compliance": {
@@ -360,11 +360,11 @@ def cognito_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPa
                         "NIST SP 800-53 Rev. 4 PS-3",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.7.1.1",
-                        "ISO 27001:2013 A.9.2.1",
-                    ],
+                        "ISO 27001:2013 A.9.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
 
@@ -1265,7 +1265,7 @@ def elasticsearch_in_vpc_check(cache: dict, session, awsAccountId: str, awsRegio
                         "ISO 27001:2013 A.6.2.2",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.1"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -1338,7 +1338,7 @@ def elasticsearch_in_vpc_check(cache: dict, session, awsAccountId: str, awsRegio
                         "ISO 27001:2013 A.6.2.2",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.1"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},

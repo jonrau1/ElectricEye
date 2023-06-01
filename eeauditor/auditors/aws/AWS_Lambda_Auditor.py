@@ -27,36 +27,60 @@ import json
 
 registry = CheckRegister()
 
+# Supported Runtimes
+SUPPORTED_LAMBDA_RUNTIMES = [
+    'nodejs18.x',
+    'nodejs16.x',
+    'nodejs14.x',
+    'python3.10',
+    'python3.9',
+    'python3.8',
+    'python3.7',
+    'ruby3.2', # doesn't exist...yet
+    'ruby2.7', # deprecates 15 NOV 2023
+    'java11',
+    'java8',
+    'java8.al2',
+    'go1.x',
+    'dotnet7',
+    'dotnet6',
+    'dotnet5.0',
+    'provided.al2',
+    'provided'
+]
+
 def get_lambda_functions(cache, session):
-    lambdas = session.client("lambda")
-    lambdaFunctions = []
     response = cache.get("get_lambda_functions")
     if response:
         return response
-    paginator = lambdas.get_paginator('list_functions')
-    if paginator:
-        for page in paginator.paginate():
-            for function in page["Functions"]:
-                lambdaFunctions.append(function)
-        cache["get_lambda_functions"] = lambdaFunctions
-        return cache["get_lambda_functions"]
+    
+    lambdas = session.client("lambda")
+    lambdaFunctions = []
+
+    for page in lambdas.get_paginator('list_functions').paginate():
+        for function in page["Functions"]:
+            lambdaFunctions.append(function)
+
+    cache["get_lambda_functions"] = lambdaFunctions
+    return cache["get_lambda_functions"]
 
 def get_lambda_layers(cache, session):
-    lambdas = session.client("lambda")
-    lambdaLayers = []
     response = cache.get("get_lambda_layers")
     if response:
         return response
-    paginator = lambdas.get_paginator('list_layers')
-    if paginator:
-        for page in paginator.paginate():
-            for layer in page["Layers"]:
-                lambdaLayers.append(layer)
-        cache["get_lambda_layers"] = lambdaLayers
-        return cache["get_lambda_layers"]
+    
+    lambdas = session.client("lambda")
+    lambdaLayers = []
+
+    for page in lambdas.get_paginator('list_layers').paginate():
+        for layer in page["Layers"]:
+            lambdaLayers.append(layer)
+
+    cache["get_lambda_layers"] = lambdaLayers
+    return cache["get_lambda_layers"]
 
 @registry.register_check("lambda")
-def unused_function_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def aws_lambda_unused_function_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Lambda.1] Lambda functions should be deleted after 30 days of no use"""
     cloudwatch = session.client("cloudwatch")
     # ISO Time
@@ -65,8 +89,8 @@ def unused_function_check(cache: dict, session, awsAccountId: str, awsRegion: st
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(function,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        functionName = str(function["FunctionName"])
-        lambdaArn = str(function["FunctionArn"])
+        functionName = function["FunctionName"]
+        lambdaArn = function["FunctionArn"]
         metricResponse = cloudwatch.get_metric_data(
             MetricDataQueries=[
                 {
@@ -85,11 +109,11 @@ def unused_function_check(cache: dict, session, awsAccountId: str, awsRegion: st
             StartTime=datetime.datetime.now() - datetime.timedelta(days=30),
             EndTime=datetime.datetime.now(),
         )
-        metrics = metricResponse["MetricDataResults"]
-        for metric in metrics:
-            modify_date = parser.parse(function["LastModified"])
-            date_delta = datetime.datetime.now(datetime.timezone.utc) - modify_date
-            if len(metric["Values"]) > 0 or date_delta.days < 30:
+        for metric in metricResponse["MetricDataResults"]:
+            modifiedDate = parser.parse(function["LastModified"])
+            dateDelta = datetime.datetime.now(datetime.timezone.utc) - modifiedDate
+
+            if len(metric["Values"]) > 0 or dateDelta.days < 30:
                 # this is a passing check
                 finding = {
                     "SchemaVersion": "2018-10-08",
@@ -216,16 +240,16 @@ def unused_function_check(cache: dict, session, awsAccountId: str, awsRegion: st
                 yield finding
 
 @registry.register_check("lambda")
-def function_tracing_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Lambda.2] Lambda functions should use active tracing with AWS X-Ray"""
+def aws_lambda_function_tracing_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Lambda.2] Lambda functions should consider using active tracing with AWS X-Ray for Performance Monitoring"""
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for function in get_lambda_functions(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(function,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        functionName = str(function["FunctionName"])
-        lambdaArn = str(function["FunctionArn"])
+        functionName = function["FunctionName"]
+        lambdaArn = function["FunctionArn"]
         # This is a passing check
         if str(function["TracingConfig"]["Mode"]) == "Active":
             finding = {
@@ -240,7 +264,7 @@ def function_tracing_check(cache: dict, session, awsAccountId: str, awsRegion: s
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Lambda.2] Lambda functions should use active tracing with AWS X-Ray",
+                "Title": "[Lambda.2] Lambda functions should consider using active tracing with AWS X-Ray for Performance Monitoring",
                 "Description": "Lambda function "
                 + functionName
                 + " has Active Tracing enabled.",
@@ -289,11 +313,11 @@ def function_tracing_check(cache: dict, session, awsAccountId: str, awsRegion: s
                         "NIST SP 800-53 Rev. 4 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
-                        "ISO 27001:2013 A.16.1.7",
-                    ],
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
         else:
@@ -309,7 +333,7 @@ def function_tracing_check(cache: dict, session, awsAccountId: str, awsRegion: s
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[Lambda.2] Lambda functions should use active tracing with AWS X-Ray",
+                "Title": "[Lambda.2] Lambda functions should consider using active tracing with AWS X-Ray for Performance Monitoring",
                 "Description": "Lambda function "
                 + functionName
                 + " does not have Active Tracing enabled. Because X-Ray gives you an end-to-end view of an entire request, you can analyze latencies in your Functions and their backend services. You can use an X-Ray service map to view the latency of an entire request and that of the downstream services that are integrated with X-Ray. Refer to the remediation instructions if this configuration is not intended.",
@@ -358,8 +382,8 @@ def function_tracing_check(cache: dict, session, awsAccountId: str, awsRegion: s
                         "NIST SP 800-53 Rev. 4 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
-                        "ISO 27001:2013 A.16.1.7",
-                    ],
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
                 "RecordState": "ACTIVE"
@@ -367,7 +391,7 @@ def function_tracing_check(cache: dict, session, awsAccountId: str, awsRegion: s
             yield finding
 
 @registry.register_check("lambda")
-def function_code_signer_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def aws_lambda_function_code_signer_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Lambda.3] Lambda functions should use code signing from AWS Signer to ensure trusted code runs in a Function"""
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -375,8 +399,8 @@ def function_code_signer_check(cache: dict, session, awsAccountId: str, awsRegio
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(function,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        functionName = str(function["FunctionName"])
-        lambdaArn = str(function["FunctionArn"])
+        functionName = function["FunctionName"]
+        lambdaArn = function["FunctionArn"]
         # This is a passing check
         try:
             signingJobArn = str(function["SigningJobArn"])
@@ -428,16 +452,23 @@ def function_code_signer_check(cache: dict, session, awsAccountId: str, awsRegio
                     "Status": "PASSED",
                     "RelatedRequirements": [
                         "NIST CSF V1.1 ID.SC-2",
+                        "NIST CSF V1.1 PR.DS-6",
                         "NIST SP 800-53 Rev. 4 RA-2",
                         "NIST SP 800-53 Rev. 4 RA-3",
                         "NIST SP 800-53 Rev. 4 PM-9",
                         "NIST SP 800-53 Rev. 4 SA-12",
                         "NIST SP 800-53 Rev. 4 SA-14",
                         "NIST SP 800-53 Rev. 4 SA-15",
+                        "NIST SP 800-53 Rev. 4 SI-7",
+                        "AICPA TSC CC7.1",
                         "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.2.1", 
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
                         "ISO 27001:2013 A.15.2.1",
-                        "ISO 27001:2013 A.15.2.2",
-                    ],
+                        "ISO 27001:2013 A.15.2.2"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED",
@@ -457,7 +488,7 @@ def function_code_signer_check(cache: dict, session, awsAccountId: str, awsRegio
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[Lambda.3] Lambda functions should use code signing from AWS Signer to ensure trusted code runs in a Function",
-                "Description": f"Lambda function {functionName} does not have an AWS code signing job configured. Code signing for AWS Lambda helps to ensure that only trusted code runs in your Lambda functions. When you enable code signing for a function, Lambda checks every code deployment and verifies that the code package is signed by a trusted source. Refer to the remediation instructions if this configuration is not intended.",
+                "Description": f"Lambda function {functionName} does not have an AWS code signing job configured. Code signing for AWS Lambda helps to ensure that only trusted code runs in your Lambda functions. When you enable code signing for a function, Lambda checks every code deployment and verifies that the code package is signed by a trusted source. While code signing and verification plays an important part in software supply chain security, the overall posture and reachability of your Lambda function alongside the vulnerability assessment of your code and embedded packages should additionally be assessed. Lambda is a difficult attack vector for adversaries to exploit, however, with the right amount of misconfigurations - depending on the business logic the function serves - they can be exploited. Code signing provides assurance that once the function package has entered into your own supply chain it has not been otherwise tampered with. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "To configure code signing for your Functions refer to the Configuring code signing for AWS Lambda section of the Amazon Lambda Developer Guide",
@@ -492,13 +523,20 @@ def function_code_signer_check(cache: dict, session, awsAccountId: str, awsRegio
                     "Status": "FAILED",
                     "RelatedRequirements": [
                         "NIST CSF V1.1 ID.SC-2",
+                        "NIST CSF V1.1 PR.DS-6",
                         "NIST SP 800-53 Rev. 4 RA-2",
                         "NIST SP 800-53 Rev. 4 RA-3",
                         "NIST SP 800-53 Rev. 4 PM-9",
                         "NIST SP 800-53 Rev. 4 SA-12",
                         "NIST SP 800-53 Rev. 4 SA-14",
                         "NIST SP 800-53 Rev. 4 SA-15",
+                        "NIST SP 800-53 Rev. 4 SI-7",
+                        "AICPA TSC CC7.1",
                         "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.2.1", 
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.15.2.2"
                     ]
@@ -509,7 +547,7 @@ def function_code_signer_check(cache: dict, session, awsAccountId: str, awsRegio
             yield finding
 
 @registry.register_check("lambda")
-def public_lambda_layer_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def aws_public_lambda_layer_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Lambda.4] Lambda layers should not be publicly shared"""
     lambdas = session.client("lambda")
     # ISO Time
@@ -532,6 +570,160 @@ def public_lambda_layer_check(cache: dict, session, awsAccountId: str, awsRegion
                 LayerName=layerName,
                 VersionNumber=layerVersion
             )["Policy"])
+            # Evaluate layer Policy
+            for s in layerPolicy["Statement"]:
+                principal = s["Principal"]
+                effect = s["Effect"]
+                try:
+                    conditionalPolicy = s["Condition"]["StringEquals"]["aws:PrincipalOrgID"]
+                    hasCondition = True
+                    del conditionalPolicy
+                except KeyError:
+                    hasCondition = False
+                # this evaluation logic is a failing check
+                if (principal == "*" and effect == "Allow" and hasCondition == False):
+                    # this is a failing check
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": f"{layerArn}/public-lambda-layer-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": layerArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices",
+                            "Effects/Data Exposure",
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "HIGH"},
+                        "Confidence": 99,
+                        "Title": "[Lambda.4] Lambda layers should not be publicly shared",
+                        "Description": f"Lambda layer {layerName} is publicly shared without specifying a conditional access policy. Inadvertently sharing Lambda layers can potentially expose business logic or sensitive details within the Layer depending on how it is configured and thus all Layer sharing should be carefully reviewed. Refer to the remediation instructions if this configuration is not intended.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For more information on sharing Lambda Layers and modifiying their permissions refer to the Configuring layer permissions section of the Amazon Lambda Developer Guide",
+                                "Url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html#configuration-layers-permissions"
+                            }
+                        },
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Compute",
+                            "AssetService": "AWS Lambda",
+                            "AssetComponent": "Layer"
+                        },
+                        "Resources": [
+                            {
+                                "Type": "AwsLambdaLayerVersion",
+                                "Id": layerArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsLambdaLayerVersion": {
+                                        "Version": layerVersion,
+                                        "CompatibleRuntimes": compatibleRuntimes,
+                                        "CreatedDate": createDate
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF V1.1 PR.AC-3",
+                                "NIST SP 800-53 Rev. 4 AC-1",
+                                "NIST SP 800-53 Rev. 4 AC-17",
+                                "NIST SP 800-53 Rev. 4 AC-19",
+                                "NIST SP 800-53 Rev. 4 AC-20",
+                                "NIST SP 800-53 Rev. 4 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1"
+                            ]
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE"
+                    }
+                    yield finding
+                else:
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": f"{layerArn}/public-lambda-layer-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": layerArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices",
+                            "Effects/Data Exposure",
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[Lambda.4] Lambda layers should not be publicly shared",
+                        "Description": f"Lambda layer {layerName} is not publicly shared.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For more information on sharing Lambda Layers and modifiying their permissions refer to the Configuring layer permissions section of the Amazon Lambda Developer Guide",
+                                "Url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html#configuration-layers-permissions"
+                            }
+                        },
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Compute",
+                            "AssetService": "AWS Lambda",
+                            "AssetComponent": "Layer"
+                        },
+                        "Resources": [
+                            {
+                                "Type": "AwsLambdaLayerVersion",
+                                "Id": layerArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsLambdaLayerVersion": {
+                                        "Version": layerVersion,
+                                        "CompatibleRuntimes": compatibleRuntimes,
+                                        "CreatedDate": createDate
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF V1.1 PR.AC-3",
+                                "NIST SP 800-53 Rev. 4 AC-1",
+                                "NIST SP 800-53 Rev. 4 AC-17",
+                                "NIST SP 800-53 Rev. 4 AC-19",
+                                "NIST SP 800-53 Rev. 4 AC-20",
+                                "NIST SP 800-53 Rev. 4 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1"
+                            ]
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED"
+                    }
+                    yield finding
         except Exception:
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -603,163 +795,9 @@ def public_lambda_layer_check(cache: dict, session, awsAccountId: str, awsRegion
                 "RecordState": "ACTIVE"
             }
             yield finding
-        # Evaluate layer Policy
-        for s in layerPolicy["Statement"]:
-            principal = s["Principal"]
-            effect = s["Effect"]
-            try:
-                conditionalPolicy = s["Condition"]["StringEquals"]["aws:PrincipalOrgID"]
-                hasCondition = True
-                del conditionalPolicy
-            except KeyError:
-                hasCondition = False
-            # this evaluation logic is a failing check
-            if (principal == "*" and effect == "Allow" and hasCondition == False):
-                # this is a failing check
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": f"{layerArn}/public-lambda-layer-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": layerArn,
-                    "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices",
-                        "Effects/Data Exposure",
-                    ],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "HIGH"},
-                    "Confidence": 99,
-                    "Title": "[Lambda.4] Lambda layers should not be publicly shared",
-                    "Description": f"Lambda layer {layerName} is publicly shared without specifying a conditional access policy. Inadvertently sharing Lambda layers can potentially expose business logic or sensitive details within the Layer depending on how it is configured and thus all Layer sharing should be carefully reviewed. Refer to the remediation instructions if this configuration is not intended.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For more information on sharing Lambda Layers and modifiying their permissions refer to the Configuring layer permissions section of the Amazon Lambda Developer Guide",
-                            "Url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html#configuration-layers-permissions"
-                        }
-                    },
-                    "ProductFields": {
-                        "ProductName": "ElectricEye",
-                        "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
-                        "AssetClass": "Compute",
-                        "AssetService": "AWS Lambda",
-                        "AssetComponent": "Layer"
-                    },
-                    "Resources": [
-                        {
-                            "Type": "AwsLambdaLayerVersion",
-                            "Id": layerArn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {
-                                "AwsLambdaLayerVersion": {
-                                    "Version": layerVersion,
-                                    "CompatibleRuntimes": compatibleRuntimes,
-                                    "CreatedDate": createDate
-                                }
-                            }
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "FAILED",
-                        "RelatedRequirements": [
-                            "NIST CSF V1.1 PR.AC-3",
-                            "NIST SP 800-53 Rev. 4 AC-1",
-                            "NIST SP 800-53 Rev. 4 AC-17",
-                            "NIST SP 800-53 Rev. 4 AC-19",
-                            "NIST SP 800-53 Rev. 4 AC-20",
-                            "NIST SP 800-53 Rev. 4 SC-15",
-                            "AICPA TSC CC6.6",
-                            "ISO 27001:2013 A.6.2.1",
-                            "ISO 27001:2013 A.6.2.2",
-                            "ISO 27001:2013 A.11.2.6",
-                            "ISO 27001:2013 A.13.1.1",
-                            "ISO 27001:2013 A.13.2.1"
-                        ]
-                    },
-                    "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE"
-                }
-                yield finding
-            else:
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": f"{layerArn}/public-lambda-layer-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": layerArn,
-                    "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices",
-                        "Effects/Data Exposure",
-                    ],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "INFORMATIONAL"},
-                    "Confidence": 99,
-                    "Title": "[Lambda.4] Lambda layers should not be publicly shared",
-                    "Description": f"Lambda layer {layerName} is not publicly shared.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For more information on sharing Lambda Layers and modifiying their permissions refer to the Configuring layer permissions section of the Amazon Lambda Developer Guide",
-                            "Url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html#configuration-layers-permissions"
-                        }
-                    },
-                    "ProductFields": {
-                        "ProductName": "ElectricEye",
-                        "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
-                        "AssetClass": "Compute",
-                        "AssetService": "AWS Lambda",
-                        "AssetComponent": "Layer"
-                    },
-                    "Resources": [
-                        {
-                            "Type": "AwsLambdaLayerVersion",
-                            "Id": layerArn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {
-                                "AwsLambdaLayerVersion": {
-                                    "Version": layerVersion,
-                                    "CompatibleRuntimes": compatibleRuntimes,
-                                    "CreatedDate": createDate
-                                }
-                            }
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "PASSED",
-                        "RelatedRequirements": [
-                            "NIST CSF V1.1 PR.AC-3",
-                            "NIST SP 800-53 Rev. 4 AC-1",
-                            "NIST SP 800-53 Rev. 4 AC-17",
-                            "NIST SP 800-53 Rev. 4 AC-19",
-                            "NIST SP 800-53 Rev. 4 AC-20",
-                            "NIST SP 800-53 Rev. 4 SC-15",
-                            "AICPA TSC CC6.6",
-                            "ISO 27001:2013 A.6.2.1",
-                            "ISO 27001:2013 A.6.2.2",
-                            "ISO 27001:2013 A.11.2.6",
-                            "ISO 27001:2013 A.13.1.1",
-                            "ISO 27001:2013 A.13.2.1"
-                        ]
-                    },
-                    "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED"
-                }
-                yield finding
 
 @registry.register_check("lambda")
-def public_lambda_function_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def aws_public_lambda_function_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Lambda.5] Lambda functions should not be publicly shared"""
     lambdas = session.client("lambda")
     # ISO Time
@@ -768,8 +806,8 @@ def public_lambda_function_check(cache: dict, session, awsAccountId: str, awsReg
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(function,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        functionName = str(function["FunctionName"])
-        lambdaArn = str(function["FunctionArn"])
+        functionName = function["FunctionName"]
+        lambdaArn = function["FunctionArn"]
         # Get function policy
         try:
             funcPolicy = json.loads(lambdas.get_policy(FunctionName=functionName)["Policy"])
@@ -998,39 +1036,18 @@ def public_lambda_function_check(cache: dict, session, awsAccountId: str, awsReg
                 yield finding
 
 @registry.register_check("lambda")
-def lambda_supported_runtimes_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def aws_lambda_supported_runtimes_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Lambda.6] Lambda functions should use supported runtimes"""
-    # Supported Runtimes
-    supportedRuntimes = [
-        'nodejs18.x',
-        'nodejs16.x',
-        'nodejs14.x',
-        'python3.10',
-        'python3.9',
-        'python3.8',
-        'python3.7',
-        'ruby3.2', # doesn't exist...yet
-        'ruby2.7', # deprecates 15 NOV 2023
-        'java11',
-        'java8',
-        'java8.al2',
-        'go1.x',
-        'dotnet7',
-        'dotnet6',
-        'dotnet5.0',
-        'provided.al2',
-        'provided'
-    ]
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for function in get_lambda_functions(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(function,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        functionName = str(function["FunctionName"])
-        lambdaArn = str(function["FunctionArn"])
+        functionName = function["FunctionName"]
+        lambdaArn = function["FunctionArn"]
         lambdaRuntime = str(function["Runtime"])
-        if lambdaRuntime not in supportedRuntimes:
+        if lambdaRuntime not in SUPPORTED_LAMBDA_RUNTIMES:
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -1167,7 +1184,7 @@ def lambda_supported_runtimes_check(cache: dict, session, awsAccountId: str, aws
 
 @registry.register_check("lambda")
 def lambda_vpc_ha_subnets_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Lambda.7] Lambda functions in VPCs should use more than one Availability Zone"""
+    """[Lambda.7] Lambda functions in VPCs should use more than one Availability Zone to promote high availability"""
     ec2 = session.client("ec2")
     # Create empty list to hold unique Subnet IDs - for future lookup against AZs
     uSubnets = []
@@ -1179,8 +1196,8 @@ def lambda_vpc_ha_subnets_check(cache: dict, session, awsAccountId: str, awsRegi
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(function,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        functionName = str(function["FunctionName"])
-        lambdaArn = str(function["FunctionArn"])
+        functionName = function["FunctionName"]
+        lambdaArn = function["FunctionArn"]
         # check specific metadata
         try:
             # append unique Subnets to the "uSubnets" list
@@ -1211,7 +1228,7 @@ def lambda_vpc_ha_subnets_check(cache: dict, session, awsAccountId: str, awsRegi
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "MEDIUM"},
                     "Confidence": 99,
-                    "Title": "[Lambda.7] Lambda functions in VPCs should use more than one Availability Zone",
+                    "Title": "[Lambda.7] Lambda functions in VPCs should use more than one Availability Zone to promote high availability",
                     "Description": f"Lambda function {functionName} is only deployed to a Single Availability Zone. Deploying resources across multiple Availability Zones is an AWS best practice to ensure high availability within your architecture. Availability is a core pillar in the confidentiality, integrity, and availability triad security model. All Lambda functions should have a multi-Availability Zone deployment to ensure that a single zone of failure does not cause a total disruption of operations. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
@@ -1278,7 +1295,7 @@ def lambda_vpc_ha_subnets_check(cache: dict, session, awsAccountId: str, awsRegi
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
-                    "Title": "[Lambda.7] Lambda functions in VPCs should use more than one Availability Zone",
+                    "Title": "[Lambda.7] Lambda functions in VPCs should use more than one Availability Zone to promote high availability",
                     "Description": f"Lambda function {functionName} is deployed to at least two Availability Zones.",
                     "Remediation": {
                         "Recommendation": {
@@ -1345,7 +1362,7 @@ def lambda_vpc_ha_subnets_check(cache: dict, session, awsAccountId: str, awsRegi
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Lambda.7] Lambda functions in VPCs should use more than one Availability Zone",
+                "Title": "[Lambda.7] Lambda functions in VPCs should use more than one Availability Zone to promote high availability",
                 "Description": f"Lambda function {functionName} is not deployed to a VPC and is thus exempt from this check.",
                 "Remediation": {
                     "Recommendation": {
@@ -1398,3 +1415,168 @@ def lambda_vpc_ha_subnets_check(cache: dict, session, awsAccountId: str, awsRegi
                 "RecordState": "ARCHIVED"
             }
             yield finding
+
+@registry.register_check("lambda")
+def aws_lambda_scanned_by_inspector_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Lambda.8] Lambda functions should be scanned for vulnerabilities by Amazon Inspector V2"""
+    inspector = session.client("inspector2")
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for function in get_lambda_functions(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(function,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        functionName = function["FunctionName"]
+        lambdaArn = function["FunctionArn"]
+
+        coverage = inspector.list_coverage(
+            filterCriteria={
+                "lambdaFunctionName": [
+                    {
+                        "comparison": "EQUALS",
+                        "value": functionName
+                    }
+                ]
+            }
+        )["coveredResources"]
+
+        # Lambda's are one of the few resources that throw specific errors for Inspector
+        if not coverage:
+            resourceScanned = False
+            reason = "Inspector coverage is not activated in the Region"
+            severityLabel = "MEDIUM"
+        else:
+            if coverage[0]["scanStatus"]["statusCode"] == "ACTIVE":
+                resourceScanned = True
+                reason = ""
+                severityLabel = "INFORMATIONAL"
+            else:
+                if coverage[0]["scanStatus"]["statusCode"] == "UNSUPPORTED_RUNTIME":
+                    resourceScanned = False
+                    reason = "Inspector does not have support for the function's Runtime"
+                    severityLabel = "LOW"
+                else:
+                    resourceScanned = False
+                    reason = "Inspector is not configured to scan this function"
+                    severityLabel = "MEDIUM"
+
+        if resourceScanned is False:
+            # this is a failing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{lambdaArn}/lambda-vulnerability-scanning-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": lambdaArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": severityLabel},
+                "Confidence": 99,
+                "Title": "[Lambda.8] Lambda functions should be scanned for vulnerabilities by Amazon Inspector V2",
+                "Description": f"Lambda function {functionName} is not being scanned for vulnerabilities by Amazon Inspector V2 because {reason}. AWS Lambda provides runtimes that run your function code in an Amazon Linux-based execution environment. Lambda is responsible for keeping software in the runtime and execution environment up to date, releasing new runtimes for new languages and frameworks, and deprecating runtimes when the underlying software is no longer supported. If you use additional libraries with your function, you're responsible for updating the libraries. You can use Amazon Inspector to detect security vulnerabilities in your Lambda functions and layers. Amazon Inspector is an automated vulnerability scanning service that discovers and reports vulnerabilities based on its vulnerability intelligence database. The Amazon Inspector vulnerability intelligence database sources data from internal AWS security research teams, paid vendor feeds, and industry-standard security advisories. Amazon Inspector automatically creates an inventory of your active Lambda functions and layers then continuously monitors them for software package vulnerabilities. When Amazon Inspector discovers a vulnerability, it generates a finding that contains details about the security issue, and how to remediate the issue. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on the customer side of the shared responsbility model for vulnerability management and using Amazon Inspector V2 for your functions and layers refer to the Configuration and vulnerability analysis in AWS Lambda section of the Amazon Lambda Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/lambda/latest/dg/security-configuration.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "AWS Lambda",
+                    "AssetComponent": "Function"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsLambdaFunction",
+                        "Id": lambdaArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsLambdaFunction": {
+                                "FunctionName": functionName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.CM-8",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.6.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            # this is a passing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{lambdaArn}/lambda-vulnerability-scanning-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": lambdaArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": severityLabel},
+                "Confidence": 99,
+                "Title": "[Lambda.8] Lambda functions should be scanned for vulnerabilities by Amazon Inspector V2",
+                "Description": f"Lambda function {functionName} is being scanned for vulnerabilities by Amazon Inspector V2.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on the customer side of the shared responsbility model for vulnerability management and using Amazon Inspector V2 for your functions and layers refer to the Configuration and vulnerability analysis in AWS Lambda section of the Amazon Lambda Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/lambda/latest/dg/security-configuration.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "AWS Lambda",
+                    "AssetComponent": "Function"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsLambdaFunction",
+                        "Id": lambdaArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsLambdaFunction": {
+                                "FunctionName": functionName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.CM-8",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.6.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+# EOF

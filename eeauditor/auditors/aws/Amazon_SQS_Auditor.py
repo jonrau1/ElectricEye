@@ -412,12 +412,12 @@ def sqs_queue_public_accessibility_check(cache: dict, session, awsAccountId: str
                             "NIST CSF V1.1 PR.AC-4",
                             "NIST CSF V1.1 PR.DS-5",
                             "NIST CSF V1.1 PR.PT-3",
-                            "NIST SP 800-53 Rev. 4 AC-1"
-                            "NIST SP 800-53 Rev. 4 AC-3"
-                            "NIST SP 800-53 Rev. 4 AC-17"
-                            "NIST SP 800-53 Rev. 4 AC-22"
+                            "NIST SP 800-53 Rev. 4 AC-1",
+                            "NIST SP 800-53 Rev. 4 AC-3",
+                            "NIST SP 800-53 Rev. 4 AC-17",
+                            "NIST SP 800-53 Rev. 4 AC-22",
                             "ISO 27001:2013 A.13.1.2"
-                        ],
+                        ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
                     "RecordState": "ARCHIVED",
@@ -471,12 +471,12 @@ def sqs_queue_public_accessibility_check(cache: dict, session, awsAccountId: str
                             "NIST CSF V1.1 PR.AC-4",
                             "NIST CSF V1.1 PR.DS-5",
                             "NIST CSF V1.1 PR.PT-3",
-                            "NIST SP 800-53 Rev. 4 AC-1"
-                            "NIST SP 800-53 Rev. 4 AC-3"
-                            "NIST SP 800-53 Rev. 4 AC-17"
-                            "NIST SP 800-53 Rev. 4 AC-22"
+                            "NIST SP 800-53 Rev. 4 AC-1",
+                            "NIST SP 800-53 Rev. 4 AC-3",
+                            "NIST SP 800-53 Rev. 4 AC-17",
+                            "NIST SP 800-53 Rev. 4 AC-22",
                             "ISO 27001:2013 A.13.1.2"
-                        ],
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
                     "RecordState": "ACTIVE",

@@ -28,26 +28,55 @@ registry = CheckRegister()
 
 # loop through ECR repos
 def describe_repositories(cache, session):
-    ecr = session.client("ecr")
-
     response = cache.get("describe_repositories")
     if response:
         return response
-    cache["describe_repositories"] = ecr.describe_repositories(maxResults=1000)
+    
+    ecr = session.client("ecr")
+
+    cache["describe_repositories"] = ecr.describe_repositories(maxResults=1000)["repositories"]
     return cache["describe_repositories"]
 
 @registry.register_check("ecr")
 def ecr_repo_vuln_scan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[ECR.1] ECR repositories should be configured to scan images on push"""
-    for repo in describe_repositories(cache, session)["repositories"]:
+    """[ECR.1] ECR repositories should be scanned for vulnerabilities by either Amazon Inspector V2 or Amazon ECR built-in scanning"""
+    inspector = session.client("inspector2")
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for repo in describe_repositories(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(repo,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        repoArn = str(repo["repositoryArn"])
-        repoName = str(repo["repositoryName"])
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        repoArn = repo["repositoryArn"]
+        repoName = repo["repositoryName"]
+
+        # Determine if a Repository is scanned by checking both for Basic (ECR built-in) and Enhanced (Inspector V2) scanning
+        # built-in
         if repo["imageScanningConfiguration"]["scanOnPush"] == False:
+            basicScan = False
+        else:
+            basicScan = True
+        # inspector
+        coverage = inspector.list_coverage(
+            filterCriteria={
+                "ecrRepositoryName": [
+                    {
+                        "comparison": "EQUALS",
+                        "value": repoName
+                    }
+                ]
+            }
+        )["coveredResources"]
+        if not coverage:
+            enhancedScan = False
+        else:
+            if coverage[0]["scanStatus"]["statusCode"] == "ACTIVE":
+                enhancedScan = True
+            else:
+                enhancedScan = False
+
+        # If neither scanning is active, this is a failing check
+        if basicScan and enhancedScan == False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": repoArn + "/ecr-no-scan",
@@ -60,10 +89,8 @@ def ecr_repo_vuln_scan_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[ECR.1] ECR repositories should be configured to scan images on push",
-                "Description": "ECR repository "
-                + repoName
-                + " is not configured to scan images on push. Refer to the remediation instructions if this configuration is not intended",
+                "Title": "[ECR.1] ECR repositories should be scanned for vulnerabilities by either Amazon Inspector V2 or Amazon ECR built-in scanning",
+                "Description": f"ECR repository {repoName} is not configured to be scanned for vulnerabilities by either Amazon Inspector V2 or Amazon ECR built-in scanning. Amazon ECR image scanning helps in identifying software vulnerabilities in your container images. The following scanning types are offered. With Enhanced scanning Amazon ECR integrates with Amazon Inspector to provide automated, continuous scanning of your repositories and your container images are scanned for both operating systems and programing language package vulnerabilities. With Basic scanning Amazon ECR uses the Common Vulnerabilities and Exposures (CVEs) database from the open-source Clair project. With basic scanning, you configure your repositories to scan on push or you can perform manual scans and Amazon ECR provides a list of scan findings. Refer to the remediation instructions if this configuration is not intended",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your repository should be configured to scan on push refer to the Image Scanning section in the Amazon ECR User Guide",
@@ -96,8 +123,8 @@ def ecr_repo_vuln_scan_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "NIST CSF V1.1 DE.CM-8",
                         "NIST SP 800-53 Rev. 4 RA-5",
                         "AICPA TSC CC7.1",
-                        "ISO 27001:2013 A.12.6.1",
-                    ],
+                        "ISO 27001:2013 A.12.6.1"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
                 "RecordState": "ACTIVE",
@@ -116,10 +143,8 @@ def ecr_repo_vuln_scan_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[ECR.1] ECR repositories should be configured to scan images on push",
-                "Description": "ECR repository "
-                + repoName
-                + " is configured to scan images on push.",
+                "Title": "[ECR.1] ECR repositories should be scanned for vulnerabilities by either Amazon Inspector V2 or Amazon ECR built-in scanning",
+                "Description": f"ECR repository {repoName} is configured to be scanned for vulnerabilities by either Amazon Inspector V2 or Amazon ECR built-in scanning.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your repository should be configured to scan on push refer to the Image Scanning section in the Amazon ECR User Guide",
@@ -152,8 +177,8 @@ def ecr_repo_vuln_scan_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "NIST CSF V1.1 DE.CM-8",
                         "NIST SP 800-53 Rev. 4 RA-5",
                         "AICPA TSC CC7.1",
-                        "ISO 27001:2013 A.12.6.1",
-                    ],
+                        "ISO 27001:2013 A.12.6.1"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED",
@@ -164,12 +189,12 @@ def ecr_repo_vuln_scan_check(cache: dict, session, awsAccountId: str, awsRegion:
 def ecr_repo_image_lifecycle_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ECR.2] ECR repositories should be have an image lifecycle policy configured"""
     ecr = session.client("ecr")
-    for repo in describe_repositories(cache, session)["repositories"]:
+    for repo in describe_repositories(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(repo,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        repoArn = str(repo["repositoryArn"])
-        repoName = str(repo["repositoryName"])
+        repoArn = repo["repositoryArn"]
+        repoName = repo["repositoryName"]
         # ISO Time
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
@@ -188,9 +213,7 @@ def ecr_repo_image_lifecycle_policy_check(cache: dict, session, awsAccountId: st
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[ECR.2] ECR repositories should be have an image lifecycle policy configured",
-                "Description": "ECR repository "
-                + repoName
-                + " does not have an image lifecycle policy configured. Refer to the remediation instructions if this configuration is not intended",
+                "Description": f"ECR repository {repoName} does have an image lifecycle policy configured.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your repository should be configured to have an image lifecycle policy refer to the Amazon ECR Lifecycle Policies section in the Amazon ECR User Guide",
@@ -234,77 +257,76 @@ def ecr_repo_image_lifecycle_policy_check(cache: dict, session, awsAccountId: st
                 "RecordState": "ARCHIVED",
             }
             yield finding
-        except KeyError:
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": repoArn + "/ecr-lifecycle-policy-check",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": repoArn,
-                "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "MEDIUM"},
-                "Confidence": 99,
-                "Title": "[ECR.2] ECR repositories should be have an image lifecycle policy configured",
-                "Description": "ECR repository "
-                + repoName
-                + " does not have an image lifecycle policy configured. Refer to the remediation instructions if this configuration is not intended",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "If your repository should be configured to have an image lifecycle policy refer to the Amazon ECR Lifecycle Policies section in the Amazon ECR User Guide",
-                        "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html",
-                    }
-                },
-                "ProductFields": {
-                    "ProductName": "ElectricEye",
-                    "Provider": "AWS",
-                    "ProviderType": "CSP",
-                    "ProviderAccountId": awsAccountId,
-                    "AssetRegion": awsRegion,
-                    "AssetDetails": assetB64,
-                    "AssetClass": "Containers",
-                    "AssetService": "Amazon Elastic Container Registry",
-                    "AssetComponent": "Repository"
-                },
-                "Resources": [
-                    {
-                        "Type": "AwsEcrRepository",
-                        "Id": repoArn,
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                        "Details": {"Other": {"RepositoryName": repoName}},
-                    }
-                ],
-                "Compliance": {
-                    "Status": "FAILED",
-                    "RelatedRequirements": [
-                        "NIST CSF V1.1 ID.AM-2",
-                        "NIST SP 800-53 Rev. 4 CM-8",
-                        "NIST SP 800-53 Rev. 4 PM-5",
-                        "AICPA TSC CC3.2",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.1.1",
-                        "ISO 27001:2013 A.8.1.2",
-                        "ISO 27001:2013 A.12.5.1",
+        except botocore.exceptions.ClientError as error:
+            if error.response["Error"]["Code"] == "LifecyclePolicyNotFoundException":
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": repoArn + "/ecr-lifecycle-policy-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": repoArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "MEDIUM"},
+                    "Confidence": 99,
+                    "Title": "[ECR.2] ECR repositories should be have an image lifecycle policy configured",
+                    "Description": f"ECR repository {repoName} does not have an image lifecycle policy configured. Amazon ECR lifecycle policies provide more control over the lifecycle management of images in a private repository. A lifecycle policy contains one or more rules, where each rule defines an action for Amazon ECR. This provides a way to automate the cleaning up of your container images by expiring images based on age or count. You should expect that images become expired within 24 hours after they meet the expiration criteria per your lifecycle policy. When Amazon ECR performs an action based on a lifecycle policy, this is captured as an event in AWS CloudTrail. When considering the use of lifecycle policies, it's important to use the lifecycle policy preview to confirm which images the lifecycle policy expires before applying it to a repository. Using Lifecycle Policies can help to reduce security exposure by forcefully removing stale images and promoting good image hygeine by having processes to continually scan and rebuild container images. Refer to the remediation instructions if this configuration is not intended",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "If your repository should be configured to have an image lifecycle policy refer to the Amazon ECR Lifecycle Policies section in the Amazon ECR User Guide",
+                            "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html",
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Containers",
+                        "AssetService": "Amazon Elastic Container Registry",
+                        "AssetComponent": "Repository"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "AwsEcrRepository",
+                            "Id": repoArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {"Other": {"RepositoryName": repoName}},
+                        }
                     ],
-                },
-                "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
-            }
-            yield finding
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 ID.AM-2",
+                            "NIST SP 800-53 Rev. 4 CM-8",
+                            "NIST SP 800-53 Rev. 4 PM-5",
+                            "AICPA TSC CC3.2",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.8.1.1",
+                            "ISO 27001:2013 A.8.1.2",
+                            "ISO 27001:2013 A.12.5.1"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE",
+                }
+                yield finding
 
 @registry.register_check("ecr")
 def ecr_repo_permission_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ECR.3] ECR repositories should be have a repository policy configured"""
     ecr = session.client("ecr")
-    for repo in describe_repositories(cache, session)["repositories"]:
+    for repo in describe_repositories(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(repo,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        repoArn = str(repo["repositoryArn"])
-        repoName = str(repo["repositoryName"])
+        repoArn = repo["repositoryArn"]
+        repoName = repo["repositoryName"]
         # ISO Time
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
@@ -378,75 +400,76 @@ def ecr_repo_permission_policy_check(cache: dict, session, awsAccountId: str, aw
                 "RecordState": "ARCHIVED",
             }
             yield finding
-        except KeyError:
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": repoArn + "/ecr-repo-access-policy-check",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": repoArn,
-                "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "MEDIUM"},
-                "Confidence": 99,
-                "Title": "[ECR.3] ECR repositories should be have a repository policy configured",
-                "Description": "ECR repository "
-                + repoName
-                + " does not have a repository policy configured. Refer to the remediation instructions if this configuration is not intended",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "If your repository should be configured to have a repository policy refer to the Amazon ECR Repository Policies section in the Amazon ECR User Guide",
-                        "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-policies.html",
-                    }
-                },
-                "ProductFields": {
-                    "ProductName": "ElectricEye",
-                    "Provider": "AWS",
-                    "ProviderType": "CSP",
-                    "ProviderAccountId": awsAccountId,
-                    "AssetRegion": awsRegion,
-                    "AssetDetails": assetB64,
-                    "AssetClass": "Containers",
-                    "AssetService": "Amazon Elastic Container Registry",
-                    "AssetComponent": "Repository"
-                },
-                "Resources": [
-                    {
-                        "Type": "AwsEcrRepository",
-                        "Id": repoArn,
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                        "Details": {"Other": {"RepositoryName": repoName}},
-                    }
-                ],
-                "Compliance": {
-                    "Status": "FAILED",
-                    "RelatedRequirements": [
-                        "NIST CSF V1.1 PR.AC-6",
-                        "NIST SP 800-53 Rev. 4 AC-1",
-                        "NIST SP 800-53 Rev. 4 AC-2",
-                        "NIST SP 800-53 Rev. 4 AC-3",
-                        "NIST SP 800-53 Rev. 4 AC-16",
-                        "NIST SP 800-53 Rev. 4 AC-19",
-                        "NIST SP 800-53 Rev. 4 AC-24",
-                        "NIST SP 800-53 Rev. 4 IA-1",
-                        "NIST SP 800-53 Rev. 4 IA-2",
-                        "NIST SP 800-53 Rev. 4 IA-4",
-                        "NIST SP 800-53 Rev. 4 IA-5",
-                        "NIST SP 800-53 Rev. 4 IA-8",
-                        "NIST SP 800-53 Rev. 4 PE-2",
-                        "NIST SP 800-53 Rev. 4 PS-3",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.7.1.1",
-                        "ISO 27001:2013 A.9.2.1",
+        except botocore.exceptions.ClientError as error:
+            if error.response["Error"]["Code"] == "RepositoryPolicyNotFoundException":
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": repoArn + "/ecr-repo-access-policy-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": repoArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "MEDIUM"},
+                    "Confidence": 99,
+                    "Title": "[ECR.3] ECR repositories should be have a repository policy configured",
+                    "Description": "ECR repository "
+                    + repoName
+                    + " does not have a repository policy configured. Refer to the remediation instructions if this configuration is not intended",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "If your repository should be configured to have a repository policy refer to the Amazon ECR Repository Policies section in the Amazon ECR User Guide",
+                            "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-policies.html",
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Containers",
+                        "AssetService": "Amazon Elastic Container Registry",
+                        "AssetComponent": "Repository"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "AwsEcrRepository",
+                            "Id": repoArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {"Other": {"RepositoryName": repoName}},
+                        }
                     ],
-                },
-                "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
-            }
-            yield finding
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 PR.AC-6",
+                            "NIST SP 800-53 Rev. 4 AC-1",
+                            "NIST SP 800-53 Rev. 4 AC-2",
+                            "NIST SP 800-53 Rev. 4 AC-3",
+                            "NIST SP 800-53 Rev. 4 AC-16",
+                            "NIST SP 800-53 Rev. 4 AC-19",
+                            "NIST SP 800-53 Rev. 4 AC-24",
+                            "NIST SP 800-53 Rev. 4 IA-1",
+                            "NIST SP 800-53 Rev. 4 IA-2",
+                            "NIST SP 800-53 Rev. 4 IA-4",
+                            "NIST SP 800-53 Rev. 4 IA-5",
+                            "NIST SP 800-53 Rev. 4 IA-8",
+                            "NIST SP 800-53 Rev. 4 PE-2",
+                            "NIST SP 800-53 Rev. 4 PS-3",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.7.1.1",
+                            "ISO 27001:2013 A.9.2.1",
+                        ],
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE",
+                }
+                yield finding
 
 @registry.register_check("ecr")
 def ecr_latest_image_vuln_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -454,10 +477,9 @@ def ecr_latest_image_vuln_check(cache: dict, session, awsAccountId: str, awsRegi
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     ecr = session.client("ecr")
-    for repo in describe_repositories(cache, session)["repositories"]:
+    for repo in describe_repositories(cache, session):
         # B64 encode all of the details for the Asset
-        repoArn = str(repo["repositoryArn"])
-        repoName = str(repo["repositoryName"])
+        repoName = repo["repositoryName"]
         if repo["imageScanningConfiguration"]["scanOnPush"] == True:
             try:
                 for images in ecr.describe_images(repositoryName=repoName, filter={"tagStatus": "TAGGED"}, maxResults=1000,)["imageDetails"]:
@@ -666,7 +688,7 @@ def ecr_registry_policy_check(cache: dict, session, awsAccountId: str, awsRegion
                     "NIST SP 800-53 Rev. 4 CP-2",
                     "NIST SP 800-53 Rev. 4 CP-11",
                     "NIST SP 800-53 Rev. 4 SA-13",
-                    "NIST SP 800-53 Rev. 4 SA14",
+                    "NIST SP 800-53 Rev. 4 SA-14",
                     "AICPA TSC CC3.1",
                     "AICPA TSC A1.2",
                     "ISO 27001:2013 A.11.1.4",
@@ -735,7 +757,7 @@ def ecr_registry_policy_check(cache: dict, session, awsAccountId: str, awsRegion
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -816,7 +838,7 @@ def ecr_registry_backup_rules_check(cache: dict, session, awsAccountId: str, aws
                     "NIST SP 800-53 Rev. 4 CP-2",
                     "NIST SP 800-53 Rev. 4 CP-11",
                     "NIST SP 800-53 Rev. 4 SA-13",
-                    "NIST SP 800-53 Rev. 4 SA14",
+                    "NIST SP 800-53 Rev. 4 SA-14",
                     "AICPA TSC CC3.1",
                     "AICPA TSC A1.2",
                     "ISO 27001:2013 A.11.1.4",
@@ -885,7 +907,7 @@ def ecr_registry_backup_rules_check(cache: dict, session, awsAccountId: str, aws
                     "NIST SP 800-53 Rev. 4 CP-2",
                     "NIST SP 800-53 Rev. 4 CP-11",
                     "NIST SP 800-53 Rev. 4 SA-13",
-                    "NIST SP 800-53 Rev. 4 SA14",
+                    "NIST SP 800-53 Rev. 4 SA-14",
                     "AICPA TSC CC3.1",
                     "AICPA TSC A1.2",
                     "ISO 27001:2013 A.11.1.4",
@@ -898,3 +920,6 @@ def ecr_registry_backup_rules_check(cache: dict, session, awsAccountId: str, aws
             "RecordState": "ARCHIVED"
         }
         yield finding
+
+
+## EOF

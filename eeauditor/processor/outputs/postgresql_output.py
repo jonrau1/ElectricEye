@@ -55,7 +55,7 @@ class PostgresProvider(object):
         if data["global"]["credentials_location"] not in CREDENTIALS_LOCATION_CHOICES:
             print(f"Invalid option for [global.credentials_location]. Must be one of {str(CREDENTIALS_LOCATION_CHOICES)}.")
             sys.exit(2)
-        self.credentials_location = data["global"]["credentials_location"]
+        self.credentialsLocation = data["global"]["credentials_location"]
 
         # Variable for the entire [outputs.postgresql] section
         postgresqlDetails = data["outputs"]["postgresql"]
@@ -68,17 +68,17 @@ class PostgresProvider(object):
         port = postgresqlDetails["postgresql_port"]
 
         # Parse Password
-        if self.credentials_location == "CONFIG_FILE":
+        if self.credentialsLocation == "CONFIG_FILE":
             password = postgresqlDetails["postgresql_password_value"]
-        elif self.credentials_location == "AWS_SSM":
+        elif self.credentialsLocation == "AWS_SSM":
             password = self.get_credential_from_aws_ssm(
                 postgresqlDetails["postgresql_password_value"],
-                "gcp_service_account_json_payload_value"
+                "postgresql_password_value"
             )
-        elif self.credentials_location == "AWS_SECRETS_MANAGER":
+        elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
             password = self.get_credential_from_aws_secrets_manager(
                 postgresqlDetails["postgresql_password_value"],
-                "gcp_service_account_json_payload_value"
+                "postgresql_password_value"
             )
 
         # Ensure that values are provided for all variable - use all() and a list comprehension to check the vars

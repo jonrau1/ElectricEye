@@ -24,6 +24,15 @@ from dateutil.parser import parse
 from check_register import CheckRegister
 import base64
 import json
+from botocore.config import Config
+
+# Adding backoff and retries for SSM - this API gets throttled a lot
+config = Config(
+   retries = {
+      'max_attempts': 10,
+      'mode': 'adaptive'
+   }
+)
 
 registry = CheckRegister()
 
@@ -39,21 +48,38 @@ def describe_volumes(cache, session):
     )
     return cache["describe_volumes"]
 
-# loop through *running & stopped& EC2 instances
 def describe_instances(cache, session):
-    ec2 = session.client("ec2")
-    instanceList = []
-    response = cache.get("instances")
+    response = cache.get("describe_instances")
     if response:
         return response
-    paginator = ec2.get_paginator("describe_instances")
-    if paginator:
-        for page in paginator.paginate(Filters=[{"Name": "instance-state-name","Values": ["running","stopped"]}]):
-            for r in page["Reservations"]:
-                for i in r["Instances"]:
-                    instanceList.append(i)
-        cache["instances"] = instanceList
-        return cache["instances"]
+    
+    instanceList = []
+    
+    ec2 = session.client("ec2")
+    ssm = session.client("ssm", config=config)
+    # Enrich EC2 with SSM details - this is done for the EC2 Auditor - all others using EC2 don't matter too much
+    managedInstances = ssm.describe_instance_information()["InstanceInformationList"]
+
+    for page in ec2.get_paginator("describe_instances").paginate(
+            Filters=[
+                {
+                    "Name": "instance-state-name",
+                    "Values": [ 
+                        "running",
+                        "stopped" 
+                    ]
+                }
+            ]
+        ):
+        for r in page["Reservations"]:
+            for i in r["Instances"]:
+                # Use a list comprehension to attempt to get SSM info for the instance
+                managedInstanceInfo = [mnginst for mnginst in managedInstances if mnginst["InstanceId"] == i["InstanceId"]]
+                i["ManagedInstanceInformation"] = managedInstanceInfo
+                instanceList.append(i)
+
+        cache["describe_instances"] = instanceList
+        return cache["describe_instances"]
 
 # loop through DynamoDB tables
 def list_tables(cache, session):
@@ -96,10 +122,7 @@ def describe_db_instances(cache, session):
                         "sqlserver-ee",
                         "sqlserver-se",
                         "sqlserver-ex",
-                        "sqlserver-web",
-                        "custom-sqlserver-ee",
-                        "custom-sqlserver-se",
-                        "custom-sqlserver-web"
+                        "sqlserver-web"
                     ]
                 }
             ]
@@ -202,7 +225,7 @@ def volume_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -266,7 +289,7 @@ def volume_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                             "NIST SP 800-53 Rev. 4 CP-2",
                             "NIST SP 800-53 Rev. 4 CP-11",
                             "NIST SP 800-53 Rev. 4 SA-13",
-                            "NIST SP 800-53 Rev. 4 SA14",
+                            "NIST SP 800-53 Rev. 4 SA-14",
                             "AICPA TSC CC3.1",
                             "AICPA TSC A1.2",
                             "ISO 27001:2013 A.11.1.4",
@@ -360,7 +383,7 @@ def ec2_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -433,7 +456,7 @@ def ec2_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                             "NIST SP 800-53 Rev. 4 CP-2",
                             "NIST SP 800-53 Rev. 4 CP-11",
                             "NIST SP 800-53 Rev. 4 SA-13",
-                            "NIST SP 800-53 Rev. 4 SA14",
+                            "NIST SP 800-53 Rev. 4 SA-14",
                             "AICPA TSC CC3.1",
                             "AICPA TSC A1.2",
                             "ISO 27001:2013 A.11.1.4",
@@ -516,7 +539,7 @@ def ddb_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -585,7 +608,7 @@ def ddb_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                             "NIST SP 800-53 Rev. 4 CP-2",
                             "NIST SP 800-53 Rev. 4 CP-11",
                             "NIST SP 800-53 Rev. 4 SA-13",
-                            "NIST SP 800-53 Rev. 4 SA14",
+                            "NIST SP 800-53 Rev. 4 SA-14",
                             "AICPA TSC CC3.1",
                             "AICPA TSC A1.2",
                             "ISO 27001:2013 A.11.1.4",
@@ -674,7 +697,7 @@ def rds_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -747,7 +770,7 @@ def rds_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                             "NIST SP 800-53 Rev. 4 CP-2",
                             "NIST SP 800-53 Rev. 4 CP-11",
                             "NIST SP 800-53 Rev. 4 SA-13",
-                            "NIST SP 800-53 Rev. 4 SA14",
+                            "NIST SP 800-53 Rev. 4 SA-14",
                             "AICPA TSC CC3.1",
                             "AICPA TSC A1.2",
                             "ISO 27001:2013 A.11.1.4",
@@ -823,7 +846,7 @@ def efs_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -887,7 +910,7 @@ def efs_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                             "NIST SP 800-53 Rev. 4 CP-2",
                             "NIST SP 800-53 Rev. 4 CP-11",
                             "NIST SP 800-53 Rev. 4 SA-13",
-                            "NIST SP 800-53 Rev. 4 SA14",
+                            "NIST SP 800-53 Rev. 4 SA-14",
                             "AICPA TSC CC3.1",
                             "AICPA TSC A1.2",
                             "ISO 27001:2013 A.11.1.4",
@@ -980,7 +1003,7 @@ def neptune_cluster_backup_check(cache: dict, session, awsAccountId: str, awsReg
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -1060,7 +1083,7 @@ def neptune_cluster_backup_check(cache: dict, session, awsAccountId: str, awsReg
                             "NIST SP 800-53 Rev. 4 CP-2",
                             "NIST SP 800-53 Rev. 4 CP-11",
                             "NIST SP 800-53 Rev. 4 SA-13",
-                            "NIST SP 800-53 Rev. 4 SA14",
+                            "NIST SP 800-53 Rev. 4 SA-14",
                             "AICPA TSC CC3.1",
                             "AICPA TSC A1.2",
                             "ISO 27001:2013 A.11.1.4",
@@ -1149,7 +1172,7 @@ def docdb_cluster_backup_check(cache: dict, session, awsAccountId: str, awsRegio
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -1226,7 +1249,7 @@ def docdb_cluster_backup_check(cache: dict, session, awsAccountId: str, awsRegio
                             "NIST SP 800-53 Rev. 4 CP-2",
                             "NIST SP 800-53 Rev. 4 CP-11",
                             "NIST SP 800-53 Rev. 4 SA-13",
-                            "NIST SP 800-53 Rev. 4 SA14",
+                            "NIST SP 800-53 Rev. 4 SA-14",
                             "AICPA TSC CC3.1",
                             "AICPA TSC A1.2",
                             "ISO 27001:2013 A.11.1.4",

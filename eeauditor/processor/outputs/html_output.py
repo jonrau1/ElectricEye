@@ -19,11 +19,12 @@
 #under the License.
 
 import os
-import json
 from datetime import datetime
 import yaml
-from botocore.exceptions import ClientError
 from processor.outputs.output_base import ElectricEyeOutput
+from os import path
+
+here = path.abspath(path.dirname(__file__))
 
 # Get the absolute path of the current directory
 currentDir = os.path.abspath(os.path.dirname(__file__))
@@ -122,7 +123,7 @@ class HtmlProvider(object):
                 </body>
             </html>
             """
-        with open(f"{output_file}_executive_report.html", "w") as f:
+        with open(f"{here}/{output_file}_executive_report.html", "w") as f:
             f.write(html)
 
         print("HTML executive report created!")
@@ -266,11 +267,9 @@ class HtmlProvider(object):
         }
 
         td img {
-            width: 36px;
-            height: 36px;
+            width: 64px;
+            height: 64px;
             margin-right: .5rem;
-            border-radius: 50%;
-
             vertical-align: middle;
         }
 
@@ -306,25 +305,25 @@ class HtmlProvider(object):
         }
 
         .severity.critical {
-            background-color: #7b1212;
+            background-color: rgb(214, 63, 56);
             color: #ffc400;
         }
 
         .severity.high {
-            background-color: #df5138e8;
+            background-color: rgb(254, 110, 115);
             color: #fff;
         }
 
         .severity.medium {
-            background-color: #ef7e06e8;
+            background-color: rgb(248, 146, 86);
         }
 
         .severity.low {
-            background-color: #c5c214;
+            background-color: rgb(223, 181, 44);
         }
 
         .severity.informational {
-            background-color: #70a010;
+            background-color: #d5dbdb;
         }
 
         .compliance {
@@ -334,12 +333,12 @@ class HtmlProvider(object):
         }
 
         .compliance.passed {
-            background-color: green;
+            background-color: #6aaf35;
             color: white;
         }
 
         .compliance.failed {
-            background-color: red;
+            background-color: #fe6e73;
             color: white;
         }
 
@@ -423,9 +422,9 @@ class HtmlProvider(object):
         # Compliance Passed v Failed
         totalPassed = [finding for finding in processedData if finding["ComplianceStatus"] == "PASSED"]
         totalFailed = [finding for finding in processedData if finding["ComplianceStatus"] == "FAILED"]
-        totalFailedCount = len(totalFailed)
-        failingPercentage = (totalFailedCount / totalFindings) * 100
-        roundedPercentage = f"{round(failingPercentage, 2)}%"
+
+        passingPercentage = (len(totalPassed) / totalFindings) * 100
+        roundedPercentage = f"{round(passingPercentage, 2)}%"
         # Severity Status
         criticalsFindings = [finding for finding in processedData if finding["Severity"] == "CRITICAL"]
         highFindings = [finding for finding in processedData if finding["Severity"] == "HIGH"]
@@ -433,10 +432,11 @@ class HtmlProvider(object):
         lowFindings = [finding for finding in processedData if finding["Severity"] == "LOW"]
         infoFindings = [finding for finding in processedData if finding["Severity"] == "INFORMATIONAL"]
         # Resource IDs
-        allResources = [d.get("ResourceId") for d in processedData]
+        #allResources = [d.get("ResourceId") for d in processedData]
         uniqueResource = list(set(d.get("ResourceId") for d in processedData))
         # Assets
         #allServices = [d.get("AssetService") for d in processedData]
+        uniqueClasses = list(set(d.get("AssetClass") for d in processedData))
         uniqueServices = list(set(d.get("AssetService") for d in processedData))
         #allComponents = [d.get("AssetComponent") for d in processedData]
         uniqueComponents = list(set(d.get("AssetComponent") for d in processedData))
@@ -446,10 +446,10 @@ class HtmlProvider(object):
         uniqueRegions = list(set(d.get("AssetRegion") for d in processedData))
 
         executiveReport = f'ElectricEye Auditors scanned {len(uniqueResource)} total Assets across {len(uniqueAccounts)} Provider Account(s) in {len(uniqueRegions)} Region(s)/Zone(s) \
-            and generated {totalFindings} Findings. Of all findings, {len(totalFailed)} failed and {len(totalPassed)} passed for a composite ElectricEye audit readiness score of {roundedPercentage}. \
+            and generated {totalFindings} Findings. Of all findings, {len(totalFailed)} failed and {len(totalPassed)} passed for an ElectricEye Findings Passing Score of {roundedPercentage}. \
             Of these findings the severities are {len(criticalsFindings)} Critical, {len(highFindings)} High, {len(mediumFindings)} Medium, {len(lowFindings)} Low, and {len(infoFindings)} Informational. \
-            There are {len(allResources)} resources across the Provider Accounts & Regions, comprising {len(uniqueServices)} distinct Asset Services (e.g., GCP CloudSQL, AWS Lambda) and {len(uniqueComponents)} distinct \
-            Asset Components (e.g., Instance, Function, User, Key). It is recommended to work backwards from resources with the highest amount of failed findings and Assets with important business- or mission-criticality.'
+            There are {len(uniqueClasses)} Asset Classes (categories) across the Provider Accounts & Regions, comprising {len(uniqueServices)} distinct Asset Services and {len(uniqueComponents)} distinct \
+            Asset Components. It is recommended to work backwards from resources with the highest amount of failed findings and Assets with important business- or mission-criticality.'
         
         return executiveReport
 

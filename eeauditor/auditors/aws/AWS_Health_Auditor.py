@@ -93,7 +93,7 @@ def open_health_abuse_events_check(cache: dict, session, awsAccountId: str, awsR
                             "NIST SP 800-53 Rev. 4 CA-7",
                             "NIST SP 800-53 Rev. 4 IR-4",
                             "NIST SP 800-53 Rev. 4 SI-4",
-                            "AICPA TSC 7.2",
+                            "AICPA TSC CC7.2",
                             "ISO 27001:2013 A.12.4.1",
                             "ISO 27001:2013 A.16.1.1",
                             "ISO 27001:2013 A.16.1.4"
@@ -179,7 +179,7 @@ def open_health_risk_events_check(cache: dict, session, awsAccountId: str, awsRe
                             "NIST SP 800-53 Rev. 4 CA-7",
                             "NIST SP 800-53 Rev. 4 IR-4",
                             "NIST SP 800-53 Rev. 4 SI-4",
-                            "AICPA TSC 7.2",
+                            "AICPA TSC CC7.2",
                             "ISO 27001:2013 A.12.4.1",
                             "ISO 27001:2013 A.16.1.1",
                             "ISO 27001:2013 A.16.1.4"
@@ -265,7 +265,7 @@ def open_health_security_events_check(cache: dict, session, awsAccountId: str, a
                             "NIST SP 800-53 Rev. 4 CA-7",
                             "NIST SP 800-53 Rev. 4 IR-4",
                             "NIST SP 800-53 Rev. 4 SI-4",
-                            "AICPA TSC 7.2",
+                            "AICPA TSC CC7.2",
                             "ISO 27001:2013 A.12.4.1",
                             "ISO 27001:2013 A.16.1.1",
                             "ISO 27001:2013 A.16.1.4"

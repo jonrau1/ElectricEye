@@ -29,7 +29,11 @@ registry = CheckRegister()
 @registry.register_check("globalaccelerator")
 def unhealthy_endpoint_group_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[GlobalAccelerator.1] Endpoint should not be unhealthy"""
-    globalaccelerator = session.client("globalaccelerator", region_name="us-west-2")
+    if awsPartition == "aws":
+        globalaccelerator = session.client("globalaccelerator", region_name="us-west-2")
+    else:
+        globalaccelerator = session.client("globalaccelerator")
+
     paginator = globalaccelerator.get_paginator("list_accelerators")
     response_iterator = paginator.paginate()
     accelerators = accumulate_paged_results(
@@ -186,7 +190,10 @@ def unhealthy_endpoint_group_check(cache: dict, session, awsAccountId: str, awsR
 @registry.register_check("globalaccelerator")
 def flow_logs_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[GlobalAccelerator.2] Accelerator should have flow logs enabled"""
-    globalaccelerator = session.client("globalaccelerator", region_name="us-west-2")
+    if awsPartition == "aws":
+        globalaccelerator = session.client("globalaccelerator", region_name="us-west-2")
+    else:
+        globalaccelerator = session.client("globalaccelerator")
 
     paginator = globalaccelerator.get_paginator("list_accelerators")
     response_iterator = paginator.paginate()

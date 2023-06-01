@@ -20,9 +20,10 @@
 
 import csv
 from functools import reduce
-
 from processor.outputs.output_base import ElectricEyeOutput
+from os import path
 
+here = path.abspath(path.dirname(__file__))
 
 @ElectricEyeOutput
 class CsvProvider(object):
@@ -42,10 +43,12 @@ class CsvProvider(object):
             {"name": "Remediation Recommendation", "path": "Remediation.Recommendation.Text",},
             {"name": "Remediation Recommendation Link", "path": "Remediation.Recommendation.Url",},
         ]
-        csv_file = output_file + ".csv"
+
+        csvOutputName = f"{here}/{output_file}.csv"
+
         try:
-            with open(csv_file, "w") as csvfile:
-                print(f"Writing {len(findings)} findings to {csv_file}")
+            with open(csvOutputName, "w") as csvfile:
+                print(f"Writing {len(findings)} findings to {csvOutputName}")
                 writer = csv.writer(csvfile, dialect="excel")
                 writer.writerow(item["name"] for item in csv_columns)
                 for finding in findings:

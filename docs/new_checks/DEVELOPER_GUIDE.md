@@ -46,16 +46,6 @@ As to the rest of ElectricEye's control flow, besides the arguments from the Con
 
 The `click` and `.toml` arguments and values are passed off the "brain" of ElectricEye which is contained in [`eeauditor.py`](./eeauditor/eeauditor.py) - this Python file will load all Auditors using [`pluginbase`](http://pluginbase.pocoo.org/) and [Decorators](https://znasibov.info/posts/2017/01/22/the_ultimate_guide_to_python_decorators.html), will run the Auditors (or specific Checks) and `yield` back the results to be sent to Security Hub or other locations instrumented by the **Outputs Processor** (defined, partially, in [`processor/main.py`](./eeauditor/processor/main.py)). Outputs are all chosen via the command-line with support for multiple Outputs, filenames are specified in the CLI but all other per-Output settings are located in the TOML file.
 
-As of April 2023 ElectricEye supports the following CAM, CSPM, EASM, and SSPM capabilities. More SaaS Providers and CSPs - as well as expanded service & capability coverage - is under active development.
-
-- **CAM**: AWS, GCP, ServiceNow
-
-- **CSPM**: AWS, GCP
-
-- **SSPM**: ServiceNow
-
-- **EASM**: AWS, GCP
-
 ## Naming an Auditor
 
 To keep naming consistent, the following pattern of `{Provider}_{ServiceName}_Auditor.py` is used such as [`Amazon_APIGW_Auditor.py`](./eeauditor/auditors/aws/Amazon_APIGW_Auditor.py) or [`GCP_CloudSQL_Auditor.py`](./eeauditor/auditors/gcp/GCP_CloudSQL_Auditor.py). Take notice that some Amazon Web Services (AWS) Cloud services take on the AWS moniker such as [`AWS_MemoryDB_Auditor.py`](./eeauditor/auditors/aws/AWS_MemoryDB_Auditor.py) and should reflect that naming convention, refer the official AWS documentation to verify those cases.

@@ -19,17 +19,18 @@
 #under the License.
 
 from functools import partial
-import inspect
-import os
+from inspect import getfile
+from os import path
 from time import sleep
-from check_register import CheckRegister, accumulate_paged_results
-from pluginbase import PluginBase
-import traceback
-from cloud_utils import CloudConfig
+from traceback import format_exc
 import json
+from requests import get
+from check_register import CheckRegister
+from cloud_utils import CloudConfig
+from pluginbase import PluginBase
 
-here = os.path.abspath(os.path.dirname(__file__))
-getPath = partial(os.path.join, here)
+here = path.abspath(path.dirname(__file__))
+getPath = partial(path.join, here)
 
 class EEAuditor(object):
     """
@@ -43,31 +44,75 @@ class EEAuditor(object):
         self.registry = CheckRegister()
         self.name = assessmentTarget
         self.plugin_base = PluginBase(package="electriceye")
-        
+        ##################################
+        # PUBLIC CLOUD SERVICE PROVIDERS #
+        ##################################
+        # AWS
         if assessmentTarget == "AWS":
             searchPath = "./auditors/aws"
             utils = CloudConfig(assessmentTarget)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
-            self.aws_account_targets = utils.aws_account_targets
-            self.aws_regions_selection = utils.aws_regions_selection
-            self.aws_electric_eye_iam_role_name = utils.aws_electric_eye_iam_role_name
-        elif assessmentTarget == "Azure":
-            searchPath = "./auditors/azure"
-            utils = CloudConfig(assessmentTarget)
+            self.awsAccountTargets = utils.awsAccountTargets
+            self.awsRegionsSelection = utils.awsRegionsSelection
+            self.aws_electric_eye_iam_role_name = utils.electricEyeRoleName
+        # GCP
         elif assessmentTarget == "GCP":
             searchPath = "./auditors/gcp"
             utils = CloudConfig(assessmentTarget)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
-            self.gcp_project_ids = utils.gcp_project_ids
-        elif assessmentTarget == "OracleCloud":
+            self.gcpProjectIds = utils.gcp_project_ids
+        # OCI
+        elif assessmentTarget == "OCI":
             searchPath = "./auditors/oci"
             utils = CloudConfig(assessmentTarget)
-        elif assessmentTarget == "GitHub":
-            searchPath = "./auditors/github"
+            # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
+            self.ociTenancyId = utils.ociTenancyId
+            self.ociUserId = utils.ociUserId
+            self.ociRegionName = utils.ociRegionName
+            self.ociCompartments = utils.ociCompartments
+            self.ociUserApiKeyFingerprint = utils.ociUserApiKeyFingerprint
+        # Azure
+        elif assessmentTarget == "Azure":
+            searchPath = "./auditors/azure"
             utils = CloudConfig(assessmentTarget)
+        # Alibaba
+        elif assessmentTarget == "Alibaba":
+            searchPath = "./auditors/alibabacloud"
+            utils = CloudConfig(assessmentTarget)
+        # VMWare Cloud on AWS
+        elif assessmentTarget == "VMC":
+            searchPath = "./auditors/vmwarecloud"
+            utils = CloudConfig(assessmentTarget)
+        
+        ###################################
+        # SOFTWARE-AS-A-SERVICE PROVIDERS #
+        ###################################
+        # Servicenow
         elif assessmentTarget == "Servicenow":
             searchPath = "./auditors/servicenow"
             utils = CloudConfig(assessmentTarget)
+        # M365
+        elif assessmentTarget == "M365":
+            searchPath = "./auditors/m365"
+            utils = CloudConfig(assessmentTarget)
+            # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
+            self.m365TenantLocation = utils.m365TenantLocation
+            self.m365ClientId = utils.m365ClientId
+            self.m365SecretId = utils.m365SecretId
+            self.m365TenantId = utils.m365TenantId
+        # GitHub
+        elif assessmentTarget == "GitHub":
+            searchPath = "./auditors/github"
+            utils = CloudConfig(assessmentTarget)
+        # Google Workspaces
+        elif assessmentTarget == "GoogleWorkspaces":
+            searchPath = "./auditors/google_workspaces"
+            utils = CloudConfig(assessmentTarget)
+        # Workday ERP
+        elif assessmentTarget == "Workday":
+            searchPath = "./auditors/workday_erp"
+            utils = CloudConfig(assessmentTarget)
+
         # Search path for Auditors
         self.source = self.plugin_base.make_plugin_source(
             searchpath=[getPath(searchPath)], identifier=self.name
@@ -89,71 +134,123 @@ class EEAuditor(object):
                     self.source.load_plugin(auditorName)
                 except Exception as e:
                     print(f"Failed to load plugin {auditorName} with exception {e}")
+
+    # Called within this class    
+    def check_service_endpoint_availability(self, endpointData, awsPartition, service, awsRegion):
+        """
+        This function downloads the latest version of botocore's endpoints.json file from GitHub and checks if a provided
+        service within a specific AWS Partition and Region is available
+        """
+
+        # these are "endpoints" and not real regions, since ElectricEye provides local overrides to the "global"
+        # AWS region within each Auditor already as long as these are present for a specific service then we're good
+        globalEndpointPseudoRegions = [
+            "aws-global", "fips-aws-global", "aws-cn-global", "aws-us-gov-global", "aws-us-gov-global-fips", "iam-govcloud", "iam-govcloud-fips", "aws-iso-global", "aws-iso-b-global", "aws-iso-e-global"
+        ]
+
+        # overrides - some services fall under a service's "endpoint" and not so much a dedicated namespace from what I can tell??
+        # we're overriding these just to trick ElectricEye into *not* aborting for certain services and also not re-naming plugins which use the same cache
+        if service == "globalaccelerator":
+            service = "iam"
+        elif service == "imagebuilder":
+            service = "ec2"
+        elif service == "elasticloadbalancingv2":
+            service = "elasticloadbalancing"
+
+        for partition in endpointData['partitions']:
+            if awsPartition == partition['partition']:
+                services = partition['services']
+                for serviceName, serviceData in services.items():
+                    try:
+                        # ecr, sagemaker, and a few other services have "api." on their names
+                        # which is not consistent with the service at all
+                        serviceName = serviceName.split("api.")[1]
+                    except IndexError:
+                        serviceName = serviceName
+                    
+                    # Compare the provided service name (from ElectricEye Plugin name) to service derived from the endpoint data
+                    if service == serviceName:
+                        regions = list(serviceData['endpoints'].keys())
+                        # Backcheck on the "global" services e.g., Support, Trustedadvisor, CloudFront, IAM
+                        if any(item in globalEndpointPseudoRegions for item in regions):
+                            serviceAvailable = True
+                            break
+                        # Each service endpoint has a dict of Regions where the endpoint is available, at this point we have a valid service availability for the region + partition
+                        if awsRegion in regions:
+                            serviceAvailable = True
+                            break
+                        else:
+                            serviceAvailable = False
+                        # break if there is nothing else
+                        break
+                    else:
+                        serviceAvailable = False
+
+        return serviceAvailable
     
-    # Called from within self.run_aws_checks()
-    def get_regions(self, service):
-        """
-        This is only used for AWS and only for Commerical Partition -- checks against SSM-managed Parameter to see what services are available in a Region
-        It is not exactly foolproof as AMB and CloudSearch and a few others are still jacked up...
-        """
-        # Pull session
-        import boto3
-        ssm = boto3.client("ssm")
-
-        # create an empty list for Commercial Region lookups
-        values = []
-
-        # Handle the weird v2 services names - global service overrides for lookup
-        if service == 'kinesisanalyticsv2':
-            service = 'kinesisanalytics'
-        elif service == 'macie2':
-            service = 'macie'
-        elif service == 'elbv2':
-            service = 'elb'
-        elif service == 'wafv2':
-            service = 'waf'
-        else:
-            service = service
-
-        paginator = ssm.get_paginator("get_parameters_by_path")
-        response_iterator = paginator.paginate(
-            Path=f"/aws/service/global-infrastructure/services/{service}/regions",
-            PaginationConfig={"MaxItems": 1000, "PageSize": 10},
-        )
-        results = accumulate_paged_results(
-            page_iterator=response_iterator, key="Parameters")
-        
-        for parameter in results["Parameters"]:
-            values.append(parameter["Value"])
-
-        return values
-
     # Called from eeauditor/controller.py run_auditor()
     def run_aws_checks(self, pluginName=None, delay=0):
         """
         Runs AWS Auditors across all TOML-specified Accounts and Regions in a specific Partition
         """
 
-        for serviceName, checkList in self.registry.checks.items():            
-            for account in self.aws_account_targets:
-                for region in self.aws_regions_selection:
-                    # Setup Session & Partition
+        # "Global" Auditors that should only need to be ran once per Account
+        globalAuditors = ["cloudfront", "globalaccelerator", "iam", "health", "support", "account", "s3"]
+        
+        # Retrieve the endpoints.json data to prevent multiple outbound calls
+        endpointData = json.loads(
+            get(
+                "https://raw.githubusercontent.com/boto/botocore/develop/botocore/data/endpoints.json"
+            ).text
+        )
+
+        for account in self.awsAccountTargets:
+
+            # This list will contain the "global" services so they're not run multiple times
+            globalAuditorsCompleted = []
+
+            for region in self.awsRegionsSelection:
+                for serviceName, checkList in self.registry.checks.items():
+                    # Pass the Cache at the "serviceName" level aka Plugin
+                    auditorCache = {}
+                    # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
+                    partition = CloudConfig.check_aws_partition(region)
+                    # Setup Boto3 Session with STS AssumeRole
                     session = CloudConfig.create_aws_session(
                         account,
+                        partition,
                         region,
                         self.aws_electric_eye_iam_role_name
                     )
-                    partition = CloudConfig.check_aws_partition(region)
-                    # Check AWS Commercial partition service eligibility, not always accurate
-                    if partition == "aws":
-                        if region not in self.get_regions(serviceName):
-                            next
-                        # Manual service checks where the endpoint doesn't exist despite SSM saying it does in Global Infra...
-                        if region == ("us-east-2" or "eu-west-3") and serviceName == ("cloudsearch" or "appstream" or "workspaces"):
-                            next
+                    # Check service availability, not always accurate
+                    if self.check_service_endpoint_availability(endpointData, partition, serviceName, region) is False:
+                        print(f"{serviceName} is not available in {region}")
+                        continue
+
+                    # For Support & Shield (Advanced) Auditors, check if the Account in question has the proper Support level and/or an active Shield Advanced Subscription
+                    if serviceName == "support":
+                        if CloudConfig.get_aws_support_eligiblity is False:
+                            print(f"{account} cannot access Trusted Advisor Checks due to not having Business, Enterprise or Enterprise On-Ramp Support.")
+                            globalAuditorsCompleted.append(serviceName)
+                            continue
+
+                    if serviceName == "shield":
+                        if CloudConfig.get_aws_shield_advanced_eligiblity is False:
+                            print(f"{account} cannot access Shield Advanced Checks due to not having an active Subscription.")
+                            globalAuditorsCompleted.append(serviceName)
+                            continue
+                    
+                    # add the global services to the "globalAuditorsCompleted" so they can be skipped after they run once
+                    # in the `session` for each of these, the Auditor will override with the "parent region" as some endpoints
+                    # are not smart enough to do that - for instance, CloudFront and Health won't respond outside of us-east-1 but IAM will
+                    if serviceName in globalAuditors:
+                        if serviceName not in globalAuditorsCompleted:
+                            globalAuditorsCompleted.append(serviceName)
+                        else:
+                            print(f"{serviceName.capitalize()} Auditor was either already run or ineligble to run for AWS Account {account}. Global Auditors only need to run once per Account.")
+                            continue
+
                     for checkName, check in checkList.items():
-                        # clearing cache for each control whithin a auditor
-                        auditor_cache = {}
                         # if a specific check is requested, only run that one check
                         if (
                             not pluginName
@@ -163,7 +260,7 @@ class EEAuditor(object):
                             try:
                                 print(f"Executing Check {checkName} for Account {account} in {region}")
                                 for finding in check(
-                                    cache=auditor_cache,
+                                    cache=auditorCache,
                                     session=session,
                                     awsAccountId=account,
                                     awsRegion=region,
@@ -172,9 +269,9 @@ class EEAuditor(object):
                                     yield finding
                             except Exception:
                                 print(f"Failed to execute check {checkName}")
-                                print(traceback.format_exc())
+                                print(format_exc())
                         
-            # optional sleep if specified - hardcode to 0 seconds
+            # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
 
     # Called from eeauditor/controller.py run_auditor()
@@ -197,20 +294,23 @@ class EEAuditor(object):
         # China partition override
         elif region in ["cn-north-1", "cn-northwest-1"]:
             partition = "aws-cn"
-        # AWS Secret Region override
+        # AWS Secret Region override - sc2s.sgov.gov
         elif region in ["us-isob-east-1", "us-isob-west-1"]:
             partition = "aws-isob"
-        # AWS Top Secret Region override
+        # AWS Top Secret Region override - c2s.ic.gov
         elif region in ["us-iso-east-1", "us-iso-west-1"]:
             partition = "aws-iso"
+        # UK GCHQ Classified Region override - cloud.adc-e.uk
+        elif region in ["eu-isoe-west-1", "eu-isoe-west-2"]:
+            partition = "aws-isoe"
         else:
             partition = "aws"
 
-        for project in self.gcp_project_ids:
+        for project in self.gcpProjectIds:
             for serviceName, checkList in self.registry.checks.items():
+                # Pass the Cache at the "serviceName" level aka Plugin
+                auditorCache = {}
                 for checkName, check in checkList.items():
-                    # clearing cache for each control whithin a auditor
-                    auditor_cache = {}
                     # if a specific check is requested, only run that one check
                     if (
                         not pluginName
@@ -220,7 +320,7 @@ class EEAuditor(object):
                         try:
                             print(f"Executing Check {checkName} for GCP Project {project}")
                             for finding in check(
-                                cache=auditor_cache,
+                                cache=auditorCache,
                                 awsAccountId=account,
                                 awsRegion=region,
                                 awsPartition=partition,
@@ -228,11 +328,133 @@ class EEAuditor(object):
                             ):
                                 yield finding
                         except Exception:
-                            print(traceback.format_exc())
+                            print(format_exc())
                             print(f"Failed to execute check {checkName}")
-                # optional sleep if specified - hardcode to 0 seconds
+                # optional sleep if specified - defaults to 0 seconds
                 sleep(delay)
 
+    # Called from eeauditor/controller.py run_auditor()
+    def run_oci_checks(self, pluginName=None, delay=0):
+        """
+        Run OCI Auditors for all Compartments specified in the TOML for a Tenancy
+        """
+
+        import boto3
+
+        sts = boto3.client("sts")
+
+        region = boto3.Session().region_name
+        account = sts.get_caller_identity()["Account"]
+
+        # GovCloud partition override
+        if region in ["us-gov-east-1", "us-gov-west-1"]:
+            partition = "aws-us-gov"
+        # China partition override
+        elif region in ["cn-north-1", "cn-northwest-1"]:
+            partition = "aws-cn"
+        # AWS Secret Region override - sc2s.sgov.gov
+        elif region in ["us-isob-east-1", "us-isob-west-1"]:
+            partition = "aws-isob"
+        # AWS Top Secret Region override - c2s.ic.gov
+        elif region in ["us-iso-east-1", "us-iso-west-1"]:
+            partition = "aws-iso"
+        # UK GCHQ Classified Region override - cloud.adc-e.uk
+        elif region in ["eu-isoe-west-1", "eu-isoe-west-2"]:
+            partition = "aws-isoe"
+        else:
+            partition = "aws"
+
+        for serviceName, checkList in self.registry.checks.items():
+            # Pass the Cache at the "serviceName" level aka Plugin
+            auditorCache = {}
+            for checkName, check in checkList.items():
+                # if a specific check is requested, only run that one check
+                if (
+                    not pluginName
+                    or pluginName
+                    and pluginName == checkName
+                ):
+                    try:
+                        print(f"Executing Check: {checkName}")
+                        for finding in check(
+                            cache=auditorCache,
+                            awsAccountId=account,
+                            awsRegion=region,
+                            awsPartition=partition,
+                            ociTenancyId=self.ociTenancyId,
+                            ociUserId=self.ociUserId,
+                            ociRegionName=self.ociRegionName,
+                            ociCompartments=self.ociCompartments,
+                            ociUserApiKeyFingerprint=self.ociUserApiKeyFingerprint
+                        ):
+                            yield finding
+                    except Exception as e:
+                        print(format_exc())
+                        print(f"Failed to execute check {checkName} with exception {e}")
+            # optional sleep if specified - defaults to 0 seconds
+            sleep(delay)
+
+    # Called from eeauditor/controller.py run_auditor()
+    def run_m365_checks(self, pluginName=None, delay=0):
+        """
+        Runs M365 Auditors using Client Secret credentials from an Enterprise Application
+        """
+
+        # These details are needed for the ASFF...
+        import boto3
+
+        sts = boto3.client("sts")
+
+        region = boto3.Session().region_name
+        account = sts.get_caller_identity()["Account"]
+
+        # GovCloud partition override
+        if region in ["us-gov-east-1", "us-gov-west-1"]:
+            partition = "aws-us-gov"
+        # China partition override
+        elif region in ["cn-north-1", "cn-northwest-1"]:
+            partition = "aws-cn"
+        # AWS Secret Region override - sc2s.sgov.gov
+        elif region in ["us-isob-east-1", "us-isob-west-1"]:
+            partition = "aws-isob"
+        # AWS Top Secret Region override - c2s.ic.gov
+        elif region in ["us-iso-east-1", "us-iso-west-1"]:
+            partition = "aws-iso"
+        # UK GCHQ Classified Region override - cloud.adc-e.uk
+        elif region in ["eu-isoe-west-1", "eu-isoe-west-2"]:
+            partition = "aws-isoe"
+        else:
+            partition = "aws"
+
+        for serviceName, checkList in self.registry.checks.items():
+            # Pass the Cache at the "serviceName" level aka Plugin
+            auditorCache = {}
+            for checkName, check in checkList.items():
+                # if a specific check is requested, only run that one check
+                if (
+                    not pluginName
+                    or pluginName
+                    and pluginName == checkName
+                ):
+                    try:
+                        print(f"Executing Check {checkName} for M365 Tenant {self.m365TenantId}")
+                        for finding in check(
+                            cache=auditorCache,
+                            awsAccountId=account,
+                            awsRegion=region,
+                            awsPartition=partition,
+                            tenantId=self.m365TenantId,
+                            clientId=self.m365ClientId,
+                            clientSecret=self.m365SecretId,
+                            tenantLocation=self.m365TenantLocation,
+                        ):
+                            yield finding
+                    except Exception:
+                        print(format_exc())
+                        print(f"Failed to execute check {checkName}")
+            # optional sleep if specified - defaults to 0 seconds
+            sleep(delay)
+    
     # Called from eeauditor/controller.py run_auditor()
     def run_non_aws_checks(self, pluginName=None, delay=0):
         """
@@ -252,19 +474,22 @@ class EEAuditor(object):
         # China partition override
         elif region in ["cn-north-1", "cn-northwest-1"]:
             partition = "aws-cn"
-        # AWS Secret Region override
+        # AWS Secret Region override - sc2s.sgov.gov
         elif region in ["us-isob-east-1", "us-isob-west-1"]:
             partition = "aws-isob"
-        # AWS Top Secret Region override
+        # AWS Top Secret Region override - c2s.ic.gov
         elif region in ["us-iso-east-1", "us-iso-west-1"]:
             partition = "aws-iso"
+        # UK GCHQ Classified Region override - cloud.adc-e.uk
+        elif region in ["eu-isoe-west-1", "eu-isoe-west-2"]:
+            partition = "aws-isoe"
         else:
             partition = "aws"
 
         for serviceName, checkList in self.registry.checks.items():
+            # Pass the Cache at the "serviceName" level aka Plugin
+            auditorCache = {}
             for checkName, check in checkList.items():
-                # clearing cache for each control whithin a auditor
-                auditor_cache = {}
                 # if a specific check is requested, only run that one check
                 if (
                     not pluginName
@@ -274,41 +499,42 @@ class EEAuditor(object):
                     try:
                         print(f"Executing Check: {checkName}")
                         for finding in check(
-                            cache=auditor_cache,
+                            cache=auditorCache,
                             awsAccountId=account,
                             awsRegion=region,
                             awsPartition=partition
                         ):
                             yield finding
                     except Exception as e:
-                        print(traceback.format_exc())
+                        print(format_exc())
                         print(f"Failed to execute check {checkName} with exception {e}")
-            # optional sleep if specified - hardcode to 0 seconds
+            # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
 
     # Called from eeauditor/controller.py print_checks()
     def print_checks_md(self):
         table = []
-        table.append(
-            "| Auditor File Name                      | Scanned Resource Name         | Auditor Scan Description                                                               |"
-        )
-        table.append(
-            "|----------------------------------------|-------------------------------|----------------------------------------------------------------------------------------|"
-        )
-
+        table.append("| Auditor Name | Check Name | Check Description |")
+        table.append("|---|---|---|")
+        # Just use some built-in functions to get the function name (__name__) and the Description/docstring (__doc__)
         for serviceName, checkList in self.registry.checks.items():
             for checkName, check in checkList.items():
                 doc = check.__doc__
                 if doc:
-                    description = (check.__doc__).replace("\n", "")
+                    description = (check.__doc__).replace("\n", "").replace("    ", "")
                 else:
-                    description = ""
+                    description = "TELL_THE_MAINTAINER_TO_FIX_ME_PLZ"
+
+                auditorFile = getfile(check).rpartition('/')[2]
+                auditorName = auditorFile.split(".py")[0]
+                
                 table.append(
-                    f"|{inspect.getfile(check).rpartition('/')[2]} | {serviceName} | {description}"
+                    f"| {auditorName} | {check.__name__} | {description} |"
                 )
 
         print("\n".join(table))
-
+    
+    # Called from eeauditor/controller.py print_checks()
     def print_controls_json(self):
         controlPrinter = []
 
@@ -316,10 +542,9 @@ class EEAuditor(object):
             for checkName, check in checkList.items():
                 doc = check.__doc__
                 if doc:
-                    description = (check.__doc__).replace("\n", "")
+                    description = (check.__doc__).replace("\n", "").replace("    ", "")
                 else:
-                    description = ""
-                
+                    description = "TELL_THE_MAINTAINER_TO_FIX_ME_PLZ"
                 
                 controlPrinter.append(description)
 

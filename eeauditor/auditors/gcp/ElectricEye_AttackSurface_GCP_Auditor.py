@@ -64,16 +64,16 @@ def get_compute_engine_instances(cache: dict, gcpProjectId: str):
     return results
 
 # This function performs the actual NMAP Scan
-def scan_host(host_ip, host_name, asset_type):
+def scan_host(hostIp, assetName, assetComponent):
     try:
         results = nmap.nmap_tcp_scan(
-            host_ip,
+            hostIp,
             # FTP, SSH, TelNet, SMTP, HTTP, POP3, NetBIOS, SMB, RDP, MSSQL, MySQL/MariaDB, NFS, Docker, Oracle, PostgreSQL, 
             # Kibana, VMWare, Proxy, Splunk, K8s, Redis, Kafka, Mongo, Rabbit/AmazonMQ, SparkUI
             args="-Pn -p 21,22,23,25,80,110,139,445,3389,1433,3306,2049,2375,1521,5432,5601,8182,8080,8089,10250,6379,9092,27017,5672,4040"
         )
 
-        print(f"Scanning {asset_type} {host_name} on {host_ip}")
+        print(f"Scanning {assetComponent} {assetName} on {hostIp}")
         return results
     except KeyError:
         results = None
@@ -149,7 +149,7 @@ def gce_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                         "Severity": {"Label": "HIGH"},
                         "Confidence": 99,
                         "Title": f"[AttackSurface.GCP.GCE.{checkIdNumber}] Google Compute Engine VM instances should not be publicly reachable on {serviceName}",
-                        "Description": f"Google Compute Engine VM instance {name} in {zone} is publicly reachable on port {portNumber} which corresponds to the {serviceName} service. When Services are successfully fingerprinted by the ElectricEye Attack Surface Management Auditor it means the instance is public (mapped 'natIp`), has an open VPC Firewall rule, and a running service on the host which adversaries can also see. Refer to the remediation insturctions for an example of a way to secure EC2 instances.",
+                        "Description": f"Google Compute Engine VM instance {name} in {zone} is publicly reachable on port {portNumber} which corresponds to the {serviceName} service. When Services are successfully fingerprinted by the ElectricEye Attack Surface Management Auditor it means the instance is public (mapped 'natIp`), has an open VPC Firewall rule, and a running service on the host which adversaries can also see. Refer to the remediation insturctions for an example of a way to secure Compute Engine instances.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "GCE VM instances should only have the minimum necessary ports open to achieve their purposes, allow traffic from authorized sources, and use other defense-in-depth and hardening strategies. For a basic view on traffic authorization into your instances refer to the Access control overview section of the Google Compute Engine guide",

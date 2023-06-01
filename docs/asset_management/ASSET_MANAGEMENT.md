@@ -31,6 +31,8 @@ This key contains the unique identifier of the specific Assessment Target being 
 
 This key contains information about the specific asset's (what the Check is evalauting against) geographic region, if known. In some cases this may correspond to a smaller geographical infrastructure repesentation such as a Google Cloud Platform `zone` and may be omitted completely if deducing the location is not known (such as from a Workday ERP or ServiceNow instance). Best effort is made to parse this information from information returned by a CSP or SaaS Provider API such as an AWS `region` or a GCP `zone`.
 
+Within AWS, there is the concept of a "global endpoint" which typically defaults to `us-east-1` but in some rare cases can be other Regions, in non-Commercial Partitions this concept also persists. Services that are "global" are Amazon S3, Amazon CloudFront, AWS Health, AWS Trusted Advisor, AWS Support, Amazon IAM, and AWS Global Accelerator. These services will follow the service endpoint identifier of `aws-global`, `aws-gov-global`, `aws-cn-global` and so on. This is done instead of using an overwrite into `us-east-1` as it should cause less confusion for users who do not have their primary regions in CONUS.
+
 ### `AssetDetails`
 
 This key contains the JSON payload returned by the CSP or SaaS provider's API relative to the specific Asset being evaluated by an ElectricEye Check. The entire schema is captured in `AssetDetails` and will only appear in `json`, `stdout`, and `cam_json` ElectricEye Outputs.
@@ -57,6 +59,7 @@ ElectricEye has several Cloud Asset Management (CAM) reporting mechanisms within
 
 For information on how to use these Outputs and view sample outputs refer to
 
+- [HTML Output](../outputs/OUTPUTS.md#html-output)
 - [Cloud Asset Management JSON Output](../outputs/OUTPUTS.md#json-cloud-asset-management-cam-output)
 - [Cloud Asset Management MongoDB & AWS DocumentDB Output](../outputs/OUTPUTS.md#mongodb--aws-documentdb-cloud-asset-management-cam-output)
 - [Cloud Asset Management PostgreSQL Output](../outputs/OUTPUTS.md#postgresql-cloud-asset-management-cam-output)
@@ -141,6 +144,7 @@ AWS CloudHSM
 AWS CloudTrail
 AWS CodeArtifact
 AWS CodeBuild
+AWS CodeDeploy
 AWS DataSync
 AWS Database Migration Service
 AWS Directory Service
@@ -170,7 +174,7 @@ Amazon Certificate Manager
 Amazon Cloud9
 Amazon CloudFront
 Amazon CloudSearch
-Amazon Cogntio
+Amazon Cognito
 Amazon Detective
 Amazon DocumentDB
 Amazon DynamoDB
@@ -181,14 +185,13 @@ Amazon Elastic Beanstalk
 Amazon Elastic Block Storage
 Amazon Elastic Container Registry
 Amazon Elastic Container Service
-Amazon Elastic Container Service (ECS)
 Amazon Elastic File System
 Amazon Elastic Kubernetes Service
-Amazon Elastic Load Balancing
-Amazon Elastic Load Balancing V2
 Amazon Elastic MapReduce
+Amazon Elastic MapReduce Serverless
 Amazon Global Accelerator
 Amazon GuardDuty
+Amazon Inspector V2
 Amazon Key Management Service
 Amazon Keyspaces
 Amazon Kinesis Data Analytics
@@ -203,6 +206,7 @@ Amazon Neptune
 Amazon OpenSearch Service
 Amazon Quantum Ledger Database
 Amazon Redshift
+Amazon Redshift Serverless
 Amazon Relational Database Service
 Amazon Route53
 Amazon S3
@@ -214,9 +218,29 @@ Amazon VPC
 Amazon Virtual Private Cloud
 Google CloudSQL
 Google Compute Engine
-System Plugins (ServiceNow)
-System Properties (ServiceNow)
-Users & Groups (ServiceNow)
+Oracle Artifact Registry
+Oracle Autonomous Database
+Oracle Block Storage
+Oracle Cloud Compute
+Oracle Cloud Compute Management
+Oracle Cloud Functions
+Oracle Cloud Load Balancer
+Oracle Cloud Virtual Cloud Network
+Oracle Container Engine for Kubernetes
+Oracle Container Instance Serivce
+Oracle Container Registry
+Oracle File Storage
+Oracle GoldenGate
+Oracle MySQL Database Service
+Oracle NoSQL Database Cloud Service
+Oracle Object Storage
+Oracle Search with OpenSearch
+System Plugins
+System Properties
+Users & Groups
+Azure Active Directory
+Microsoft 365 Conditional Access
+Microsoft 365 Defender
 ```
 
 This list will be kept up to date, probably.
@@ -226,14 +250,13 @@ This list will be kept up to date, probably.
 **NOTE** To get an up to date list of these values, navigate to the directory of Auditors you want to check and use the following command: `grep -ho 'AssetComponent": "[^"]*' *.py | sed 's/.*: "//;s/"$//' | sort -u`
 
 ```
-Plugin
-System Property
-User
 Accelerator
 Access Key
 Account Activation
 Account Configuration
+Activation
 Agent
+Alternate Contact
 Application
 Application Load Balancer
 Association
@@ -252,10 +275,14 @@ Database Cluster
 Database Cluster Snapshot
 Database Instance
 Delivery Stream
+Deployment Group
 Directory
 Distribution
 Document
 Domain
+EC2 Deep Inspection Configuration
+EC2 Scanner
+ECR Scanner
 Elastic IP
 Encryption Configuration
 Endpoint
@@ -275,12 +302,14 @@ Instance
 Journal Export
 Key
 Key Alias
+Lambda Scanner
 Layer
 Ledger
 License Configuration
 Member
 Mesh
 Model
+Namespace
 Network Load Balancer
 Notebook Instance
 Parameter Group
@@ -301,7 +330,9 @@ Role
 Search Domain
 Secret
 Security Group
+Serial Console Access
 Server Certificate Storage
+Shield Response Team Access
 Snapshot
 Source Credential
 Stack
@@ -325,6 +356,35 @@ Workgroup
 Workspace
 Database Instance
 Instance
+Application
+Artifact
+Bucket
+Cluster
+Connection
+Database
+Database System
+Deployment
+File System
+Function
+Image
+Instance
+Instance Configuration
+Load Balancer
+Mount Target
+Network Security Group
+Node Pool
+Repository
+Security List
+Table
+Virtual Node Pool
+Volume
+Plugin
+System Property
+User
+Machine
+Policy
+Recommendation
+User
 ```
 
 This list will be kept up to date, probably.

@@ -24,27 +24,53 @@ from check_register import CheckRegister
 from dateutil.parser import parse
 import base64
 import json
+from botocore.config import Config
+
+# Adding backoff and retries for SSM - this API gets throttled a lot
+config = Config(
+   retries = {
+      'max_attempts': 10,
+      'mode': 'adaptive'
+   }
+)
 
 registry = CheckRegister()
 
 # Instantiate a NMAP scanner for TCP scans to define ports
 nmap = nmap3.NmapScanTechniques()
 
-def ec2_paginate(cache, session):
-    ec2 = session.client("ec2")
-    
-    instanceList = []
-    response = cache.get("instances")
+def describe_instances(cache, session):
+    response = cache.get("describe_instances")
     if response:
         return response
-    paginator = ec2.get_paginator("describe_instances")
-    if paginator:
-        for page in paginator.paginate(Filters=[{'Name': 'instance-state-name','Values': ['running']}]):
-            for r in page["Reservations"]:
-                for i in r["Instances"]:
-                    instanceList.append(i)
-        cache["instances"] = instanceList
-        return cache["instances"]
+    
+    instanceList = []
+    
+    ec2 = session.client("ec2")
+    ssm = session.client("ssm", config=config)
+    # Enrich EC2 with SSM details - this is done for the EC2 Auditor - all others using EC2 don't matter too much
+    managedInstances = ssm.describe_instance_information()["InstanceInformationList"]
+
+    for page in ec2.get_paginator("describe_instances").paginate(
+            Filters=[
+                {
+                    "Name": "instance-state-name",
+                    "Values": [ 
+                        "running",
+                        "stopped" 
+                    ]
+                }
+            ]
+        ):
+        for r in page["Reservations"]:
+            for i in r["Instances"]:
+                # Use a list comprehension to attempt to get SSM info for the instance
+                managedInstanceInfo = [mnginst for mnginst in managedInstances if mnginst["InstanceId"] == i["InstanceId"]]
+                i["ManagedInstanceInformation"] = managedInstanceInfo
+                instanceList.append(i)
+
+        cache["describe_instances"] = instanceList
+        return cache["describe_instances"]
 
 def describe_load_balancers(cache, session):
     elbv2 = session.client("elbv2")
@@ -123,7 +149,7 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # Paginate the iterator object from Cache
-    for i in ec2_paginate(cache, session):
+    for i in describe_instances(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(i,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -335,7 +361,7 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
                 except KeyError:
                     continue
 
-@registry.register_check("elbv2")
+@registry.register_check("elasticloadbalancingv2")
 def elbv2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AttackSurface.ELBv2.{checkIdNumber}] Application Load Balancers should not be publicly reachable on {serviceName}"""
     # ISO Time
@@ -548,7 +574,7 @@ def elbv2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId:
         else:
             continue
 
-@registry.register_check("elb")
+@registry.register_check("elasticloadbalancing")
 def elb_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AttackSurface.ELB.{checkIdNumber}] Classic Load Balancers should not be publicly reachable on {serviceName}"""
     # ISO Time
@@ -1169,7 +1195,7 @@ def cloudfront_attack_surface_open_tcp_port_check(cache: dict, session, awsAccou
             except KeyError:
                 continue
 
-@registry.register_check("cloudfront")
+@registry.register_check("route53")
 def route53_public_hz_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AttackSurface.Route53.{checkIdNumber}] Route53 Public Hosted Zones A Records should not be publicly reachable on {serviceName}"""
     route53 = session.client("route53")

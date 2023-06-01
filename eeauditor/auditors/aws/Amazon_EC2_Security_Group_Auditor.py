@@ -78,9 +78,7 @@ def security_group_all_open_check(cache: dict, session, awsAccountId: str, awsRe
                         "Severity": {"Label": "CRITICAL"},
                         "Confidence": 99,
                         "Title": "[SecurityGroup.1] Security groups should not allow unrestricted access to all ports and protocols",
-                        "Description": "Security group "
-                        + sgName
-                        + " allows unrestricted access to all ports and protocols. Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.",
+                        "Description": f"Security group {sgName} contains a rule that allows unrestricted access to all ports and protocols. Security Groups are often the first line of defense for network boundaries in AWS, allowing unfettered access removes an important part of a cloud security defense-in-depth and makes it easier for adversaries to perform recon on your assets and potentially gain unauthorized access where no other network-based controls exist. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements. Additionally, ensure that Network Firewalls, Route 53 Resolver DNS Firewalls, WAFv2, or some other self-managed host- or network-based appliance exists to interdict and prevent adversarial network traffic from reaching your hosts.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "For more information on modifying security group rules refer to the Adding, Removing, and Updating Rules section of the Amazon Virtual Private Cloud User Guide",
@@ -123,8 +121,8 @@ def security_group_all_open_check(cache: dict, session, awsAccountId: str, awsRe
                                 "ISO 27001:2013 A.6.2.2",
                                 "ISO 27001:2013 A.11.2.6",
                                 "ISO 27001:2013 A.13.1.1",
-                                "ISO 27001:2013 A.13.2.1",
-                            ],
+                                "ISO 27001:2013 A.13.2.1"
+                            ]
                         },
                         "Workflow": {"Status": "NEW"},
                         "RecordState": "ACTIVE",
@@ -217,8 +215,6 @@ def security_group_master_auditor_check(cache: dict, session, awsAccountId: str,
             checkId = x["CheckId"]
             checkDescription = x["CheckDescriptor"]
 
-            print(f"Auditing all Security Groups for unrestricted {checkDescription} access")
-
             for secgroup in describe_security_groups(cache, session)["SecurityGroups"]:
                 # B64 encode all of the details for the Asset
                 assetJson = json.dumps(secgroup,default=str).encode("utf-8")
@@ -268,7 +264,7 @@ def security_group_master_auditor_check(cache: dict, session, awsAccountId: str,
                                 "Severity": {"Label": "HIGH"},
                                 "Confidence": 99,
                                 "Title": checkTitle,
-                                "Description": f"{sgName} allows unrestricted {checkDescription} access. Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.",
+                                "Description": f"{sgName} allows unrestricted {checkDescription} access. Security Groups are often the first line of defense for network boundaries in AWS, allowing unfettered access removes an important part of a cloud security defense-in-depth and makes it easier for adversaries to perform recon on your assets and potentially gain unauthorized access where no other network-based controls exist. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements. Additionally, ensure that Network Firewalls, Route 53 Resolver DNS Firewalls, WAFv2, or some other self-managed host- or network-based appliance exists to interdict and prevent adversarial network traffic from reaching your hosts. Refer to the remediation instructions to remediate this behavior.",
                                 "Remediation": {
                                     "Recommendation": {
                                         "Text": "For more information on modifying security group rules refer to the Adding, Removing, and Updating Rules section of the Amazon Virtual Private Cloud User Guide",

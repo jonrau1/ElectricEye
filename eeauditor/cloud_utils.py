@@ -1,8 +1,28 @@
+#This file is part of ElectricEye.
+#SPDX-License-Identifier: Apache-2.0
+
+#Licensed to the Apache Software Foundation (ASF) under one
+#or more contributor license agreements.  See the NOTICE file
+#distributed with this work for additional information
+#regarding copyright ownership.  The ASF licenses this file
+#to you under the Apache License, Version 2.0 (the
+#"License"); you may not use this file except in compliance
+#with the License.  You may obtain a copy of the License at
+
+#http://www.apache.org/licenses/LICENSE-2.0
+
+#Unless required by applicable law or agreed to in writing,
+#software distributed under the License is distributed on an
+#"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+#KIND, either express or implied.  See the License for the
+#specific language governing permissions and limitations
+#under the License.
+
 import boto3
-import tomli
-import sys
-import os
-import re
+from tomli import load as tomload
+from sys import exit
+from os import environ, path
+from re import compile
 import json
 from botocore.exceptions import ClientError
 
@@ -23,65 +43,68 @@ class CloudConfig(object):
     """
 
     def __init__(self, assessmentTarget):
-        here = os.path.abspath(os.path.dirname(__file__))
+        here = path.abspath(path.dirname(__file__))
         tomlFile = f"{here}/external_providers.toml"
 
         with open(tomlFile, "rb") as f:
-            data = tomli.load(f)
+            data = tomload(f)
 
         # From TOML [global]
         if data["global"]["aws_multi_account_target_type"] not in AWS_MULTI_ACCOUNT_TARGET_TYPE_CHOICES:
             print("Invalid option for [global.aws_multi_account_target_type].")
-            sys.exit(2)
-        self.aws_multi_account_target_type = data["global"]["aws_multi_account_target_type"]
+            exit(2)
+        self.awsMultiAccountTargetType = data["global"]["aws_multi_account_target_type"]
 
         if data["global"]["credentials_location"] not in CREDENTIALS_LOCATION_CHOICES:
             print(f"Invalid option for [global.credentials_location]. Must be one of {str(CREDENTIALS_LOCATION_CHOICES)}.")
-            sys.exit(2)
-        self.credentials_location = data["global"]["credentials_location"]
+            exit(2)
+        self.credentialsLocation = data["global"]["credentials_location"]
 
+        ##################################
+        # PUBLIC CLOUD SERVICE PROVIDERS #
+        ##################################
         
         # AWS
         if assessmentTarget == "AWS":
             # Process ["aws_account_targets"] 
             awsAccountTargets = data["regions_and_accounts"]["aws"]["aws_account_targets"]
-            if self.aws_multi_account_target_type == "Accounts":
+            if self.awsMultiAccountTargetType == "Accounts":
                 if not awsAccountTargets:
-                    self.aws_account_targets = [sts.get_caller_identity()["Account"]]
+                    self.awsAccountTargets = [sts.get_caller_identity()["Account"]]
                 else:
-                    self.aws_account_targets = awsAccountTargets
-            elif self.aws_multi_account_target_type == "OU":
+                    self.awsAccountTargets = awsAccountTargets
+            elif self.awsMultiAccountTargetType == "OU":
                 if not awsAccountTargets:
                     print("OU was specified but targets were not specified.")
-                    sys.exit(2)
+                    exit(2)
                 # Regex to check for Valid OUs
-                ouIdRegex = re.compile(r"^ou-[0-9a-z]{4,32}-[a-z0-9]{8,32}$")
+                ouIdRegex = compile(r"^ou-[0-9a-z]{4,32}-[a-z0-9]{8,32}$")
                 for ou in awsAccountTargets:
                     if not ouIdRegex.match(ou):
                         print(f"Invalid Organizational Unit ID {ou}.")
-                        sys.exit(2)
-                self.aws_account_targets = self.get_aws_accounts_from_organizational_units(awsAccountTargets)
-            elif self.aws_multi_account_target_type == "Organization":
-                self.aws_account_targets = self.get_aws_accounts_from_organization()
+                        exit(2)
+                self.awsAccountTargets = self.get_aws_accounts_from_organizational_units(awsAccountTargets)
+            elif self.awsMultiAccountTargetType == "Organization":
+                self.awsAccountTargets = self.get_aws_accounts_from_organization()
             
             # Process ["aws_regions_selection"]
             awsRegions = self.get_aws_regions()
             if not data["regions_and_accounts"]["aws"]["aws_regions_selection"]:
-                self.aws_regions_selection = [boto3.Session().region_name]
+                self.awsRegionsSelection = [boto3.Session().region_name]
             else:
                 tomlRegions = data["regions_and_accounts"]["aws"]["aws_regions_selection"]
                 if "All" in tomlRegions:
-                    self.aws_regions_selection = awsRegions
+                    self.awsRegionsSelection = awsRegions
                 else:
                     # Validation check
-                    self.aws_regions_selection = [a for a in tomlRegions if a in awsRegions]
+                    self.awsRegionsSelection = [a for a in tomlRegions if a in awsRegions]
             
             # Process ["aws_electric_eye_iam_role_name"]
             electricEyeRoleName = data["regions_and_accounts"]["aws"]["aws_electric_eye_iam_role_name"]
             if electricEyeRoleName == (None or ""):
                 print(f"A value for ['aws_electric_eye_iam_role_name'] was not provided. Fix the TOML file and run ElectricEye again.")
-                sys.exit(2)
-            self.aws_electric_eye_iam_role_name = electricEyeRoleName
+                exit(2)
+            self.electricEyeRoleName = electricEyeRoleName
         
         # GCP
         elif assessmentTarget == "GCP":
@@ -89,60 +112,207 @@ class CloudConfig(object):
             gcpProjects = data["regions_and_accounts"]["gcp"]["gcp_project_ids"]
             if not gcpProjects:
                 print("No GCP Projects were provided in [regions_and_accounts.gcp.gcp_project_ids].")
-                sys.exit(2)
+                exit(2)
             else:
-                self.gcp_project_ids = gcpProjects
+                self.gcpProjectIds = gcpProjects
             
             # Process ["gcp_service_account_json_payload_value"]
             gcpCred = data["credentials"]["gcp"]["gcp_service_account_json_payload_value"]
-            if self.credentials_location == "CONFIG_FILE":
-                self.gcp_service_account_json_payload_value = gcpCred
-            elif self.credentials_location == "AWS_SSM":
-                self.gcp_service_account_json_payload_value = self.get_credential_from_aws_ssm(
+            if self.credentialsLocation == "CONFIG_FILE":
+                self.gcpServiceAccountJsonPayloadValue = gcpCred
+            elif self.credentialsLocation == "AWS_SSM":
+                self.gcpServiceAccountJsonPayloadValue = self.get_credential_from_aws_ssm(
                     gcpCred,
                     "gcp_service_account_json_payload_value"
                 )
-            elif self.credentials_location == "AWS_SECRETS_MANAGER":
-                self.gcp_service_account_json_payload_value = self.get_credential_from_aws_secrets_manager(
+            elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
+                self.gcpServiceAccountJsonPayloadValue = self.get_credential_from_aws_secrets_manager(
                     gcpCred,
                     "gcp_service_account_json_payload_value"
                 )
-            self.setup_gcp_credentials(self.gcp_service_account_json_payload_value)
+            self.setup_gcp_credentials(self.gcpServiceAccountJsonPayloadValue)
         
+        # Oracle Cloud Infrastructure (OCI)
+        elif assessmentTarget == "OCI":
+            ociValues = data["regions_and_accounts"]["oci"]
+
+            # Retrieve the OCIDs for Tenancy & User and the Region ID along with a list of Compartment OCIDs
+            ociTenancyId = ociValues["oci_tenancy_ocid"]
+            ociUserId = ociValues["oci_user_ocid"]
+            ociRegionName = ociValues["oci_region_name"]
+            ociCompartments = ociValues["oci_compartment_ocids"]
+            # Process the [credentials.oci]
+            ociUserApiKeyFingerprint = data["credentials"]["oci"]["oci_user_api_key_fingerprint_value"]
+            ociUserApiKeyPemValue = data["credentials"]["oci"]["oci_user_api_key_private_key_pem_contents_value"]
+
+            if any(
+                # Check to make sure none of the variables pulled from TOML are emtpy
+                not var for var in [
+                    ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint, ociUserApiKeyPemValue
+                    ]
+                ):
+                print(f"One of your Oracle Cloud TOML entries in [regions_and_accounts.oci] or [credentials.oci] is empty!")
+                exit(2)
+
+            # Assign ["regions_and_accounts"]["oci"] values to `self`
+            self.ociTenancyId = ociTenancyId
+            self.ociUserId = ociUserId
+            self.ociRegionName = ociRegionName
+            self.ociCompartments = ociCompartments
+
+            # Process ["oci_user_api_key_fingerprint_value"]
+            ociUserApiKeyFingerprint = data["credentials"]["oci"]["oci_user_api_key_fingerprint_value"]
+            if self.credentialsLocation == "CONFIG_FILE":
+                ociUserApiKeyFingerprint = ociUserApiKeyFingerprint
+            elif self.credentialsLocation == "AWS_SSM":
+                ociUserApiKeyFingerprint = self.get_credential_from_aws_ssm(
+                    ociUserApiKeyFingerprint,
+                    "oci_user_api_key_fingerprint_value"
+                )
+            elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
+                ociUserApiKeyFingerprint = self.get_credential_from_aws_secrets_manager(
+                    ociUserApiKeyFingerprint,
+                    "oci_user_api_key_fingerprint_value"
+                )
+
+            self.ociUserApiKeyFingerprint = ociUserApiKeyFingerprint
+
+            # Process ["oci_user_api_key_private_key_pem_contents_value"]
+            ociUserApiKeyPemLocation = data["credentials"]["oci"]["oci_user_api_key_private_key_pem_contents_value"]
+            if self.credentialsLocation == "CONFIG_FILE":
+                ociUserApiKeyPemLocation = ociUserApiKeyPemLocation
+            elif self.credentialsLocation == "AWS_SSM":
+                ociUserApiKeyPemLocation = self.get_credential_from_aws_ssm(
+                    ociUserApiKeyPemLocation,
+                    "oci_user_api_key_private_key_pem_contents_value"
+                )
+            elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
+                ociUserApiKeyPemLocation = self.get_credential_from_aws_secrets_manager(
+                    ociUserApiKeyPemLocation,
+                    "oci_user_api_key_private_key_pem_contents_value"
+                )
+
+            # Create the PEM file and save the location of it to environ
+            self.setup_oci_credentials(ociUserApiKeyPemLocation)
+
+        # Azure
+        elif assessmentTarget == "Azure":
+            print("Coming soon!")
+
+        # Alibaba Cloud
+        elif assessmentTarget == "Alibaba":
+            print("Coming soon!")
+
+        # VMWare Cloud on AWS
+        elif assessmentTarget == "VMC":
+            print("Coming soon!")
+
+        ###################################
+        # SOFTWARE-AS-A-SERVICE PROVIDERS #
+        ###################################
+
         # ServiceNow
         elif assessmentTarget == "Servicenow":
             # Process data["credentials"]["servicenow"] - nothing needs to be assigned to `self`
             serviceNowValues = data["credentials"]["servicenow"]
+
+            snowInstanceName = serviceNowValues["servicenow_instance_name"]
+            snowInstanceRegion = serviceNowValues["servicenow_instance_region"]
+            snowUserName = serviceNowValues["servicenow_sspm_username"]
+            snowUserLoginBreachRate = serviceNowValues["servicenow_failed_login_breaching_rate"]
+
+            if any(
+                # Check to make sure none of the variables pulled from TOML are emtpy
+                not var for var in [
+                    snowInstanceName, snowInstanceRegion, snowUserName, snowUserLoginBreachRate
+                    ]
+                ):
+                print(f"One of your ServiceNow TOML entries in [credentials.servicenow] is empty!")
+                exit(2)
             
             # Retrieve ServiceNow ElectricEye user password
             serviceNowPwVal = serviceNowValues["servicenow_sspm_password_value"]
-            if self.credentials_location == "CONFIG_FILE":
-                os.environ["SNOW_SSPM_PASSWORD"] = serviceNowPwVal
-            elif self.credentials_location == "AWS_SSM":
-                os.environ["SNOW_SSPM_PASSWORD"] = self.get_credential_from_aws_ssm(
+            if self.credentialsLocation == "CONFIG_FILE":
+                environ["SNOW_SSPM_PASSWORD"] = serviceNowPwVal
+            elif self.credentialsLocation == "AWS_SSM":
+                environ["SNOW_SSPM_PASSWORD"] = self.get_credential_from_aws_ssm(
                     serviceNowPwVal,
                     "servicenow_sspm_password_value"
                 )
-            elif self.credentials_location == "AWS_SECRETS_MANAGER":
-                os.environ["SNOW_SSPM_PASSWORD"] = self.get_credential_from_aws_secrets_manager(
+            elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
+                environ["SNOW_SSPM_PASSWORD"] = self.get_credential_from_aws_secrets_manager(
                     serviceNowPwVal,
                     "servicenow_sspm_password_value"
                 )
             # All other ServiceNow Values are written as environment variables and either provided
             # to PySnow Clients or to ProductFields{} within the ASFF per Finding
-            os.environ["SNOW_INSTANCE_NAME"] = serviceNowValues["servicenow_instance_name"]
-            os.environ["SNOW_INSTANCE_REGION"] = serviceNowValues["servicenow_instance_region"]
-            os.environ["SNOW_SSPM_USERNAME"] = serviceNowValues["servicenow_sspm_username"]
-            os.environ["SNOW_FAILED_LOGIN_BREACHING_RATE"] = serviceNowValues["servicenow_failed_login_breaching_rate"]
-        
-        # Azure
-        elif assessmentTarget == "Azure":
-            print("Coming soon!")
-        
-        # Oracle Cloud Infrastructure (OCI)
-        elif assessmentTarget == "OracleCloud":
-            print("Coming soon!")
+            environ["SNOW_INSTANCE_NAME"] = snowInstanceName
+            environ["SNOW_INSTANCE_REGION"] = snowInstanceRegion
+            environ["SNOW_SSPM_USERNAME"] = snowUserName
+            environ["SNOW_FAILED_LOGIN_BREACHING_RATE"] = snowUserLoginBreachRate
 
+        # M365
+        elif assessmentTarget == "M365":
+            # Process data["credentials"]["servicenow"] - values need to be assigned to self
+            m365Values = data["credentials"]["m365"]
+
+            m365ClientId = m365Values["m365_ent_app_client_id_value"]
+            m365SecretId = m365Values["m365_ent_app_client_secret_id_value"]
+            m365TenantId = m365Values["m365_ent_app_tenant_id_value"]
+            m365TenantLocation = m365Values["m365_tenant_location"]
+
+            if any(
+                # Check to make sure none of the variables pulled from TOML are emtpy
+                not var for var in [
+                    m365ClientId, m365SecretId, m365TenantId, m365TenantLocation
+                    ]
+                ):
+                print(f"One of your M365 TOML entries in [credentials.m365] is empty!")
+                exit(2)
+
+            # This value (tenant location) will always be in plaintext
+            self.m365TenantLocation = m365TenantLocation
+
+            # Retrieve the values for the M365 Enterprise Application Client ID, Secret Value & Tenant ID
+            if self.credentialsLocation == "CONFIG_FILE":
+                self.m365ClientId = m365ClientId
+                self.m365SecretId = m365SecretId
+                self.m365TenantId = m365TenantId
+            # SSM
+            elif self.credentialsLocation == "AWS_SSM":
+                # Client ID
+                self.m365ClientId = self.get_credential_from_aws_ssm(
+                    m365ClientId,
+                    "m365_ent_app_client_id_value"
+                )
+                # Secret Value
+                self.m365SecretId = self.get_credential_from_aws_ssm(
+                    m365SecretId,
+                    "m365_ent_app_client_secret_id_value"
+                )
+                # Tenant ID
+                self.m365TenantId = self.get_credential_from_aws_ssm(
+                    m365TenantId,
+                    "m365_ent_app_tenant_id_value"
+                )
+            # AWS Secrets Manager
+            elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
+                # Client ID
+                self.m365ClientId = self.get_credential_from_aws_secrets_manager(
+                    m365ClientId,
+                    "m365_ent_app_client_id_value"
+                )
+                # Secret Value
+                self.m365SecretId = self.get_credential_from_aws_secrets_manager(
+                    m365SecretId,
+                    "m365_ent_app_client_secret_id_value"
+                )
+                # Tenant ID
+                self.m365TenantId = self.get_credential_from_aws_secrets_manager(
+                    m365TenantId,
+                    "m365_ent_app_tenant_id_value"
+                )
+    
     def get_aws_regions(self):
         """
         Uses EC2 DescribeRegions API to get a list of opted-in AWS Regions
@@ -166,7 +336,7 @@ class CloudConfig(object):
         # Check that a value was provided
         if value == (None or ""):
             print(f"A value for {configurationName} was not provided. Fix the TOML file and run ElectricEye again.")
-            sys.exit(2)
+            exit(2)
 
         # Retrieve the credential from SSM Parameter Store
         try:
@@ -187,7 +357,7 @@ class CloudConfig(object):
         # Check that a value was provided
         if value == (None or ""):
             print(f"A value for {configurationName} was not provided. Fix the TOML file and run ElectricEye again.")
-            sys.exit(2)
+            exit(2)
 
         # Retrieve the credential from AWS Secrets Manager
         try:
@@ -204,7 +374,7 @@ class CloudConfig(object):
         Uses Organizations ListAccounts API to get a list of "ACTIVE" AWS Accounts in the entire Organization
         """
         try:
-            accounts = [account["Id"] for account in org.list_accounts() if account["Status"] == "ACTIVE"]
+            accounts = [account["Id"] for account in org.list_accounts()["Accounts"] if account["Status"] == "ACTIVE"]
         except ClientError as e:
             raise e
         
@@ -215,24 +385,30 @@ class CloudConfig(object):
         Uses Organizations ListAccountsForParent API to get a list of "ACTIVE" AWS Accounts for specified OUs
         """
         accounts = []
+        # Sometimes the caller Account may not be in the OU, add them in
+        accounts.append(sts.get_caller_identity()["Account"])
 
         for parent in targets:
             print(f"Processing accounts for Organizational Unit {parent}.")
             try:
                 for account in org.list_accounts_for_parent(ParentId=parent)["Accounts"]:
                     if account["Status"] == "ACTIVE":
-                        accounts.append(account["Id"])
+                        if account["Id"] not in accounts:
+                            accounts.append(account["Id"])
+                        else:
+                            continue
             except ClientError as e:
                 raise e
         
         return accounts
     
     # This function is called outside of this Class
-    def create_aws_session(account, region, roleName):
+    def create_aws_session(account, partition, region, roleName):
         """
-        Uses STS AssumeRole to create a temporary Boto3 Session with a specified Account and Region
+        Uses STS AssumeRole to create a temporary Boto3 Session with a specified Account, Partition, and Region
         """
-        crossAccountRoleArn = f"arn:aws:iam::{account}:role/{roleName}"
+
+        crossAccountRoleArn = f"arn:{partition}:iam::{account}:role/{roleName}"
 
         try:
             memberAcct = sts.assume_role(
@@ -251,7 +427,7 @@ class CloudConfig(object):
 
         return session
     
-    # This function is called outside of this Class
+    # This function is called outside of this Class and from create_aws_session()
     def check_aws_partition(region):
         """
         Returns the AWS Partition based on the current Region of a Session
@@ -273,6 +449,36 @@ class CloudConfig(object):
 
         return partition
 
+    # This function is called outside of this Class
+    def get_aws_support_eligiblity(session):
+        support = session.client("support")
+
+        try:
+            support.describe_trusted_advisor_checks(language='en')
+            supportEligible = True
+        except ClientError as e:
+            if str(e) == "An error occurred (SubscriptionRequiredException) when calling the DescribeTrustedAdvisorChecks operation: Amazon Web Services Premium Support Subscription is required to use this service.":
+                supportEligible = False
+            else:
+                raise e
+
+        return supportEligible
+
+    # This function is called outside of this Class
+    def get_aws_shield_advanced_eligiblity(session):
+        shield = session.client("shield")
+
+        try:
+            shield.describe_subscription()
+            shieldEligible = True
+        except ClientError as e:
+            if str(e) == "An error occurred (ResourceNotFoundException) when calling the DescribeSubscription operation: The subscription does not exist.":
+                shieldEligible = False
+            else:
+                raise e
+
+        return shieldEligible
+
     def setup_gcp_credentials(self, credentialValue):
         """
         The Python Google Client SDK defaults to checking for credentials in the "GOOGLE_APPLICATION_CREDENTIALS"
@@ -283,7 +489,7 @@ class CloudConfig(object):
         This function simply takes the value of the TOML configuration ["gcp_service_account_json_payload_value"] derived 
         by this overall Class (CloudConfig), writes it to a JSON file, and specifies that location as the environment variable "GOOGLE_APPLICATION_CREDENTIALS"
         """
-        here = os.path.abspath(os.path.dirname(__file__))
+        here = path.abspath(path.dirname(__file__))
         # Write the result of ["gcp_service_account_json_payload_value"] to file
         with open(f"{here}/gcp_cred.json", 'w') as jsonfile:
             json.dump(
@@ -294,6 +500,21 @@ class CloudConfig(object):
                 indent=2
             )
         # Set Cred global path
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = f"{here}/gcp_cred.json"
+        print(f"{here}/gcp_cred.json saved to environment variable")
+        environ["GOOGLE_APPLICATION_CREDENTIALS"] = f"{here}/gcp_cred.json"
+
+    def setup_oci_credentials(self, credentialValue):
+        """
+        Oracle Cloud Python SDK Config object can be created and requires the path to a PEM file, we can save the PEM
+        contents to a file and save the location to an environment variable to be used
+        """
+        here = path.abspath(path.dirname(__file__))
+        # Write the result of ["oci_user_api_key_private_key_pem_contents_value"] to file
+        with open(f"{here}/oci_api_key.pem", "w") as f:
+            f.write(credentialValue)
+
+        # Set the location
+        print(f"{here}/oci_api_key.pem saved to environment variable")
+        environ["OCI_PEM_FILE_PATH"] = f"{here}/oci_api_key.pem"
         
 ## EOF

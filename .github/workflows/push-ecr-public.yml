@@ -1,0 +1,49 @@
+name: "ElectricEye on ECR Public"
+
+on:
+  push:
+    branches: [ master ]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  ElectricEyeOnEcrPublic:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout le branch
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Assume Role via OIDC Provider
+      - name: Assume AWS Role with OIDC
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.ELECTRIC_EYE_OPENSOURCE_AWS_ACCOUNT_ID }}:role/ElectricEyeOIDCGitHubActionRole
+          aws-region: us-east-1
+
+      # ECR Login to ECR-Public
+      - name: Amazon ECR Public Login
+        id: login-ecr-public
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registry-type: public
+
+      # Build, Tag, Push to ECR-Public
+      - name: Build, Tag, Push Image to ECR Public
+        env:
+          REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
+          REGISTRY_ALIAS: t4o3u7t2
+          REPOSITORY: electriceye
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG .
+          docker tag $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:latest
+          docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
+          docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:latest
+      
+      # Print the location
+      - name: Print Image
+        run: echo "$REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG"

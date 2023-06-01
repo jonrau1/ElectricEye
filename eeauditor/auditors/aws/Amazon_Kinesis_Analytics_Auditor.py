@@ -26,7 +26,7 @@ import json
 
 registry = CheckRegister()
 
-@registry.register_check("kinesisanalyticsv2")
+@registry.register_check("kinesisanalytics")
 def kda_log_to_cloudwatch_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[KinesisAnalytics.1] Applications should log to CloudWatch"""
     kinesisanalyticsv2 = session.client("kinesisanalyticsv2")

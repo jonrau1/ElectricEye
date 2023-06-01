@@ -95,7 +95,7 @@ def cognitoidp_cis_password_check(cache: dict, session, awsAccountId: str, awsRe
                     "AssetRegion": awsRegion,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Amazon Cogntio",
+                    "AssetService": "Amazon Cognito",
                     "AssetComponent": "User Pool"
                 },
                 "Resources": [
@@ -170,7 +170,7 @@ def cognitoidp_cis_password_check(cache: dict, session, awsAccountId: str, awsRe
                     "AssetRegion": awsRegion,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Amazon Cogntio",
+                    "AssetService": "Amazon Cognito",
                     "AssetComponent": "User Pool"
                 },
                 "Resources": [
@@ -262,7 +262,7 @@ def cognitoidp_temp_password_check(cache: dict, session, awsAccountId: str, awsR
                     "AssetRegion": awsRegion,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Amazon Cogntio",
+                    "AssetService": "Amazon Cognito",
                     "AssetComponent": "User Pool"
                 },
                 "Resources": [
@@ -339,7 +339,7 @@ def cognitoidp_temp_password_check(cache: dict, session, awsAccountId: str, awsR
                     "AssetRegion": awsRegion,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Amazon Cogntio",
+                    "AssetService": "Amazon Cognito",
                     "AssetComponent": "User Pool"
                 },
                 "Resources": [
@@ -433,7 +433,7 @@ def cognitoidp_mfa_check(cache: dict, session, awsAccountId: str, awsRegion: str
                     "AssetRegion": awsRegion,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Amazon Cogntio",
+                    "AssetService": "Amazon Cognito",
                     "AssetComponent": "User Pool"
                 },
                 "Resources": [
@@ -507,7 +507,7 @@ def cognitoidp_mfa_check(cache: dict, session, awsAccountId: str, awsRegion: str
                     "AssetRegion": awsRegion,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Amazon Cogntio",
+                    "AssetService": "Amazon Cognito",
                     "AssetComponent": "User Pool"
                 },
                 "Resources": [
@@ -572,11 +572,11 @@ def cognitoidp_waf_check(cache: dict, session, awsAccountId: str, awsRegion: str
         # so we end up having to create our own way to determine
         getacl = wafv2.get_web_acl_for_resource(ResourceArn=userPoolArn)
         try:
-            coverage = getacl["WebACL"]["ARN"]
+            wafCoverage = getacl["WebACL"]["ARN"]
         except KeyError:
-            coverage = False
+            wafCoverage = False
         # this is a failing check
-        if coverage == False:
+        if wafCoverage is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{userPoolArn}/cognito-user-pool-waf-check",
@@ -605,7 +605,7 @@ def cognitoidp_waf_check(cache: dict, session, awsAccountId: str, awsRegion: str
                     "AssetRegion": awsRegion,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Amazon Cogntio",
+                    "AssetService": "Amazon Cognito",
                     "AssetComponent": "User Pool"
                 },
                 "Resources": [
@@ -668,7 +668,7 @@ def cognitoidp_waf_check(cache: dict, session, awsAccountId: str, awsRegion: str
                     "AssetRegion": awsRegion,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Amazon Cogntio",
+                    "AssetService": "Amazon Cognito",
                     "AssetComponent": "User Pool"
                 },
                 "Resources": [

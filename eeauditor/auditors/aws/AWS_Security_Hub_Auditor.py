@@ -114,7 +114,7 @@ def high_critical_findings(cache: dict, session, awsAccountId: str, awsRegion: s
                     "NIST SP 800-53 Rev. 4 CA-7",
                     "NIST SP 800-53 Rev. 4 IR-4",
                     "NIST SP 800-53 Rev. 4 SI-4",
-                    "AICPA TSC 7.2",
+                    "AICPA TSC CC7.2",
                     "ISO 27001:2013 A.12.4.1",
                     "ISO 27001:2013 A.16.1.1",
                     "ISO 27001:2013 A.16.1.4"
@@ -135,7 +135,7 @@ def high_critical_findings(cache: dict, session, awsAccountId: str, awsRegion: s
             "CreatedAt": iso8601Time,
             "UpdatedAt": iso8601Time,
             "FirstObservedAt": iso8601Time,
-            "Severity": {"Label": "CRITICAL"},
+            "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
             "Title": "[SecurityHub.1] Security Hub should not have active high or critical severity findings from AWS services",
             "Description": "High or critical findings were found in the Security Hub hub for AWS account "
@@ -173,7 +173,7 @@ def high_critical_findings(cache: dict, session, awsAccountId: str, awsRegion: s
                     "NIST SP 800-53 Rev. 4 CA-7",
                     "NIST SP 800-53 Rev. 4 IR-4",
                     "NIST SP 800-53 Rev. 4 SI-4",
-                    "AICPA TSC 7.2",
+                    "AICPA TSC CC7.2",
                     "ISO 27001:2013 A.12.4.1",
                     "ISO 27001:2013 A.16.1.1",
                     "ISO 27001:2013 A.16.1.4"

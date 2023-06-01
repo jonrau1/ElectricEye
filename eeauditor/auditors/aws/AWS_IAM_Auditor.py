@@ -27,11 +27,13 @@ import json
 registry = CheckRegister()
 
 def list_users(cache, session):
-    iam = session.client("iam")
     response = cache.get("list_users")
     if response:
         return response
-    cache["list_users"] = iam.list_users(MaxItems=1000)
+    
+    iam = session.client("iam")
+
+    cache["list_users"] = iam.list_users(MaxItems=1000)["Users"]
     return cache["list_users"]
 
 @registry.register_check("iam")
@@ -40,7 +42,7 @@ def iam_access_key_age_check(cache: dict, session, awsAccountId: str, awsRegion:
     iam = session.client("iam")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for users in list_users(cache, session)["Users"]:
+    for users in list_users(cache, session):
         userName = str(users["UserName"])
         userArn = str(users["Arn"])
         # Get keys per User
@@ -235,20 +237,20 @@ def user_permission_boundary_check(cache: dict, session, awsAccountId: str, awsR
     """[IAM.2] IAM users should have permissions boundaries attached"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for users in list_users(cache, session)["Users"]:
+    for users in list_users(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(users,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         userName = str(users["UserName"])
         userArn = str(users["Arn"])
         try:
-            # this value isn't actually going to be used - we need to check if it there
+            # this value isn"t actually going to be used - we need to check if it there
             users["PermissionsBoundary"]["PermissionsBoundaryArn"]
             hasPermBoundary = True
         except KeyError:
             hasPermBoundary = False
         # this is a passing check
-        if hasPermBoundary == True:
+        if hasPermBoundary is True:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{userArn}/iam-user-permissions-boundary-check",
@@ -297,21 +299,17 @@ def user_permission_boundary_check(cache: dict, session, awsAccountId: str, awsR
                     "Status": "PASSED",
                     "RelatedRequirements": [
                         "NIST CSF V1.1 PR.AC-4",
-                        "NIST SP 800-53 Rev. 4 AC-1",
                         "NIST SP 800-53 Rev. 4 AC-2",
                         "NIST SP 800-53 Rev. 4 AC-3",
                         "NIST SP 800-53 Rev. 4 AC-5",
                         "NIST SP 800-53 Rev. 4 AC-6",
-                        "NIST SP 800-53 Rev. 4 AC-14",
                         "NIST SP 800-53 Rev. 4 AC-16",
-                        "NIST SP 800-53 Rev. 4 AC-24",
                         "AICPA TSC CC6.3",
                         "ISO 27001:2013 A.6.1.2",
                         "ISO 27001:2013 A.9.1.2",
                         "ISO 27001:2013 A.9.2.3",
                         "ISO 27001:2013 A.9.4.1",
-                        "ISO 27001:2013 A.9.4.4",
-                        "ISO 27001:2013 A.9.4.5"
+                        "ISO 27001:2013 A.9.4.4"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -368,21 +366,17 @@ def user_permission_boundary_check(cache: dict, session, awsAccountId: str, awsR
                     "Status": "FAILED",
                     "RelatedRequirements": [
                         "NIST CSF V1.1 PR.AC-4",
-                        "NIST SP 800-53 Rev. 4 AC-1",
                         "NIST SP 800-53 Rev. 4 AC-2",
                         "NIST SP 800-53 Rev. 4 AC-3",
                         "NIST SP 800-53 Rev. 4 AC-5",
                         "NIST SP 800-53 Rev. 4 AC-6",
-                        "NIST SP 800-53 Rev. 4 AC-14",
                         "NIST SP 800-53 Rev. 4 AC-16",
-                        "NIST SP 800-53 Rev. 4 AC-24",
                         "AICPA TSC CC6.3",
                         "ISO 27001:2013 A.6.1.2",
                         "ISO 27001:2013 A.9.1.2",
                         "ISO 27001:2013 A.9.2.3",
                         "ISO 27001:2013 A.9.4.1",
-                        "ISO 27001:2013 A.9.4.4",
-                        "ISO 27001:2013 A.9.4.5"
+                        "ISO 27001:2013 A.9.4.4"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -396,7 +390,7 @@ def user_mfa_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
     iam = session.client("iam")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for users in list_users(cache, session)["Users"]:
+    for users in list_users(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(users,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -409,7 +403,7 @@ def user_mfa_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
         except KeyError:
             pwCheck = False
         # If there is a password, evaluate if there any MFA devices
-        if pwCheck == True:
+        if pwCheck is True:
             # this is a failing check due to the list comprehension returning empty (false)
             if not iam.list_mfa_devices(UserName=userName)["MFADevices"]:
                 finding = {
@@ -425,7 +419,7 @@ def user_mfa_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
                     "Severity": {"Label": "HIGH"},
                     "Confidence": 99,
                     "Title": "[IAM.3] IAM users should have Multi-Factor Authentication (MFA) enabled",
-                    "Description": f"IAM user {userName} does not have MFA enabled. For increased security, AWS recommends that you configure multi-factor authentication (MFA) to help protect your AWS resources. Refer to the remediation section if this behavior is not intended.",
+                    "Description": f"IAM user {userName} does not have MFA enabled. For increased security, AWS recommends that you configure multi-factor authentication (MFA) to help protect your AWS resources. Passwords are the most common method of authenticating a sign-in to a computer or online service, but they're also the most vulnerable. People can choose easy passwords and use the same passwords for multiple sign-ins to different computers and services. To provide an extra level of security for sign-ins, you must use multifactor authentication (MFA), which uses both a password, which should be strong, and an additional verification method based on either something you have with you that isn't easily duplicated, such as Time-based One Time Password (TOTP) generation application such as Google Authenticator or using a FIDO2 hardware key such as a Yubikey. The additional verification method isn't employed until after the user's password has been verified. With MFA, even if a strong user password is compromised, the attacker doesn't have your smart phone or your fingerprint to complete the sign-in. Refer to the remediation section if this behavior is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For information on MFA refer to the Using Multi-Factor Authentication (MFA) in AWS section of the AWS IAM User Guide",
@@ -654,7 +648,7 @@ def user_inline_policy_check(cache: dict, session, awsAccountId: str, awsRegion:
     iam = session.client("iam")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for users in list_users(cache, session)["Users"]:
+    for users in list_users(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(users,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -826,7 +820,7 @@ def user_direct_attached_policy_check(cache: dict, session, awsAccountId: str, a
     iam = session.client("iam")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for users in list_users(cache, session)["Users"]:
+    for users in list_users(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(users,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -1003,24 +997,36 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccoun
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        pwPolicy = response["PasswordPolicy"]
-        minPwLength = int(pwPolicy["MinimumPasswordLength"])
-        symbolReq = str(pwPolicy["RequireSymbols"])
-        numberReq = str(pwPolicy["RequireNumbers"])
-        uppercaseReq = str(pwPolicy["RequireUppercaseCharacters"])
-        lowercaseReq = str(pwPolicy["RequireLowercaseCharacters"])
-        maxPwAge = int(pwPolicy["MaxPasswordAge"])
-        pwReuse = int(pwPolicy["PasswordReusePrevention"])
+
+        # Sometimes, PW Policy attributes are missing which would make it a fail - different than the error of it not being enabled at all
+        try:
+            pwPolicy = response["PasswordPolicy"]
+            
+            minPwLength = pwPolicy["MinimumPasswordLength"]
+            symbolReq = pwPolicy["RequireSymbols"]
+            numberReq = pwPolicy["RequireNumbers"]
+            uppercaseReq = pwPolicy["RequireUppercaseCharacters"]
+            lowercaseReq = pwPolicy["RequireLowercaseCharacters"]
+            maxPwAge = pwPolicy["MaxPasswordAge"]
+            pwReuse = pwPolicy["PasswordReusePrevention"]
+
+            if (
+                minPwLength >= 14
+                and maxPwAge <= 90
+                and pwReuse >= 24
+                and symbolReq is True
+                and numberReq is True
+                and uppercaseReq is True
+                and lowercaseReq is True
+            ):
+                cisCompliantPolicy = True
+            else:
+                cisCompliantPolicy = False
+        except KeyError:
+            print("IAM Password Policy is missing one or more attributes, this is a failing check.")
+            cisCompliantPolicy = False
         
-        if (
-            minPwLength >= 14
-            and maxPwAge <= 90
-            and pwReuse >= 24
-            and symbolReq == "True"
-            and numberReq == "True"
-            and uppercaseReq == "True"
-            and lowercaseReq == "True"
-        ):
+        if cisCompliantPolicy is True:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": awsAccountId + "/cis-aws-foundations-benchmark-pw-policy-check",
@@ -1173,7 +1179,7 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccoun
     # this is a failing check
     except botocore.exceptions.ClientError as error:
         # Handle "NoSuchEntity" exception which means the PW policy does not exist
-        if error.response['Error']['Code'] == 'NoSuchEntity':
+        if error.response["Error"]["Code"] == "NoSuchEntity":
             # B64 encode all of the details for the Asset
             assetB64 = None
             finding = {
@@ -1423,44 +1429,44 @@ def iam_created_managed_policy_least_priv_check(cache: dict, session, awsAccount
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
-        for mpolicy in iam.list_policies(Scope='Local')['Policies']:
+        for mpolicy in iam.list_policies(Scope="Local")["Policies"]:
             # B64 encode all of the details for the Asset
             assetJson = json.dumps(mpolicy,default=str).encode("utf-8")
             assetB64 = base64.b64encode(assetJson)
-            policyArn = mpolicy['Arn']
-            versionId = mpolicy['DefaultVersionId']
+            policyArn = mpolicy["Arn"]
+            versionId = mpolicy["DefaultVersionId"]
             policyDocument = iam.get_policy_version(
                 PolicyArn=policyArn,
                 VersionId=versionId
-            )['PolicyVersion']['Document']
+            )["PolicyVersion"]["Document"]
             #handle policies docs returned as strings
             if type(policyDocument) == str:
                 policyDocument = json.loads(policyDocument)
 
-            leastPrivilegeRating = 'passing'
-            for statement in policyDocument['Statement']:
-                if statement["Effect"] == 'Allow':
-                    if statement.get('Condition') == None: 
+            leastPrivilegeRating = "passing"
+            for statement in policyDocument["Statement"]:
+                if statement["Effect"] == "Allow":
+                    if statement.get("Condition") == None: 
                         # action structure could be a string or a list
-                        if type(statement['Action']) == list: 
-                            if len(['True' for x in statement['Action'] if ":*" in x or '*' == x]) > 0:
-                                if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                    leastPrivilegeRating = 'failedHigh'
+                        if type(statement["Action"]) == list: 
+                            if len(["True" for x in statement["Action"] if ":*" in x or "*" == x]) > 0:
+                                if type(statement["Resource"]) == str and statement["Resource"] == "*":
+                                    leastPrivilegeRating = "failedHigh"
                                     # Means that an initial failure will not be overwritten by a lower finding later
                                     next
-                                elif type(statement['Resource']) == list: 
-                                    leastPrivilegeRating = 'failedLow'
+                                elif type(statement["Resource"]) == list: 
+                                    leastPrivilegeRating = "failedLow"
 
                         # Single action in a statement
-                        elif type(statement['Action']) == str:
-                            if ":*" in statement['Action'] or statement['Action'] == '*':
-                                if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                    leastPrivilegeRating = 'failedHigh'
+                        elif type(statement["Action"]) == str:
+                            if ":*" in statement["Action"] or statement["Action"] == "*":
+                                if type(statement["Resource"]) == str and statement["Resource"] == "*":
+                                    leastPrivilegeRating = "failedHigh"
                                     # Means that an initial failure will not be overwritten by a lower finding later
                                     next
-                                elif type(statement['Resource']) == list: 
-                                    leastPrivilegeRating = 'failedLow'
-            if leastPrivilegeRating == 'passing':
+                                elif type(statement["Resource"]) == list: 
+                                    leastPrivilegeRating = "failedLow"
+            if leastPrivilegeRating == "passing":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": f"{policyArn}/mpolicy_least_priv",
@@ -1526,7 +1532,7 @@ def iam_created_managed_policy_least_priv_check(cache: dict, session, awsAccount
                     "RecordState": "ARCHIVED",
                 }
                 yield finding
-            elif leastPrivilegeRating == 'failedLow':
+            elif leastPrivilegeRating == "failedLow":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": f"{policyArn}/mpolicy_least_priv",
@@ -1592,7 +1598,7 @@ def iam_created_managed_policy_least_priv_check(cache: dict, session, awsAccount
                     "RecordState": "ACTIVE",
                 }
                 yield finding
-            elif leastPrivilegeRating == 'failedHigh':
+            elif leastPrivilegeRating == "failedHigh":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": f"{policyArn}/mpolicy_least_priv",
@@ -1667,52 +1673,52 @@ def iam_user_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
     """[IAM.9] User inline policies should follow least privilege principles"""
     iam = session.client("iam")
     try:
-        for users in list_users(cache, session)["Users"]:
+        for users in list_users(cache, session):
             # B64 encode all of the details for the Asset
             assetJson = json.dumps(users,default=str).encode("utf-8")
             assetB64 = base64.b64encode(assetJson)
-            userArn = users['Arn']
-            userName = users['UserName']
+            userArn = users["Arn"]
+            userName = users["UserName"]
 
             policyNames = iam.list_user_policies(
                 UserName=userName
-            )['PolicyNames']
+            )["PolicyNames"]
             for policyName in policyNames:
                 policyDocument = iam.get_user_policy(
                     UserName=userName,
                     PolicyName=policyName
-                )['PolicyDocument']
+                )["PolicyDocument"]
 
                 #handle policies docs returned as strings
                 if type(policyDocument) == str:
                     policyDocument = json.loads(policyDocument)
 
-                leastPrivilegeRating = 'passing'
-                for statement in policyDocument['Statement']:
-                    if statement["Effect"] == 'Allow':
-                        if statement.get('Condition') == None: 
+                leastPrivilegeRating = "passing"
+                for statement in policyDocument["Statement"]:
+                    if statement["Effect"] == "Allow":
+                        if statement.get("Condition") == None: 
                             # action structure could be a string or a list
-                            if type(statement['Action']) == list: 
-                                if len(['True' for x in statement['Action'] if ":*" in x or '*' == x]) > 0:
-                                    if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        leastPrivilegeRating = 'failedHigh'
+                            if type(statement["Action"]) == list: 
+                                if len(["True" for x in statement["Action"] if ":*" in x or "*" == x]) > 0:
+                                    if type(statement["Resource"]) == str and statement["Resource"] == "*":
+                                        leastPrivilegeRating = "failedHigh"
                                         # Means that an initial failure will not be overwritten by a lower finding later
                                         next
-                                    elif type(statement['Resource']) == list: 
-                                        leastPrivilegeRating = 'failedLow'
+                                    elif type(statement["Resource"]) == list: 
+                                        leastPrivilegeRating = "failedLow"
 
                             # Single action in a statement
-                            elif type(statement['Action']) == str:
-                                if ":*" in statement['Action'] or statement['Action'] == '*':
-                                    if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        leastPrivilegeRating = 'failedHigh'
+                            elif type(statement["Action"]) == str:
+                                if ":*" in statement["Action"] or statement["Action"] == "*":
+                                    if type(statement["Resource"]) == str and statement["Resource"] == "*":
+                                        leastPrivilegeRating = "failedHigh"
                                         # Means that an initial failure will not be overwritten by a lower finding later
                                         next
-                                    elif type(statement['Resource']) == list: 
-                                        leastPrivilegeRating = 'failedLow'
+                                    elif type(statement["Resource"]) == list: 
+                                        leastPrivilegeRating = "failedLow"
 
                 iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-                if leastPrivilegeRating == 'passing':
+                if leastPrivilegeRating == "passing":
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": f"{userArn}/user_policy_least_priv",
@@ -1765,25 +1771,25 @@ def iam_user_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                         "Compliance": {
                             "Status": "PASSED",
                             "RelatedRequirements": [
-                                "NIST CSF V1.1 PR.AC-3",
-                                "NIST SP 800-53 Rev. 4 AC-1",
-                                "NIST SP 800-53 Rev. 4 AC-17",
-                                "NIST SP 800-53 Rev. 4 AC-19",
-                                "NIST SP 800-53 Rev. 4 AC-20",
-                                "NIST SP 800-53 Rev. 4 SC-15",
-                                "AICPA TSC CC6.6",
-                                "ISO 27001:2013 A.6.2.1",
-                                "ISO 27001:2013 A.6.2.2",
-                                "ISO 27001:2013 A.11.2.6",
-                                "ISO 27001:2013 A.13.1.1",
-                                "ISO 27001:2013 A.13.2.1"
-                            ],
+                                "NIST CSF V1.1 PR.AC-4",
+                                "NIST SP 800-53 Rev. 4 AC-2",
+                                "NIST SP 800-53 Rev. 4 AC-3",
+                                "NIST SP 800-53 Rev. 4 AC-5",
+                                "NIST SP 800-53 Rev. 4 AC-6",
+                                "NIST SP 800-53 Rev. 4 AC-16",
+                                "AICPA TSC CC6.3",
+                                "ISO 27001:2013 A.6.1.2",
+                                "ISO 27001:2013 A.9.1.2",
+                                "ISO 27001:2013 A.9.2.3",
+                                "ISO 27001:2013 A.9.4.1",
+                                "ISO 27001:2013 A.9.4.4"
+                            ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
                         "RecordState": "ARCHIVED",
                     }
                     yield finding
-                elif leastPrivilegeRating == 'failedLow':
+                elif leastPrivilegeRating == "failedLow":
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": f"{userArn}/user_policy_least_priv",
@@ -1836,25 +1842,25 @@ def iam_user_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                         "Compliance": {
                             "Status": "FAILED",
                             "RelatedRequirements": [
-                                "NIST CSF V1.1 PR.AC-3",
-                                "NIST SP 800-53 Rev. 4 AC-1",
-                                "NIST SP 800-53 Rev. 4 AC-17",
-                                "NIST SP 800-53 Rev. 4 AC-19",
-                                "NIST SP 800-53 Rev. 4 AC-20",
-                                "NIST SP 800-53 Rev. 4 SC-15",
-                                "AICPA TSC CC6.6",
-                                "ISO 27001:2013 A.6.2.1",
-                                "ISO 27001:2013 A.6.2.2",
-                                "ISO 27001:2013 A.11.2.6",
-                                "ISO 27001:2013 A.13.1.1",
-                                "ISO 27001:2013 A.13.2.1"
-                            ],
+                                "NIST CSF V1.1 PR.AC-4",
+                                "NIST SP 800-53 Rev. 4 AC-2",
+                                "NIST SP 800-53 Rev. 4 AC-3",
+                                "NIST SP 800-53 Rev. 4 AC-5",
+                                "NIST SP 800-53 Rev. 4 AC-6",
+                                "NIST SP 800-53 Rev. 4 AC-16",
+                                "AICPA TSC CC6.3",
+                                "ISO 27001:2013 A.6.1.2",
+                                "ISO 27001:2013 A.9.1.2",
+                                "ISO 27001:2013 A.9.2.3",
+                                "ISO 27001:2013 A.9.4.1",
+                                "ISO 27001:2013 A.9.4.4"
+                            ]
                         },
                         "Workflow": {"Status": "NEW"},
                         "RecordState": "ACTIVE",
                     }
                     yield finding
-                elif leastPrivilegeRating == 'failedHigh':
+                elif leastPrivilegeRating == "failedHigh":
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": f"{userArn}/user_policy_least_priv",
@@ -1907,19 +1913,19 @@ def iam_user_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                         "Compliance": {
                             "Status": "FAILED",
                             "RelatedRequirements": [
-                                "NIST CSF V1.1 PR.AC-3",
-                                "NIST SP 800-53 Rev. 4 AC-1",
-                                "NIST SP 800-53 Rev. 4 AC-17",
-                                "NIST SP 800-53 Rev. 4 AC-19",
-                                "NIST SP 800-53 Rev. 4 AC-20",
-                                "NIST SP 800-53 Rev. 4 SC-15",
-                                "AICPA TSC CC6.6",
-                                "ISO 27001:2013 A.6.2.1",
-                                "ISO 27001:2013 A.6.2.2",
-                                "ISO 27001:2013 A.11.2.6",
-                                "ISO 27001:2013 A.13.1.1",
-                                "ISO 27001:2013 A.13.2.1"
-                            ],
+                                "NIST CSF V1.1 PR.AC-4",
+                                "NIST SP 800-53 Rev. 4 AC-2",
+                                "NIST SP 800-53 Rev. 4 AC-3",
+                                "NIST SP 800-53 Rev. 4 AC-5",
+                                "NIST SP 800-53 Rev. 4 AC-6",
+                                "NIST SP 800-53 Rev. 4 AC-16",
+                                "AICPA TSC CC6.3",
+                                "ISO 27001:2013 A.6.1.2",
+                                "ISO 27001:2013 A.9.1.2",
+                                "ISO 27001:2013 A.9.2.3",
+                                "ISO 27001:2013 A.9.4.1",
+                                "ISO 27001:2013 A.9.4.4"
+                            ]
                         },
                         "Workflow": {"Status": "NEW"},
                         "RecordState": "ACTIVE",
@@ -1935,52 +1941,52 @@ def iam_group_policy_least_priv_check(cache: dict, session, awsAccountId: str, a
     iam = session.client("iam")
     try:
         Groups = iam.list_groups()
-        for group in Groups['Groups']:
+        for group in Groups["Groups"]:
             # B64 encode all of the details for the Asset
             assetJson = json.dumps(group,default=str).encode("utf-8")
             assetB64 = base64.b64encode(assetJson)
-            groupArn = group['Arn']
-            groupName = group['GroupName']
+            groupArn = group["Arn"]
+            groupName = group["GroupName"]
 
             policyNames = iam.list_group_policies(
                 GroupName=groupName
-            )['PolicyNames']
+            )["PolicyNames"]
             for policyName in policyNames:
                 policyDocument = iam.get_group_policy(
                     GroupName=groupName,
                     PolicyName=policyName
-                )['PolicyDocument']
+                )["PolicyDocument"]
 
                 #handle policies docs returned as strings
                 if type(policyDocument) == str:
                     policyDocument = json.loads(policyDocument)
 
-                leastPrivilegeRating = 'passing'
-                for statement in policyDocument['Statement']:
-                    if statement["Effect"] == 'Allow':
-                        if statement.get('Condition') == None: 
+                leastPrivilegeRating = "passing"
+                for statement in policyDocument["Statement"]:
+                    if statement["Effect"] == "Allow":
+                        if statement.get("Condition") == None: 
                             # action structure could be a string or a list
-                            if type(statement['Action']) == list: 
-                                if len(['True' for x in statement['Action'] if ":*" in x or '*' == x]) > 0:
-                                    if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        leastPrivilegeRating = 'failedHigh'
+                            if type(statement["Action"]) == list: 
+                                if len(["True" for x in statement["Action"] if ":*" in x or "*" == x]) > 0:
+                                    if type(statement["Resource"]) == str and statement["Resource"] == "*":
+                                        leastPrivilegeRating = "failedHigh"
                                         # Means that an initial failure will not be overwritten by a lower finding later
                                         next
-                                    elif type(statement['Resource']) == list: 
-                                        leastPrivilegeRating = 'failedLow'
+                                    elif type(statement["Resource"]) == list: 
+                                        leastPrivilegeRating = "failedLow"
 
                             # Single action in a statement
-                            elif type(statement['Action']) == str:
-                                if ":*" in statement['Action'] or statement['Action'] == '*':
-                                    if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        leastPrivilegeRating = 'failedHigh'
+                            elif type(statement["Action"]) == str:
+                                if ":*" in statement["Action"] or statement["Action"] == "*":
+                                    if type(statement["Resource"]) == str and statement["Resource"] == "*":
+                                        leastPrivilegeRating = "failedHigh"
                                         # Means that an initial failure will not be overwritten by a lower finding later
                                         next
-                                    elif type(statement['Resource']) == list: 
-                                        leastPrivilegeRating = 'failedLow'
+                                    elif type(statement["Resource"]) == list: 
+                                        leastPrivilegeRating = "failedLow"
 
                 iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-                if leastPrivilegeRating == 'passing':
+                if leastPrivilegeRating == "passing":
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": f"{groupArn}/group_policy_least_priv",
@@ -2033,25 +2039,25 @@ def iam_group_policy_least_priv_check(cache: dict, session, awsAccountId: str, a
                         "Compliance": {
                             "Status": "PASSED",
                             "RelatedRequirements": [
-                                "NIST CSF V1.1 PR.AC-3",
-                                "NIST SP 800-53 Rev. 4 AC-1",
-                                "NIST SP 800-53 Rev. 4 AC-17",
-                                "NIST SP 800-53 Rev. 4 AC-19",
-                                "NIST SP 800-53 Rev. 4 AC-20",
-                                "NIST SP 800-53 Rev. 4 SC-15",
-                                "AICPA TSC CC6.6",
-                                "ISO 27001:2013 A.6.2.1",
-                                "ISO 27001:2013 A.6.2.2",
-                                "ISO 27001:2013 A.11.2.6",
-                                "ISO 27001:2013 A.13.1.1",
-                                "ISO 27001:2013 A.13.2.1"
-                            ],
+                                "NIST CSF V1.1 PR.AC-4",
+                                "NIST SP 800-53 Rev. 4 AC-2",
+                                "NIST SP 800-53 Rev. 4 AC-3",
+                                "NIST SP 800-53 Rev. 4 AC-5",
+                                "NIST SP 800-53 Rev. 4 AC-6",
+                                "NIST SP 800-53 Rev. 4 AC-16",
+                                "AICPA TSC CC6.3",
+                                "ISO 27001:2013 A.6.1.2",
+                                "ISO 27001:2013 A.9.1.2",
+                                "ISO 27001:2013 A.9.2.3",
+                                "ISO 27001:2013 A.9.4.1",
+                                "ISO 27001:2013 A.9.4.4"
+                            ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
                         "RecordState": "ARCHIVED",
                     }
                     yield finding
-                elif leastPrivilegeRating == 'failedLow':
+                elif leastPrivilegeRating == "failedLow":
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": f"{groupArn}/group_policy_least_priv",
@@ -2104,25 +2110,25 @@ def iam_group_policy_least_priv_check(cache: dict, session, awsAccountId: str, a
                         "Compliance": {
                             "Status": "FAILED",
                             "RelatedRequirements": [
-                                "NIST CSF V1.1 PR.AC-3",
-                                "NIST SP 800-53 Rev. 4 AC-1",
-                                "NIST SP 800-53 Rev. 4 AC-17",
-                                "NIST SP 800-53 Rev. 4 AC-19",
-                                "NIST SP 800-53 Rev. 4 AC-20",
-                                "NIST SP 800-53 Rev. 4 SC-15",
-                                "AICPA TSC CC6.6",
-                                "ISO 27001:2013 A.6.2.1",
-                                "ISO 27001:2013 A.6.2.2",
-                                "ISO 27001:2013 A.11.2.6",
-                                "ISO 27001:2013 A.13.1.1",
-                                "ISO 27001:2013 A.13.2.1"
-                            ],
+                                "NIST CSF V1.1 PR.AC-4",
+                                "NIST SP 800-53 Rev. 4 AC-2",
+                                "NIST SP 800-53 Rev. 4 AC-3",
+                                "NIST SP 800-53 Rev. 4 AC-5",
+                                "NIST SP 800-53 Rev. 4 AC-6",
+                                "NIST SP 800-53 Rev. 4 AC-16",
+                                "AICPA TSC CC6.3",
+                                "ISO 27001:2013 A.6.1.2",
+                                "ISO 27001:2013 A.9.1.2",
+                                "ISO 27001:2013 A.9.2.3",
+                                "ISO 27001:2013 A.9.4.1",
+                                "ISO 27001:2013 A.9.4.4"
+                            ]
                         },
                         "Workflow": {"Status": "NEW"},
                         "RecordState": "ACTIVE",
                     }
                     yield finding
-                elif leastPrivilegeRating == 'failedHigh':
+                elif leastPrivilegeRating == "failedHigh":
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": f"{groupArn}/group_policy_least_priv",
@@ -2175,19 +2181,19 @@ def iam_group_policy_least_priv_check(cache: dict, session, awsAccountId: str, a
                         "Compliance": {
                             "Status": "FAILED",
                             "RelatedRequirements": [
-                                "NIST CSF V1.1 PR.AC-3",
-                                "NIST SP 800-53 Rev. 4 AC-1",
-                                "NIST SP 800-53 Rev. 4 AC-17",
-                                "NIST SP 800-53 Rev. 4 AC-19",
-                                "NIST SP 800-53 Rev. 4 AC-20",
-                                "NIST SP 800-53 Rev. 4 SC-15",
-                                "AICPA TSC CC6.6",
-                                "ISO 27001:2013 A.6.2.1",
-                                "ISO 27001:2013 A.6.2.2",
-                                "ISO 27001:2013 A.11.2.6",
-                                "ISO 27001:2013 A.13.1.1",
-                                "ISO 27001:2013 A.13.2.1"
-                            ],
+                                "NIST CSF V1.1 PR.AC-4",
+                                "NIST SP 800-53 Rev. 4 AC-2",
+                                "NIST SP 800-53 Rev. 4 AC-3",
+                                "NIST SP 800-53 Rev. 4 AC-5",
+                                "NIST SP 800-53 Rev. 4 AC-6",
+                                "NIST SP 800-53 Rev. 4 AC-16",
+                                "AICPA TSC CC6.3",
+                                "ISO 27001:2013 A.6.1.2",
+                                "ISO 27001:2013 A.9.1.2",
+                                "ISO 27001:2013 A.9.2.3",
+                                "ISO 27001:2013 A.9.4.1",
+                                "ISO 27001:2013 A.9.4.4"
+                            ]
                         },
                         "Workflow": {"Status": "NEW"},
                         "RecordState": "ACTIVE",
@@ -2204,51 +2210,51 @@ def iam_role_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
         Roles = iam.list_roles()
-        for role in Roles['Roles']:
+        for role in Roles["Roles"]:
             # B64 encode all of the details for the Asset
             assetJson = json.dumps(role,default=str).encode("utf-8")
             assetB64 = base64.b64encode(assetJson)
-            roleArn = role['Arn']
-            roleName = role['RoleName']
+            roleArn = role["Arn"]
+            roleName = role["RoleName"]
 
             policyNames = iam.list_role_policies(
                 RoleName=roleName
-            )['PolicyNames']
+            )["PolicyNames"]
             for policyName in policyNames:
                 policyDocument = iam.get_role_policy(
                     RoleName=roleName,
                     PolicyName=policyName
-                )['PolicyDocument']
+                )["PolicyDocument"]
 
                 #handle policies docs returned as strings
                 if type(policyDocument) == str:
                     policyDocument = json.loads(policyDocument)
 
-                leastPrivilegeRating = 'passing'
-                for statement in policyDocument['Statement']:
-                    if statement["Effect"] == 'Allow':
-                        if statement.get('Condition') == None: 
+                leastPrivilegeRating = "passing"
+                for statement in policyDocument["Statement"]:
+                    if statement["Effect"] == "Allow":
+                        if statement.get("Condition") == None: 
                             # action structure could be a string or a list
-                            if type(statement['Action']) == list: 
-                                if len(['True' for x in statement['Action'] if ":*" in x or '*' == x]) > 0:
-                                    if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        leastPrivilegeRating = 'failedHigh'
+                            if type(statement["Action"]) == list: 
+                                if len(["True" for x in statement["Action"] if ":*" in x or "*" == x]) > 0:
+                                    if type(statement["Resource"]) == str and statement["Resource"] == "*":
+                                        leastPrivilegeRating = "failedHigh"
                                         # Means that an initial failure will not be overwritten by a lower finding later
                                         next
-                                    elif type(statement['Resource']) == list: 
-                                        leastPrivilegeRating = 'failedLow'
+                                    elif type(statement["Resource"]) == list: 
+                                        leastPrivilegeRating = "failedLow"
 
                             # Single action in a statement
-                            elif type(statement['Action']) == str:
-                                if ":*" in statement['Action'] or statement['Action'] == '*':
-                                    if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        leastPrivilegeRating = 'failedHigh'
+                            elif type(statement["Action"]) == str:
+                                if ":*" in statement["Action"] or statement["Action"] == "*":
+                                    if type(statement["Resource"]) == str and statement["Resource"] == "*":
+                                        leastPrivilegeRating = "failedHigh"
                                         # Means that an initial failure will not be overwritten by a lower finding later
                                         next
-                                    elif type(statement['Resource']) == list: 
-                                        leastPrivilegeRating = 'failedLow'
+                                    elif type(statement["Resource"]) == list: 
+                                        leastPrivilegeRating = "failedLow"
                 
-                if leastPrivilegeRating == 'passing':
+                if leastPrivilegeRating == "passing":
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": f"{roleArn}/role_policy_least_priv",
@@ -2319,7 +2325,7 @@ def iam_role_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                         "RecordState": "ARCHIVED",
                     }
                     yield finding
-                elif leastPrivilegeRating == 'failedLow':
+                elif leastPrivilegeRating == "failedLow":
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": f"{roleArn}/role_policy_least_priv",
@@ -2390,7 +2396,7 @@ def iam_role_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                         "RecordState": "ACTIVE",
                     }
                     yield finding
-                elif leastPrivilegeRating == 'failedHigh':
+                elif leastPrivilegeRating == "failedHigh":
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": f"{roleArn}/role_policy_least_priv",
@@ -2443,19 +2449,19 @@ def iam_role_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                         "Compliance": {
                             "Status": "FAILED",
                             "RelatedRequirements": [
-                                "NIST CSF V1.1 PR.AC-3",
-                                "NIST SP 800-53 Rev. 4 AC-1",
-                                "NIST SP 800-53 Rev. 4 AC-17",
-                                "NIST SP 800-53 Rev. 4 AC-19",
-                                "NIST SP 800-53 Rev. 4 AC-20",
-                                "NIST SP 800-53 Rev. 4 SC-15",
-                                "AICPA TSC CC6.6",
-                                "ISO 27001:2013 A.6.2.1",
-                                "ISO 27001:2013 A.6.2.2",
-                                "ISO 27001:2013 A.11.2.6",
-                                "ISO 27001:2013 A.13.1.1",
-                                "ISO 27001:2013 A.13.2.1"
-                            ],
+                                "NIST CSF V1.1 PR.AC-4",
+                                "NIST SP 800-53 Rev. 4 AC-2",
+                                "NIST SP 800-53 Rev. 4 AC-3",
+                                "NIST SP 800-53 Rev. 4 AC-5",
+                                "NIST SP 800-53 Rev. 4 AC-6",
+                                "NIST SP 800-53 Rev. 4 AC-16",
+                                "AICPA TSC CC6.3",
+                                "ISO 27001:2013 A.6.1.2",
+                                "ISO 27001:2013 A.9.1.2",
+                                "ISO 27001:2013 A.9.2.3",
+                                "ISO 27001:2013 A.9.4.1",
+                                "ISO 27001:2013 A.9.4.4"
+                            ]
                         },
                         "Workflow": {"Status": "NEW"},
                         "RecordState": "ACTIVE",

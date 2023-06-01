@@ -34,7 +34,7 @@ def list_environments(cache, session):
     cache["list_environments"] = mwaa.list_environments()
     return cache["list_environments"]
 
-@registry.register_check("mwaa")
+@registry.register_check("airflow")
 def mwaa_kms_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[MWAA.1] Managed Apache Airflow Environments should be encrypted with a KMS CMK"""
     mwaa = session.client("mwaa")
@@ -187,7 +187,7 @@ def mwaa_kms_encryption_check(cache: dict, session, awsAccountId: str, awsRegion
             }
             yield finding
 
-@registry.register_check("mwaa")
+@registry.register_check("airflow")
 def mwaa_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[MWAA.2] Managed Apache Airflow Environments should be use permit public URL access"""
     mwaa = session.client("mwaa")
@@ -347,7 +347,7 @@ def mwaa_public_access_check(cache: dict, session, awsAccountId: str, awsRegion:
             }
             yield finding
 
-@registry.register_check("mwaa")
+@registry.register_check("airflow")
 def mwaa_dag_processing_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[MWAA.3] Managed Apache Airflow Environments should have DAG Processing logs enabled"""
     mwaa = session.client("mwaa")
@@ -497,7 +497,7 @@ def mwaa_dag_processing_logging_check(cache: dict, session, awsAccountId: str, a
             }
             yield finding
 
-@registry.register_check("mwaa")
+@registry.register_check("airflow")
 def mwaa_scheduler_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[MWAA.4] Managed Apache Airflow Environments should have Scheduler logs enabled"""
     mwaa = session.client("mwaa")
@@ -647,7 +647,7 @@ def mwaa_scheduler_logging_check(cache: dict, session, awsAccountId: str, awsReg
             }
             yield finding
 
-@registry.register_check("mwaa")
+@registry.register_check("airflow")
 def mwaa_task_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[MWAA.5] Managed Apache Airflow Environments should have Task logs enabled"""
     mwaa = session.client("mwaa")
@@ -797,7 +797,7 @@ def mwaa_task_logging_check(cache: dict, session, awsAccountId: str, awsRegion: 
             }
             yield finding
 
-@registry.register_check("mwaa")
+@registry.register_check("airflow")
 def mwaa_webserver_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[MWAA.6] Managed Apache Airflow Environments should have Webserver logs enabled"""
     mwaa = session.client("mwaa")
@@ -947,7 +947,7 @@ def mwaa_webserver_logging_check(cache: dict, session, awsAccountId: str, awsReg
             }
             yield finding
 
-@registry.register_check("mwaa")
+@registry.register_check("airflow")
 def mwaa_worker_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[MWAA.7] Managed Apache Airflow Environments should have Worker logs enabled"""
     mwaa = session.client("mwaa")

@@ -1,0 +1,54 @@
+name: "Syft & Grype SBOM and Vuln Scan"
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  Anchore-Syft-Grype:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout le branch
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Build the ElectricEye Docker Image, locally
+      - name: Build ElectricEye Docker Image
+        run: docker build . --file Dockerfile --tag localbuild/electriceye:latest
+
+      # Generate an CycloneDX JSON SBOM with Syft on the Image
+      - name: Generate CDX SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          image: localbuild/electriceye:latest
+          format: cyclonedx-json # the One True SBOM Format
+          artifact-name: syft-cdx-sbom.json
+          output-file: syft-cdx-sbom.json
+
+      # Print SBOM to stdout
+      - name: SBOM Printer Goes Brrrr
+        run: cat "syft-cdx-sbom.json"
+
+      # Scan the CDX SBOM with Grype
+      - name: Grype Scan SBOM
+        uses: anchore/scan-action@v3.3.5
+        id: scan
+        with:
+          output-format: sarif
+          sbom: "syft-cdx-sbom.json"
+          severity-cutoff: critical
+          fail-build: true
+
+      # Print Grype SARIF Report to stdout
+      - name: View Grype Scan SBOM Report
+        if: always() # run when build fails too
+        run: cat "${{ steps.scan.outputs.sarif }}"
+
+      # Upload Grype SARIF Report to GitHub Security
+      - name: Upload Grype Scan SBOM Report
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: ${{ steps.scan.outputs.sarif }}

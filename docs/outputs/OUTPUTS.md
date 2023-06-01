@@ -1,12 +1,14 @@
 # ElectricEye Outputs
 
-This documentation is all about Outputs supported by ElectricEye and how to configure them with the Command-line and/or TOML file.
+This documentation is all about Outputs supported by ElectricEye and how to configure them with the Command-line and/or TOML configuration file.
 
 ## Table of Contents
 
 - [Key Considerations](#key-considerations)
 - [`stdout` Output](#stdout-output)
 - [JSON Output](#json-output)
+- [HTML Output](#html-output)
+- [HTML Compliance Output](#html-compliance-output)
 - [Normalized JSON Output](#json-normalized-output)
 - [Cloud Asset Management JSON Output](#json-cloud-asset-management-cam-output)
 - [CSV Output](#csv-output)
@@ -18,6 +20,8 @@ This documentation is all about Outputs supported by ElectricEye and how to conf
 - [Firemon Cloud Defense (DisruptOps) Output](#firemon-cloud-defense-disruptops-output)
 - [AWS DynamoDB Output](#aws-dynamodb-output)
 - [Amazon Simple Queue Service (SQS) Output](#amazon-simple-queue-service-sqs-output)
+- [Slack Output](#slack-output)
+- [Microsoft Teams Summary Output](#microsoft-teams-summary-output)
 
 ## Key Considerations
 
@@ -29,8 +33,10 @@ To review the list of possible Output providers, use the following ElectricEye c
 
 ```bash
 $ python3 eeauditor/controller.py --list-options
-['firemon_cloud_defense', 'json', 'sechub', 'json_normalized', 'postgresql', 'cam_json', 'csv', 'stdout', 'mongodb', 'ddb_backend', 'cam_postgresql']
+['amazon_sqs', 'cam_json', 'cam_mongodb', 'cam_postgresql', 'csv', 'ddb_backend', 'firemon_cloud_defense', 'html', 'html_compliance', 'json', 'json_normalized', 'mongodb', 'postgresql', 'sechub', 'slack', 'stdout']
 ```
+
+#### IMPORTANT NOTE!! You can specify multiple Outputs by providing the `-o` or `--outputs` argument multiple times, for instance: `python3 eeauditor/controller.py -t AWS -o json -o csv -o postgresql`
 
 For ***file-based Ouputs*** such as JSON or CSV, the filename is controlled using the `--output-file` argument, if provided for other Outputs it will be ignored. Note that you do not need to specify a MIME type (e.g., `.csv`, `.json`), this will be handled by the Output Processor
 
@@ -39,6 +45,7 @@ $ python3 eeauditor/controller.py --output-file my_important_file -o json -t AWS
 ```
 
 All other Output attributes are controlled in the [TOML Configuration File](../../eeauditor/external_providers.toml) underneath the `[Outputs]` heading, ensure that any sensitive values you provide match the selection within `[global.credentials_location]`. At this time, it is **NOT POSSIBLE** to mix-and-match credential locations between local files, SSM, ASM, or otherwise.
+
 
 ```toml
 
@@ -121,7 +128,41 @@ To use this Output include the following arguments in your ElectricEye CLI: `pyt
 
 **NOTE** This was screen-captured on a 3840x2160 screen at 67% zoom, so it looks like shit, sorry.
 
-![HTML JPG](../../screenshots/html_output.jpg)
+![HTML JPG](../../screenshots/outputs/html_output.jpg)
+
+## HTML Compliance Output
+
+The HTML "Compliance" Output produces a graphical HTML report consisting of `matplotlib` horizontal bar charts and pie charts which denote the pass vs. fail of each major compliance/best practice framework covered by ElectricEye as well as a per-control status per Framework. In addition, each control status is enriched with aggregated asset data including how many resources in total were assessed for a control, how many unique Asset Classes, Services, and Components, and the control objectives from the framework/standard authors is also provided. This report will provide a high-level summary of what was scanned which goes into much further detail than the regular `html` output while sacrificing per-Asset and per-Finding granularity.
+
+The generated Table supports dyanmic scrolling, hidden scroll bars, and will use [iconography.yaml](../../eeauditor/processor/outputs/iconography.yaml) to generate in-line `<img>` tags for each Framework and will also use several JSON files locally saved within this repository to populate the control objectives such as [this one for AICPA TSCs](../../eeauditor/processor/outputs/aicpa_tscs.json).
+
+The Table format follows this schema in HTML
+
+```html
+<thead>
+    <tr>
+        <th>Control Title</th>
+        <th>Control Objective</th>
+        <th>Control Passing Score</th>
+        <th>Unique Asset Classes Impacted</th>
+        <th>Unique Asset Services Impacted</th>
+        <th>Unique Asset Components Impacted</th>
+        <th>Total Check Evaluations in Scope</th>
+        <th>Passing Controls</th>
+        <th>Failing Controls</th>
+    </tr>
+</thead>
+```
+
+To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o html_compliance --output-file my_file_name_here`
+
+### Example HTML Compliance Report
+
+![HTML Compliance 1](../../screenshots/outputs/html_compliance_1.jpg)
+
+![HTML Compliance 2](../../screenshots/outputs/html_compliance_2.jpg)
+
+![HTML Compliance 3](../../screenshots/outputs/html_compliance_3.jpg)
 
 ## JSON Output
 
@@ -810,5 +851,104 @@ Additionally, values within the `[outputs.postgresql]` section of the TOML file 
 *Coming Soon*
 
 ## Amazon Simple Queue Service (SQS) Output
+
+The Amazon SQS Output selection will write all ElectricEye findings to an Amazon Simple Queue Service (SQS) queue by using `json.dumps()` to insert messages into the queue with a one-second delay. To make use of the messages in the queue, ensure you are parsing the `["body"]` using `json.loads()`, or using another library in your preferred language to load the stringified JSON back into a proper JSON object. Using Amazon SQS is a great way to distribute ElectricEye findings to many other locations using various messaging service architectures with Lambda or Amazon Simple Notification Service (SNS) topics.
+
+This Output will provide the `ProductFields.AssetDetails` information.
+
+To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o amazon_sqs`
+
+### Example Amazon Simple Queue Service (SQS) Output
+
+**NOTE**: The schema will look exactly like the [JSON Output Example](#example-json-output), however, the below example shows how it would look like to an AWS Lambda function that subscribes to the SQS queue.
+
+```
+{
+    "Records": [
+        {
+            "messageId": "7e23824d-EXAMPLEEXAMPLE-895f18577f72",
+            "receiptHandle": "AQEBOduIJm5ObZao9VF9aPM66S1AvbRIh5JhrEXAMPLEEXAMPLEfbqsfCFQfLDMn2GcE4LG1Y49+fQL8hZDxrE6UT3mS8fDfpfM6IEXz2/ez9ud9Y3qT0JTGjr4NWJscGHauEKnHxxjhPzVgygcPjcAXw+ylbyrTbqLpeUpoW/ZNw7SvmCO59t841J3vM2MkSmg0PKr7IpMVd0cJAyqUMuU652dcYVghkeqCB1J9UECIk+9f8RzLI9OESsch9KSAyiEWMTvxW6WtHbwXbeePn/JJBxDEXAMPLEEXAMPLEoRmej5STwkpZG64en4B1KWrw==",
+            "body": "{\"SchemaVersion\": \"2018-10-08\", \"Id\": \"arn:aws-cn:ec2:cn-northwest-1:456456456456:instance/i-04f4EXAMPLEEXAMPLEa9f186/ec2-public-facing-check\", \"ProductArn\": \"arn:aws-cn:securityhub:cn-northwest-1:456456456456:product/456456456456/default\", \"GeneratorId\": \"arn:aws-cn:ec2:cn-northwest-1:456456456456:instance/i-04f4EXAMPLEEXAMPLEa9f186\", \"AwsAccountId\": \"456456456456\", \"Types\": [\"Software and Configuration Checks/AWS Security Best Practices\", \"Effects/Data Exposure\"], \"Compliance\": {\"Status\": \"PASSED\", \"RelatedRequirements\": [\"NIST CSF V1.1 PR.AC-3\", \"NIST SP 800-53 Rev. 4 AC-1\", \"NIST SP 800-53 Rev. 4 AC-17\", \"NIST SP 800-53 Rev. 4 AC-19\", \"NIST SP 800-53 Rev. 4 AC-20\", \"NIST SP 800-53 Rev. 4 SC-15\", \"AICPA TSC CC6.6\", \"ISO 27001:2013 A.6.2.1\", \"ISO 27001:2013 A.6.2.2\", \"ISO 27001:2013 A.11.2.6\", \"ISO 27001:2013 A.13.1.1\", \"ISO 27001:2013 A.13.2.1\"]}, \"Workflow\": {\"Status\": \"RESOLVED\"}, \"RecordState\": \"ARCHIVED\"}",
+            "attributes": {
+                "ApproximateReceiveCount": "1",
+                "SentTimestamp": "16855989149",
+                "SenderId": "ARRRRRRRRRRRRRRRRR:i-123412341234",
+                "ApproximateFirstReceiveTimestamp": "16855989149"
+            },
+            "messageAttributes": {},
+            "md5OfBody": "16bb6daEXAMPLEEXAMPLE65a6dfc4e9",
+            "eventSource": "aws:sqs",
+            "eventSourceARN": "arn:aws-cn:sqs:cn-northwest-1:123412341234:EXAMPLEEXAMPLE",
+            "awsRegion": "cn-northwest-1"
+        },
+        {...}
+    ]
+}
+
+```
+
+## Slack Output
+
+The Slack output will use a Bot Token of a Slack App you have added to your Workspace to write findings using the [`chat.PostMessage`](https://api.slack.com/methods/chat.postMessage) API Endpoint to your Channel which has your App added to it. There are two modes that you can send Findings to slack, you can either choose to send an aggregated message that contains the amount of findings, assets, providers, and passing percentage or you can send a pre-filtered list of findings which will contain a snapshot of important information per finding. 
+
+Since ElectricEye does not track state, the integration will not be about to use the [`chat.update`](https://api.slack.com/methods/chat.update) or [`chat.delete`](https://api.slack.com/methods/chat.delete) APIs to update or delete findings. For more information on creating a Slack App Bot, refer to [Slack's documentation](https://api.slack.com/tutorials/tracks/create-bot-to-welcome-users), at the minimum you will need [`chat:write`](https://api.slack.com/scopes/chat:write) Scopes and to generate a Bot Token to authenticate against the `chat.PostMessage` API.
+
+This Output will *not* provide the `ProductFields.AssetDetails` information.
+
+To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o slack`
+
+Additionally, values within the `[outputs.slack]` section of the TOML file *must be provided* for this integration to work.
+
+- **`slack_app_bot_token_value`**: The location (or actual contents) of the Slack Bot Token associated with your Slack App - ensure that your App is added into the Channel you will specify and that it has "chat:write" Bot Token Scopes. This location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter.
+
+- **`slack_channel_identifier`**: The name or identifier for your Slack Channel you want ElectricEye to send findings to. Ensure that you Slack App has been added to this channel as well.
+
+- **`electric_eye_slack_message_type`**: Specify either `Summary` to send a Summary / aggregation of ElectricEye findings in a single message or use `Findings` partnered with the two other TOML parameters to send individual findings-per-message that match your state and severity criteria. This defaults to `Summary`.
+
+- **`electric_eye_slack_severity_filter`**: A list of `Severity.Label` values from the ASFF that you want included in findings that are sent to Slack if you chose `Findings` for the value of `electric_eye_slack_message_type`. These can include "INFORMATIONAL", "LOW", "MEDIUM", "HIGH", "CRITICAL" but defaults to HIGH and CRITICAL. These values are case sensitive and default to `["HIGH", "CRITICAL"]`.
+
+- **`electric_eye_slack_finding_state_filter`**: A list of `RecordState` values from the ASFF that you want included in findings that are sent to Slack if you chose `Findings` for the value of `electric_eye_slack_message_type`. This is a list of one or both of "ACTIVE" and "ARCHIVED" and defaults to `["ACTIVE"] `.
+
+The "Summary" output will contain the following values:
+- Total Findings Count
+- Total Passed Findings Count
+- Total Failed Findings Count
+- Total Passing Percentage
+- Total Findings broken down per Severity
+- Total Assets (should reflect Findings)
+- Unique Asset Count
+- Unique Asset Classes
+- Unique Asset Services
+- Unique Asset Components
+- Total unique Accounts/Tenancies/Projects/Instances/Subscriptions/etc. covered
+- Total unique Regions/Zones covered
+
+An example of the "Summary" output.
+
+![SlackSummary](../../screenshots/outputs/slack_summary_output.jpg)
+
+The "Findings" output will contain the follow values from the ElectricEye ASFF:
+- `Title`
+- `Description`
+- `Remediation.Recommendation.Text`
+- `Remediation.Recommendation.Url`
+- `Severity.Label`
+- `ProductFields.Provider`
+- `ProductFields.ProviderAccountId`
+- `ProductFields.ProviderType`
+- `ProductFields.AssetRegion`
+- `ProductFields.AssetClass`
+- `ProductFields.AssetService`
+- `ProductFields.AssetComponent`
+- `Resources.[].Id` (`AssetId`)
+- `CreatedAt`
+- `Compliance.RelatedRequirements`
+- `RecordState`
+
+An example of the "Findings" output.
+
+![SlackFindings](../../screenshots/outputs/slack_findings_output.jpg)
+
+## Microsoft Teams Summary Output
 
 *Coming Soon*

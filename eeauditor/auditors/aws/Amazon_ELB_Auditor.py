@@ -34,7 +34,7 @@ def describe_clbs(cache, session):
     cache["describe_load_balancers"] = elb.describe_load_balancers()
     return cache["describe_load_balancers"]
 
-@registry.register_check("elb")
+@registry.register_check("elasticloadbalancing")
 def internet_facing_clb_https_listener_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELB.1] Classic load balancers that are internet-facing should use secure listeners"""
     # ISO Time
@@ -203,7 +203,7 @@ def internet_facing_clb_https_listener_check(cache: dict, session, awsAccountId:
         else:
             continue
 
-@registry.register_check("elb")
+@registry.register_check("elasticloadbalancing")
 def clb_https_listener_tls12_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELB.2] Classic load balancers should use TLS 1.2 listener policies"""
     # ISO Time
@@ -371,7 +371,7 @@ def clb_https_listener_tls12_policy_check(cache: dict, session, awsAccountId: st
                 }
                 yield finding
 
-@registry.register_check("elb")
+@registry.register_check("elasticloadbalancing")
 def clb_cross_zone_balancing_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELB.3] Classic load balancers should have cross-zone load balancing configured"""
     elb = session.client("elb")
@@ -455,7 +455,7 @@ def clb_cross_zone_balancing_check(cache: dict, session, awsAccountId: str, awsR
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -529,7 +529,7 @@ def clb_cross_zone_balancing_check(cache: dict, session, awsAccountId: str, awsR
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -543,7 +543,7 @@ def clb_cross_zone_balancing_check(cache: dict, session, awsAccountId: str, awsR
             }
             yield finding
 
-@registry.register_check("elb")
+@registry.register_check("elasticloadbalancing")
 def clb_connection_draining_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELB.4] Classic load balancers should have connection draining configured"""
     elb = session.client("elb")
@@ -627,7 +627,7 @@ def clb_connection_draining_check(cache: dict, session, awsAccountId: str, awsRe
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -701,7 +701,7 @@ def clb_connection_draining_check(cache: dict, session, awsAccountId: str, awsRe
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 CP-11",
                         "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA14",
+                        "NIST SP 800-53 Rev. 4 SA-14",
                         "AICPA TSC CC3.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
@@ -715,7 +715,7 @@ def clb_connection_draining_check(cache: dict, session, awsAccountId: str, awsRe
             }
             yield finding
 
-@registry.register_check("elb")
+@registry.register_check("elasticloadbalancing")
 def clb_access_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELB.5] Classic load balancers should enable access logging"""
     elb = session.client("elb")

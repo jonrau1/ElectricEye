@@ -133,8 +133,8 @@ def eks_public_endpoint_access_check(cache: dict, session, awsAccountId: str, aw
                         "ISO 27001:2013 A.6.2.2",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
-                    ],
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
                 "RecordState": "ACTIVE",
@@ -206,8 +206,8 @@ def eks_public_endpoint_access_check(cache: dict, session, awsAccountId: str, aw
                         "ISO 27001:2013 A.6.2.2",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
-                    ],
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED"
@@ -283,8 +283,8 @@ def eks_latest_k8s_version_check(cache: dict, session, awsAccountId: str, awsReg
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.1.1",
                         "ISO 27001:2013 A.8.1.2",
-                        "ISO 27001:2013 A.12.5.1",
-                    ],
+                        "ISO 27001:2013 A.12.5.1"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
                 "RecordState": "ACTIVE",
@@ -347,8 +347,8 @@ def eks_latest_k8s_version_check(cache: dict, session, awsAccountId: str, awsReg
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.1.1",
                         "ISO 27001:2013 A.8.1.2",
-                        "ISO 27001:2013 A.12.5.1",
-                    ],
+                        "ISO 27001:2013 A.12.5.1"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED",

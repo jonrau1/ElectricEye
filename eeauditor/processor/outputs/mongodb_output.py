@@ -23,9 +23,9 @@ import tomli
 import os
 import sys
 import requests
-import pymongo
+from pymongo import errors, MongoClient
 import json
-import base64
+from base64 import b64decode
 from botocore.exceptions import ClientError
 from processor.outputs.output_base import ElectricEyeOutput
 
@@ -150,16 +150,16 @@ class JsonProvider(object):
 
         try:
             # Connect to MongoDB
-            client = pymongo.MongoClient(connectionString)
+            client = MongoClient(connectionString)
             db = client[self.dbName]
             collection = db[self.collName]
-        except pymongo.errors.ConnectionError as e:
+        except errors.ConnectionError as e:
             print(f"Connection or credential issue with MongoDB/AWS DocumentDB!")
             raise e
         
         decodedFindings = [
             {**d, "ProductFields": {**d["ProductFields"],
-                "AssetDetails": json.loads(base64.b64decode(d["ProductFields"]["AssetDetails"]).decode("utf-8"))
+                "AssetDetails": json.loads(b64decode(d["ProductFields"]["AssetDetails"]).decode("utf-8"))
                     if d["ProductFields"]["AssetDetails"] is not None
                     else None
             }} if "AssetDetails" in d["ProductFields"]
@@ -178,7 +178,7 @@ class JsonProvider(object):
                 filter = {'_id': doc['_id']}
                 update = {'$set': doc}
                 collection.update_one(filter, update, upsert=True)
-            except pymongo.errors as e:
+            except errors as e:
                 print(f"Encountered an error during update_one() operation: {e}")
             except KeyError as ke:
                 raise ke

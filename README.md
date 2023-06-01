@@ -1,8 +1,26 @@
 # ElectricEye
 
-![Logo](./screenshots/logo.svg)
+<p align="center">
+  <img src="./screenshots/logo.svg" width="420" height="420">
+</p>
 
-ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management, and External Attack Surface Management supporting 100s of services and evaluations to harden your public cloud & SaaS environments.
+ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to NIST CSF, 800-53, ISO 27001, AICPA TSC (SOC2), and more!
+
+![VulnScan](https://github.com/jonrau1/ElectricEye/actions/workflows/sbom-vulns.yml/badge.svg)  ![CodeQL](https://github.com/jonrau1/ElectricEye/actions/workflows/codeql-analysis.yml/badge.svg) ![EcrBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-ecr-public.yml/badge.svg) ![OcrBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-ocr-public.yml/badge.svg) ![DockerHubBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-docker-hub.yml/badge.svg)
+
+<p>
+  <a href="https://hub.docker.com/r/electriceye/electriceye"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/electriceye/electriceye"></a>
+  <a href="https://hub.docker.com/r/electriceye/electriceye"><img alt="Docker" src="https://img.shields.io/docker/image-size/electriceye/electriceye"></a>
+  <a href="https://github.com/jonrau1/ElectricEye"><img alt="Repo size" src="https://img.shields.io/github/repo-size/jonrau1/ElectricEye"></a>
+  <a href="https://github.com/jonrau1/ElectricEye/issues"><img alt="Issues" src="https://img.shields.io/github/issues/jonrau1/ElectricEye"></a>
+  <a href="https://github.com/jonrau1/ElectricEye"><img alt="Contributors" src="https://img.shields.io/github/contributors-anon/jonrau1/ElectricEye"></a>
+  <a href="https://github.com/jonrau1/ElectricEye"><img alt="License" src="https://img.shields.io/github/license/jonrau1/ElectricEye"></a>
+</p>
+
+<p align="center">
+  <a href="https://gallery.ecr.aws/t4o3u7t2/electriceye"><img width="150" height=40" alt="AWS ECR Gallery" src="https://user-images.githubusercontent.com/3985464/151531396-b6535a68-c907-44eb-95a1-a09508178616.png"></a>
+  <a href="https://hub.docker.com/repository/docker/electriceye/electriceye/general"><img width="150" height=40" alt="Docker Hub" src="https://www.unixtutorial.org/images/software/docker-hub.png"></a>
+</p>
 
 ***Up here in space***<br/>
 ***I'm looking down on you***<br/>
@@ -10,62 +28,53 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 ***Everything you do***<br/>
 <sub>*Judas Priest, 1982*</sub>
 
-## Super Quick Start :triangular_flag_on_post: :triangular_flag_on_post:
-
-```bash
-git clone https://github.com/jonrau1/ElectricEye.git
-cd ElectricEye
-pip3 install -r requirements.txt
-python3 eeauditor/controller.py -t AWS -o stdout
-```
-
 ## Table of Contents
 
-- [Architecture](#architecture)
+- [Workflow](#workflow)
 - [Quick Run Down](#quick-run-down-running-running)
-- [Tell me more!](#tell-me-more-raised_eyebrow-raised_eyebrow)
-- [Using ElectricEye](#using-electriceye)
-- [Cloud Asset Management](./docs/asset_management/ASSET_MANAGEMENT.md)
-- [Custom Outputs](./docs/outputs/OUTPUTS.md)
+- [Configuring ElectricEye](#configuring-electriceye)
+- [ElectricEye on Docker](#electriceye-on-docker)
+- [Cloud Asset Management](#cloud-asset-management-cam)
+- [Outputs](./docs/outputs/OUTPUTS.md)
 - [FAQ](./docs/faq/FAQ.md)
 - [Supported Services and Checks](#supported-services-and-checks)
 - [Contributing](#contributing)
-- [Developer Guide](./docs/new_checks/DEVELOPER_GUIDE.md)
-    - [Auditor testing](./docs/new_checks/DEVELOPER_GUIDE.md#auditor-testing)
+- [Developer & Testing Guide](./docs/new_checks/DEVELOPER_GUIDE.md)
+- [Repository Security](#repository-security)
 - [License](#license)
 
-## Architecture
+## Workflow
 
-![Architecture](./screenshots/ElectricEye2023Architecture.jpg)
+![Architecture](./screenshots/ElectricEye2023Architecture.svg)
 
 ## Quick Run Down :running: :running:
 
-- ElectricEye is a Python CLI tool that offers cross-Account, cross-Region, multi-Cloud CAM, CSPM, SSPM, and EASM capabilities across AWS, GCP, and ServiceNow (*with more on the way!*). All Partitions are supported for AWS!
+- ElectricEye is a Python CLI tool that offers cross-Account, cross-Region, multi-Cloud & SaaS Asset Management, Security Posture Management, and Attack Surface Monitoring capabilities across [AWS, all Partitions supported!](https://aws.amazon.com/), [GCP](https://cloud.google.com/), [Oracle Cloud Infrastructure (OCI)](https://www.oracle.com/cloud/), [ServiceNow](https://www.servicenow.com/), and [Microsoft 365 Enterprise (*M365*)](https://www.microsoft.com/en-us/microsoft-365/compare-microsoft-365-enterprise-plans) *with more on the way*.
 
-- ElectricEye offers over 500 checks for security, reliability, monitoring, and exposure across 100 CSP & SaaS services, including atypical services not supported by AWS Config/Google Cloud Asset API or mainstream CSPM & CNAPP tools.
+- ElectricEye offers over *900* checks for security, reliability, monitoring, and exposure across more than 100 CSP & SaaS services, including atypical services not supported by AWS Config/Google Cloud Asset API or mainstream CSPM & CNAPP tools.
 
-- All checks are currently mapped to NIST Cybersecurity Framework V1.1, NIST Special Publication 800-53 Revision 4, AICPA 2020 Trust Service Criteria (TSCs), and ISO 27001:2013 ISMS controls.
+- All checks are currently mapped to NIST Cybersecurity Framework V1.1, NIST Special Publication 800-53 Revision 4, AICPA 2020 Trust Service Criteria (TSCs), and ISO 27001:2013 Annex A controls for Audit Readiness and internal GRC requirements.
 
-- The EASM module uses NMAP for service discovery and reachability assessment of over 20 highly-dangerous ports and protocols for nearly every public-facing CSP service
+- Multi-faceted Attack Surface Monitoring uses tools such as VirusTotal, Nmap, Shodan.io, Detect-Secrets, and CISA's KEV to locate assets indexed on the internet, find exposed services, locate exploitable vulnerabilities, and malicious packages in artifact repositories.
 
-- Outputs to AWS Security Hub, AWS DocumentDB, JSON, CSV, HTML Executive Reports, MongoDB, Amazon SQS, PostgreSQL, Amazon Simple Queue Service (SQS), Amazon DynamoDB, and [**FireMon Cloud Defense**](https://www.firemon.com/introducing-disruptops/).
+- Outputs to [AWS Security Hub](https://aws.amazon.com/security-hub/), [AWS DocumentDB](https://aws.amazon.com/documentdb/), JSON, CSV, HTML Reports, [MongoDB](https://www.mongodb.com/), [Amazon SQS](https://aws.amazon.com/sqs/), [PostgreSQL](https://www.postgresql.org/), [Slack](https://slack.com/) (via Slack App Bots), and [FireMon Cloud Defense](https://www.firemon.com/introducing-disruptops/).
 
-## Tell Me More! :raised_eyebrow: :raised_eyebrow:
+ElectricEye's core concept is the **Auditor** which are sets of Python scripts that run **Checks** per Service dedicated to a specific SaaS vendor or public cloud service provider called an **Assessment Target**.  You can run an entire Assessment Target, a specific Auditor, or a specific Check within an Auditor. After ElectricEye is done with evaluations, it supports over a dozen types of **Outputs** ranging from an HTML executive report to AWS DocumentDB clusters - you can run multiple Outputs as you see fit.
 
-ElectricEye's core concept is the **Auditor** which are sets of Python scripts that run **Checks** per Service dedicated to a specific SaaS vendor or public cloud service provider called an **Assessment Target**. You can run an entire Assessment Target, a specific Auditor, or a specific Check within an Auditor. After ElectricEye is done with evaluations, it supports over a dozen types of **Outputs** ranging from an HTML executive report to AWS DocumentDB clusters. ElectricEye also uses other tools such as Shodan, `detect-secrets`, and NMAP for carrying out its Checks. While mainly a security tool, ElectricEye can be used for Cloud Asset Management use cases such as discovery and inventory and has Checks aligned to several best-practice regimes that cover resiliency, recovery, performance optimization, monitoring, as well as several 100 security checks against your cloud infrastructure and identities.
+ElectricEye also uses utilizes other tools such as [Shodan](https://www.shodan.io/), [`detect-secrets`](https://pypi.org/project/detect-secrets/), [VirusTotal](https://www.virustotal.com/gui/home/upload), the United States Cyber and Infrastructure Security Agency (CISA) Known Exploited Vulnerability (KEV) Catalog, and [NMAP](https://nmap.org/) for carrying out its Checks and enriching their findings.
 
-First, clone this repository and install the requirements using `pip3`: `pip3 install -r requirements.txt`.
+1. First, clone this repository and install the requirements using `pip3`: `pip3 install -r requirements.txt`.
 
-Then, modify the [TOML file](./eeauditor/external_providers.toml) located in `ElectricEye/eeauditor/external_providers.toml` to specify various configurations for the CSP(s) and SaaS Provider(s) you want to assess.
+2. Then, modify the [TOML configuration](./eeauditor/external_providers.toml) located in `ElectricEye/eeauditor/external_providers.toml` to specify various configurations for the CSP(s) and SaaS Provider(s) you want to assess, specify where credentials are stored, and configure Outputs.
 
-Finally, run the Controller to learn about the various Checks, Auditors, Assessment Targets, and Outputs.
+3. Finally, run the Controller to learn about the various Checks, Auditors, Assessment Targets, and Outputs.
 
-```bash
+```
 $ python3 eeauditor/controller.py --help
 Usage: controller.py [OPTIONS]
 
 Options:
-  -t, --target-provider [AWS|Azure|OracleCloud|GCP|Servicenow]
+  -t, --target-provider [AWS|Azure|OCI|GCP|Servicenow|M365]
                                   CSP or SaaS Vendor Assessment Target, ensure
                                   that any -a or -c arg maps to your target
                                   provider e.g., -t AWS -a
@@ -78,823 +87,182 @@ Options:
                                   name. Defaults to ALL Checks
   -d, --delay INTEGER             Time in seconds to sleep between Auditors
                                   being ran, defaults to 0
-  -o, --outputs TEXT              A list of Outputs (files, APIs, databases)
-                                  to send ElectricEye Findings - can provide
-                                  more than one  [default: stdout]
+  -o, --outputs TEXT              A list of Outputs (files, APIs, databases,
+                                  ChatOps) to send ElectricEye Findings,
+                                  specify multiple with additional arguments:
+                                  -o csv -o postgresql -o slack  [default:
+                                  stdout]
   --output-file TEXT              For file outputs such as JSON and CSV, the
                                   name of the file, DO NOT SPECIFY .file_type
                                   [default: output]
   --list-options                  Lists all valid Output options
-  --list-checks                   List all Checks, Assets, and Check
-                                  Description within every Auditor for a
-                                  specific Assessment Target
-  --create-insights               Create SecurityHub insights for ElectricEye.
-                                  This only needs to be done once per Security
-                                  Hub instance
-  --list-controls                 Lists all Controls (Check Titles) for an
-                                  Assessment Target, used for mapping...
-  --help                          Show this message and exit.                     Show this message and exit.
+  --list-checks                   Prints a table of Auditors, Checks, and
+                                  Check descriptions to stdout - use this for
+                                  -a or -c args
+  --create-insights               Create AWS Security Hub Insights for
+                                  ElectricEye. This only needs to be done once
+                                  per Account per Region for Security Hub
+  --list-controls                 Lists all ElectricEye Controls (e.g. Check
+                                  Titles) for an Assessment Target
+  --help                          Show this message and exit.
 ```
 
-For more information see [here](#using-electriceye), you can read the [FAQ here](./docs/faq/FAQ.md), or if you want a more in-depth analysis of the control flow and concepts review [the Developer Guide](./docs/new_checks/DEVELOPER_GUIDE.md).
+For more information see [here](#configuring-electricey), you can read the [FAQ here](./docs/faq/FAQ.md), information on [Outputs is here](./docs/outputs/OUTPUTS.md) or, if you want a more in-depth analysis of the control flow and concepts review [the Developer Guide](./docs/new_checks/DEVELOPER_GUIDE.md).
 
-## Using ElectricEye
+## Configuring ElectricEye
 
-Refer to sub-headings for per-CSP or per-SaaS setup instructions.
+Refer to sub-headings for per-CSP or per-SaaS setup instructions. Go to [Outputs](./docs/outputs/OUTPUTS.md) to, well, learn about Outputs and examples.
 
 ### Public Cloud Service Providers
 
 - [For Amazon Web Services (AWS)](./docs/setup/Setup_AWS.md)
 - [For Google Cloud Platform (GCP)](./docs/setup/Setup_GCP.md)
+- [For Oracle Cloud Infrastructure](./docs/setup/Setup_OCI.md)
+
+The following Cloud Service Providers are on the Roadmap
+
 - [For Microsoft Azure (*Coming Soon*)](./docs/setup/Setup_Azure.md)
-- [For Oracle Cloud Infrastructure (*Coming Soon*)](./docs/setup/Setup_OCI.md)
+- [For Alibaba Cloud (*Coming Soon*)](./docs/setup/Setup_AlibabaCloud.md)
+- [For VMWare Cloud on AWS (*Coming Soon*)](./docs/setup/Setup_VMC.md)
 
 ### Software-as-a-Service (SaaS) Providers
 
 - [For ServiceNow](./docs/setup/Setup_ServiceNow.md)
-- [For Microsoft M365 (E5) (*Coming Soon*)](./docs//Setup_M365.md)
+- [For Microsoft M365](./docs/setup/Setup_M365.md)
+
+The following SaaS Providers are on the Roadmap
+
 - [For Workday ERP (*Coming Soon*)](./docs/setup/Setup_WorkDay.md)
 - [For GitHub (*Coming Soon*)](./docs/setup/Setup_GitHub.md)
+- [For Google Workspaces (*Coming Soon*)](./docs/setup/Setup_Google_Workspaces.md)
+- [For Salesforce (*Coming Soon*)](./docs//setup/Setup_Salesforce.md)
+
+## ElectricEye on Docker
+
+After configuring ElectricEye for your environment(s) using the [TOML configuration](./eeauditor/external_providers.toml), you can instead utilize Docker to run ElectricEye which have images maintained on ECR Public, Oracle Cloud Container Registry (OCR), and Docker Hub. You can read more about the security assurance activities [here](#repository-security), in the future more Registries and image signing will be utilized.
+
+### Building Images
+
+If you would rather build your own image use the following commands. Be sure to add `sudo` if you do not have a `docker` user properly setup in your system.
+
+```bash
+git clone https://github.com/jonrau1/ElectricEye.git
+cd ElectricEye
+docker build -t electriceye:local .
+```
+
+From here you can push to your repository of chocie, be sure to change the tag from `local` to whichever tag your repository is expecting or whatever you prefer. Maybe just latest, like a chad?
+
+### Pulling Images
+
+You can also pull an ElectricEye image from the various repositories, a `latest` image tag will always be pushed alongside an image tagged with the SHA hash of the workflow `${{ github.sha }}` and can be viewed within the various GitHub Action Workflows within the `Print Image` step.
+
+To pull from the various repositories, use these commands, you can replace `latest` as you see fit. The dependencies within ElectricEye stay relatively stable until a new cloud or major integration is added. Check the Pull Requests for more information to be sure.
+
+- Amazon Elastic Container Registry (ECR) Public: `docker pull public.ecr.aws/t4o3u7t2/electriceye:latest` 
+
+- Oracle Cloud Infrastructure Registry (OCIR): `docker pull iad.ocir.io/idudmagprsdi/electriceye:latest`
+
+- Docker Hub: `docker pull electriceye/electriceye`
+
+### Setting up a Session
+
+#### NOTE!! You can skip this section if you are using hard-coded credentials in your TOML and if you will not be using any AWS Output or running any AWS Auditors
+
+When interacting with AWS credential stores such as AWS Systems Manager, AWS Secrets Manager and Outputs such as AWS Security and for Role Assumption into the Role specified in the `aws_electric_eye_iam_role_name` TOML parameter, ElectricEye uses your current (default) Boto3 Session which is derived from your credentials. Running ElectricEye from AWS Infrastructure that has an attached Role, or running from a location with `aws cli` credentials already instantiated, this is handled transparently. When using Docker, you will need to provide [Environment Variables](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html#using-environment-variables) directly to the Container.
+
+Ensure that if you will be using AWS SSM (`ssm:GetParameter`), AWS Secrets Manager (`secretsmanager:GetSecretValue`), AWS Security Hub (`securityhub:BatchImportFindings`), Amazon SQS (`sqs:SendMessage`), and/or Amazon DynamoDB (`dynamodb:PutItem`) for credentials and Outputs that you have the proper permissions! You will likely also require `kms:Decrypt` depending if you are using AWS Key Management Service (KMS) Customer-managed Keys (CMKs) for your secrets/parameters encryption. You will need `sts:AssumeRole` to assume into the Role specified in the `aws_electric_eye_iam_role_name` TOML parameter.
+
+You will need to pass in your AWS Region, an AWS Access Key, and an AWS Secret Access Key. If you are NOT using an AWS IAM User with Access Keys you will need to also provide an AWS Session Token which is produced by temporary credentials such as an IAM Role or EC2 Instance Profile.
+
+If you are using a User, proceed to the next step, you will need to have your credentials ready to copy. If you are using an EC2 Instance Profile or an additional IAM Role you will Assume, ensure you have `jq` installed: `apt install -y jq` or `yum install jq`.
+
+> - To Assume an IAM Role and retrieve the temporary credentials
+
+```bash
+AWS_ACCOUNT_ID=$(aws sts get-caller-identity | jq -r '.Account')
+MY_ROLE_NAME='iam-role-name'
+TEMP_CREDS=$(aws sts assume-role --role-arn arn:aws:iam::$AWS_ACCOUNT_ID:role/$MY_ROLE_NAME --role-session-name ElectriceyeForDocker)
+AWS_ACCESS_KEY=$(echo $TEMP_CREDS | jq -r '.Credentials.AccessKeyId')
+AWS_SECRET_KEY=$(echo $TEMP_CREDS | jq -r '.Credentials.SecretAccessKey')
+AWS_SESSION_TOKEN=$(echo $TEMP_CREDS | jq -r '.Credentials.SessionToken')
+MY_REGION='aws-region-here'
+```
+
+> - To retrieve temporary credentials for an EC2 Instance Profile using Instance Metadata Service Version 1
+
+```bash
+MY_INSTANCE_PROFILE_ROLE_NAME="my_ec2_role_name"
+IMDS_SECURITY_CREDENTIALS=$(curl http://169.254.169.254/latest/meta-data/iam/security-credentials/$MY_INSTANCE_PROFILE_ROLE_NAME)
+MY_REGION='my_aws_region'
+AWS_ACCESS_KEY=$(echo $IMDS_SECURITY_CREDENTIALS | jq -r '.AccessKeyId')
+AWS_SECRET_KEY=$(echo $IMDS_SECURITY_CREDENTIALS | jq -r '.SecretAccessKey')
+AWS_SESSION_TOKEN=$(echo $IMDS_SECURITY_CREDENTIALS | jq -r '.Token')
+```
+
+> - To retrieve temporary credentials for an EC2 Instance Profile using Instance Metadata Service Version 2
+
+```bash
+MY_INSTANCE_PROFILE_ROLE_NAME="my_ec2_role_name"
+TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 300")
+IMDSV2_SECURITY_CREDENTIALS=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/iam/security-credentials/$MY_INSTANCE_PROFILE_ROLE_NAME)
+MY_REGION='my_aws_region'
+AWS_ACCESS_KEY=$(echo $IMDSV2_SECURITY_CREDENTIALS | jq -r '.AccessKeyId')
+AWS_SECRET_KEY=$(echo $IMDSV2_SECURITY_CREDENTIALS | jq -r '.SecretAccessKey')
+AWS_SESSION_TOKEN=$(echo $IMDSV2_SECURITY_CREDENTIALS | jq -r '.Token')
+```
+
+You can also retrieve temporary credentials from Federated identities, read more at the links for [AssumeRoleWithWebIdentity](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithWebIdentity.html) or [AssumeRoleWithSAML](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithSAML.html) or refer to the larger temporary credential documentation [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_request.html#api_assumerole).
+
+### Running ElectricEye Container
+
+Run ElectricEye using the following commands, passing in your Session credentials. Change the commands within the container to evaluate different environments with ElectricEye. Change the value of `/path/to/my/external_providers.toml` to your exact path, such as `~/electriceye-docker/external_providers.toml` for example.
+
+**IMPORTANT NOTE** If you are using an AWS IAM User with Access Keys, hardcode the values and omit the value for `AWS_SESSION_TOKEN`!!
+
+```bash
+sudo docker run \
+    --user eeuser:eeuser \
+    -e AWS_DEFAULT_REGION=$MY_REGION \
+    -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY \
+    -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_KEY \
+    -e AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN \
+    -v /path/to/my/external_providers.toml:/eeauditor/external_providers.toml \
+    electriceye /bin/bash -c "python3 eeauditor/controller.py --help"
+```
+
+To save a local file output such as `-o json`. `-o cam-json`, `-o csv`, or `-o html` and so on, ensure that you specify a file name that begins with `/eeauditor/` as the `eeuser` within the Docker Image only has permissions within that directory. To remove the files you cannot use `docker cp` but you can submit the file to remote APIs you have control of by `base64` encoding the output or you can use the Session with AWS S3 permissions to upload the file to S3. If you are evaluating Oracle Cloud or Google Cloud Platform, your credentials will be locally loaded and you can upload to Oracle Object Storage or Google Cloud Storage buckets, respectively.
+
+```bash
+BUCKET_NAME="your_s3_bucket_you_have_access_to"
+sudo docker run \
+    --user eeuser:eeuser \
+    -e AWS_DEFAULT_REGION=$MY_REGION \
+    -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY \
+    -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_KEY \
+    -e AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN \
+    -v /path/to/my/external_providers.toml:/eeauditor/external_providers.toml \
+    electriceye /bin/bash -c "python3 eeauditor/controller.py -t AWS -o json --output-file /eeauditor/my-aws-findings \
+    && aws s3 cp /eeauditor/my-aws-findings.json s3://$BUCKET_NAME/eefindings.json"
+```
+
+For more configuration information ensure you refer back to the per-Provider setup instructions.
 
 ## Cloud Asset Management (CAM)
 
-For more information on ElectricEye's CAM concept of operations and output, refer to [the Asset Management documentation](./docs/asset_management/ASSET_MANAGEMENT.md)
-
-Individual information is located at:
-
-- [CAM Concept of Operations](./docs/asset_management/ASSET_MANAGEMENT.md#cam-concept-of-operations-conops)
-- [CAM Reporting](./docs/asset_management/ASSET_MANAGEMENT.md#cloud-asset-management-cam-reporting)
-- [Asset Class Mapping](./docs/asset_management/ASSET_MANAGEMENT.md#asset-class-mapping)
+For more information on ElectricEye's CAM concept of operations and schema, refer to [the Asset Management documentation](./docs/asset_management/ASSET_MANAGEMENT.md).
 
 ## Supported Services and Checks
 
 In total there are:
 
-> - **2** Supported Public CSPs
+- **3** Supported Public CSPs: `AWS`, `GCP`, `OCI`
+- **2** Supported SaaS Provider: `ServiceNow`, `M365`
+- **972** ElectricEye Checks
+- **140** Supported CSP & SaaS Asset Components across all Services
+- **112** ElectricEye Auditors
 
-> - **1** Supported SaaS Provider
-
-> - **693** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
-
-> - **105** Supported CSP & SaaS Resources / Asset Types
-
-> - **89** Auditor Plugins
-
-### AWS Checks & Services
-___
-
-These are the following services and checks perform by each Auditor, there are currently...
-
-- :boom: **548 Checks** :boom:
-- :exclamation: **100 supported AWS services/components** :exclamation:
-- :fire: **77 Auditors** :fire:
-
-**Regarding AWS ElasticSearch Service/OpenSearch Service:** AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
-
-**Regarding AWS Shield Advanced:** You must be actively subscribed to Shield Advanced with at least one Protection assigned to assess this Service.
-
-**Regarding AWS Trusted Advisor:** You must be on AWS Business or Enterprise Support to interact with the `support` API for Trusted Advisor.
-
-**Regarding AWS Health:** You must be on AWS Business or Enterprise Support to interact with the `support` API for Health.
-
-
-| Auditor File Name | Scanned Resource Name | Auditor Scan Description |
-|---|---|---|
-| Amazon_APIGW_Auditor | API Gateway Stage | Are stage metrics enabled |
-| Amazon_APIGW_Auditor | API Gateway Stage | Is stage API logging enabled |
-| Amazon_APIGW_Auditor | API Gateway Stage | Is stage caching enabled |
-| Amazon_APIGW_Auditor | API Gateway Stage | Is cache encryption enabled |
-| Amazon_APIGW_Auditor | API Gateway Stage | Is stage xray tracing configured |
-| Amazon_APIGW_Auditor | API Gateway Stage | Is the stage protected by a WAF WACL |
-| Amazon_APIGW_Auditor | API Gateway Rest API | Do Rest APIs use Policies |
-| Amazon_APIGW_Auditor | API Gateway Rest API | Do Rest APIs use Authorizers |
-| Amazon_AppStream_Auditor | AppStream 2.0 (Fleets) | Do Fleets allow Default Internet Access |
-| Amazon_AppStream_Auditor | AppStream 2.0 (Images) | Are Images Public |
-| Amazon_AppStream_Auditor | AppStream 2.0 (Users) | Are users reported as Compromised |
-| Amazon_AppStream_Auditor | AppStream 2.0 (Users) | Do users use SAML authentication |
-| Amazon_Athena_Auditor | Athena workgroup | Do workgroups enforce query result encryption |
-| Amazon_Athena_Auditor | Athena workgroup | Do workgroups with query result encryption override client settings |
-| Amazon_Athena_Auditor | Athena workgroup | Do workgroups publish metrics |
-| Amazon_Athena_Auditor | Athena workgroup | Do workgroups auto-update the Athena engine version |
-| Amazon_Autoscaling_Auditor | Autoscaling groups | Do ASGs protect instances from scale-in |
-| Amazon_Autoscaling_Auditor | Autoscaling groups | Do ASGs with ELB or Target Groups use ELB health checks |
-| Amazon_Autoscaling_Auditor | Autoscaling groups | Do ASGs use at least half or more of a Region's open AZs |
-| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros with trusted signers use key pairs |
-| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distro origins have Origin Shield enabled |
-| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros use the default viewer certificate |
-| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros have Georestriction enabled |
-| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros have Field-Level Encryption enabled |
-| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros have WAF enabled |
-| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros enforce Default Viewer TLS 1.2 |
-| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros enforce Custom Origin TLS 1.2 |
-| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros enforce Custom Origin HTTPS-only connections |
-| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros enforce Default Viewer HTTPS with SNI |
-| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros have logging enabled |
-| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros have default root objects |
-| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros enforce Default Viewer HTTPS-only connections |
-| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros enforce S3 Origin Object Access Identity |
-| Amazon_CloudSearch_Auditor | CloudSearch Domain | Do Domains enforce HTTPS-only |
-| Amazon_CloudSearch_Auditor | CloudSearch Domain | Do Domains use TLS 1.2 |
-| Amazon_CognitoIdP_Auditor | Cognito Identity Pool | Does the Password policy comply with AWS CIS Foundations Benchmark |
-| Amazon_CognitoIdP_Auditor | Cognito Identity Pool | Cognito Temporary Password Age |
-| Amazon_CognitoIdP_Auditor | Cognito Identity Pool | Does the Identity pool enforce MFA |
-| Amazon_CognitoIdP_Auditor | Cognito Identity Pool | Is the Identity pool protected by WAF |
-| Amazon_DocumentDB_Auditor | DocumentDB Instance | Are Instances publicly accessible |
-| Amazon_DocumentDB_Auditor | DocumentDB Instance | Are Instance encrypted |
-| Amazon_DocumentDB_Auditor | DocumentDB Instance | Is audit logging enabled |
-| Amazon_DocumentDB_Auditor | DocumentDB Cluster | Is the Cluster configured for HA |
-| Amazon_DocumentDB_Auditor | DocumentDB Cluster | Is the Cluster deletion protected |
-| Amazon_DocumentDB_Auditor | DocumentDB Cluster | Is cluster audit logging on |
-| Amazon_DocumentDB_Auditor | DocumentDB Cluster | Is cluster TLS enforcement on |
-| Amazon_DocumentDB_Auditor | DocDB Snapshot | Are docdb cluster snapshots encrypted |
-| Amazon_DocumentDB_Auditor | DocDB Snapshot | Are docdb cluster snapshots public |
-| Amazon_DynamoDB_Auditor | DynamoDB Table | Do tables use KMS CMK for encryption |
-| Amazon_DynamoDB_Auditor | DynamoDB Table | Do tables have PITR enabled |
-| ~~Amazon_DynamoDB_Auditor~~ | ~~DynamoDB Table~~ | ~~Do tables have TTL enabled~~ **THIS FINDING HAS BEEN RETIRED** |
-| Amazon_DAX_Auditor | DAX Cluster | Do clusters encrypt data at rest |
-| Amazon_DAX_Auditor | DAX Cluster | Do clusters encrypt data in transit |
-| Amazon_DAX_Auditor | DAX Cluster | Do clusters have cache item TTL defined |
-| Amazon_EBS_Auditor | EBS Volume | Is the Volume attached |
-| Amazon_EBS_Auditor | EBS Volume | Is the Volume configured to be deleted on instance termination |
-| Amazon_EBS_Auditor | EBS Volume | Is the Volume encrypted |
-| Amazon_EBS_Auditor | EBS Snapshot | Is the Snapshot encrypted |
-| Amazon_EBS_Auditor | EBS Snapshot | Is the Snapshot public |
-| Amazon_EBS_Auditor | Account | Is account level encryption by default enabled |
-| Amazon_EBS_Auditor | EBS Volume | Does the Volume have a snapshot |
-| Amazon_EC2_Auditor | EC2 Instance | Is IMDSv2 enabled |
-| Amazon_EC2_Auditor | EC2 Instance | Is Secure Enclave used |
-| Amazon_EC2_Auditor | EC2 Instance | Is the instance internet-facing |
-| Amazon_EC2_Auditor | EC2 Instance | Is Source/Dest Check disabled |
-| Amazon_EC2_Auditor | AWS Account | Is Serial Port Access restricted |
-| Amazon_EC2_Auditor | EC2 Instance | Is instance using an AMI baked in last 3 months |
-| Amazon_EC2_Auditor | EC2 Instance | Is instance using a correctly registered AMI |
-| Amazon_EC2_Auditor | Account | Are instances spread across Multiple AZs |
-| Amazon_EC2_Image_Builder_Auditor | Image Builder | Are pipeline tests enabled |
-| Amazon_EC2_Image_Builder_Auditor | Image Builder | Is EBS encrypted |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Are all ports (-1) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is FTP (tcp20-21) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is TelNet (tcp23) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is WSDCOM-RPC (tcp135) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is SMB (tcp445) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is MSSQL (tcp1433) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is OracleDB (tcp1521) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is MySQL/MariaDB (tcp3306) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is RDP (tcp3389) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is PostgreSQL (tcp5432) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is Kibana (tcp5601) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is Redis (tcp6379) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is Splunkd (tcp8089) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is Elasticsearch (tcp9200) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is Elasticsearch (tcp9300) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is Memcached (udp11211) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is Redshift (tcp5439) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is DocDB (tcp27017) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is Cassandra (tcp9142) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is Kafka (tcp9092) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is NFS (tcp2049) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is Rsync (tcp873) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is TFTP (udp69) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is Docker API (tcp2375) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is K8s API (tcp10250) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is SMTP (tcp25) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is NetBioas (tcp137-139) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is OpenVPN (udp1194) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is RabbitMQ (tcp5672) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is Spark WebUI (tcp4040) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is POP3 (tcp110) open to the internet |
-| Amazon_EC2_Security_Group_Auditor | Security Group | Is VMWare ESXi (tcp8182) open to the internet |
-| Amazon_EC2_SSM_Auditor | EC2 Instance | Is the instance managed by SSM |
-| Amazon_EC2_SSM_Auditor | EC2 Instance | Does the instance have a successful SSM association |
-| Amazon_EC2_SSM_Auditor | EC2 Instance | Is the SSM Agent up to date |
-| Amazon_EC2_SSM_Auditor | EC2 Instance | Is the Patch status up to date |
-| Amazon_ECR_Auditor | ECR Registry (Account) | Is there a registry access policy |
-| Amazon_ECR_Auditor | ECR Registry (Account) | Is image replication configured |
-| Amazon_ECR_Auditor | ECR Repository | Does the repository support scan-on-push |
-| Amazon_ECR_Auditor | ECR Repository | Is there an image lifecycle policy |
-| Amazon_ECR_Auditor | ECR Repository | Is there a repo access policy |
-| Amazon_ECR_Auditor | Image (Container) | Does the latest container have any vulns |
-| Amazon_ECS_Auditor | ECS Cluster | Is container insights enabled |
-| Amazon_ECS_Auditor | ECS Cluster | Is a default cluster provider configured |
-| Amazon_ECS_Auditor | ECS Task Definition | Is the Task Definition using a Privileged container |
-| Amazon_ECS_Auditor | ECS Task Definition | Do EC2-ECS containers use SELinux or AppArmor |
-| Amazon_ECS_Auditor | ECS Task Definition | Do containers use a Root user |
-| Amazon_EFS_Auditor | EFS File System | Are file systems encrypted |
-| Amazon_EFS_Auditor | EFS File System | Does the File system have a custom policy attached |
-| Amazon_EKS_Auditor | EKS Cluster | Is the API Server publicly accessible |
-| Amazon_EKS_Auditor | EKS Cluster | Are one of the *three* latest K8s version used |
-| Amazon_EKS_Auditor | EKS Cluster | Are auth or audit logs enabled |
-| Amazon_EKS_Auditor | EKS Cluster | Is K8s Secrets envelope encryption used |
-| Amazon_EKS_Auditor | EKS Cluster | Is a deprecated K8s version used |
-| Amazon_Elasticache_Redis_Auditor | Elasticache Redis Cluster | Is an AUTH Token used |
-| Amazon_Elasticache_Redis_Auditor | Elasticache Redis Cluster | Is the cluster encrypted at rest |
-| Amazon_Elasticache_Redis_Auditor | Elasticache Redis Cluster | Does the cluster encrypt in transit |
-| Amazon_ElasticBeanstalk_Auditor | Elastic Beanstalk environment | Is IMDSv1 disabled |
-| Amazon_ElasticBeanstalk_Auditor | Elastic Beanstalk environment | Is platform auto-update and instance refresh enabled |
-| Amazon_ElasticBeanstalk_Auditor | Elastic Beanstalk environment | Is enhanced health reporting enabled |
-| Amazon_ElasticBeanstalk_Auditor | Elastic Beanstalk environment | Is CloudWatch log streaming enabled |
-| Amazon_ElasticBeanstalk_Auditor | Elastic Beanstalk environment | Is AWS X-Ray tracing enabled |
-| Amazon_ElasticsearchService_Auditor | OpenSearch domain | Are dedicated masters used |
-| Amazon_ElasticsearchService_Auditor | OpenSearch domain | Is Cognito auth used |
-| Amazon_ElasticsearchService_Auditor | OpenSearch domain | Is encryption at rest used |
-| Amazon_ElasticsearchService_Auditor | OpenSearch domain | Is Node2Node encryption used |
-| Amazon_ElasticsearchService_Auditor | OpenSearch domain | Is HTTPS-only enforced |
-| Amazon_ElasticsearchService_Auditor | OpenSearch domain | Is a TLS 1.2 policy used |
-| Amazon_ElasticsearchService_Auditor | OpenSearch domain | Are there available version updates |
-| Amazon_ElasticsearchService_Auditor | OpenSearch domain | Is ES in a VPC |
-| Amazon_ElasticsearchService_Auditor | OpenSearch domain | Is ES Publicly Accessible |
-| Amazon_ELB_Auditor | ELB (Classic Load Balancer) | Do internet facing ELBs have a secure listener |
-| Amazon_ELB_Auditor | ELB (Classic Load Balancer) | Do secure listeners enforce TLS 1.2 |
-| Amazon_ELB_Auditor | ELB (Classic Load Balancer) | Is cross zone load balancing enabled |
-| Amazon_ELB_Auditor | ELB (Classic Load Balancer) | Is connection draining enabled |
-| Amazon_ELB_Auditor | ELB (Classic Load Balancer) | Is access logging enabled |
-| Amazon_ELBv2_Auditor | ELBv2 (ALB) | Is access logging enabled for ALBs |
-| Amazon_ELBv2_Auditor | ELBv2 (ALB/NLB) | Is deletion protection enabled |
-| Amazon_ELBv2_Auditor | ELBv2 (ALB/NLB) | Do internet facing ELBs have a secure listener |
-| Amazon_ELBv2_Auditor | ELBv2 (ALB/NLB) | Do secure listeners enforce TLS 1.2 |
-| Amazon_ELBv2_Auditor | ELBv2 (ALB/NLB) | Are invalid HTTP headers dropped |
-| Amazon_ELBv2_Auditor | ELBv2 (NLB) | Do NLBs with TLS listeners have access logging enabled |
-| Amazon_ELBv2_Auditor | ELBv2 (ALB) | Do ALBs have HTTP Desync protection enabled |
-| Amazon_ELBv2_Auditor | ELBv2 (ALB) | Do ALBs SGs allow access to non-Listener ports |
-| Amazon_ELBv2_Auditor | ELBv2 (ALB) | Ares ALBs protected by WAF |
-| Amazon_EMR_Auditor | EMR Cluster | Do clusters have a sec configuration attached |
-| Amazon_EMR_Auditor | EMR Cluster | Do cluster sec configs enforce encryption in transit |
-| Amazon_EMR_Auditor | EMR Cluster | Do cluster sec configs enforce encryption at rest for EMRFS |
-| Amazon_EMR_Auditor | EMR Cluster | Do cluster sec configs enforce encryption at rest for EBS |
-| Amazon_EMR_Auditor | EMR Cluster | Do cluster sec configs enforce Kerberos authN |
-| Amazon_EMR_Auditor | EMR Cluster | Is cluster termination protection enabled |
-| Amazon_EMR_Auditor | EMR Cluster | Is cluster logging enabled |
-| Amazon_EMR_Auditor | AWS Account | Is EMR public SG block configured for the Account in the region |
-| Amazon_Kinesis_Analytics_Auditor | Kinesis analytics application | Does application log to CloudWatch |
-| Amazon_Kinesis_Data_Streams_Auditor | Kinesis data stream | Is stream encryption enabled |
-| Amazon_Kinesis_Data_Streams_Auditor | Kinesis data stream | Is enhanced monitoring enabled |
-| Amazon_Kinesis_Firehose_Auditor | Firehose delivery stream | Is delivery stream encryption enabled |
-| Amazon_Managed_Blockchain_Auditor | Fabric peer node | Are chaincode logs enabled |
-| Amazon_Managed_Blockchain_Auditor | Fabric peer node | Are peer node logs enabled |
-| Amazon_Managed_Blockchain_Auditor | Fabric member | Are member CA logs enabled |
-| Amazon_MQ_Auditor | Amazon MQ message broker | Message brokers should be encrypted with customer-managed KMS CMKs |
-| Amazon_MQ_Auditor | Amazon MQ message broker | Message brokers should have audit logging enabled |
-| Amazon_MQ_Auditor | Amazon MQ message broker | Message brokers should have general logging enabled |
-| Amazon_MQ_Auditor | Amazon MQ message broker | Message broker should not be publicly accessible |
-| Amazon_MQ_Auditor | Amazon MQ message broker | Message brokers should be configured to auto upgrade to the latest minor version |
-| Amazon_MSK_Auditor | MSK Cluster | Is inter-cluster encryption used |
-| Amazon_MSK_Auditor | MSK Cluster | Is client-broker communications TLS-only |
-| Amazon_MSK_Auditor | MSK Cluster | Is enhanced monitoring used |
-| Amazon_MSK_Auditor | MSK Cluster | Is Private CA TLS auth used |
-| Amazon_MWAA_Auditor | Airflow Environment | Is a KMS CMK used for encryption |
-| Amazon_MWAA_Auditor | Airflow Environment | Is the Airflow URL Public |
-| Amazon_MWAA_Auditor | Airflow Environment | Are DAG Processing logs configured |
-| Amazon_MWAA_Auditor | Airflow Environment | Are Scheduler logs configured |
-| Amazon_MWAA_Auditor | Airflow Environment | Are Task logs configured |
-| Amazon_MWAA_Auditor | Airflow Environment | Are Webserver logs configured |
-| Amazon_MWAA_Auditor | Airflow Environment | Are Worker logs configured |
-| Amazon_Neptune_Auditor | Neptune instance | Is Neptune instance configured for HA |
-| Amazon_Neptune_Auditor | Neptune instance | Is Neptune instance storage encrypted |
-| Amazon_Neptune_Auditor | Neptune instance | Does Neptune instance use IAM DB Auth |
-| Amazon_Neptune_Auditor | Neptune cluster | Is SSL connection enforced |
-| ~~Amazon_Neptune_Auditor~~ | ~~Neptune cluster~~ | ~~Is audit logging enabled~~ **THIS FINDING HAS BEEN RETIRED** |
-| Amazon_Neptune_Auditor | Neptune instance | Does Neptune instance export audit logs |
-| Amazon_Neptune_Auditor | Neptune instance | Is Neptune instance deletion protected |
-| Amazon_Neptune_Auditor | Neptune instance | Does Neptune instance automatically update minor versions |
-| Amazon_Neptune_Auditor | Neptune cluster | Are Neptune clusters configured to auto-scale |
-| Amazon_Neptune_Auditor | Neptune cluster | Are Neptune clusters configured to cache query results |
-| Amazon_QLDB_Auditor | QLDB Ledger | Does ledger have deletion protection |
-| Amazon_QLDB_Auditor | QLDB Export | Is export encryption enabled |
-| Amazon_RDS_Auditor | RDS DB Instance | Is HA configured |
-| Amazon_RDS_Auditor | RDS DB Instance | Are DB instances publicly accessible |
-| Amazon_RDS_Auditor | RDS DB Instance | Is DB storage encrypted |
-| Amazon_RDS_Auditor | RDS DB Instance | Do supported DBs use IAM Authentication |
-| Amazon_RDS_Auditor | RDS DB Instance | Are supported DBs joined to a domain |
-| Amazon_RDS_Auditor | RDS DB Instance | Is performance insights enabled |
-| Amazon_RDS_Auditor | RDS DB Instance | Is deletion protection enabled |
-| Amazon_RDS_Auditor | RDS DB Instance | Is database CloudWatch logging enabled |
-| Amazon_RDS_Auditor | RDS Snapshot | Are snapshots encrypted |
-| Amazon_RDS_Auditor | RDS Snapshot | Are snapshots public |
-| Amazon_RDS_Auditor | RDS DB Cluster (Aurora) | Is Database Activity Stream configured |
-| Amazon_RDS_Auditor | RDS DB Cluster (Aurora) | Is the cluster encrypted |
-| Amazon_RDS_Auditor | RDS DB Instance | Does Instance have any snapshots |
-| Amazon_RDS_Auditor | RDS DB Instance | Does the instance security group allow risky access |
-| Amazon_RDS_Auditor | Event Subscription (Account) | Does an Event Subscription to monitor DB instances exist |
-| Amazon_RDS_Auditor | Event Subscription (Account) | Does an Event Subscription to monitor paramter groups exist |
-| Amazon_RDS_Auditor | RDS DB Instance | Do PostgreSQL instances use a version susceptible to Lightspin "log_fwd" attack |
-| Amazon_RDS_Auditor | RDS DB Instance | Do Aurora PostgreSQL instances use a version susceptible to Lightspin "log_fwd" attack |
-| Amazon_Redshift_Auditor | Redshift cluster | Is the cluster publicly accessible |
-| Amazon_Redshift_Auditor | Redshift cluster | Is the cluster encrypted at rest |
-| Amazon_Redshift_Auditor | Redshift cluster | Is enhanced VPC routing enabled |
-| Amazon_Redshift_Auditor | Redshift cluster | Is cluster audit logging enabled |
-| Amazon_Redshift_Auditor | Redshift cluster | Does the cluster use the default Admin username |
-| Amazon_Redshift_Auditor | Redshift cluster | Is cluster user activity logging enabled |
-| Amazon_Redshift_Auditor | Redshift cluster | Does the cluster enforce encrypted in transit |
-| Amazon_Redshift_Auditor | Redshift cluster | Does the cluster take automated snapshots |
-| Amazon_Redshift_Auditor | Redshift cluster | Is the cluster configured for automated major version upgrades |
-| Amazon_Route53_Auditor | Route53 Hosted Zone | Do Hosted Zones have Query Logging enabled |
-| Amazon_Route53_Auditor | Route53 Hosted Zone | Do Hosted Zones have traffic policies associated |
-| Amazon_Route53_Resolver_Auditor | VPC | Do VPCs have Query Logging enabled |
-| Amazon_Route53_Resolver_Auditor | VPC | Do VPCs have DNS Firewalls associated |
-| Amazon_Route53_Resolver_Auditor | VPC | Do VPCs enabled DNSSEC resolution |
-| Amazon_Route53_Resolver_Auditor | VPC | Do VPCs with DNS Firewall fail open |
-| Amazon_S3_Auditor | S3 Bucket | Is bucket encryption enabled |
-| Amazon_S3_Auditor | S3 Bucket | Is a bucket lifecycle enabled |
-| Amazon_S3_Auditor | S3 Bucket | Is bucket versioning enabled |
-| Amazon_S3_Auditor | S3 Bucket | Does the bucket policy allow public access |
-| Amazon_S3_Auditor | S3 Bucket | Does the bucket have a policy |
-| Amazon_S3_Auditor | S3 Bucket | Is server access logging enabled |
-| Amazon_S3_Auditor | Account | Is account level public access block configured |
-| Amazon_SageMaker_Auditor | SageMaker Notebook | Is notebook encryption enabled |
-| Amazon_SageMaker_Auditor | SageMaker Notebook | Is notebook direct internet access enabled |
-| Amazon_SageMaker_Auditor | SageMaker Notebook | Is the notebook in a vpc |
-| Amazon_SageMaker_Auditor | SageMaker Endpoint | Is endpoint encryption enabled |
-| Amazon_SageMaker_Auditor | SageMaker Model | Is model network isolation enabled |
-| Amazon_Shield_Advanced_Auditor | Route53 Hosted Zone | Are Rt53 hosted zones protected by Shield Advanced |
-| Amazon_Shield_Advanced_Auditor | Classic Load Balancer | Are CLBs protected by Shield Adv |
-| Amazon_Shield_Advanced_Auditor | ELBv2 (ALB/NLB) | Are ELBv2s protected by Shield Adv |
-| Amazon_Shield_Advanced_Auditor | Elastic IP | Are EIPs protected by Shield Adv |
-| Amazon_Shield_Advanced_Auditor | CloudFront Distribution | Are CF Distros protected by Shield Adv |
-| Amazon_Shield_Advanced_Auditor | Account (DRT IAM Role) | Does the DRT have account authZ via IAM role |
-| Amazon_Shield_Advanced_Auditor | Account (DRT S3 Access) | Does the DRT have access to WAF logs S3 buckets |
-| Amazon_Shield_Advanced_Auditor | Account (Shield subscription) | Is Shield Adv subscription on auto renew |
-| Amazon_Shield_Advanced_Auditor | Global Accelerator Accelerator | Are GA Accelerators protected by Shield Adv |
-| Amazon_Shield_Advanced_Auditor | Account | Has Shield Adv mitigated any attacks in the last 7 days |
-| Amazon_SNS_Auditor | SNS Topic | Is the topic encrypted |
-| Amazon_SNS_Auditor | SNS Topic | Does the topic have plaintext (HTTP) subscriptions |
-| Amazon_SNS_Auditor | SNS Topic | Does the topic allow public access |
-| Amazon_SNS_Auditor | SNS Topic | Does the topic allow cross-account access |
-| Amazon_SQS_Auditor | SQS Queue | Are there old messages |
-| Amazon_SQS_Auditor | SQS Queue | Is Server Side Encryption Enabled |
-| Amazon_SQS_Auditor | SQS Queue | Is the SQS Queue publically accessible |
-| Amazon_VPC_Auditor | VPC | Is the default VPC out and about |
-| Amazon_VPC_Auditor | VPC | Is flow logging enabled |
-| Amazon_VPC_Auditor | Subnet | Do subnets map public IPs |
-| Amazon_VPC_Auditor | Subnet | Do subnets have available IP space |
-| Amazon_WorkSpaces_Auditor | Workspace | Is user volume encrypted |
-| Amazon_WorkSpaces_Auditor | Workspace | Is root volume encrypted |
-| Amazon_WorkSpaces_Auditor | Workspace | Is running mode set to auto-off |
-| Amazon_WorkSpaces_Auditor | DS Directory | Does directory allow default internet access |
-| Amazon_Xray_Auditor | XRay Encryption Config | Is KMS CMK encryption used |
-| AMI_Auditor | Amazon Machine Image (AMI) | Are owned AMIs public |
-| AMI_Auditor | Amazon Machine Image (AMI) | Are owned AMIs encrypted |
-| AWS_ACM_Auditor | ACM Certificate | Are certificates revoked |
-| AWS_ACM_Auditor | ACM Certificate | Are certificates in use |
-| AWS_ACM_Auditor | ACM Certificate | Is certificate transparency logging enabled |
-| AWS_ACM_Auditor | ACM Certificate | Have certificates been correctly renewed |
-| AWS_ACM_Auditor | ACM Certificate | Are certificates correctly validated |
-| AWS_Amplify_Auditor | AWS Amplify | Does the app have basic auth enabled on the branches |
-| AWS_Amplify_Auditor | AWS Amplify | Does the app have auto deletion for branches enabled |
-| AWS_AppMesh_Auditor | App Mesh mesh | Does the mesh egress filter DROP_ALL |
-| AWS_AppMesh_Auditor | App Mesh virtual node | Does the backend default client policy enforce TLS |
-| AWS_AppMesh_Auditor | App Mesh virtual node | Do virtual node backends have STRICT TLS mode configured for inbound connections |
-| AWS_AppMesh_Auditor | App Mesh virtual node | Do virtual nodes have an HTTP access log location defined |
-| AWS_Backup_Auditor | EC2 Instance | Are EC2 instances backed up |
-| AWS_Backup_Auditor | EBS Volume | Are EBS volumes backed up |
-| AWS_Backup_Auditor | DynamoDB tables | Are DynamoDB tables backed up |
-| AWS_Backup_Auditor | RDS DB Instance | Are RDS DB instances backed up |
-| AWS_Backup_Auditor | EFS File System | Are EFS file systems backed up |
-| AWS_Backup_Auditor | Neptune cluster | Are Neptune clusters backed up |
-| AWS_Backup_Auditor | DocumentDB cluster | Are DocumentDB clusters backed up |
-| AWS_Cloud9_Auditor | Cloud9 Environment | Are Cloud9 Envs using SSM for access |
-| AWS_CloudFormation_Auditor | CloudFormation Stack | Is drift detection enabled |
-| AWS_CloudFormation_Auditor | CloudFormation Stack | Are stacks monitored |
-| AWS_CloudHSM_Auditor | CloudHSM Cluster | Is the CloudHSM Cluster in a degraded state |
-| AWS_CloudHSM_Auditor | CloudHSM HSM Module | Is the CloudHSM hardware security module in a degraded state |
-| AWS_CloudHSM_Auditor | CloudHSM Backups | Is there at least one backup in a READY state |
-| AWS_CloudTrail_Auditor | CloudTrail | Is the trail multi-region |
-| AWS_CloudTrail_Auditor | CloudTrail | Does the trail send logs to CWL |
-| AWS_CloudTrail_Auditor | CloudTrail | Is the trail encrypted by KMS |
-| AWS_CloudTrail_Auditor | CloudTrail | Are global/management events logged |
-| AWS_CloudTrail_Auditor | CloudTrail | Is log file validation enabled |
-| AWS_CodeArtifact_Auditor | CodeArtifact Repo | Does the CodeArtifact Repo have a least privilege resource policy attached |
-| AWS_CodeArtifact_Auditor | CodeArtifact Domain | Does the CodeArtifact Domain have a least privilege resource policy attached |
-| AWS_CodeBuild_Auditor | CodeBuild project | Is artifact encryption enabled |
-| AWS_CodeBuild_Auditor | CodeBuild project | Is Insecure SSL enabled |
-| AWS_CodeBuild_Auditor | CodeBuild project | Are plaintext environmental variables used |
-| AWS_CodeBuild_Auditor | CodeBuild project | Is S3 logging encryption enabled |
-| AWS_CodeBuild_Auditor | CodeBuild project | Is CloudWatch logging enabled |
-| AWS_CodeBuild_Auditor | CodeBuild project | Does CodeBuild store PATs or Basic Auth creds |
-| AWS_CodeBuild_Auditor | CodeBuild project | Is the CodeBuild project public |
-| AWS_CodeBuild_Auditor | CodeBuild project | Are CodeBuild projects using privileged containers |
-| AWS_Directory_Service_Auditor | DS Directory | Is RADIUS enabled |
-| AWS_Directory_Service_Auditor | DS Directory | Is CloudWatch log forwarding enabled |
-| AWS_DMS_Auditor | DMS Replication Instance | Are DMS instances publicly accessible |
-| AWS_DMS_Auditor | DMS Replication Instance | Is DMS multi-az configured |
-| AWS_DMS_Auditor | DMS Replication Instance | Are minor version updates configured |
-| AWS_Global_Accelerator_Auditor | Global Accelerator Endpoint | Is the endpoint healthy |
-| AWS_Global_Accelerator_Auditor | Global Accelerator Accelerator | Are flow logs enabled for accelerator |
-| AWS_Health_Auditor | AWS Health Event | Are there active Security Events |
-| AWS_Health_Auditor | AWS Health Event | Are there active Abuse Events |
-| AWS_Health_Auditor | AWS Health Event | Are there active Risk Events |
-| AWS_Glue_Auditor | Glue Crawler | Is S3 encryption configured for the crawler |
-| AWS_Glue_Auditor | Glue Crawler | Is CWL encryption configured for the crawler |
-| AWS_Glue_Auditor | Glue Crawler | Is job bookmark encryption configured for the crawler |
-| AWS_Glue_Auditor | Glue Data Catalog | Is data catalog encryption configured |
-| AWS_Glue_Auditor | Glue Data Catalog | Is connection password encryption configured |
-| AWS_Glue_Auditor | Glue Data Catalog | Is a resource policy configured |
-| AWS_IAM_Auditor | IAM Access Key | Are access keys over 90 days old |
-| AWS_IAM_Auditor | IAM User | Do users have permissions boundaries |
-| AWS_IAM_Auditor | IAM User | Do users have MFA |
-| AWS_IAM_Auditor | IAM User | Do users have in-line policies attached |
-| AWS_IAM_Auditor | IAM User | Do users have managed policies attached |
-| AWS_IAM_Auditor | Password policy (Account) | Does the IAM password policy meet or exceed AWS CIS Foundations Benchmark standards |
-| AWS_IAM_Auditor | Server certs (Account) | Are they any Server certificates stored by IAM |
-| AWS_IAM_Auditor | IAM Policy | Do managed IAM policies adhere to least privilege principles |
-| AWS_IAM_Auditor | IAM User | Do User IAM inline policies adhere to least privilege principles |
-| AWS_IAM_Auditor | IAM Group | Do Group IAM inline policies adhere to least privilege principles |
-| AWS_IAM_Auditor | IAM Role | Do Role IAM inline policies adhere to least privilege principles |
-| AWS_IAMRA_Auditor | IAMRA Trust Anchor | Do Trust Anchors contain self-signed certificates |
-| AWS_IAMRA_Auditor | IAMRA Trust Anchor | Do Trust Anchors use a Certificate Revocation List (CRL) |
-| AWS_IAMRA_Auditor | IAMRA Profile | Do IAMRA Profiles specify a Session Policy |
-| AWS_IAMRA_Auditor | IAMRA Profile | Do IAMRA Profiles specify a Permission Boundary |
-| AWS_IAMRA_Auditor | IAM Role | Do IAM Roles associated with IAMRA use Condition statements in the Trust Policy |
-| AWS_Keyspaces_Auditor | Keyspaces table | Are Keyspaces Tables encrypted with a KMS CMK |
-| AWS_Keyspaces_Auditor | Keyspaces table | Do Keyspaces Tables have PTR enabled |
-| AWS_Keyspaces_Auditor | Keyspaces table | Are Keyspaces Tables in an unusable state |
-| AWS_KMS_Auditor | KMS key | Is key rotation enabled |
-| AWS_KMS_Auditor | KMS key | Does the key allow public access |
-| AWS_Lambda_Auditor | Lambda function | Has function been used or updated in the last 30 days |
-| AWS_Lambda_Auditor | Lambda function | Is tracing enabled |
-| AWS_Lambda_Auditor | Lambda function | Is code signing used |
-| AWS_Lambda_Auditor | Lambda layer | Is the layer public |
-| AWS_Lambda_Auditor | Lambda function | Is the function public |
-| AWS_Lambda_Auditor | Lambda function | Is the function using a supported runtime |
-| AWS_Lambda_Auditor | Lambda function | Are functions in VPCs highly available in at least 2 AZs |
-| AWS_License_Manager_Auditor | License Manager configuration | Do LM configurations enforce a hard limit on license consumption |
-| AWS_License_Manager_Auditor | License Manager configuration | Do LM configurations enforce auto-disassociation |
-| AWS_MemoryDB_Auditor | MemoryDB Cluster | Do clusters use TLS |
-| AWS_MemoryDB_Auditor | MemoryDB Cluster | Do clusters use KMS CMK for encryption at rest |
-| AWS_MemoryDB_Auditor | MemoryDB Cluster | Are clusters configured for auto minor version updates |
-| AWS_MemoryDB_Auditor | MemoryDB Cluster | Are cluster events monitored with SNS |
-| AWS_MemoryDB_Auditor | MemoryDB User | MemDB Admin users should be reviewed |
-| AWS_MemoryDB_Auditor | MemoryDB User | MemDB users should use passwords |
-| AWS_RAM_Auditor | RAM Resource Share | Is the resource share status not failed |
-| AWS_RAM_Auditor | RAM Resource Share | Does the resource allow external principals |
-| AWS_Secrets_Manager_Auditor | Secrets Manager secret | Is the secret over 90 days old |
-| AWS_Secrets_Manager_Auditor | Secrets Manager secret | Is secret auto-rotation enabled |
-| AWS_Security_Hub_Auditor | Security Hub (Account) | Are there active high or critical findings in Security Hub |
-| AWS_Security_Services_Auditor | IAM Access Analyzer (Account) | Is IAM Access Analyzer enabled |
-| AWS_Security_Services_Auditor | GuardDuty (Account) | Is GuardDuty enabled |
-| AWS_Security_Services_Auditor | Detective (Account) | Is Detective enabled |
-| AWS_Security_Services_Auditor | Macie2 | Is Macie enabled |
-| ~~AWS_Security_Services_Auditor~~ | ~~AWS WAFv2 (Regional)~~ | ~~Are Regional Web ACLs configured~~ **THIS FINDING HAS BEEN RETIRED** |
-| ~~AWS_Security_Services_Auditor~~ | ~~AWS WAFv2 (Global)~~ | ~~Are Global Web ACLs (for CloudFront) configured~~ **THIS FINDING HAS BEEN RETIRED** |
-| AWS_Systems_Manager_Auditor | SSM Document | Are self owned SSM Documents publicly shared |
-| AWS_Systems_Manager_Auditor | SSM Association | Does an SSM Association that targets all Instances conduct SSM Agent updates |
-| AWS_Systems_Manager_Auditor | SSM Association | Does an SSM Association that targets all Instances conduct patching |
-| AWS_Systems_Manager_Auditor | SSM Association | Does an SSM Association that targets all Instances conduct inventory gathering |
-| AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | Is the Trusted Advisor check for MFA on Root Account failing |
-| AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | Is the Trusted Advisor check for ELB Listener Security failing |
-| AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | Is the Trusted Advisor check for CloudFront SSL Certs in IAM Cert Store failing |
-| AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | Is the Trusted Advisor check for CloudFront SSL Cert on Origin Server failing |
-| AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | Is the Trusted Advisor check for Exposed Access Keys failing |
-| AWS_WAFv2_Auditor | AWS WAFv2 (Regional) | Do Regional WAFs use Cloudwatch Metrics |
-| AWS_WAFv2_Auditor | AWS WAFv2 (Regional) | Do Regional WAFs use Request Sampling |
-| AWS_WAFv2_Auditor | AWS WAFv2 (Regional) | Do Regional WAFs have Logging enabled |
-| AWS_WAFv2_Auditor | AWS WAFv2 (Global) | Do Global WAFs use Cloudwatch Metrics |
-| AWS_WAFv2_Auditor | AWS WAFv2 (Global) | Do Global WAFs use Request Sampling |
-| AWS_WAFv2_Auditor | AWS WAFv2 (Global) | Do Global WAFs have Logging enabled |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a FTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a SSH service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a Telnet service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a SMTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a HTTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a POP3 service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a Win NetBIOS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a SMB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a RDP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a MSSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a MySQL/MariaDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a NFS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a Docker API service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a OracleDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a PostgreSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a Kibana service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a VMWARE ESXi service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a HTTP Proxy service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a SplunkD service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a Kubernetes API Server service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a Redis service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a Kafka service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a MongoDB/DocDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a Rabbit/AmazonMQ service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a SparkUI service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a FTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a SSH service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a Telnet service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a SMTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a HTTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a POP3 service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a Win NetBIOS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a SMB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a RDP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a MSSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a MySQL/MariaDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a NFS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a Docker API service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a OracleDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a PostgreSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a Kibana service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a VMWARE ESXi service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a HTTP Proxy service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a SplunkD service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a Kubernetes API Server service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a Redis service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a Kafka service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a MongoDB/DocDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a Rabbit/AmazonMQ service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a SparkUI service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a FTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a SSH service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a Telnet service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a SMTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a HTTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a POP3 service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a Win NetBIOS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a SMB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a RDP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a MSSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a MySQL/MariaDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a NFS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a Docker API service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a OracleDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a PostgreSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a Kibana service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a VMWARE ESXi service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a HTTP Proxy service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a SplunkD service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a Kubernetes API Server service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a Redis service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a Kafka service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a MongoDB/DocDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a Rabbit/AmazonMQ service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a SparkUI service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a FTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a SSH service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a Telnet service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a SMTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a HTTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a POP3 service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a Win NetBIOS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a SMB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a RDP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a MSSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a MySQL/MariaDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a NFS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a Docker API service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a OracleDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a PostgreSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a Kibana service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a VMWARE ESXi service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a HTTP Proxy service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a SplunkD service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a Kubernetes API Server service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a Redis service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a Kafka service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a MongoDB/DocDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a Rabbit/AmazonMQ service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a SparkUI service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a FTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a SSH service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a Telnet service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a SMTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a HTTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a POP3 service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a Win NetBIOS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a SMB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a RDP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a MSSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a MySQL/MariaDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a NFS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a Docker API service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a OracleDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a PostgreSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a Kibana service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a VMWARE ESXi service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a HTTP Proxy service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a SplunkD service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a Kubernetes API Server service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a Redis service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a Kafka service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a MongoDB/DocDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a Rabbit/AmazonMQ service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a SparkUI service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a FTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a SSH service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a Telnet service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a SMTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a HTTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a POP3 service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a Win NetBIOS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a SMB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a RDP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a MSSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a MySQL/MariaDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a NFS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a Docker API service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a OracleDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a PostgreSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a Kibana service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a VMWARE ESXi service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a HTTP Proxy service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a SplunkD service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a Kubernetes API Server service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a Redis service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a Kafka service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a MongoDB/DocDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a Rabbit/AmazonMQ service publicly accessible |
-| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a SparkUI service publicly accessible |
-| Amazon_Secrets_Auditor | CodeBuild project | Do CodeBuild projects have secrets in plaintext env vars |
-| Amazon_Secrets_Auditor | CloudFormation Stack | Do CloudFormation Stacks have secrets in parameters |
-| Amazon_Secrets_Auditor | ECS Task Definition | Do ECS Task Definitions have secrets in env vars |
-| Amazon_Secrets_Auditor | EC2 Instance | Do EC2 instances have secrets in User Data |
-| Amazon_Shodan_Auditor | EC2 Instance | Are EC2 instances w/ public IPs indexed |
-| Amazon_Shodan_Auditor | ELBv2 (ALB) | Are internet-facing ALBs indexed |
-| Amazon_Shodan_Auditor | RDS Instance | Are public accessible RDS instances indexed |
-| Amazon_Shodan_Auditor | OpenSearch domain | Are ES Domains outside a VPC indexed |
-| Amazon_Shodan_Auditor | ELB (CLB) | Are internet-facing CLBs indexed |
-| Amazon_Shodan_Auditor | DMS Replication Instance | Are public accessible DMS instances indexed |
-| Amazon_Shodan_Auditor | Amazon MQ message broker | Are public accessible message brokers indexed |
-| Amazon_Shodan_Auditor | CloudFront Distribution | Are CloudFront distros indexed |
-| Amazon_Shodan_Auditor | Global Accelerator Accelerator | Are Global Accelerator Accelerators indexed |
-
-### GCP Checks & Services
-___
-
-These are the following services and checks perform by each Auditor, there are currently...
-- :boom: **53 Checks** :boom:
-- :exclamation: **2 supported GCP services/components** :exclamation:
-- :fire: **3 Auditors** :fire:
-
-
-| Auditor File Name | Scanned Resource Name | Auditor Scan Description |
-|---|---|---|
-| GCP_ComputeEngine_Auditor | GCE VM Instance | Is deletion protection enabled |
-| GCP_ComputeEngine_Auditor | GCE VM Instance | Is IP forwarding disabled |
-| GCP_ComputeEngine_Auditor | GCE VM Instance | Is auto-restart enabled |
-| GCP_ComputeEngine_Auditor | GCE VM Instance | Is Secure Boot enabled |
-| GCP_ComputeEngine_Auditor | GCE VM Instance | Is Virtual Trusted Platform Module enabled |
-| GCP_ComputeEngine_Auditor | GCE VM Instance | Is Instance Integrity Monitoring enabled |
-| GCP_ComputeEngine_Auditor | GCE VM Instance | Is Secure Integrity Monitoring Auto-learning Policy set to Update |
-| GCP_ComputeEngine_Auditor | GCE VM Instance | Is Serial Port access disabled |
-| GCP_ComputeEngine_Auditor | GCE VM Instance | Are Linux VM Instances access with OS Logon |
-| GCP_ComputeEngine_Auditor | GCE VM Instance | Are Linux VM Instances acessed with OS Logon using 2FA/MFA |
-| GCP_ComputeEngine_Auditor | GCE VM Instance | Are project-wide SSH keys blocked from access VM instances |
-| GCP_ComputeEngine_Auditor | GCE VM Instance | Are instances publicly facing |
-| GCP_CloudSQL_Auditor | CloudSQL Instance | Are instances publicly facing |
-| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances enabled auto-backup |
-| GCP_CloudSQL_Auditor | CloudSQL Instance | Do MySQL instances enable PITR |
-| GCP_CloudSQL_Auditor | CloudSQL Instance | Do PostgreSQL instances enable PITR |
-| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a private network enabled |
-| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances allowe GCP services connectivity |
-| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a password policy enabled |
-| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a password min length |
-| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a password reuse check |
-| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a configuration to disallow usernames in the password |
-| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a password change interval check |
-| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have storage auto-resize enabled |
-| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have deletion protection enabled |
-| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have query insights enabled |
-| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have SSL/TLS Enforcement enabled |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a FTP service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a SSH service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Telnet service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a SMTP service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a HTTP service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a POP3 service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Win NetBIOS service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a SMB service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a RDP service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a MSSQL service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a MySQL/MariaDB service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a NFS service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Docker API service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a OracleDB service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a PostgreSQL service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Kibana service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a VMWARE ESXi service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a HTTP Proxy service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a SplunkD service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Kubernetes API Server service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Redis service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Kafka service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a MongoDB/DocDB service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Rabbit/AmazonMQ service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a SparkUI service publicly accessible |
-
-
-### Azure Checks & Services
-___
-
-*Coming Soon!*
-
-### SSPM: GitHub Checks & Services
-___
-
-*Coming Soon!*
-
-### SSPM: Servicenow Checks & Services
-___
-
-These are the following services and checks perform by each Auditor, there are currently...
-- :boom: **92 Checks** :boom:
-- :exclamation: **3 supported ServiceNow services/components** :exclamation:
-- :fire: **9 Auditors** :fire:
-
-| Auditor File Name | Scanned Resource Name | Auditor Scan Description |
-|---|---|---|
-| Servicenow_Users_Auditor | Servicenow User | Do active users have MFA enabled |
-| Servicenow_Users_Auditor | Servicenow User | Audit active users for {X} failed login attempts |
-| Servicenow_Users_Auditor | Servicenow User | Audit active users that are locked out |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance block unsanitized messages |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance specify a script execution role |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for JSONv2 API |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for SOAP API |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does instance block delegated developer grant roles |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for CSV API |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce default deny |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance double-check inbound form transactions |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance control live profile details |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for GlideAjax API |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for Excel API |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for the import API |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for PDF API |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance protect performance monitoring for unauthorized access |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance restrict performance monitoring to specific IP |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enable privacy control for client-callable scripts |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance restrict Favorites access |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance have an IP Allowlist |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for RSS API |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for Script Requests API |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance perform validation for SOAP requests |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance restrict ServiceNow employee access
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for Unload API |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for WSDL API |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for XML API |
-| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for XSD API |
-| Servicenow_Attachments_Auditor | System Property | Attachments: Does the instance restrict files from being rendered in the browser |
-| Servicenow_Attachments_Auditor | System Property | Attachments: Instance should restrict questionable file attachments |
-| Servicenow_Attachments_Auditor | System Property | Attachments: Instance should configure file download restrictions |
-| Servicenow_Attachments_Auditor | System Property | Attachments: Instance should enable access control for profile pictures |
-| Servicenow_Attachments_Auditor | System Property | Attachments: Instance should enforce downloading of attachments |
-| Servicenow_Attachments_Auditor | System Property | Attachments: Instance should define file type allowlist for uploads |
-| Servicenow_Attachments_Auditor | System Property | Attachments: Instance should prevent unauthorized access to attachments |
-| Servicenow_Attachments_Auditor | System Property | Attachments: Instance should prevent specific file extensions upload |
-| Servicenow_Attachments_Auditor | System Property | Attachments: Instance should prevent specific file type upload |
-| Servicenow_Attachments_Auditor | System Property | Attachments: Instance should prevent specific file type download |
-| Servicenow_Attachments_Auditor | System Property | Attachments: Instance should enable MIME type validation |
-| Servicenow_EmailSecurity_Auditor | System Property | Email Security: Instance should restrict email HTML bodies from rendering |
-| Servicenow_EmailSecurity_Auditor | System Property | Email Security: Instance should restrict acccess to emails with empty target tables |
-| Servicenow_EmailSecurity_Auditor | System Property | Email Security: Instance should specify trusted domain allowlists |
-| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should disallow embedded HTML code |
-| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should disallow JavaScript in embedded HTML |
-| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should check unsanitized HTML |
-| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should enable script sandboxing |
-| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should disable AJAXEvaluate |
-| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should escape Excel formula injection |
-| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should escape HTML |
-| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should escape JavaScript |
-| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should escape Jelly |
-| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should escape XML |
-| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should sanitize HTML |
-| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should prevent JavaScript injection with Jelly interpolation |
-| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should enable SOAP request strict security |
-| Servicenow_SecureCommunications_Auditor | System Property | Secure Communications: Instance should enable certficate validation on outbound connections |
-| Servicenow_SecureCommunications_Auditor | System Property | Secure Communications: Instance should disable SSLv2 & SSLv3 |
-| Servicenow_SecureCommunications_Auditor | System Property | Secure Communications: Instance should verify HTTP client hostnames |
-| Servicenow_SecureCommunications_Auditor | System Property | Secure Communications: Instance should check revoked certificate status |
-| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should enable URL allow list for cross-origin iframe communication |
-| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should enforce relative links |
-| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should specify URL allow list for cross-origin iframe communication |
-| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should specify URL allow list for logout redirects |
-| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should set virtual agent embedded client content security policy |
-| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should set virtual agent embedded client X-Frame-Options |
-| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should set X-Frame-Options: SAMEORIGIN |
-| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should set XXE entity expansion threshold |
-| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should set XMLdoc/XMLUtil entity validation allow list |
-| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should disable XXE entity expansion |
-| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should set XMLdoc2 entity validation allow list |
-| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should enable XML external entity processing allow lists |
-| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should set absolute session timeouts |
-| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should set an Anti-CSRF token |
-| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should set the HTTPOnly property for sensitive cookies |
-| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should enable Anti-CSRF token strict validation |
-| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should disable passwordless authentication |
-| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should globally enable MFA |
-| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should enforce password change validation |
-| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should disable password autocompletes |
-| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should disable Remember Me checkboxes |
-| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should rotate HTTP SessionIDs |
-| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should validate session cookies |
-| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should set a strong security reference policy |
-| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should set a strong session activity timeout |
-| Servicenow_SessionManagement_Auditor | System Property | Session Management: If using Remember Me, instance should set a strong rotation timeout |
-| Servicenow_SecurityPlugins_Auditor | Plugin | Plugins: Instance should have the Contextual Security: Role Management Plugin intalled and active |
-| Servicenow_SecurityPlugins_Auditor | Plugin | Plugins: Instance should have the Explicit Role Plugin intalled and active |
-| Servicenow_SecurityPlugins_Auditor | Plugin | Plugins: Instance should have the SAML 2.0 SSO Plugin intalled and active |
-| Servicenow_SecurityPlugins_Auditor | Plugin | Plugins: Instance should have the Security Jump Start Plugin intalled and active |
-| Servicenow_SecurityPlugins_Auditor | Plugin | Plugins: Instance should have the SNC Access Control Plugin intalled and active |
-| Servicenow_SecurityPlugins_Auditor | Plugin | Plugins: Instance should have the Email Filters Plugin intalled and active |
-
-### SSPM: M365 Checks & Services
-___
-
-*Coming Soon!*
+The tables of supported Services and Checks have been migrated to the respective per-Provider setup documentation linked above in [Configuring ElectricEye](#configuring-electriceye).
 
 ## Contributing
 
@@ -902,7 +270,9 @@ Refer to the [Developer Guide](./docs/new_checks/DEVELOPER_GUIDE.md) for instruc
 
 Feel free to open PRs and Issues where syntax, grammatic, and implementation errors are encountered in the code base.
 
-**ElectricEye is for sale**: contact the maintainer for more imformation!
+### ElectricEye is for sale
+
+Contact the maintainer for more information!
 
 ### Early Contributors
 
@@ -928,6 +298,40 @@ Quick shout-outs to the folks who answered the call early to test out ElectricEy
 - [Manuel Leos Rivas](https://www.linkedin.com/in/manuel-lr/)
 - [Andrew Alaniz](https://www.linkedin.com/in/andrewdalaniz/)
 - [Christopher Childers](https://www.linkedin.com/in/christopher-childers-28950537/)
+
+## Repository Security
+
+Since ElectricEye is a security tool, it only makes sense to ensure a high-level of security of components are maintained. To that end the following tools are configured for usage. Refer to the build badges and Actions for detailed information about each run.
+
+#### [`Syft`](https://github.com/anchore/syft)
+
+See [results here](https://github.com/jonrau1/ElectricEye/actions/workflows/sbom-vulns.yml)!
+
+A CLI tool and Go library for generating a Software Bill of Materials (SBOM) from container images and filesystems.
+
+ElectricEye uses Syft to build an SBOM off of a built ElectricEye Docker Image in CycloneDX format and upload it as an artifact to every succesful GitHub Action run.
+
+#### [`Grype`](https://github.com/anchore/grype)
+
+See [results here](https://github.com/jonrau1/ElectricEye/actions/workflows/sbom-vulns.yml)!
+
+A vulnerability scanner for container images and filesystems. Easily install the binary to try it out. Works with Syft, the powerful SBOM (software bill of materials) tool for container images and filesystems.
+
+ElectricEye passes the CycloneDX SBOM from `Syft` to `Grype` to perform vulnerability scans on the built Docker image which combines all Python dependencies and built-in methods within the `alpine` Docker Image parent that ElectricEye uses. Builds with critical vulnerabilities are broken automatically. The results are posted to the GitHub Action and uploaded as `sarif` to GitHub Security
+
+#### [`Dependabot`](https://github.com/dependabot)
+
+Dependabot alerts tell you that your code depends on a package that is insecure. If your code depends on a package with a security vulnerability, this can cause a range of problems for your project or the people who use it. You should upgrade to a secure version of the package as soon as possible. If your code uses malware, you need to replace the package with a secure alternative.
+
+ElectricEye uses Dependabot as a Software Composition Analysis (SCA) tool to run daily scans and open Pull Requests in the event that a Docker, Python, or GitHub-Action dependency requires a security patch.
+
+#### [`CodeQL`](https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/about-code-scanning-with-codeql)
+
+See [results here](https://github.com/jonrau1/ElectricEye/actions/workflows/codeql-analysis.yml)!
+
+CodeQL is the code analysis engine developed by GitHub to automate security checks. You can analyze your code using CodeQL and display the results as code scanning alerts.
+
+ElectricEye uses `codeql` as a Static Application Security Testing (SAST) tool to scan all Auditors which are written in Python, `codeql` also looks for secrets in code. It is ran on push and on a schedule.
 
 ## License
 
