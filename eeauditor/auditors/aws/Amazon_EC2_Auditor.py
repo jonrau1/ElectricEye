@@ -2666,6 +2666,7 @@ def ec2_instance_exploitable_vulnerability_check(cache: dict, session, awsAccoun
                         "NIST SP 800-53 Rev. 4 SI-5",
                         "AICPA TSC CC3.2",
                         "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.6.1.4",
                         "ISO 27001:2013 A.12.6.1",
                         "ISO 27001:2013 A.12.6.4",
                         "ISO 27001:2013 A.18.2.3"
@@ -2744,6 +2745,7 @@ def ec2_instance_exploitable_vulnerability_check(cache: dict, session, awsAccoun
                         "NIST SP 800-53 Rev. 4 SI-5",
                         "AICPA TSC CC3.2",
                         "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.6.1.4",
                         "ISO 27001:2013 A.12.6.1",
                         "ISO 27001:2013 A.12.6.4",
                         "ISO 27001:2013 A.18.2.3"
