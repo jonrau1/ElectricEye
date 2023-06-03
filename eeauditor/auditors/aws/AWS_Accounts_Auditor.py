@@ -116,18 +116,14 @@ def aws_accounts_billing_dedicated_contact_check(cache: dict, session, awsAccoun
             "Compliance": {
                 "Status": "FAILED",
                 "RelatedRequirements": [
-                    "NIST CSF V1.1 ID.BE-5",
-                    "NIST CSF V1.1 PR.PT-5",
-                    "NIST SP 800-53 Rev. 4 CP-2",
-                    "NIST SP 800-53 Rev. 4 CP-11",
-                    "NIST SP 800-53 Rev. 4 SA-13",
-                    "NIST SP 800-53 Rev. 4 SA-14",
-                    "AICPA TSC CC3.1",
-                    "AICPA TSC A1.2",
-                    "ISO 27001:2013 A.11.1.4",
-                    "ISO 27001:2013 A.17.1.1",
-                    "ISO 27001:2013 A.17.1.2",
-                    "ISO 27001:2013 A.17.2.1"
+                    "NIST CSF V1.1 DE.DP-4",
+                    "NIST SP 800-53 Rev. 4 AU-6",
+                    "NIST SP 800-53 Rev. 4 CA-2",
+                    "NIST SP 800-53 Rev. 4 CA-7",
+                    "NIST SP 800-53 Rev. 4 RA-5",
+                    "NIST SP 800-53 Rev. 4 SI-4",
+                    "AICPA TSC CC7.2",
+                    "ISO 27001:2013 A.16.1.2"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -177,18 +173,14 @@ def aws_accounts_billing_dedicated_contact_check(cache: dict, session, awsAccoun
             "Compliance": {
                 "Status": "PASSED",
                 "RelatedRequirements": [
-                    "NIST CSF V1.1 ID.BE-5",
-                    "NIST CSF V1.1 PR.PT-5",
-                    "NIST SP 800-53 Rev. 4 CP-2",
-                    "NIST SP 800-53 Rev. 4 CP-11",
-                    "NIST SP 800-53 Rev. 4 SA-13",
-                    "NIST SP 800-53 Rev. 4 SA-14",
-                    "AICPA TSC CC3.1",
-                    "AICPA TSC A1.2",
-                    "ISO 27001:2013 A.11.1.4",
-                    "ISO 27001:2013 A.17.1.1",
-                    "ISO 27001:2013 A.17.1.2",
-                    "ISO 27001:2013 A.17.2.1"
+                    "NIST CSF V1.1 DE.DP-4",
+                    "NIST SP 800-53 Rev. 4 AU-6",
+                    "NIST SP 800-53 Rev. 4 CA-2",
+                    "NIST SP 800-53 Rev. 4 CA-7",
+                    "NIST SP 800-53 Rev. 4 RA-5",
+                    "NIST SP 800-53 Rev. 4 SI-4",
+                    "AICPA TSC CC7.2",
+                    "ISO 27001:2013 A.16.1.2"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -267,18 +259,14 @@ def aws_accounts_operations_dedicated_contact_check(cache: dict, session, awsAcc
             "Compliance": {
                 "Status": "FAILED",
                 "RelatedRequirements": [
-                    "NIST CSF V1.1 ID.BE-5",
-                    "NIST CSF V1.1 PR.PT-5",
-                    "NIST SP 800-53 Rev. 4 CP-2",
-                    "NIST SP 800-53 Rev. 4 CP-11",
-                    "NIST SP 800-53 Rev. 4 SA-13",
-                    "NIST SP 800-53 Rev. 4 SA-14",
-                    "AICPA TSC CC3.1",
-                    "AICPA TSC A1.2",
-                    "ISO 27001:2013 A.11.1.4",
-                    "ISO 27001:2013 A.17.1.1",
-                    "ISO 27001:2013 A.17.1.2",
-                    "ISO 27001:2013 A.17.2.1"
+                    "NIST CSF V1.1 DE.DP-4",
+                    "NIST SP 800-53 Rev. 4 AU-6",
+                    "NIST SP 800-53 Rev. 4 CA-2",
+                    "NIST SP 800-53 Rev. 4 CA-7",
+                    "NIST SP 800-53 Rev. 4 RA-5",
+                    "NIST SP 800-53 Rev. 4 SI-4",
+                    "AICPA TSC CC7.2",
+                    "ISO 27001:2013 A.16.1.2"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -328,18 +316,14 @@ def aws_accounts_operations_dedicated_contact_check(cache: dict, session, awsAcc
             "Compliance": {
                 "Status": "PASSED",
                 "RelatedRequirements": [
-                    "NIST CSF V1.1 ID.BE-5",
-                    "NIST CSF V1.1 PR.PT-5",
-                    "NIST SP 800-53 Rev. 4 CP-2",
-                    "NIST SP 800-53 Rev. 4 CP-11",
-                    "NIST SP 800-53 Rev. 4 SA-13",
-                    "NIST SP 800-53 Rev. 4 SA-14",
-                    "AICPA TSC CC3.1",
-                    "AICPA TSC A1.2",
-                    "ISO 27001:2013 A.11.1.4",
-                    "ISO 27001:2013 A.17.1.1",
-                    "ISO 27001:2013 A.17.1.2",
-                    "ISO 27001:2013 A.17.2.1"
+                    "NIST CSF V1.1 DE.DP-4",
+                    "NIST SP 800-53 Rev. 4 AU-6",
+                    "NIST SP 800-53 Rev. 4 CA-2",
+                    "NIST SP 800-53 Rev. 4 CA-7",
+                    "NIST SP 800-53 Rev. 4 RA-5",
+                    "NIST SP 800-53 Rev. 4 SI-4",
+                    "AICPA TSC CC7.2",
+                    "ISO 27001:2013 A.16.1.2"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -418,18 +402,14 @@ def aws_accounts_security_dedicated_contact_check(cache: dict, session, awsAccou
             "Compliance": {
                 "Status": "FAILED",
                 "RelatedRequirements": [
-                    "NIST CSF V1.1 ID.BE-5",
-                    "NIST CSF V1.1 PR.PT-5",
-                    "NIST SP 800-53 Rev. 4 CP-2",
-                    "NIST SP 800-53 Rev. 4 CP-11",
-                    "NIST SP 800-53 Rev. 4 SA-13",
-                    "NIST SP 800-53 Rev. 4 SA-14",
-                    "AICPA TSC CC3.1",
-                    "AICPA TSC A1.2",
-                    "ISO 27001:2013 A.11.1.4",
-                    "ISO 27001:2013 A.17.1.1",
-                    "ISO 27001:2013 A.17.1.2",
-                    "ISO 27001:2013 A.17.2.1"
+                    "NIST CSF V1.1 DE.DP-4",
+                    "NIST SP 800-53 Rev. 4 AU-6",
+                    "NIST SP 800-53 Rev. 4 CA-2",
+                    "NIST SP 800-53 Rev. 4 CA-7",
+                    "NIST SP 800-53 Rev. 4 RA-5",
+                    "NIST SP 800-53 Rev. 4 SI-4",
+                    "AICPA TSC CC7.2",
+                    "ISO 27001:2013 A.16.1.2"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -479,18 +459,14 @@ def aws_accounts_security_dedicated_contact_check(cache: dict, session, awsAccou
             "Compliance": {
                 "Status": "PASSED",
                 "RelatedRequirements": [
-                    "NIST CSF V1.1 ID.BE-5",
-                    "NIST CSF V1.1 PR.PT-5",
-                    "NIST SP 800-53 Rev. 4 CP-2",
-                    "NIST SP 800-53 Rev. 4 CP-11",
-                    "NIST SP 800-53 Rev. 4 SA-13",
-                    "NIST SP 800-53 Rev. 4 SA-14",
-                    "AICPA TSC CC3.1",
-                    "AICPA TSC A1.2",
-                    "ISO 27001:2013 A.11.1.4",
-                    "ISO 27001:2013 A.17.1.1",
-                    "ISO 27001:2013 A.17.1.2",
-                    "ISO 27001:2013 A.17.2.1"
+                    "NIST CSF V1.1 DE.DP-4",
+                    "NIST SP 800-53 Rev. 4 AU-6",
+                    "NIST SP 800-53 Rev. 4 CA-2",
+                    "NIST SP 800-53 Rev. 4 CA-7",
+                    "NIST SP 800-53 Rev. 4 RA-5",
+                    "NIST SP 800-53 Rev. 4 SI-4",
+                    "AICPA TSC CC7.2",
+                    "ISO 27001:2013 A.16.1.2"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
