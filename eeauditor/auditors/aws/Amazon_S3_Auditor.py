@@ -247,18 +247,18 @@ def bucket_lifecycle_check(cache: dict, session, awsAccountId: str, awsRegion: s
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 ID.BE-5",
-                        "NIST CSF V1.1 PR.PT-5",
-                        "NIST SP 800-53 Rev. 4 CP-2",
-                        "NIST SP 800-53 Rev. 4 CP-11",
-                        "NIST SP 800-53 Rev. 4 SA-13",
-                        "NIST SP 800-53 Rev. 4 SA-14",
-                        "AICPA TSC CC3.1",
-                        "AICPA TSC A1.2",
-                        "ISO 27001:2013 A.11.1.4",
-                        "ISO 27001:2013 A.17.1.1",
-                        "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1"
+                        "NIST CSF V1.1 PR.DS-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 MP-6",
+                        "NIST SP 800-53 Rev. 4 PE-16",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.5",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.8.3.1",
+                        "ISO 27001:2013 A.8.3.2",
+                        "ISO 27001:2013 A.8.3.3",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.7"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -314,18 +314,18 @@ def bucket_lifecycle_check(cache: dict, session, awsAccountId: str, awsRegion: s
                     "Compliance": {
                         "Status": "FAILED",
                         "RelatedRequirements": [
-                            "NIST CSF V1.1 ID.BE-5",
-                            "NIST CSF V1.1 PR.PT-5",
-                            "NIST SP 800-53 Rev. 4 CP-2",
-                            "NIST SP 800-53 Rev. 4 CP-11",
-                            "NIST SP 800-53 Rev. 4 SA-13",
-                            "NIST SP 800-53 Rev. 4 SA-14",
-                            "AICPA TSC CC3.1",
-                            "AICPA TSC A1.2",
-                            "ISO 27001:2013 A.11.1.4",
-                            "ISO 27001:2013 A.17.1.1",
-                            "ISO 27001:2013 A.17.1.2",
-                            "ISO 27001:2013 A.17.2.1"
+                            "NIST CSF V1.1 PR.DS-3",
+                            "NIST SP 800-53 Rev. 4 CM-8",
+                            "NIST SP 800-53 Rev. 4 MP-6",
+                            "NIST SP 800-53 Rev. 4 PE-16",
+                            "AICPA TSC CC6.1",
+                            "AICPA TSC CC6.5",
+                            "ISO 27001:2013 A.8.2.3",
+                            "ISO 27001:2013 A.8.3.1",
+                            "ISO 27001:2013 A.8.3.2",
+                            "ISO 27001:2013 A.8.3.3",
+                            "ISO 27001:2013 A.11.2.5",
+                            "ISO 27001:2013 A.11.2.7"
                         ]
                     },
                     "Workflow": {"Status": "NEW"},
@@ -401,91 +401,112 @@ def bucket_versioning_check(cache: dict, session, awsAccountId: str, awsRegion: 
                     "Status": "PASSED",
                     "RelatedRequirements": [
                         "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.IP-4",
                         "NIST CSF V1.1 PR.PT-5",
                         "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-4",
+                        "NIST SP 800-53 Rev. 4 CP-6",
+                        "NIST SP 800-53 Rev. 4 CP-7",
+                        "NIST SP 800-53 Rev. 4 CP-8",
+                        "NIST SP 800-53 Rev. 4 CP-9",
                         "NIST SP 800-53 Rev. 4 CP-11",
-                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 CP-13",
+                        "NIST SP 800-53 Rev. 4 PL-8",
                         "NIST SP 800-53 Rev. 4 SA-14",
-                        "AICPA TSC CC3.1",
+                        "NIST SP 800-53 Rev. 4 SC-6",
                         "AICPA TSC A1.2",
+                        "AICPA TSC A1.3",
+                        "AICPA TSC CC3.1",
                         "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.12.3.1",
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.1.3",
                         "ISO 27001:2013 A.17.2.1",
-                    ],
+                        "ISO 27001:2013 A.18.1.3"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED",
             }
             yield finding
-        except Exception as e:
-            if str(e) == "'Status'":
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": s3Arn + "/s3-bucket-versioning-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": s3Arn,
-                    "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "INFORMATIONAL"},
-                    "Confidence": 99,
-                    "Title": "[S3.3] S3 Buckets should have versioning enabled",
-                    "Description": "S3 bucket "
-                    + bucketName
-                    + " does not have versioning enabled. Refer to the remediation instructions if this configuration is not intended.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For more information on Bucket Versioning and how to configure it refer to the Using Versioning section of the Amazon Simple Storage Service Developer Guide",
-                            "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html",
-                        }
-                    },
-                    "ProductFields": {
-                        "ProductName": "ElectricEye",
-                        "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
-                        "AssetClass": "Storage",
-                        "AssetService": "Amazon S3",
-                        "AssetComponent": "Bucket"
-                    },
-                    "Resources": [
-                        {
-                            "Type": "AwsS3Bucket",
-                            "Id": s3Arn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "FAILED",
-                        "RelatedRequirements": [
-                            "NIST CSF V1.1 ID.BE-5",
-                            "NIST CSF V1.1 PR.PT-5",
-                            "NIST SP 800-53 Rev. 4 CP-2",
-                            "NIST SP 800-53 Rev. 4 CP-11",
-                            "NIST SP 800-53 Rev. 4 SA-13",
-                            "NIST SP 800-53 Rev. 4 SA-14",
-                            "AICPA TSC CC3.1",
-                            "AICPA TSC A1.2",
-                            "ISO 27001:2013 A.11.1.4",
-                            "ISO 27001:2013 A.17.1.1",
-                            "ISO 27001:2013 A.17.1.2",
-                            "ISO 27001:2013 A.17.2.1",
-                        ],
-                    },
-                    "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
-                }
-                yield finding
-            else:
-                print(e)
+        except KeyError:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": s3Arn + "/s3-bucket-versioning-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": s3Arn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[S3.3] S3 Buckets should have versioning enabled",
+                "Description": "S3 bucket "
+                + bucketName
+                + " does not have versioning enabled. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Bucket Versioning and how to configure it refer to the Using Versioning section of the Amazon Simple Storage Service Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon S3",
+                    "AssetComponent": "Bucket"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsS3Bucket",
+                        "Id": s3Arn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.IP-4",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-4",
+                        "NIST SP 800-53 Rev. 4 CP-6",
+                        "NIST SP 800-53 Rev. 4 CP-7",
+                        "NIST SP 800-53 Rev. 4 CP-8",
+                        "NIST SP 800-53 Rev. 4 CP-9",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 CP-13",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "NIST SP 800-53 Rev. 4 SC-6",
+                        "AICPA TSC A1.2",
+                        "AICPA TSC A1.3",
+                        "AICPA TSC CC3.1",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.12.3.1",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.1.3",
+                        "ISO 27001:2013 A.17.2.1",
+                        "ISO 27001:2013 A.18.1.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding
 
 @registry.register_check("s3")
 def bucket_policy_allows_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -860,88 +881,147 @@ def bucket_access_logging_check(cache: dict, session, awsAccountId: str, awsRegi
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
                         "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
                         "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
                         "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
                         "NIST SP 800-53 Rev. 4 IR-4",
                         "NIST SP 800-53 Rev. 4 IR-5",
                         "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
                         "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
                         "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
                         "ISO 27001:2013 A.12.4.1",
-                        "ISO 27001:2013 A.16.1.7",
-                    ],
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED",
             }
             yield finding
-        except Exception as e:
-            if str(e) == "'LoggingEnabled'":
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": s3Arn + "/s3-bucket-server-access-logging-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": s3Arn,
-                    "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "LOW"},
-                    "Confidence": 99,
-                    "Title": "[S3.6] S3 Buckets should have server access logging enabled",
-                    "Description": "S3 bucket "
-                    + bucketName
-                    + " does not have server access logging enabled. Refer to the remediation instructions if this configuration is not intended.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For more information on Bucket Policies and how to configure it refer to the Amazon S3 Server Access Logging section of the Amazon Simple Storage Service Developer Guide",
-                            "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html",
-                        }
-                    },
-                    "ProductFields": {
-                        "ProductName": "ElectricEye",
-                        "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
-                        "AssetClass": "Storage",
-                        "AssetService": "Amazon S3",
-                        "AssetComponent": "Bucket"
-                    },
-                    "Resources": [
-                        {
-                            "Type": "AwsS3Bucket",
-                            "Id": s3Arn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "FAILED",
-                        "RelatedRequirements": [
-                            "NIST CSF V1.1 DE.AE-3",
-                            "NIST SP 800-53 Rev. 4 AU-6",
-                            "NIST SP 800-53 Rev. 4 CA-7",
-                            "NIST SP 800-53 Rev. 4 IR-4",
-                            "NIST SP 800-53 Rev. 4 IR-5",
-                            "NIST SP 800-53 Rev. 4 IR-8",
-                            "NIST SP 800-53 Rev. 4 SI-4",
-                            "AICPA TSC CC7.2",
-                            "ISO 27001:2013 A.12.4.1",
-                            "ISO 27001:2013 A.16.1.7",
-                        ],
-                    },
-                    "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
-                }
-                yield finding
-            else:
-                print(e)
+        except KeyError:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": s3Arn + "/s3-bucket-server-access-logging-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": s3Arn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[S3.6] S3 Buckets should have server access logging enabled",
+                "Description": f"S3 bucket {bucketName} does not have server access logging enabled. Server access logging provides detailed records for the requests that are made to a bucket. Server access logs are useful for many applications. For example, access log information can be useful in security and access audits. It can also help you learn about your customer base and understand your Amazon S3 bill. Outside of managing static web applications from S3, consider using richer and more modern types of logs and other components such as pairing with Amazon CloudFront with Real-time logging. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Bucket Policies and how to configure it refer to the Amazon S3 Server Access Logging section of the Amazon Simple Storage Service Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon S3",
+                    "AssetComponent": "Bucket"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsS3Bucket",
+                        "Id": s3Arn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding
 
 @registry.register_check("s3")
 def s3_account_level_block(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:

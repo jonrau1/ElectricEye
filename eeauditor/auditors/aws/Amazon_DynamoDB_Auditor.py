@@ -308,18 +308,30 @@ def ddb_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
                 "Compliance": { 
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 ID.BE-5", 
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.IP-4",
                         "NIST CSF V1.1 PR.PT-5",
                         "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-4",
+                        "NIST SP 800-53 Rev. 4 CP-6",
+                        "NIST SP 800-53 Rev. 4 CP-7",
+                        "NIST SP 800-53 Rev. 4 CP-8",
+                        "NIST SP 800-53 Rev. 4 CP-9",
                         "NIST SP 800-53 Rev. 4 CP-11",
-                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 CP-13",
+                        "NIST SP 800-53 Rev. 4 PL-8",
                         "NIST SP 800-53 Rev. 4 SA-14",
-                        "AICPA TSC CC3.1",
+                        "NIST SP 800-53 Rev. 4 SC-6",
                         "AICPA TSC A1.2",
+                        "AICPA TSC A1.3",
+                        "AICPA TSC CC3.1",
                         "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.12.3.1",
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1"
+                        "ISO 27001:2013 A.17.1.3",
+                        "ISO 27001:2013 A.17.2.1",
+                        "ISO 27001:2013 A.18.1.3"
                     ]
                 },
                 "Workflow": {
@@ -377,18 +389,30 @@ def ddb_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
                 "Compliance": { 
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 ID.BE-5", 
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.IP-4",
                         "NIST CSF V1.1 PR.PT-5",
                         "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-4",
+                        "NIST SP 800-53 Rev. 4 CP-6",
+                        "NIST SP 800-53 Rev. 4 CP-7",
+                        "NIST SP 800-53 Rev. 4 CP-8",
+                        "NIST SP 800-53 Rev. 4 CP-9",
                         "NIST SP 800-53 Rev. 4 CP-11",
-                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 CP-13",
+                        "NIST SP 800-53 Rev. 4 PL-8",
                         "NIST SP 800-53 Rev. 4 SA-14",
-                        "AICPA TSC CC3.1",
+                        "NIST SP 800-53 Rev. 4 SC-6",
                         "AICPA TSC A1.2",
+                        "AICPA TSC A1.3",
+                        "AICPA TSC CC3.1",
                         "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.12.3.1",
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1"
+                        "ISO 27001:2013 A.17.1.3",
+                        "ISO 27001:2013 A.17.2.1",
+                        "ISO 27001:2013 A.18.1.3"
                     ]
                 },
                 "Workflow": {
