@@ -155,9 +155,22 @@ def oci_cloud_compute_instance_config_vuln_scan_plugin_enabled_check(cache, awsA
                     "Status": "FAILED",
                     "RelatedRequirements": [
                         "NIST CSF V1.1 DE.CM-8",
+                        "NIST CSF V1.1 ID.RA-1",
+                        "NIST SP 800-53 Rev. 4 CA-2",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-8",
+                        "NIST SP 800-53 Rev. 4 RA-3",
                         "NIST SP 800-53 Rev. 4 RA-5",
+                        "NIST SP 800-53 Rev. 4 SA-5",
+                        "NIST SP 800-53 Rev. 4 SA-11",
+                        "NIST SP 800-53 Rev. 4 SI-2",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "NIST SP 800-53 Rev. 4 SI-5",
+                        "AICPA TSC CC3.2",
                         "AICPA TSC CC7.1",
-                        "ISO 27001:2013 A.12.6.1"
+                        "ISO 27001:2013 A.12.6.1",
+                        "ISO 27001:2013 A.12.6.4",
+                        "ISO 27001:2013 A.18.2.3"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -218,9 +231,22 @@ def oci_cloud_compute_instance_config_vuln_scan_plugin_enabled_check(cache, awsA
                     "Status": "PASSED",
                     "RelatedRequirements": [
                         "NIST CSF V1.1 DE.CM-8",
+                        "NIST CSF V1.1 ID.RA-1",
+                        "NIST SP 800-53 Rev. 4 CA-2",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-8",
+                        "NIST SP 800-53 Rev. 4 RA-3",
                         "NIST SP 800-53 Rev. 4 RA-5",
+                        "NIST SP 800-53 Rev. 4 SA-5",
+                        "NIST SP 800-53 Rev. 4 SA-11",
+                        "NIST SP 800-53 Rev. 4 SI-2",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "NIST SP 800-53 Rev. 4 SI-5",
+                        "AICPA TSC CC3.2",
                         "AICPA TSC CC7.1",
-                        "ISO 27001:2013 A.12.6.1"
+                        "ISO 27001:2013 A.12.6.1",
+                        "ISO 27001:2013 A.12.6.4",
+                        "ISO 27001:2013 A.18.2.3"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
