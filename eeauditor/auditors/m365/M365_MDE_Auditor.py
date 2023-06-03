@@ -235,16 +235,21 @@ def m365_mde_machine_unhealthy_sensor_check(cache, awsAccountId, awsRegion, awsP
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 PR.MA-1",
-                        "NIST SP 800-53 Rev. 4 MA-2",
-                        "NIST SP 800-53 Rev. 4 MA-3",
-                        "NIST SP 800-53 Rev. 4 MA-5",
-                        "NIST SP 800-53 Rev. 4 MA-6",
-                        "AICPA TSC CC8.1",
-                        "ISO 27001:2013 A.11.1.2",
-                        "ISO 27001:2013 A.11.2.4",
-                        "ISO 27001:2013 A.11.2.5",
-                        "ISO 27001:2013 A.11.2.6"
+                        "NIST CSF V1.1 DE.AE-4",
+                        "NIST CSF V1.1 DE.DP-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-2",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 RA-3",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.2",
+                        "AICPA TSC CC7.3",
+                        "ISO 27001:2013 A.16.1.2",
+                        "ISO 27001:2013 A.16.1.3",
+                        "ISO 27001:2013 A.16.1.4"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -304,16 +309,21 @@ def m365_mde_machine_unhealthy_sensor_check(cache, awsAccountId, awsRegion, awsP
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 PR.MA-1",
-                        "NIST SP 800-53 Rev. 4 MA-2",
-                        "NIST SP 800-53 Rev. 4 MA-3",
-                        "NIST SP 800-53 Rev. 4 MA-5",
-                        "NIST SP 800-53 Rev. 4 MA-6",
-                        "AICPA TSC CC8.1",
-                        "ISO 27001:2013 A.11.1.2",
-                        "ISO 27001:2013 A.11.2.4",
-                        "ISO 27001:2013 A.11.2.5",
-                        "ISO 27001:2013 A.11.2.6"
+                        "NIST CSF V1.1 DE.AE-4",
+                        "NIST CSF V1.1 DE.DP-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-2",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 RA-3",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.2",
+                        "AICPA TSC CC7.3",
+                        "ISO 27001:2013 A.16.1.2",
+                        "ISO 27001:2013 A.16.1.3",
+                        "ISO 27001:2013 A.16.1.4"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -394,11 +404,20 @@ def m365_mde_machine_high_risk_score_check(cache, awsAccountId, awsRegion, awsPa
                     "Status": "FAILED",
                     "RelatedRequirements": [
                         "NIST CSF V1.1 DE.AE-4",
+                        "NIST CSF V1.1 DE.DP-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-2",
+                        "NIST SP 800-53 Rev. 4 CA-7",
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 IR-4",
                         "NIST SP 800-53 Rev. 4 RA-3",
+                        "NIST SP 800-53 Rev. 4 RA-5",
                         "NIST SP 800-53 Rev. 4 SI-4",
-                        "AICPA TSC CC7.3"
+                        "AICPA TSC CC7.2",
+                        "AICPA TSC CC7.3",
+                        "ISO 27001:2013 A.16.1.2",
+                        "ISO 27001:2013 A.16.1.3",
+                        "ISO 27001:2013 A.16.1.4"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -459,11 +478,20 @@ def m365_mde_machine_high_risk_score_check(cache, awsAccountId, awsRegion, awsPa
                     "Status": "PASSED",
                     "RelatedRequirements": [
                         "NIST CSF V1.1 DE.AE-4",
+                        "NIST CSF V1.1 DE.DP-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-2",
+                        "NIST SP 800-53 Rev. 4 CA-7",
                         "NIST SP 800-53 Rev. 4 CP-2",
                         "NIST SP 800-53 Rev. 4 IR-4",
                         "NIST SP 800-53 Rev. 4 RA-3",
+                        "NIST SP 800-53 Rev. 4 RA-5",
                         "NIST SP 800-53 Rev. 4 SI-4",
-                        "AICPA TSC CC7.3"
+                        "AICPA TSC CC7.2",
+                        "AICPA TSC CC7.3",
+                        "ISO 27001:2013 A.16.1.2",
+                        "ISO 27001:2013 A.16.1.3",
+                        "ISO 27001:2013 A.16.1.4"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -704,16 +732,27 @@ def m365_mde_machine_exploitable_vulns_check(cache, awsAccountId, awsRegion, aws
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 DE.AE-4",
                         "NIST CSF V1.1 DE.CM-8",
-                        "NIST SP 800-53 Rev. 4 CP-2",
-                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST CSF V1.1 ID.RA-1",
+                        "NIST CSF V1.1 ID.RA-2",
+                        "NIST SP 800-53 Rev. 4 CA-2",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-8",
+                        "NIST SP 800-53 Rev. 4 PM-15",
+                        "NIST SP 800-53 Rev. 4 PM-16",
                         "NIST SP 800-53 Rev. 4 RA-3",
                         "NIST SP 800-53 Rev. 4 RA-5",
+                        "NIST SP 800-53 Rev. 4 SA-5",
+                        "NIST SP 800-53 Rev. 4 SA-11",
+                        "NIST SP 800-53 Rev. 4 SI-2",
                         "NIST SP 800-53 Rev. 4 SI-4",
+                        "NIST SP 800-53 Rev. 4 SI-5",
+                        "AICPA TSC CC3.2",
                         "AICPA TSC CC7.1",
-                        "AICPA TSC CC7.3",
-                        "ISO 27001:2013 A.12.6.1"
+                        "ISO 27001:2013 A.6.1.4",
+                        "ISO 27001:2013 A.12.6.1",
+                        "ISO 27001:2013 A.12.6.4",
+                        "ISO 27001:2013 A.18.2.3"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -773,16 +812,27 @@ def m365_mde_machine_exploitable_vulns_check(cache, awsAccountId, awsRegion, aws
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 DE.AE-4",
                         "NIST CSF V1.1 DE.CM-8",
-                        "NIST SP 800-53 Rev. 4 CP-2",
-                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST CSF V1.1 ID.RA-1",
+                        "NIST CSF V1.1 ID.RA-2",
+                        "NIST SP 800-53 Rev. 4 CA-2",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-8",
+                        "NIST SP 800-53 Rev. 4 PM-15",
+                        "NIST SP 800-53 Rev. 4 PM-16",
                         "NIST SP 800-53 Rev. 4 RA-3",
                         "NIST SP 800-53 Rev. 4 RA-5",
+                        "NIST SP 800-53 Rev. 4 SA-5",
+                        "NIST SP 800-53 Rev. 4 SA-11",
+                        "NIST SP 800-53 Rev. 4 SI-2",
                         "NIST SP 800-53 Rev. 4 SI-4",
+                        "NIST SP 800-53 Rev. 4 SI-5",
+                        "AICPA TSC CC3.2",
                         "AICPA TSC CC7.1",
-                        "AICPA TSC CC7.3",
-                        "ISO 27001:2013 A.12.6.1"
+                        "ISO 27001:2013 A.6.1.4",
+                        "ISO 27001:2013 A.12.6.1",
+                        "ISO 27001:2013 A.12.6.4",
+                        "ISO 27001:2013 A.18.2.3"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
