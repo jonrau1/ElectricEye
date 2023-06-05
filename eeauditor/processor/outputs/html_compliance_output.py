@@ -230,25 +230,28 @@ class JsonProvider(object):
                 }
                 tableContent.append(contentRow)
 
-        tableDf = pd.DataFrame(tableContent)
-        aggAssetControlsDf = pd.DataFrame(aggregatedAssetControlsData)
+        if tableContent:
+            tableDf = pd.DataFrame(tableContent)
+            aggAssetControlsDf = pd.DataFrame(aggregatedAssetControlsData)
 
-        tableContentDf = tableDf.merge(
-            how="left",
-            right=aggAssetControlsDf,
-            left_on="ControlTitle",
-            right_on="ControlId"
-        )
+            tableContentDf = tableDf.merge(
+                how="left",
+                right=aggAssetControlsDf,
+                left_on="ControlTitle",
+                right_on="ControlId"
+            )
 
-        del tableContentDf["ControlId"]
+            del tableContentDf["ControlId"]
 
-        tableContent = json.loads(tableContentDf.to_json(index=False,orient="table"))
+            tableContent = json.loads(tableContentDf.to_json(index=False,orient="table"))
 
-        del tableContentDf
+            del tableContentDf
 
-        print(f"Finished generating the table for {framework}")
+            print(f"Finished generating the table for {framework}")
 
-        return tableContent["data"]
+            return tableContent["data"]
+        else:
+            return []
 
     def generate_executive_summary(self, processedFindings):
         """
