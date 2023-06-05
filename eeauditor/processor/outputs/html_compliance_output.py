@@ -218,23 +218,12 @@ class JsonProvider(object):
         tableContent = []
 
         print(f"Generating a table of controls objectives and aggregated asset information for {len(controls)} controls in {framework}")
-
-        if framework == "NIST CSF V1.1":
-            filepath = f"{here}/nist_csfv1_1.json"
-        elif framework == "NIST SP 800-53 Rev. 4":
-            filepath = f"{here}/nist_800_53_r4.json"
-        elif framework == "AICPA TSC":
-            filepath = f"{here}/aicpa_tscs.json"
-        elif framework == "ISO 27001:2013":
-            filepath = f"{here}/iso27001_2013.json"
-        else:
-            return []
         
-        with open(filepath) as jsonfile:
+        with open(f"{here}/control_objectives.json") as jsonfile:
             data = json.load(jsonfile)
 
         for controlInfo in data:
-            if controlInfo["ControlTitle"] in controls:
+            if controlInfo["ControlTitle"].startswith(framework):
                 contentRow = {
                     "ControlTitle": controlInfo["ControlTitle"],
                     "ControlDescription": controlInfo["ControlDescription"]
@@ -254,6 +243,8 @@ class JsonProvider(object):
         del tableContentDf["ControlId"]
 
         tableContent = json.loads(tableContentDf.to_json(index=False,orient="table"))
+
+        del tableContentDf
 
         print(f"Finished generating the table for {framework}")
 
