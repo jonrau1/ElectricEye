@@ -27,6 +27,30 @@ from datetime import datetime
 
 here = path.abspath(path.dirname(__file__))
 
+# NOTE: This must be updated as Frameworks are added and should match the titles given to them
+SUPPORTED_FRAMEWORKS = [
+    "NIST CSF V1.1",
+    "NIST SP 800-53 Rev. 4",
+    "AICPA TSC",
+    "ISO 27001:2013",
+    "CIS Critical Security Controls V8",
+    "NIST SP 800-53 Rev. 5",
+    "NIST SP 800-171 Rev. 2",
+    "CSA Cloud Controls Matrix V4.0",
+    "CMMC 2.0",
+    "UK NCSC Cyber Essentials V2.2",
+    "HIPAA Security Rule 45 CFR Part 164 Subpart C",
+    "FFIEC Cybersecurity Assessment Tool",
+    "NERC Critical Infrastructure Protection",
+    "NYDFS 23 NYCRR Part 500",
+    "UK NCSC Cyber Assessment Framework V3.1",
+    "PCI-DSS V4.0",
+    "NZISM V3.5",
+    "ISO 27001:2022",
+    "Critical Risk Profile V1.2",
+    "ECB CROE"
+]
+
 @ElectricEyeOutput
 class JsonProvider(object):
     __provider__ = "html_compliance"
@@ -102,8 +126,7 @@ class JsonProvider(object):
 
         for findings in processedFindings:
             for controls in findings["ComplianceRelatedRequirements"]:
-                if controls == "NIST SP 800-53 Rev. 4 AC-1NIST SP 800-53 Rev. 4 AC-3NIST SP 800-53 Rev. 4 AC-17NIST SP 800-53 Rev. 4 AC-22ISO 27001:2013 A.13.1.2":
-                    continue
+
                 if controls not in uniqueControls:
                     uniqueControls.append(controls)
                 else:
@@ -157,23 +180,13 @@ class JsonProvider(object):
         This function returns a complex dictionary that records the statistics of all audit readiness frameworks by passing and failing checks
         """
 
-        # Aggregate by control framework
-        controlsStatusAggregation = {
-            "NIST CSF V1.1": {},
-            "NIST SP 800-53 Rev. 4": {},
-            "AICPA TSC": {},
-            "ISO 27001:2013": {}
-        }
+        # Create a dict of nested dicts from a list comprehension of a list of Supported Frameworks...holy shit what a word salad
+        controlsStatusAggregation = {framework: {} for framework in SUPPORTED_FRAMEWORKS}
         # Populate the data structure of pass/fail by individual controls
         for controlTitle in uniqueControls:
-            if controlTitle.startswith("NIST CSF V1.1"):
-                controlsStatusAggregation["NIST CSF V1.1"][controlTitle] = {"Passed": 0, "Failed": 0}
-            elif controlTitle.startswith("NIST SP 800-53 Rev. 4"):
-                controlsStatusAggregation["NIST SP 800-53 Rev. 4"][controlTitle] = {"Passed": 0, "Failed": 0}
-            elif controlTitle.startswith("AICPA TSC"):
-                controlsStatusAggregation["AICPA TSC"][controlTitle] = {"Passed": 0, "Failed": 0}
-            elif controlTitle.startswith("ISO 27001:2013"):
-                controlsStatusAggregation["ISO 27001:2013"][controlTitle] = {"Passed": 0, "Failed": 0}
+            for framework in SUPPORTED_FRAMEWORKS:
+                if controlTitle.startswith(framework):
+                    controlsStatusAggregation[framework][controlTitle] = {"Passed": 0, "Failed": 0}
 
         del uniqueControls
 
@@ -181,29 +194,12 @@ class JsonProvider(object):
         for finding in processedFindings:
             status = finding["ComplianceStatus"]
             for controls in finding["ComplianceRelatedRequirements"]:
-                if controls == "NIST SP 800-53 Rev. 4 AC-1NIST SP 800-53 Rev. 4 AC-3NIST SP 800-53 Rev. 4 AC-17NIST SP 800-53 Rev. 4 AC-22ISO 27001:2013 A.13.1.2":
-                    continue
-
-                if controls.startswith("NIST CSF V1.1"):
-                    if status == "PASSED":
-                        controlsStatusAggregation["NIST CSF V1.1"][controls]["Passed"] += 1
-                    else:
-                        controlsStatusAggregation["NIST CSF V1.1"][controls]["Failed"] += 1
-                elif controls.startswith("NIST SP 800-53 Rev. 4"):
-                    if status == "PASSED":
-                        controlsStatusAggregation["NIST SP 800-53 Rev. 4"][controls]["Passed"] += 1
-                    else:
-                        controlsStatusAggregation["NIST SP 800-53 Rev. 4"][controls]["Failed"] += 1
-                elif controls.startswith("AICPA TSC"):
-                    if status == "PASSED":
-                        controlsStatusAggregation["AICPA TSC"][controls]["Passed"] += 1
-                    else:
-                        controlsStatusAggregation["AICPA TSC"][controls]["Failed"] += 1
-                elif controls.startswith("ISO 27001:2013"):
-                    if status == "PASSED":
-                        controlsStatusAggregation["ISO 27001:2013"][controls]["Passed"] += 1
-                    else:
-                        controlsStatusAggregation["ISO 27001:2013"][controls]["Failed"] += 1
+                for framework in SUPPORTED_FRAMEWORKS:
+                    if controls.startswith(framework):
+                        if status == "PASSED":
+                            controlsStatusAggregation[framework][controls]["Passed"] += 1
+                        else:
+                            controlsStatusAggregation[framework][controls]["Failed"] += 1
 
         print("Finished aggregating Pass/Fail stats for all controls.")
 
@@ -348,8 +344,8 @@ class JsonProvider(object):
             # access the dict with the specific aggregations
             controlsData = controlsAggregation[framework]
 
-            # Loop the newly assembled list, only taking the controls for a specific framework at a time and use the info
-            # to assemble into a dataframe to combine with another dataframe based on controls information
+            # Loop the newly assembled list, only taking the controls for a specific framework that comes from the CONSTANT of all available frameworks 
+            # at a time and use the info to assemble into a dataframe to combine with another dataframe based on controls information
             if framework == "NIST CSF V1.1":
                 aggregatedAssetControlsData = [info for info in assetDataPerControl if info["ControlId"].startswith("NIST CSF V1.1")]
             elif framework == "NIST SP 800-53 Rev. 4":

@@ -2604,171 +2604,171 @@
     "ControlDescription": "You must install any such updates within 14 days in all circumstances. If you cannot achieve this requirement at all times, you will not achieve compliance to this question. You are not required to install feature updates or optional updates in order to meet this requirement, just high-risk or critical security updates"
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.310(d)(2)(iii)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.310(d)(2)(iii)",
     "ControlDescription": "Accountability: Maintain a record of the movements of hardware and electronic media and any person responsible therefore."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(3)(i)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(3)(i)",
     "ControlDescription": "Workforce security: Implement policies and procedures to ensure that all members of its workforce have appropriate access to electronic protected health information, as provided under paragraph (a)(4) of this section, and to prevent those workforce members who do not have access under paragraph (a)(4) of this section from obtaining access to electronic protected health information."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(3)(ii)(A)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(3)(ii)(A)",
     "ControlDescription": "Authorization and/or supervision: Implement procedures for the authorization and/or supervision of workforce members who work with electronic protected health information or in locations where it might be accessed."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.312(a)(1)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.312(a)(1)",
     "ControlDescription": "Access control: Implement technical policies and procedures for electronic information systems that maintain electronic protected health information to allow access only to those persons or software programs that have been granted access rights as specified in 164.308(a)(4)."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.310(d)(2)(i)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.310(d)(2)(i)",
     "ControlDescription": "Disposal: Implement policies and procedures to address the final disposition of electronic protected health information, and/or the hardware or electronic media on which it is stored."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.310(d)(1)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.310(d)(1)",
     "ControlDescription": "Device and media controls: Implement policies and procedures that govern the receipt and removal of hardware and electronic media that contain electronic protected health information into and out of a facility, and the movement of these items within the facility."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.312(a)(2)(iv)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.312(a)(2)(iv)",
     "ControlDescription": "Encryption and decryption: Implement a mechanism to encrypt and decrypt electronic protected health information."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.312(e)(1)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.312(e)(1)",
     "ControlDescription": "Transmission security: Implement technical security measures to guard against unauthorized access to electronic protected health information that is being transmitted over an electronic communications network."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.312(e)(2)(i)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.312(e)(2)(i)",
     "ControlDescription": "Integrity controls: Implement security measures to ensure that electronically transmitted electronic protected health information is not improperly modified without detection until disposed of."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.312(e)(2)(ii)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.312(e)(2)(ii)",
     "ControlDescription": "Encryption: Implement a mechanism to encrypt electronic protected health information whenever deemed appropriate."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.312(b)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.312(b)",
     "ControlDescription": "Audit controls: Implement hardware, software, and/or procedural mechanisms that record and examine activity in information systems that contain or use electronic protected health information."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.312(c)(1)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.312(c)(1)",
     "ControlDescription": "Integrity: Implement policies and procedures to protect electronic protected health information from improper alteration or destruction."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.312(c)(2)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.312(c)(2)",
     "ControlDescription": "Mechanism to authenticate electronic protected health information: Implement electronic mechanisms to corroborate that electronic protected health information has not been altered or destroyed in an unauthorized manner."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.312(a)(2)(iii)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.312(a)(2)(iii)",
     "ControlDescription": "Automatic logoff: Implement electronic procedures that terminate an electronic session after a predetermined time of inactivity."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.312(a)(2)(i)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.312(a)(2)(i)",
     "ControlDescription": "Unique user identification: Assign a unique name and/or number for identifying and tracking user identity."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(3)(ii)(C)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(3)(ii)(C)",
     "ControlDescription": "Termination procedures: Implement procedures for terminating access to electronic protected health information when the employment of, or other arrangement with, a workforce member ends or as required by determinations made as specified in paragraph (a)(3)(ii)(B) of this section."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(3)(ii)(B)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(3)(ii)(B)",
     "ControlDescription": "Workforce clearance procedure: Implement procedures to determine that the access of a workforce member to electronic protected health information is appropriate."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(4)(i)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(4)(i)",
     "ControlDescription": "Information access management: Implement policies and procedures for authorizing access to electronic protected health information that are consistent with the applicable requirements of subpart E of this part."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(4)(ii)(C)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(4)(ii)(C)",
     "ControlDescription": "Access establishment and modification: Implement policies and procedures that, based upon the entity's access authorization policies, establish, document, review, and modify a user's right of access to a workstation, transaction, program, or process."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(1)(ii)(A)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(1)(ii)(A)",
     "ControlDescription": "Risk analysis: Conduct an accurate and thorough assessment of the potential risks and vulnerabilities to the confidentiality, integrity, and availability of electronic protected health information held by the covered entity or business associate."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(1)(ii)(B)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(1)(ii)(B)",
     "ControlDescription": "Risk management : Implement security measures sufficient to reduce risks and vulnerabilities to a reasonable and appropriate level to comply with 164.306(a)."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(1)(ii)(D)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(1)(ii)(D)",
     "ControlDescription": "Information system activity review: Implement procedures to regularly review records of information system activity, such as audit logs, access reports, and security incident tracking reports."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(5)(ii)(B)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(5)(ii)(B)",
     "ControlDescription": "Protection from malicious software: Procedures for guarding against, detecting, and reporting malicious software."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(7)(ii)(A)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(7)(ii)(A)",
     "ControlDescription": "Data backup plan: Establish and implement procedures to create and maintain retrievable exact copies of electronic protected health information."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(7)(ii)(B)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(7)(ii)(B)",
     "ControlDescription": "Disaster recovery plan: Establish (and implement as needed) procedures to restore any loss of data."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.310(d)(2)(iv)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.310(d)(2)(iv)",
     "ControlDescription": "Data backup and storage: Create a retrievable, exact copy of electronic protected health information, when needed, before movement of equipment."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(5)(i)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(5)(i)",
     "ControlDescription": "Security awareness and training: Implement a security awareness and training program for all members of its workforce (including management)."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(5)(ii)(A)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(5)(ii)(A)",
     "ControlDescription": "Security reminders: Periodic security updates."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(5)(ii)(C)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(5)(ii)(C)",
     "ControlDescription": "Log-in monitoring : Procedures for monitoring log-in attempts and reporting discrepancies."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(5)(ii)(D)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(5)(ii)(D)",
     "ControlDescription": "Password management: Procedures for creating, changing, and safeguarding passwords."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(6)(ii)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(6)(ii)",
     "ControlDescription": "Response and Reporting: Identify and respond to suspected or known security incidents; mitigate, to the extent practicable, harmful effects of security incidents that are known to the covered entity or business associate; and document security incidents and their outcomes."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(4)(ii)(A)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(4)(ii)(A)",
     "ControlDescription": "Isolating health care clearinghouse functions: If a health care clearinghouse is part of a larger organization, the clearinghouse must implement policies and procedures that protect the electronic protected health information of the clearinghouse from unauthorized access by the larger organization."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(b)(1)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(b)(1)",
     "ControlDescription": "Business associate contracts and other arrangements (1): A covered entity may permit a business associate to create, receive, maintain, or transmit electronic protected health information on the covered entity's behalf only if the covered entity obtains satisfactory assurances, in accordance with 164.314(a), that the business associate will appropriately safeguard the information. A covered entity is not required to obtain such satisfactory assurances from a business associate that is a subcontractor."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(b)(2)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(b)(2)",
     "ControlDescription": "Business associate contracts and other arrangements (2): A business associate may permit a business associate that is a subcontractor to create, receive, maintain, or transmit electronic protected health information on its behalf only if the business associate obtains satisfactory assurances, in accordance with 164.314(a), that the subcontractor will appropriately safeguard the information."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(b)(3)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(b)(3)",
     "ControlDescription": "Implementation specifications: Written contract or other arrangement: Document the satisfactory assurances required by paragraph (b)(1) or (b)(2) of this section through a written contract or other arrangement with the business associate that meets the applicable requirements of 164.314(a)."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(8)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(8)",
     "ControlDescription": "Evaluation: Perform a periodic technical and nontechnical evaluation, based initially upon the standards implemented under this rule and, subsequently, in response to environmental or operational changes affecting the security of electronic protected health information, that establishes the extent to which a covered entity's or business associate's security policies and procedures meet the requirements of this subpart."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(2)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(2)",
     "ControlDescription": "Assigned security responsibility: Identify the security official who is responsible for the development and implementation of the policies and procedures required by this subpart for the entity."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(1)(i)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(1)(i)",
     "ControlDescription": "Security management process: Implement policies and procedures to prevent, detect, contain, and correct security violations."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(6)(i)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(6)(i)",
     "ControlDescription": "Security incident procedures: Implement policies and procedures to address security incidents."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(7)(i)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(7)(i)",
     "ControlDescription": "Contingency plan: Establish (and implement as needed) policies and procedures for responding to an emergency or other occurrence (for example, fire, vandalism, system failure, and natural disaster) that damages systems that contain electronic protected health information."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 163.310(a)(2)(i)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 163.310(a)(2)(i)",
     "ControlDescription": "Contingency operations: Establish (and implement as needed) procedures that allow facility access in support of restoration of lost data under the disaster recovery plan and emergency mode operations plan in the event of an emergency."
   },
   {
-    "ControlTitle": "HIPAA Security Rule CFR 164 164.308(a)(7)(ii)(D)",
+    "ControlTitle": "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(7)(ii)(D)",
     "ControlDescription": "Testing and revision procedures: Implement procedures for periodic testing and revision of contingency plans."
   },
   {
