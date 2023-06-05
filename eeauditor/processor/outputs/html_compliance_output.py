@@ -223,9 +223,11 @@ class JsonProvider(object):
             data = json.load(jsonfile)
 
         for controlInfo in data:
-            if str(controlInfo["ControlTitle"]).startswith(framework):
+            controlTitle = controlInfo["ControlTitle"]
+            # Only grab controls that match the framework that are in the covered controls
+            if controlTitle.startswith(framework) and controlTitle in controls:
                 contentRow = {
-                    "ControlTitle": controlInfo["ControlTitle"],
+                    "ControlTitle": controlTitle,
                     "ControlDescription": controlInfo["ControlDescription"]
                 }
                 tableContent.append(contentRow)
