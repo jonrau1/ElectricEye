@@ -223,12 +223,14 @@ class JsonProvider(object):
             data = json.load(jsonfile)
 
         for controlInfo in data:
-            if controlInfo["ControlTitle"].startswith(framework):
+            if str(controlInfo["ControlTitle"]).startswith(framework):
                 contentRow = {
                     "ControlTitle": controlInfo["ControlTitle"],
                     "ControlDescription": controlInfo["ControlDescription"]
                 }
                 tableContent.append(contentRow)
+            else:
+                continue
 
         if tableContent:
             tableDf = pd.DataFrame(tableContent)
