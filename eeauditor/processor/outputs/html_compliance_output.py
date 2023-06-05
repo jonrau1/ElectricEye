@@ -337,7 +337,11 @@ class JsonProvider(object):
 
     def create_visuals(self, controlsAggregation, assetDataPerControl):
         # Loop through every high level framework aggregation to generate findings
-        for framework in controlsAggregation:
+        for framework, controls in controlsAggregation.items():
+            if not controls:  # this checks if `controls` is not empty
+                print(f"There are not any results for {framework}, skipping it!")
+                continue
+            # Continue with populated Frameworks, this is more or less to be "fuck up proof" in case I forgot to add a Framework to SUPPORTED_FRAMEWORKS
             print(f"Creating a visualization for the {framework} framework!")
             # remove shit we don't need so the filename doesn't get dicked up
             frameworkSavefile = str(framework).replace(".","").replace(" ", "").lower()
@@ -346,14 +350,8 @@ class JsonProvider(object):
 
             # Loop the newly assembled list, only taking the controls for a specific framework that comes from the CONSTANT of all available frameworks 
             # at a time and use the info to assemble into a dataframe to combine with another dataframe based on controls information
-            if framework == "NIST CSF V1.1":
-                aggregatedAssetControlsData = [info for info in assetDataPerControl if info["ControlId"].startswith("NIST CSF V1.1")]
-            elif framework == "NIST SP 800-53 Rev. 4":
-                aggregatedAssetControlsData = [info for info in assetDataPerControl if info["ControlId"].startswith("NIST SP 800-53 Rev. 4")]
-            elif framework == "AICPA TSC":
-                aggregatedAssetControlsData = [info for info in assetDataPerControl if info["ControlId"].startswith("AICPA TSC")]
-            elif framework == "ISO 27001:2013":
-                aggregatedAssetControlsData = [info for info in assetDataPerControl if info["ControlId"].startswith("ISO 27001:2013")]
+            if framework in SUPPORTED_FRAMEWORKS:
+                aggregatedAssetControlsData = [info for info in assetDataPerControl if info["ControlId"].startswith(framework)]
             else:
                 aggregatedAssetControlsData = []
 
