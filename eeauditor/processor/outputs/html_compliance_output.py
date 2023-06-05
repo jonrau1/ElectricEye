@@ -237,8 +237,8 @@ class JsonProvider(object):
             aggAssetControlsDf = pd.DataFrame(aggregatedAssetControlsData)
 
             tableContentDf = tableDf.merge(
+                aggAssetControlsDf,
                 how="left",
-                right=aggAssetControlsDf,
                 left_on="ControlTitle",
                 right_on="ControlId"
             )
