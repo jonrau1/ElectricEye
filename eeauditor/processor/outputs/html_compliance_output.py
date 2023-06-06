@@ -639,87 +639,101 @@ class JsonProvider(object):
         # CIS Critical Security Controls V8
         elif framework == "CIS Critical Security Controls V8":
             imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/cis_critical_controls_v8.jpg" class="framework__header__image">'
-            frameworkInfo = "TODO"
+            frameworkInfo = "The CIS Critical Security Controls (CIS Controls) are a prioritized set of Safeguards to mitigate the most prevalent cyber-attacks against systems and networks. They are mapped to and referenced by multiple legal, regulatory, and policy frameworks. CIS Controls v8 has been enhanced to keep up with modern systems and software. Movement to cloud-based computing, virtualization, mobility, outsourcing, Work-from-Home, and changing attacker tactics prompted the update and supports an enterprise's security as they move to both fully cloud and hybrid environments."
 
         # 800-53 R5
         elif framework == "NIST SP 800-53 Rev. 5":
             imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/nist_80053_rev5.jpg" class="framework__header__image">'
-            frameworkInfo = "TODO"
+            frameworkInfo = "This publication provides a catalog of security and privacy controls for information systems and organizations to protect organizational operations and assets, individuals, other organizations, and the Nation from a diverse set of threats and risks, including hostile attacks, human errors, natural disasters, structural failures, foreign intelligence entities, and privacy risks. The controls are flexible and customizable and implemented as part of an organization-wide process to manage risk. The controls address diverse requirements derived from mission and business needs, laws, executive orders, directives, regulations, policies, standards, and guidelines. Finally, the consolidated control catalog addresses security and privacy from a functionality perspective (i.e., the strength of functions and mechanisms provided by the controls) and from an assurance perspective (i.e., the measure of confidence in the security or privacy capability provided by the controls). Addressing functionality and assurance helps to ensure that information technology products and the systems that rely on those products are sufficiently trustworthy."
         
         # 800-171 R2
         elif framework == "NIST SP 800-171 Rev. 2":
             imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/nist_800171_rev2.jpg" class="framework__header__image">'
-            frameworkInfo = "TODO"
+            frameworkInfo = "The protection of Controlled Unclassified Information (CUI) resident in nonfederal systems and organizations is of paramount importance to federal agencies and can directly impact the ability of the federal government to successfully conduct its essential missions and functions. This publication provides agencies with recommended security requirements for protecting the confidentiality of CUI when the information is resident in nonfederal systems and organizations; when the nonfederal organization is not collecting or maintaining information on behalf of a federal agency or using or operating a system on behalf of an agency; and where there are no specific safeguarding requirements for protecting the confidentiality of CUI prescribed by the authorizing law, regulation, or governmentwide policy for the CUI category listed in the CUI Registry. The requirements apply to all components of nonfederal systems and organizations that process, store, and/or transmit CUI, or that provide protection for such components. The security requirements are intended for use by federal agencies in contractual vehicles or other agreements established between those agencies and nonfederal organizations."
 
         # CSA Cloud Controls Matrix V4.0
         elif framework == "CSA Cloud Controls Matrix V4.0":
             imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/csa_ccm_v4.jpg" class="framework__header__image">'
-            frameworkInfo = "TODO"
+            frameworkInfo = "The Cloud Controls Matrix (CCM) is a cybersecurity control framework for cloud computing aligned to the CSA best practices, that is considered the de-facto standard for cloud security and privacy. The accompanying questionnaire, CAIQ, provides a set of “yes or no” questions based on the security controls in the CCM. "
 
         # CMMC 2.0
         elif framework == "CMMC 2.0":
             imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/cmmc_v2.jpg" class="framework__header__image">'
-            frameworkInfo = "TODO"
+            frameworkInfo = """
+            The Cybersecurity Maturity Model Certification (CMMC) 2.0 program is the next iteration of the Department's CMMC cybersecurity model. It streamlines requirements to three levels of cybersecurity and aligns the requirements at each level with well-known and widely accepted NIST cybersecurity standards.</br>
+
+            </br>The CMMC model is designed to protect Federal Contract Information (FCI) and Controlled Unclassified Information (CUI) that is shared with contractors and subcontractors of the Department through acquisition programs. In alignment with section 4.1901 of the Federal Acquisition Regulation (FAR), FCI is defined as information, not intended for public release, that is provided by or generated for the Government under a contract to develop or deliver a product or service to the Government, but not including information provided by the Government to the public (such as that on public websites) or simple transactional information, such as that necessary to process payments. CUI is information the Government creates or possesses, or that an entity creates or possesses for or on behalf of the Government, that a law, regulation, or Government-wide policy requires or permits an agency to handle using safeguarding or dissemination controls.
+            """
 
         # UK NCSC Cyber Essentials V2.2
         elif framework == "UK NCSC Cyber Essentials V2.2":
             imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/uk_ncsc_cyber_essentials.jpg" class="framework__header__image">'
-            frameworkInfo = "TODO"
+            frameworkInfo = "Cyber Essentials is an effective, Government backed scheme that will help you to protect your organisation, whatever its size, against a whole range of the most common cyber attacks. Cyber attacks come in many shapes and sizes, but the vast majority are very basic in nature, carried out by relatively unskilled individuals. They're the digital equivalent of a thief trying your front door to see if it's unlocked. Our advice is designed to prevent these attacks. Cyber Essentials self-assessment option gives you protection against a wide variety of the most common cyber attacks. This is important because vulnerability to basic attacks can mark you out as target for more in-depth unwanted attention from cyber criminals and others. Certification gives you peace of mind that your defences will protect against the vast majority of common cyber attacks simply because these attacks are looking for targets which do not have the Cyber Essentials technical controls in place."
 
         # HIPAA Security Rule 45 CFR Part 164 Subpart C
         elif framework == "HIPAA Security Rule 45 CFR Part 164 Subpart C":
             imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/hipaa_security_rule.jpg" class="framework__header__image">'
-            frameworkInfo = "TODO"
+            frameworkInfo = """
+                The HIPAA Security Rule requires physicians to protect patients' electronically stored, protected health information (known as “ePHI”) by using appropriate administrative, physical and technical safeguards to ensure the confidentiality, integrity and security of this information. Essentially, the Security Rule operationalizes the protections contained in the Privacy Rule by addressing the technical and nontechnical safeguards that covered entities must implement to secure ePHI.</br>
+            
+            </br>All covered entities must assess their security risks, even those entities who utilize certified electronic health record (EHR) technology. Those entities must put in place administrative, physical and technical safeguards to maintain compliance with the Security Rule and document every security compliance measure. Technical safeguards encompass the technology, as well and the policies and procedures for its use, that protect ePHI and control access to it. They are often the most difficult regulations to comprehend and implement (45 CFR 164.312).</br>
+
+            </br>The Security Rule incorporates the concepts of scalability, flexibility and generalization. In other words, the regulations do not expect the same security precautions from small or rural providers as are demanded of large covered entities with significant resources. Security is recognized as an evolving target, and so HIPAA's security requirements are not linked to specific technologies or products. HHS has stated it is focused more on what needs to be done and less on how it should be accomplished.
+            """
 
         # FFIEC Cybersecurity Assessment Tool
         elif framework == "FFIEC Cybersecurity Assessment Tool":
             imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/ffiec_cat.jpg" class="framework__header__image">'
-            frameworkInfo = "TODO"
+            frameworkInfo = "In light of the increasing volume and sophistication of cyber threats, the Federal Financial Institutions Examination Council (FFIEC) developed the Cybersecurity Assessment Tool (Assessment) to help institutions identify their risks and determine their cybersecurity preparedness. The Assessment provides a repeatable and measurable process for financial institutions to measure their cybersecurity preparedness over time. The following resources can help management and directors of financial institutions understand supervisory expectations, increase awareness of cybersecurity risks, and assess and mitigate the risks facing their institutions."
 
         # NERC Critical Infrastructure Protection
         elif framework == "NERC Critical Infrastructure Protection":
             imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/nerc_cip.jpg" class="framework__header__image">'
-            frameworkInfo = "TODO"
+            frameworkInfo = "The North American Electric Reliability Corporation (NERC) has been in operation since the early 1960s and is in charge of maintaining the operations and functions of our Bulk Power System, also known as the electric grid. Before the invention and adoption of the internet and the regulations of cybersecurity today, NERC served entirely as a voluntary industry organization. For over 40 years, NERC suggested NERC CIP environment standards to assist energy companies and government agencies in maintaining their infrastructure along the electric grid. Jump to 2005, the Energy Policy Act of 2005 required the Federal Energy Regulatory Commission to choose an Electric Reliability Organization. NERC was seen as the most qualified organization to take charge as they had been working towards establishing industry reliability standards for a very long time. This new designation gave NERC more authority, allowed them to decide mandatory regulations, and continued to improve and modify their current standards of compliance. In 2008, (CIP) Critical Infrastructure Protection Standards compliance framework was developed to mitigate cybersecurity attacks on the Bulk Electric System. While initially, these standards were not required, they were used to mitigate risk, later becoming an industry norm."
 
         # NYDFS 23 NYCRR Part 500
         elif framework == "NYDFS 23 NYCRR Part 500":
             imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/nydfs500_title23.jpg" class="framework__header__image">'
-            frameworkInfo = "TODO"
+            frameworkInfo = "In response to the significant and ever-increasing threats to the cybersecurity of information and financial systems, in 2017, the State of New York Department of Financial Services imposed a new set of cybersecurity requirements on financial institutions that are licensed or authorized to do business in the state. Title 23 New York Codes, Rules, and Regulation Part 500: Cybersecurity Requirements for Financial Services Companies is designed to protect customer data and the information technology systems of financial institutions such as state-chartered, private, and international banks, mortgage brokers, and insurance companies."
 
         # UK NCSC Cyber Assessment Framework V3.1
         elif framework == "UK NCSC Cyber Assessment Framework V3.1":
             imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/uk_ncsc_caf_v3_1.jpg" class="framework__header__image">'
-            frameworkInfo = "TODO"
+            frameworkInfo = "The Cyber Assessment Framework (CAF) provides a systematic and comprehensive approach to assessing the extent to which cyber risks to essential functions are being managed by the organisation responsible. It is intended to be used either by the responsible organisation itself (selfassessment) or by an independent external entity, possibly a regulator or a suitably qualified organisation acting on behalf of a regulator. The NCSC CAF cyber security and resilience principles provide the foundations of the CAF. The 14 principles are written in terms of outcomes, i.e. specification of what needs to be achieved rather than a checklist of what needs to be done. The CAF adds additional levels of detail to the top-level principles, including a collection of structured sets of Indicators of Good Practice (IGPs) as described in more detail below."
 
         # PCI-DSS V4.0
-        elif framework == "UK NCSC Cyber Assessment Framework V3.1":
+        elif framework == "PCI-DSS V4.0":
             imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/pci_dss_v4_0.jpg" class="framework__header__image">'
-            frameworkInfo = "TODO"
+            frameworkInfo = "The PCI Security Standards Council (PCI SSC) issued version 4.0 of the PCI Data Security Standard (PCI DSS) on March 31, 2022. The PCI DSS is a global standard that establishes a baseline of technical and operational standards for protecting account data. PCI DSS v4.0 replaces PCI DSS version 3.2.1 to address emerging threats and technologies better and provide innovative ways to combat new threats. You can find and review the updated standard and Summary of Changes on the PCI SSC website."
 
         # NZISM V3.5
         elif framework == "NZISM V3.5":
             imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/nzism.jpg" class="framework__header__image">'
-            frameworkInfo = "TODO"
+            frameworkInfo = "The New Zealand Information Security Manual (NZISM) is the New Zealand Government's manual on information assurance and information systems security. The NZISM is a practitioner's manual designed to meet the needs of agency information security executives as well as vendors, contractors and consultants who provide services to agencies."
 
         # ISO 27001:2022
-        elif framework == "NZISM V3.5":
+        elif framework == "ISO 27001:2022":
             imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/iso_27001_2022.jpg" class="framework__header__image">'
-            frameworkInfo = "TODO"
+            frameworkInfo = "ISO/IEC 27001 is the world's best-known standard for information security management systems (ISMS). It defines requirements an ISMS must meet. The ISO/IEC 27001 standard provides companies of any size and from all sectors of activity with guidance for establishing, implementing, maintaining and continually improving an information security management system. Conformity with ISO/IEC 27001 means that an organization or business has put in place a system to manage risks related to the security of data owned or handled by the company, and that this system respects all the best practices and principles enshrined in this International Standard. Annex A has seen the greatest change. The updated version of ISO 27001 Annex A has been completely restructured and revised. As a result, the number of controls has decreased from 114 to 93 in the new version of ISO 27001. Also, these security controls are now divided into four sections instead of the previous 14."
 
         # Critical Risk Profile V1.2
         elif framework == "Critical Risk Profile V1.2":
             imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/cri_profile_v12.jpg" class="framework__header__image">'
-            frameworkInfo = "TODO"
+            frameworkInfo = "The CRI Profile is based on the National Institute of Standards and Technology's (NIST) “Framework for Improving Critical Infrastructure Cybersecurity.” The Profile is an efficient approach to cybersecurity risk management that effectively counters the dynamic, evolving threat and provides adequate assurance to government supervisors."
 
         # ECB CROE
         elif framework == "ECB CROE":
             imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/euro_central_bank_croe.jpg" class="framework__header__image">'
-            frameworkInfo = "TODO"
+            frameworkInfo = """
+            The European Central Bank (ECB) CROEs, or Comprehensive Reviews on the Effectiveness and Efficiency of the ECB, are a series of assessments conducted by the ECB to evaluate its own operations and performance. The purpose of these reviews is to ensure that the ECB functions effectively and efficiently in carrying out its mandate of maintaining price stability and supporting the general economic policies in the Eurozone. The ECB CROEs cover various aspects of the central bank's activities, including its monetary policy, financial stability, organizational structure, and risk management.</br>
+            
+            </br>The fourth component of the CROEs is risk management evaluation. This involves analyzing the ECB's risk management framework and practices. The review assesses whether the ECB has appropriate risk management policies and procedures in place to identify, assess, and mitigate risks effectively. It examines the ECB's risk appetite, risk culture, and the adequacy of its risk assessment methodologies. This component aims to ensure that the ECB has robust risk management practices in place to protect its operations and reputation.
+            """
 
         # Equifax SCF V1.0
         elif framework == "Equifax SCF V1.0":
             imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/equifax_scf_v1_0.jpg" class="framework__header__image">'
-            frameworkInfo = "TODO"
+            frameworkInfo = "The controls framework is the blueprint for how a company protects its data and infrastructure. Five core capabilities - cybersecurity, privacy, fraud prevention, crisis management, and physical security - are represented in these unified controls framework. NIST CSF and NIST PF were selected as the foundation for the security controls framework because it supports a comprehensive, defense-in-depth approach to security and privacy. Its flexible, risk-based structure can also be tailored to meet a company's specific needs."
 
         else:
             return []
