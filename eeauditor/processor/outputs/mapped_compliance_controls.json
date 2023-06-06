@@ -27,7 +27,9 @@
         "CMMC 2.0 CA.L2-3.12.4",
         "CMMC 2.0 SC.L2-3.13.6",
         "CSA Cloud Controls Matrix V4.0 IVS-03",
-        "NIST SP 800-53 Rev. 5 CM-12"
+        "NIST SP 800-53 Rev. 5 CM-12",
+        "Equifax SCF V1.0 NI-CS-1",
+        "Equifax SCF V1.0 NI-CS-6"
     ],
     "NIST CSF V1.1 DE.AE-2": [
         "CIS Critical Security Controls V8 8.11",
@@ -47,7 +49,8 @@
         "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.312(b)",
         "CSA Cloud Controls Matrix V4.0 LOG-13",
         "NIST SP 800-171 Rev. 2 3.3.5",
-        "NIST SP 800-53 Rev. 5 AU-6(1)"
+        "NIST SP 800-53 Rev. 5 AU-6(1)",
+        "Equifax SCF V1.0 CM-CS-14"
     ],
     "NIST CSF V1.1 DE.AE-3": [
         "CIS Critical Security Controls V8 8.2",
@@ -107,7 +110,9 @@
         "CIS Critical Security Controls V8 8.7",
         "CIS Critical Security Controls V8 8.8",
         "CIS Critical Security Controls V8 8.12",
-        "FFIEC Cybersecurity Assessment Tool D3.DC.An.B.4"
+        "FFIEC Cybersecurity Assessment Tool D3.DC.An.B.4",
+        "Equifax SCF V1.0 CM-CS-11",
+        "Equifax SCF V1.0 CM-CS-14"
     ],
     "NIST CSF V1.1 DE.AE-5": [
         "CIS Critical Security Controls V8 13.11",
@@ -123,7 +128,8 @@
         "Critical Risk Profile V1.2 DE.AE-5.1",
         "ECB CROE 2.5.2.1-7",
         "ECB CROE 2.5.2.1-21",
-        "FFIEC Cybersecurity Assessment Tool D5.DR.De.B.2"
+        "FFIEC Cybersecurity Assessment Tool D5.DR.De.B.2",
+        "Equifax SCF V1.0 CM-CS-14"
     ],
     "NIST CSF V1.1 DE.CM-1": [
         "CIS Critical Security Controls V8 8.5",
@@ -212,7 +218,11 @@
         "CMMC 2.0 SI.L2-3.14.3",
         "CIS Critical Security Controls V8 13.7",
         "ISO 27001:2022 A8.8",
-        "CIS Critical Security Controls V8 13.8"
+        "CIS Critical Security Controls V8 13.8",
+        "Equifax SCF V1.0 CM-CS-10",
+        "Equifax SCF V1.0 CM-CS-17",
+        "Equifax SCF V1.0 CM-CS-7",
+        "Equifax SCF V1.0 NI-CS-5"
     ],
     "NIST CSF V1.1 DE.CM-4": [
         "CIS Critical Security Controls V8 9.7",
@@ -278,7 +288,10 @@
         "UK NCSC Cyber Assessment Framework V3.1 C1.e",
         "CIS Critical Security Controls V8 10.7",
         "NIST SP 800-53 Rev. 5 SI-4",
-        "UK NCSC Cyber Essentials V2.2 A8.3"
+        "UK NCSC Cyber Essentials V2.2 A8.3",
+        "Equifax SCF V1.0 CM-CS-17",
+        "Equifax SCF V1.0 CM-CS-8",
+        "Equifax SCF V1.0 CM-CS-9"
     ],
     "NIST CSF V1.1 DE.CM-7": [
         "CIS Critical Security Controls V8 1.3",
@@ -332,7 +345,8 @@
         "PCI-DSS V4.0 5.4.1",
         "NZISM V3.5 15.2.23. Filtering suspicious emails and attachments (CID:1745)",
         "CMMC 2.0 SI.L1-3.14.2",
-        "NIST SP 800-53 Rev. 5 SI-8"
+        "NIST SP 800-53 Rev. 5 SI-8",
+        "Equifax SCF V1.0 CM-CS-4"
     ],
     "NIST CSF V1.1 DE.CM-8": [
         "CIS Critical Security Controls V8 7.5",
@@ -350,7 +364,12 @@
         "PCI-DSS V4.0 11.3.1.1",
         "PCI-DSS V4.0 11.3.1.2",
         "PCI-DSS V4.0 11.3.1.3",
-        "CMMC 2.0 SI.L1-3.14.5"
+        "CMMC 2.0 SI.L1-3.14.5",
+        "Equifax SCF V1.0 PM-CS-4",
+        "Equifax SCF V1.0 VM-CS-10",
+        "Equifax SCF V1.0 VM-CS-2",
+        "Equifax SCF V1.0 VM-CS-3",
+        "Equifax SCF V1.0 VM-CS-4"
     ],
     "NIST CSF V1.1 DE.DP-4": [
         "CIS Critical Security Controls V8 17.5",
@@ -376,7 +395,8 @@
         "NZISM V3.5 7.3.5. Information security incident management documentation (CID:1260)",
         "UK NCSC Cyber Assessment Framework V3.1 D1.b",
         "FFIEC Cybersecurity Assessment Tool D5.IR.Pl.B.4",
-        "NIST SP 800-53 Rev. 5 IR-8"
+        "NIST SP 800-53 Rev. 5 IR-8",
+        "Equifax SCF V1.0 CM-CS-14"
     ],
     "NIST CSF V1.1 ID.AM-2": [
         "CIS Critical Security Controls V8 2.1",
@@ -415,7 +435,12 @@
         "CSA Cloud Controls Matrix V4.0 GRC-02",
         "NERC Critical Infrastructure Protection CIP-013-2, Requirement R2",
         "ISO 27001:2022 A8.26",
-        "ISO 27001:2022 A8.30"
+        "ISO 27001:2022 A8.30",
+        "Equifax SCF V1.0 AM-CS-1",
+        "Equifax SCF V1.0 AM-CS-5",
+        "Equifax SCF V1.0 AM-CS-7",
+        "Equifax SCF V1.0 AM-CS-8",
+        "Equifax SCF V1.0 AM-CS-9"
     ],
     "NIST CSF V1.1 ID.AM-3": [
         "CIS Critical Security Controls V8 3.8",
@@ -445,7 +470,8 @@
         "CMMC 2.0 CA.L2-3.12.4",
         "CMMC 2.0 SC.L2-3.13.6",
         "CSA Cloud Controls Matrix V4.0 IVS-03",
-        "NIST SP 800-53 Rev. 5 CM-12"
+        "NIST SP 800-53 Rev. 5 CM-12",
+        "Equifax SCF V1.0 PP-CS-8"
     ],
     "NIST CSF V1.1 ID.RA-1": [
         "CIS Critical Security Controls V8 7.1",
@@ -516,7 +542,15 @@
         "NZISM V3.5 12.4.4. Patching vulnerabilities in products (CID:3452)",
         "NIST SP 800-53 Rev. 5 RA-7",
         "NIST SP 800-53 Rev. 5 SI-2",
-        "NIST SP 800-53 Rev. 5 SI-2(2)"
+        "NIST SP 800-53 Rev. 5 SI-2(2)",
+        "Equifax SCF V1.0 PM-CS-4",
+        "Equifax SCF V1.0 VM-CS-1",
+        "Equifax SCF V1.0 VM-CS-10",
+        "Equifax SCF V1.0 VM-CS-2",
+        "Equifax SCF V1.0 VM-CS-3",
+        "Equifax SCF V1.0 VM-CS-4",
+        "Equifax SCF V1.0 VM-CS-5",
+        "Equifax SCF V1.0 VM-CS-6"
     ],
     "NIST CSF V1.1 ID.RA-5": [
         "CIS Critical Security Controls V8 3.7",
@@ -548,7 +582,12 @@
         "ECB CROE 2.6.2-25",
         "PCI-DSS V4.0 11.3.2",
         "PCI-DSS V4.0 11.3.2.1",
-        "CMMC 2.0 SI.L1-3.14.5"
+        "CMMC 2.0 SI.L1-3.14.5",
+        "Equifax SCF V1.0 RM-CS-11",
+        "Equifax SCF V1.0 RM-CS-4",
+        "Equifax SCF V1.0 RM-CS-5",
+        "Equifax SCF V1.0 RM-CS-6",
+        "Equifax SCF V1.0 RM-CS-7"
     ],
     "NIST CSF V1.1 ID.SC-1": [
         "CIS Critical Security Controls V8 15.2",
@@ -582,7 +621,9 @@
         "NIST SP 800-53 Rev. 5 PM-30",
         "NIST SP 800-53 Rev. 5 SR-1",
         "NIST SP 800-53 Rev. 5 AC-20",
-        "NIST SP 800-53 Rev. 5 SR-6"
+        "NIST SP 800-53 Rev. 5 SR-6",
+        "Equifax SCF V1.0 VR-CS-1",
+        "Equifax SCF V1.0 VR-CS-8"
     ],
     "NIST CSF V1.1 ID.SC-2": [
         "CIS Critical Security Controls V8 15.1",
@@ -624,7 +665,12 @@
         "FFIEC Cybersecurity Assessment Tool D4.RM.Dd.B.3",
         "FFIEC Cybersecurity Assessment Tool D4.RM.Om.B.1",
         "CSA Cloud Controls Matrix V4.0 STA-13",
-        "NIST SP 800-53 Rev. 5 SI-4"
+        "NIST SP 800-53 Rev. 5 SI-4",
+        "Equifax SCF V1.0 VR-CS-2",
+        "Equifax SCF V1.0 VR-CS-3",
+        "Equifax SCF V1.0 VR-CS-5",
+        "Equifax SCF V1.0 VR-CS-6",
+        "Equifax SCF V1.0 VR-CS-7"
     ],
     "NIST CSF V1.1 PR.AC-1": [
         "CIS Critical Security Controls V8 4.7",
@@ -748,7 +794,16 @@
         "FFIEC Cybersecurity Assessment Tool D4.RM.Co.B.6",
         "NZISM V3.5 2.3.25. Cloud Adoption Strategy (CID:7046)",
         "ISO 27001:2022 A5.19",
-        "ISO 27001:2022 A5.20"
+        "ISO 27001:2022 A5.20",
+        "Equifax SCF V1.0 AC-CS-1",
+        "Equifax SCF V1.0 AC-CS-10",
+        "Equifax SCF V1.0 AC-CS-11",
+        "Equifax SCF V1.0 AC-CS-12",
+        "Equifax SCF V1.0 AC-CS-13",
+        "Equifax SCF V1.0 AC-CS-2",
+        "Equifax SCF V1.0 AC-CS-3",
+        "Equifax SCF V1.0 AC-CS-4",
+        "Equifax SCF V1.0 AC-CS-5"
     ],
     "NIST CSF V1.1 PR.AC-3": [
         "CIS Critical Security Controls V8 4.11",
@@ -810,7 +865,9 @@
         "ISO 27001:2022 A8.3",
         "NERC Critical Infrastructure Protection CIP-005-7, Requirement R1 Part 1.4",
         "NIST SP 800-53 Rev. 5 SI-4",
-        "NIST SP 800-53 Rev. 5 SC-7"
+        "NIST SP 800-53 Rev. 5 SC-7",
+        "Equifax SCF V1.0 NI-CS-11",
+        "Equifax SCF V1.0 NI-CS-3"
     ],
     "NIST CSF V1.1 PR.AC-4": [
         "CIS Critical Security Controls V8 3.3",
@@ -912,7 +969,16 @@
         "NIST SP 800-171 Rev. 2 3.1.5",
         "NIST SP 800-53 Rev. 5 AC-6(1)",
         "NIST SP 800-53 Rev. 5 AC-6(7)",
-        "NIST SP 800-53 Rev. 5 AU-9(4)"
+        "NIST SP 800-53 Rev. 5 AU-9(4)",
+        "Equifax SCF V1.0 AC-CS-1",
+        "Equifax SCF V1.0 AC-CS-10",
+        "Equifax SCF V1.0 AC-CS-11",
+        "Equifax SCF V1.0 AC-CS-12",
+        "Equifax SCF V1.0 AC-CS-13",
+        "Equifax SCF V1.0 AC-CS-2",
+        "Equifax SCF V1.0 AC-CS-3",
+        "Equifax SCF V1.0 AC-CS-4",
+        "Equifax SCF V1.0 AC-CS-5"
     ],
     "NIST CSF V1.1 PR.AC-5": [
         "CIS Critical Security Controls V8 3.12",
@@ -1037,7 +1103,10 @@
         "ECB CROE 2.7.2.1-1",
         "ECB CROE 2.7.2.1-10.d",
         "ECB CROE 2.7.2.1-10.e",
-        "ECB CROE 2.8.2.1-2"
+        "ECB CROE 2.8.2.1-2",
+        "Equifax SCF V1.0 NI-CS-6",
+        "Equifax SCF V1.0 NI-CS-7",
+        "Equifax SCF V1.0 NI-CS-8"
     ],
     "NIST CSF V1.1 PR.DS-1": [
         "CIS Critical Security Controls V8 3.11",
@@ -1080,7 +1149,13 @@
         "ISO 27001:2022 A8.25",
         "ECB CROE 2.3.2.1-4",
         "Critical Risk Profile V1.2 PR.IP-2.2",
-        "ISO 27001:2022 A8.26"
+        "ISO 27001:2022 A8.26",
+        "Equifax SCF V1.0 DE-CS-1",
+        "Equifax SCF V1.0 DE-CS-2",
+        "Equifax SCF V1.0 DE-CS-4",
+        "Equifax SCF V1.0 DE-CS-5",
+        "Equifax SCF V1.0 DE-CS-6",
+        "Equifax SCF V1.0 DC-CS-6"
     ],
     "NIST CSF V1.1 PR.DS-2": [
         "CIS Critical Security Controls V8 3.10",
@@ -1161,7 +1236,12 @@
         "ISO 27001:2022 A8.25",
         "ECB CROE 2.3.2.1-4",
         "Critical Risk Profile V1.2 PR.IP-2.2",
-        "ISO 27001:2022 A8.26"
+        "ISO 27001:2022 A8.26",
+        "Equifax SCF V1.0 DE-CS-1",
+        "Equifax SCF V1.0 DE-CS-3",
+        "Equifax SCF V1.0 DE-CS-5",
+        "Equifax SCF V1.0 DE-CS-6",
+        "Equifax SCF V1.0 DE-CS-9"
     ],
     "NIST CSF V1.1 PR.DS-3": [
         "CIS Critical Security Controls V8 1.1",
@@ -1225,7 +1305,11 @@
         "UK NCSC Cyber Assessment Framework V3.1 B3.e",
         "NERC Critical Infrastructure Protection CIP-011-2, Requirement R2 Part 2.2",
         "CSA Cloud Controls Matrix V4.0 DSP-16",
-        "NIST SP 800-53 Rev. 5 SR-12"
+        "NIST SP 800-53 Rev. 5 SR-12",
+        "Equifax SCF V1.0 AM-CS-3",
+        "Equifax SCF V1.0 AM-CS-4",
+        "Equifax SCF V1.0 AM-CS-6",
+        "Equifax SCF V1.0 DC-CS-5"
     ],
     "NIST CSF V1.1 PR.DS-5": [
         "CIS Critical Security Controls V8 3.13",
@@ -1254,7 +1338,8 @@
         "ECB CROE 2.7.2.1-1",
         "ECB CROE 2.7.2.1-10.d",
         "ECB CROE 2.7.2.1-10.e",
-        "ECB CROE 2.8.2.1-2"
+        "ECB CROE 2.8.2.1-2",
+        "Equifax SCF V1.0 DC-CS-4"
     ],
     "NIST CSF V1.1 PR.DS-6": [
         "CIS Critical Security Controls V8 11.5",
@@ -1275,7 +1360,9 @@
         "NERC Critical Infrastructure Protection CIP-009-6, Requirement R2 Part 2.2",
         "NERC Critical Infrastructure Protection CIP-009-6, Requirement R2 Part 2.3",
         "FFIEC Cybersecurity Assessment Tool D5.IR.Te.B.3",
-        "NIST SP 800-53 Rev. 5 CP-9(1)"
+        "NIST SP 800-53 Rev. 5 CP-9(1)",
+        "Equifax SCF V1.0 DE-CS-7",
+        "Equifax SCF V1.0 DE-CS-8"
     ],
     "NIST CSF V1.1 PR.IP-1": [
         "CIS Critical Security Controls V8 2.7",
@@ -1382,7 +1469,12 @@
         "CIS Critical Security Controls V8 16.7",
         "CSA Cloud Controls Matrix V4.0 AIS-02",
         "UK NCSC Cyber Assessment Framework V3.1 B4.a",
-        "ISO 27001:2022 A8.8"
+        "ISO 27001:2022 A8.8",
+        "Equifax SCF V1.0 CC-CS-1",
+        "Equifax SCF V1.0 CC-CS-2",
+        "Equifax SCF V1.0 CC-CS-3",
+        "Equifax SCF V1.0 CC-CS-4",
+        "Equifax SCF V1.0 PM-CS-7"
     ],
     "NIST CSF V1.1 PR.IP-2": [
         "CIS Critical Security Controls V8 16.5",
@@ -1415,7 +1507,12 @@
         "ISO 27001:2022 A8.28",
         "ISO 27001:2022 A8.29",
         "PCI-DSS V4.0 6.2.3.1",
-        "NIST SP 800-53 Rev. 5 SA-15"
+        "NIST SP 800-53 Rev. 5 SA-15",
+        "Equifax SCF V1.0 PP-CS-3",
+        "Equifax SCF V1.0 PP-CS-4",
+        "Equifax SCF V1.0 PP-CS-5",
+        "Equifax SCF V1.0 PP-CS-6",
+        "Equifax SCF V1.0 PP-CS-7"
     ],
     "NIST CSF V1.1 PR.IP-4": [
         "CIS Critical Security Controls V8 11.2",
@@ -1430,7 +1527,10 @@
         "CMMC 2.0 MP.L2-3.8.9",
         "ISO 27001:2022 A8.12",
         "NIST SP 800-53 Rev. 5 CP-9(8)",
-        "NIST SP 800-53 Rev. 5 SC-28"
+        "NIST SP 800-53 Rev. 5 SC-28",
+        "Equifax SCF V1.0 RP-CS-4",
+        "Equifax SCF V1.0 RP-CS-6",
+        "Equifax SCF V1.0 RP-CS-7"
     ],
     "NIST CSF V1.1 PR.IP-7": [
         "CIS Critical Security Controls V8 16.14",
@@ -1468,7 +1568,9 @@
         "PCI-DSS V4.0 11.4.5",
         "PCI-DSS V4.0 11.4.6",
         "NERC Critical Infrastructure Protection CIP-010-4, Requirement R3 Part 3.1",
-        "NERC Critical Infrastructure Protection CIP-010-4, Requirement R3 Part 3.2"
+        "NERC Critical Infrastructure Protection CIP-010-4, Requirement R3 Part 3.2",
+        "Equifax SCF V1.0 GV-CS-5",
+        "Equifax SCF V1.0 IR-CS-4"
     ],
     "NIST CSF V1.1 PR.PT-1": [
         "CIS Critical Security Controls V8 8.2",
@@ -1528,7 +1630,12 @@
         "PCI-DSS V4.0 10.4.3",
         "CSA Cloud Controls Matrix V4.0 LOG-13",
         "NIST SP 800-171 Rev. 2 3.3.5",
-        "NIST SP 800-53 Rev. 5 AU-6(1)"
+        "NIST SP 800-53 Rev. 5 AU-6(1)",
+        "Equifax SCF V1.0 CM-CS-11",
+        "Equifax SCF V1.0 CM-CS-12",
+        "Equifax SCF V1.0 CM-CS-13",
+        "Equifax SCF V1.0 CM-CS-15",
+        "Equifax SCF V1.0 CM-CS-16"
     ],
     "NIST CSF V1.1 PR.PT-3": [
         "CIS Critical Security Controls V8 2.7",
@@ -1555,7 +1662,11 @@
         "PCI-DSS V4.0 1.2.6",
         "FFIEC Cybersecurity Assessment Tool D3.DC.Ev.B.2",
         "FFIEC Cybersecurity Assessment Tool D5.ER.Es.B.4",
-        "CMMC 2.0 SC.L2-3.13.6"
+        "CMMC 2.0 SC.L2-3.13.6",
+        "Equifax SCF V1.0 CC-CS-1",
+        "Equifax SCF V1.0 CC-CS-2",
+        "Equifax SCF V1.0 CC-CS-3",
+        "Equifax SCF V1.0 CC-CS-5"
     ],
     "NIST CSF V1.1 PR.PT-5": [
         "CIS Critical Security Controls V8 11.4",
@@ -1564,7 +1675,8 @@
         "PCI-DSS V4.0 9.4.1",
         "NZISM V3.5 6.4.6. Backup strategy (CID:1123)",
         "ISO 27001:2022 A8.13",
-        "NIST SP 800-53 Rev. 5 CP-6(1)"
+        "NIST SP 800-53 Rev. 5 CP-6(1)",
+        "Equifax SCF V1.0 RP-CS-5"
     ],
     "NIST CSF V1.1 RS.AN-1": [
         "CIS Critical Security Controls V8 8.11",
@@ -1595,6 +1707,7 @@
         "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(1)(ii)(B)",
         "FFIEC Cybersecurity Assessment Tool D1.G.SP.B.1",
         "PCI-DSS V4.0 6.3.1",
-        "CSA Cloud Controls Matrix V4.0 TVM-08"
+        "CSA Cloud Controls Matrix V4.0 TVM-08",
+        "Equifax SCF V1.0 IR-CS-2"
     ]
 }

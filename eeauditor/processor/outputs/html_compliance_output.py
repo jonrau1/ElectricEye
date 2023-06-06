@@ -48,7 +48,8 @@ SUPPORTED_FRAMEWORKS = [
     "NZISM V3.5",
     "ISO 27001:2022",
     "Critical Risk Profile V1.2",
-    "ECB CROE"
+    "ECB CROE",
+    "Equifax SCF V1.0"
 ]
 
 @ElectricEyeOutput

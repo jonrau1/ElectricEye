@@ -9422,5 +9422,757 @@
   {
     "ControlTitle": "AICPA TSC C1.2",
     "ControlDescription": "The entity disposes of confidential information to meet the entity's objectives related to confidentiality. Identifies Confidential Information for Destruction—Procedures are in place to identify confidential information requiring destruction when the end of the retention period is reached. Destroys Confidential Information—Procedures are in place to erase or otherwise destroy confidential information that has been identified for destruction."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AM-CS-1",
+    "ControlDescription": "The Company maintains an inventory of Assets."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AM-CS-2",
+    "ControlDescription": "Hardware Technology Assets must be requested and approved."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AM-CS-3",
+    "ControlDescription": "Assets are securely disposed of, if no longer required.  "
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AM-CS-4",
+    "ControlDescription": "Media is securely sanitized prior to disposal, release, or re-use."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AM-CS-5",
+    "ControlDescription": "Scope for regulatory compliance requirements is identified and documented."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AM-CS-6",
+    "ControlDescription": "The Company tracks and reports on End Of Service Life (EOSL\") for hardware and software.\""
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AM-CS-7",
+    "ControlDescription": "The asset inventory is validated and updated on a [INSERT TIME FRAME] basis."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AM-CS-8",
+    "ControlDescription": "For The Company systems deployed in its FedRAMP boundaries, automated mechanisms to scan for, detect, and remediate the presence of unauthorized hardware, software, and firmware components are implemented."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AM-CS-9",
+    "ControlDescription": "Scope for The Company's authorization boundaries is identified and documented."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 RP-CS-1",
+    "ControlDescription": "The Company maintains a comprehensive business continuity and disaster recovery framework that is reviewed and approved by relevant company management on a [INSERT TIME FRAME] basis."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 RP-CS-2",
+    "ControlDescription": "The Company executes contingency plans, including business continuity and disaster recovery, during or after an event as deemed necessary for plan activation. "
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 RP-CS-3",
+    "ControlDescription": "The Company updates contingency plans on a [INSERT TIME FRAME] basis, as a result of an incident/event, or based on the results of a contingency plan test. The Company incorporates lessons learned and updates strategies, as necessary."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 RP-CS-4",
+    "ControlDescription": "The Company tests contingency plans on a [INSERT TIME FRAME] basis."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 RP-CS-5",
+    "ControlDescription": "The Company uses alternate sites to permit the transfer and resumption of critical information systems and processes when the primary site capabilities are unavailable."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 RP-CS-6",
+    "ControlDescription": "The Company completes secure backups of information systems and data."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 RP-CS-7",
+    "ControlDescription": "The Company performs testing of the integrity of backups on select applications on a [INSERT TIME FRAME] basis."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 CC-CS-1",
+    "ControlDescription": "The Company deploys systems in to its environment in accordance with established baseline configurations."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 CC-CS-2",
+    "ControlDescription": "The Company monitors for changes to configuration settings and critical files within The Company systems."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 CC-CS-3",
+    "ControlDescription": "The Company restricts access and/or permissions to install software to authorized individuals."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 CC-CS-4",
+    "ControlDescription": "The Company updates established baseline configurations to reflect changes in requirements on a [INSERT TIME FRAME] basis."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 CC-CS-5",
+    "ControlDescription": "The Company restricts program execution for systems deployed in its FedRAMP boundaries."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 TC-CS-1",
+    "ControlDescription": "The Company maintains a Change Management Policy that identifies requirements for changes, roles, responsibilities, and management commitment. "
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 TC-CS-2",
+    "ControlDescription": "The Company reviews proposed changes to systems and approves or disapproves changes after consideration for change type, business need, impact, and risk. "
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 TC-CS-3",
+    "ControlDescription": "The Company has established a Change Advisory Board (CAB) to review changes categorized as Risk 1 or Risk 2."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 TC-CS-4",
+    "ControlDescription": "The Company uses a change management system to track and document production changes. The ticket tracking system maintains history, identifies details of the change and has a method of approval/sign-off."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 TC-CS-5",
+    "ControlDescription": "The Company's Change Management Team performs an audit of changes to ensure change documentation meets The Company Change Management Policy."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 SC-CS-1",
+    "ControlDescription": "The Company reviews, responds, and incorporates legislative, statutory, and regulatory requirements regarding cybersecurity if determined to be applicable to The Company. "
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 SC-CS-2",
+    "ControlDescription": "The Company performs risk assessments to determine company compliance with legislative, statutory, and regulatory obligations regarding cybersecurity."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 DE-CS-1",
+    "ControlDescription": "Data devaluation requirements to protect The Company sensitive data at rest, in use, and in transit, is defined, established, implemented and communicated to support compliance with applicable laws, regulations, customer contracts, and industry standards relating to information security. Requirements are reviewed, approved and updated, as necessary, on at least an annual basis."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 DE-CS-2",
+    "ControlDescription": "Sensitive data is protected at rest in accordance with established data devaluation requirements."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 DE-CS-3",
+    "ControlDescription": "Sensitive data is protected in transit in accordance with established data devaluation requirements."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 DE-CS-4",
+    "ControlDescription": "The Company owned laptops and mobile devices employ full disk encryption."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 DE-CS-5",
+    "ControlDescription": "Cryptographic key management requirements are defined, established, implemented, and maintained."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 DE-CS-6",
+    "ControlDescription": "Access to cryptographic keys is restricted to authorized personnel and appropriately stored, protected, and maintained, in accordance with defined requirements."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 DE-CS-7",
+    "ControlDescription": "Cryptographic mechanisms have been implemented to protect data integrity in transit."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 DE-CS-8",
+    "ControlDescription": "Cryptographic mechanisms have been implemented to verify the authenticity of software prior to installation."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 DE-CS-9",
+    "ControlDescription": "A formal digital certificate management program, including supporting requirements and management documentation, technology, and inventory, is defined, established, implemented, and maintained."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 DC-CS-1",
+    "ControlDescription": "Security requirements have been defined, documented, and communicated to appropriate individuals, to establish the organization's approach to the classification and handling of data, in accordance with its sensitivity and criticality. The requirements are reviewed, updated as necessary, and approved on at least an annual basis."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 DC-CS-2",
+    "ControlDescription": "Information assets are classified and labeled in accordance with established data classification requirements."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 DC-CS-3",
+    "ControlDescription": "The organization manages, protects, and monitors removable media usage in accordance with documented and approved data handling and acceptable usage requirements."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 DC-CS-4",
+    "ControlDescription": "A Data Loss Prevention (DLP) Program is in place to detect and monitor unauthorized leakage of sensitive data across the enterprise."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 DC-CS-5",
+    "ControlDescription": "A Record Retention Policy and accompanying governing documents have been defined, documented and communicated to appropriate individuals, in accordance with applicable laws, regulations, and contractual obligations. The Policy and governing documents are reviewed, updated as necessary, and approved on at least an annual basis."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 DC-CS-6",
+    "ControlDescription": "A risk based process to discover and protect or remove data at rest in repositories is defined and implemented."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 FM-CS-1",
+    "ControlDescription": "The Company has a documented strategy which defines a risk based process to monitor consumer access to applications to detect fraud activity."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 FM-CS-2",
+    "ControlDescription": "The Company tests the efficacy of fraud monitoring tools on a [INSERT TIME FRAME] basis and remediates identified issues."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 GV-CS-1",
+    "ControlDescription": "Appropriate safeguards to protect The Company personnel and data and to comply with applicable laws, regulations, customer contracts, and industry standards relating to information security are implemented and documented within The Company's Information Security Policy (Policy\"). The Policy is reviewed on at least an annual basis.\""
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 GV-CS-10",
+    "ControlDescription": "Prior to integration, the Company assesses the impact of the Acquired Entities' information security safeguards (e.g., running vulnerability scans, assessing access control processes, and assessing change control processes) on the Company Information Security Management Program.  The Company creates a plan to address high risks to the Company Information Security Management Program without undue delay."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 GV-CS-11",
+    "ControlDescription": "A privacy program based on company-wide privacy principles and a privacy charter is formally defined, documented, and implemented."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 GV-CS-12",
+    "ControlDescription": "External privacy notice(s) are developed, documented, and published detailing how the organization processes personal data. The external privacy notice(s) are reviewed, updated and approved on at least an annual basis."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 GV-CS-13",
+    "ControlDescription": "The Company provides to relevant parties the third party assessor's information security management program assessment report."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 GV-CS-14",
+    "ControlDescription": "For The Company systems deployed in its FedRAMP boundaries, a system security plan is established, maintained, and updated on a [INSERT TIME FRAME] basis. "
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 GV-CS-15",
+    "ControlDescription": "For The Company systems deployed in its FedRAMP boundaries, for any weaknesses or deficiencies noted during the assessment, a Plan of Action and Milestone is established, maintained, and updated on a [INSERT TIME FRAME] basis."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 GV-CS-2",
+    "ControlDescription": "A comprehensive information security management program, including defined roles and responsibilities has been established, implemented and communicated. The Information Security Management Program is documented, maintained and approved."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 GV-CS-3",
+    "ControlDescription": "The Company employs a Chief Information Security Officer who is responsible for implementing, maintaining, and monitoring The Company's Information Security Management Program."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 GV-CS-4",
+    "ControlDescription": "The Company employs an Information Security Officer or equivalent for each of its business units who is responsible for implementing, maintaining, and monitoring The Company's Information Security Management Program at the business unit level."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 GV-CS-5",
+    "ControlDescription": "Reporting is provided to The Company Board of Directors and the Technology Committee on the adequacy of the Information Security Management Program and The Company's security posture at least annually."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 GV-CS-6",
+    "ControlDescription": "Variances in the implementation of a policy statement, standard, control or technical requirement are identified, documented, tracked, managed, remediated as appropriate, and approved, where required."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 GV-CS-7",
+    "ControlDescription": "The Company assesses the Information Security Management Program at planned intervals."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 GV-CS-8",
+    "ControlDescription": "Management performs information security related due diligence procedures, which include assessments of the information security environment, on target companies, prior to acquisition."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 GV-CS-9",
+    "ControlDescription": "Upon acquisition of new companies, management develops an integration plan that includes implementation or enhancement of information security controls. A Company project team is assigned that regularly monitors and oversees the integration to ensure that progress is being made without undue delay, and where feasible."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 HR-CS-1",
+    "ControlDescription": "Background and drug screening is performed on employees per company policy."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 HR-CS-2",
+    "ControlDescription": "Background and drug screening is performed on contractors per company policy."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 HR-CS-3",
+    "ControlDescription": "The Company maintains worker termination procedures which are required to be initiated in the appropriate HR portal within [INSERT NUMBER] hours of termination date."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 HR-CS-4",
+    "ControlDescription": "The Company employees complete onboarding procedures prior to the employee's start date."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 HR-CS-5",
+    "ControlDescription": "For The Company systems deployed, The Company maintains a Sanctions Process that is a two-tier administrative process and is designed to evaluate allegations. "
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AC-CS-1",
+    "ControlDescription": "Enterprise User Accounts are provisioned when an approved request has been documented."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AC-CS-10",
+    "ControlDescription": "[INSERT USER TYPE] access is certified by appropriate management on a [INSERT TIME FRAME] basis."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AC-CS-11",
+    "ControlDescription": "[INSERT USER TYPE] creation is permitted when appropriate approvals are obtained."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AC-CS-12",
+    "ControlDescription": "[INSERT USER TYPE] and access are provisioned by an authorized party."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AC-CS-13",
+    "ControlDescription": "[INSERT USER TYPE] access is removed or disabled upon notification from an authorized party."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AC-CS-14",
+    "ControlDescription": "Security requirements for [INSERT USER TYPE] and credentials are enforced."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AC-CS-15",
+    "ControlDescription": "Security requirements for [INSERT USER TYPE] and credentials are enforced."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AC-CS-16",
+    "ControlDescription": "Security requirements for [INSERT USER TYPE] and credentials are enforced."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AC-CS-17",
+    "ControlDescription": "Consumers are properly identified before a [INSERT USER TYPE] is created."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AC-CS-2",
+    "ControlDescription": "Organizational Users are only provisioned with system and application access when an approved request has been documented."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AC-CS-3",
+    "ControlDescription": "Privileged accounts for Organizational Users are provisioned when an approved request has been documented."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AC-CS-4",
+    "ControlDescription": "Organizational User accounts that are managed by an Enterprise Directory Service are disabled or deleted when no longer necessary, upon termination, or upon notification from an authorized party."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AC-CS-5",
+    "ControlDescription": "Organizational User accounts that are not managed by an Enterprise Directory Service are disabled or deleted when no longer necessary, upon termination, or upon notification from an authorized party."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AC-CS-6",
+    "ControlDescription": "The Company enforces security requirements for Organizational User accounts and credentials that are managed by an Enterprise Directory Service."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AC-CS-7",
+    "ControlDescription": "The Company enforces security requirements for Organizational User accounts and credentials that are not managed by an Enterprise Directory Service."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AC-CS-8",
+    "ControlDescription": "The Company requires multi-factor authentication for remote network access."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 AC-CS-9",
+    "ControlDescription": "The Company requires multi-factor authentication based on the risk associated with the type of account and access."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 IR-CS-1",
+    "ControlDescription": "The Company maintains operational plans for incident response and recovery activities."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 IR-CS-2",
+    "ControlDescription": "The Company responds to security incidents in accordance with documented procedures and tracks response activities through resolution."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 IR-CS-3",
+    "ControlDescription": "The Company tests its security incident response capability biannually and updates its plans as needed."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 IR-CS-4",
+    "ControlDescription": "The Company conducts post security incident analysis and updates plans or procedures if areas for improvement are identified."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 IR-CS-5",
+    "ControlDescription": "The Company reports security incidents to the CISO and Board of Directors (or subcommittee) based on severity and in accordance with the Security Incident Response Plan."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 CM-CS-1",
+    "ControlDescription": "The Company has established roles and responsibilities for monitoring security events and responding to detected threat activity."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 CM-CS-10",
+    "ControlDescription": "The Company has threat detection and prevention capabilities for inbound email."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 CM-CS-11",
+    "ControlDescription": "The Company maintains a logging and alerting infrastructure to collect audit logs from in-scope networks, systems, and applications and to monitor those audit logs for evidence of threat activity."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 CM-CS-12",
+    "ControlDescription": "The Company collects and stores audit logs in accordance with applicable data governance and retention requirements."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 CM-CS-13",
+    "ControlDescription": "The Company determines audit log sources, collection requirements, and monitoring priorities using an established risk methodology."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 CM-CS-14",
+    "ControlDescription": "The Company uses a security event and incident management system to analyze audit logs and detect threat activity."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 CM-CS-15",
+    "ControlDescription": "The Company has guidance for creating, storing, and transmitting audit logs for networks, systems, and applications."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 CM-CS-16",
+    "ControlDescription": "Application and Asset Owners configure systems to log events according to security requirements."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 CM-CS-17",
+    "ControlDescription": "Application Owners enroll externally facing applications to be behind a web application firewall."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 CM-CS-2",
+    "ControlDescription": "The Company monitors internal personnel activity to detect potential cybersecurity incidents."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 CM-CS-3",
+    "ControlDescription": "The Company monitors third-party personnel activity to detect potential cybersecurity incidents."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 CM-CS-4",
+    "ControlDescription": "Monitoring for unauthorized connections, devices, and software is performed."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 CM-CS-5",
+    "ControlDescription": "Technologies and processes are in place to detect and remediate operational issues with security detection tools."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 CM-CS-6",
+    "ControlDescription": "The Company tests the efficacy of security detection tools and remediates identified issues on  [INSERT TIME CADENCE]."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 CM-CS-7",
+    "ControlDescription": "The Company networks are monitored to detect threat activity."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 CM-CS-8",
+    "ControlDescription": "The Company applications are monitored to detect threat activity."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 CM-CS-9",
+    "ControlDescription": "The Company endpoints are monitored to detect malicious code and detect threat activity."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 NI-CS-1",
+    "ControlDescription": "The Company maintains network diagrams and documentation describing the network topology which are reviewed and updated as needed."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 NI-CS-10",
+    "ControlDescription": "The Company implements and maintains controls to identify and prevent unauthorized devices from accessing its wireless network."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 NI-CS-11",
+    "ControlDescription": "The Company implements and maintains controls to identify and prevent unauthorized devices from remotely accessing the network."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 NI-CS-2",
+    "ControlDescription": "The Company configures network devices to mitigate network security threats."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 NI-CS-3",
+    "ControlDescription": "The Company restricts unnecessary network services, ports, and protocols, and monitors communications at external network boundaries and between internal networks. "
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 NI-CS-4",
+    "ControlDescription": "The Company permits external network connections from its network through boundary protection devices or services."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 NI-CS-5",
+    "ControlDescription": "The Company monitors its network for performance and capacity to maintain availability."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 NI-CS-6",
+    "ControlDescription": "The Company regularly reviews and revises its segmentation strategy, policies, and methods on a [INSERT TIME FRAME] basis. "
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 NI-CS-7",
+    "ControlDescription": "The Company physically or logically separates its network based on function and class of data."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 NI-CS-8",
+    "ControlDescription": "The Company separates its network by function with the user network segmented from production, non-production and internet-facing networks. Network design and implementation considers the principles of least privilege. "
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 NI-CS-9",
+    "ControlDescription": "The Company implements and maintains controls to identify and prevent unauthorized devices from accessing its physical network."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PS-CS-1",
+    "ControlDescription": "The Company maintains a physical security standard which contains requirements for physical controls."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PS-CS-10",
+    "ControlDescription": "The Company has designed and implemented environmental controls to protect information systems at all [INSERT TIER LEVEL] facilities."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PS-CS-2",
+    "ControlDescription": "The Company performs Physical Security Assessments for all facilities on a [INSERT TIME FRAME] basis."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PS-CS-3",
+    "ControlDescription": "The Company performs Physical Penetration Tests for [INSERT TIER LEVEL] facilities on a [INSERT TIME FRAME] basis."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PS-CS-4",
+    "ControlDescription": "Electronic Access Control Systems (ACS) are used to secure [INSERT TIER LEVEL] facilities."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PS-CS-5",
+    "ControlDescription": "The Company supervisors approve physical access requests before physical access is granted."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PS-CS-6",
+    "ControlDescription": "Physical Access reviews are performed in accordance with the Access Management Team Review Process."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PS-CS-7",
+    "ControlDescription": "Physical badge access is deprovisioned within [INSERT TIME FRAME] of notification of termination of an employee or contractor."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PS-CS-8",
+    "ControlDescription": "Visitors at all [INSERT TIER LEVEL] facilities are required to sign-in on an approved visitor log or register in an electronic visitor management system."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PS-CS-9",
+    "ControlDescription": "The Company uses video surveillance systems at [INSERT TIER LEVEL] facilities."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PM-CS-1",
+    "ControlDescription": "The Company has a Patch Supervisor and Patch Management Group (PMG) responsible for supervising and reporting on patching."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PM-CS-2",
+    "ControlDescription": "The Company provides training on patch management policies and procedures on a [INSERT TIME FRAME] basis."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PM-CS-3",
+    "ControlDescription": "The Company performs a biannual assessment of its management and implementation of security updates and patches."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PM-CS-4",
+    "ControlDescription": "Patches are identified, assessed, and documented as they are made available by vendors."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PM-CS-5",
+    "ControlDescription": "Patch deployment is prioritized, initiated, completed, and documented per timeline requirements."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PM-CS-6",
+    "ControlDescription": "The Company documents, reports, and escalates patch status, progress, risks, and issues."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PM-CS-7",
+    "ControlDescription": "System images and baseline build configurations are updated to include the latest available patches."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PM-CS-8",
+    "ControlDescription": "The Company maintains a patch management solution to manage software patches."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PM-CS-9",
+    "ControlDescription": "Application or System Owners verify that patches are successfully deployed."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PP-CS-1",
+    "ControlDescription": "A security strategy is established, documented, maintained, communicated and reviewed [INSERT TIME FRAME]."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PP-CS-10",
+    "ControlDescription": "A budgeting process to fund Privacy capital and operational expenditures, including ensuring the Privacy organization is adequately staffed and funded, has been defined and implemented."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PP-CS-2",
+    "ControlDescription": "A budgeting process to fund security and technology capital and operational expenditures, including ensuring the security and technology organizations are adequately staffed and funded, has been defined and implemented."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PP-CS-3",
+    "ControlDescription": "The System Development Life Cycle (SDLC) methodology and supporting processes and tools are defined, maintained, reviewed and approved on a [INSERT TIME FRAME] basis."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PP-CS-4",
+    "ControlDescription": "System development and information security roles and responsibilities are defined and communicated."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PP-CS-5",
+    "ControlDescription": "The organization controls changes to systems within the System Development Life Cycle (SDLC) through formal, documented, and implemented change control procedures that incorporate information security considerations."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PP-CS-6",
+    "ControlDescription": "Use of production data in non-production environments is prohibited."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PP-CS-7",
+    "ControlDescription": "Production environments are logically separate from non-production environments."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PP-CS-8",
+    "ControlDescription": "Organizational communication and data flows (i.e. system designs,  data flow diagrams) for applications and systems are documented and updated [INSERT TIME FRAME]."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 PP-CS-9",
+    "ControlDescription": "A Privacy strategy is established, documented, maintained, communicated and reviewed [INSERT TIME FRAME]."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 RM-CS-1",
+    "ControlDescription": "Organizational risk target/goals is presented to The Company Board of Directors."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 RM-CS-10",
+    "ControlDescription": "The Company performs an Enterprise Privacy Risk Assessment to assess the internal and external risks to the processing of personal data on a [INSERT TIME FRAME] basis."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 RM-CS-11",
+    "ControlDescription": "For The Company systems deployed in its FedRAMP boundaries, The Company performs a FIPS 199 analysis and categorization on an annual basis. "
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 RM-CS-2",
+    "ControlDescription": "The Company Board of Directors reviews and approves the Core Security Risk Assessment on a [INSERT TIME FRAME] basis."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 RM-CS-3",
+    "ControlDescription": "The Company performs an Enterprise Security Risk Assessment to assess internal and external risks to the security, confidentiality, or integrity of personal information that could result in the unauthorized disclosure, misuse, loss, alteration, destruction, or other compromise of such information and documents those risks that are material. "
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 RM-CS-4",
+    "ControlDescription": "The Company performs an Enterprise Threat Vector Assessment which includes the identification of key controls designed to mitigate risk of enterprise threat vectors."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 RM-CS-5",
+    "ControlDescription": "The Company maintains an Asset Risk Assessment Methodology which defines asset risk assessment lifecycle steps."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 RM-CS-6",
+    "ControlDescription": "The Company determines technology assets' Inherent Risk Rating (IRR)."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 RM-CS-7",
+    "ControlDescription": "The Company performs technology asset Security Risk Assessments (SRAs) on a [INSERT TIME FRAME] basis."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 RM-CS-8",
+    "ControlDescription": "The Company communicates technology assets' security issue results and recommendations to appropriate stakeholders for resolution."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 RM-CS-9",
+    "ControlDescription": "The Company maintains a list of security controls which are reviewed and approved on a [INSERT TIME FRAME] basis."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 ST-CS-1",
+    "ControlDescription": "The Company requires new employees to complete Security Awareness Training within [INSERT TIME FRAME] days of start-date. Non-completions are handled pursuant to the Mandatory Training policy."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 ST-CS-2",
+    "ControlDescription": "The Company requires new contractors to complete Security Awareness Training within [INSERT TIME FRAME] days of start-date. Non-completions are handled pursuant to the Mandatory Training policy."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 ST-CS-3",
+    "ControlDescription": "The Company requires all employees to complete Security Awareness Training on an [INSERT TIME FRAME] or if significant system changes occur. Employees have a designated window of time to complete Security Awareness Training from course enrollment. Non-completions are handled pursuant to the Mandatory Training policy."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 ST-CS-4",
+    "ControlDescription": "The Company requires contractors to complete Security Awareness Training on an [INSERT TIME FRAME] or if significant system changes occur.  Contractors have a designated window of time to complete Security Awareness Training from course enrollment. Non-completions are handled pursuant to the Mandatory Training policy."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 ST-CS-5",
+    "ControlDescription": "The Company requires additional Security Awareness Training based on job role [INSERT TIME FRAME]."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 ST-CS-6",
+    "ControlDescription": "The Company's Board receives Security Awareness training on [INSERT TIME FRAME]."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 ST-CS-7",
+    "ControlDescription": "New and existing employees (based on job role) receive [INSERT SPECIFIC TRAINING MODULE] training prior to starting their roles and responsibilities. Non-completions are handled pursuant to the Mandatory Training Policy."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 ST-CS-8",
+    "ControlDescription": "The Company security training curriculum is developed and updated as needed based on current threats and industry best practices."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 TD-CS-1",
+    "ControlDescription": "The Threat Intelligence team collects and analyzes threat information from open source and human intelligence sources."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 TD-CS-2",
+    "ControlDescription": "The Threat Intelligence team sources and provides actionable threat information, such as indicators of compromise, to relevant parties to enable monitoring for cyber threats. "
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 TD-CS-3",
+    "ControlDescription": "The Threat Intelligence Team provides threat intelligence and recommendations to implement countermeasures to appropriate parties as deemed necessary by management."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 TD-CS-4",
+    "ControlDescription": "The Company maintains an Insider Threat Program that includes a cross-discipline Insider Threat Incident Handling Team."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 VR-CS-1",
+    "ControlDescription": "The Company's Vendor Relations Oversight Program, including defined roles and responsibilities and supporting documentation is defined, implemented, approved, reviewed, and revised, [INSERT TIME FRAME]."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 VR-CS-10",
+    "ControlDescription": "Material changes to existing third party relationships require reassessment in accordance with The Company's Vendor Relations Oversight Program."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 VR-CS-2",
+    "ControlDescription": "The Company conducts appropriate due diligence procedures, in accordance with The Company's formal Vendor Relations Oversight Program, prior to entering into contractual agreements with third parties."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 VR-CS-3",
+    "ControlDescription": "The Company identifies, assigns, documents and maintains third party compliance risk ratings, in accordance with procedures performed under The Company's formal Vendor Relations Oversight Program."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 VR-CS-4",
+    "ControlDescription": "A contract is signed between The Company and the vendor detailing the roles and responsibilities of each party, including information security requirements. The contract is reviewed and approved by Legal."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 VR-CS-5",
+    "ControlDescription": "An inventory of The Company's approved vendors is defined and formally maintained."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 VR-CS-6",
+    "ControlDescription": "A risk based process to credential The Company clients is defined and implemented."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 VR-CS-7",
+    "ControlDescription": "A risk based process to review the admissibility of The Company Client's permissible purpose, in alignment with product consumption is in place."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 VR-CS-8",
+    "ControlDescription": "The Company conducts training on credentialing program standards and procedures on a [INSERT TIME FRAME] basis."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 VR-CS-9",
+    "ControlDescription": "A risk based process to review, assess, and monitor a third party's information security safeguards is defined and implemented."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 VM-CS-1",
+    "ControlDescription": "The Company receives and analyzes vulnerability information to determine applicability and potential impact to The Company assets."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 VM-CS-10",
+    "ControlDescription": "The Company maintains a process to prioritize, communicate, escalate, and track remediation of exploitable critical vulnerabilities identified on The Company perimeter."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 VM-CS-11",
+    "ControlDescription": "Application and System Owners mitigate vulnerabilities within established Service Level Agreements (SLAs)."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 VM-CS-2",
+    "ControlDescription": "The Company maintains a process for internal and external sources to report identified vulnerabilities."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 VM-CS-3",
+    "ControlDescription": "The Company scans external systems to identify vulnerabilities on [INSERT TIME FRAME]."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 VM-CS-4",
+    "ControlDescription": "The Company scans internal systems to identify vulnerabilities on [INSERT TIME FRAME]."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 VM-CS-5",
+    "ControlDescription": "The Company performs penetration tests against externally-facing applications on [INSERT TIME FRAME]."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 VM-CS-6",
+    "ControlDescription": "The Company ranks and prioritizes identified vulnerabilities for remediation in accordance with an established risk ranking process."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 VM-CS-7",
+    "ControlDescription": "The Company documents and communicates identified vulnerabilities to responsible parties."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 VM-CS-8",
+    "ControlDescription": "The Company tracks identified vulnerabilities against established remediation timelines."
+  },
+  {
+    "ControlTitle": "Equifax SCF V1.0 VM-CS-9",
+    "ControlDescription": "The Company performs testing or scanning to confirm remediation of identified vulnerabilities."
   }
 ]
