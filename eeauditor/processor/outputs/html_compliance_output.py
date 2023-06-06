@@ -52,6 +52,9 @@ SUPPORTED_FRAMEWORKS = [
     "Equifax SCF V1.0"
 ]
 
+with open(f"{here}/mapped_compliance_controls.json") as jsonfile:
+    CONTROLS_CROSSWALK = json.load(jsonfile)
+
 @ElectricEyeOutput
 class JsonProvider(object):
     __provider__ = "html_compliance"
@@ -100,6 +103,16 @@ class JsonProvider(object):
         processedFindings = []
 
         for finding in findings:
+            complianceRelatedRequirements = finding["Compliance"]["RelatedRequirements"]
+            nistCsfControls = [control for control in complianceRelatedRequirements if control.startswith("NIST CSF V1.1")]
+            for control in nistCsfControls:
+                crosswalkedControls = self.nist_csf_v_1_1_controls_crosswalk(control)
+                # Not every single NIST CSF Control maps across to other frameworks
+                if crosswalkedControls is not None:
+                    complianceRelatedRequirements.extend(crosswalkedControls)
+                else:
+                    continue
+            
             processedFindings.append(
                 {
                     "AssetId": finding["Resources"][0]["Id"],
@@ -110,13 +123,25 @@ class JsonProvider(object):
                     "AssetService": finding["ProductFields"]["AssetService"],
                     "AssetComponent": finding["ProductFields"]["AssetComponent"],
                     "ComplianceStatus": finding["Compliance"]["Status"],
-                    "ComplianceRelatedRequirements": finding["Compliance"]["RelatedRequirements"],
+                    "ComplianceRelatedRequirements": complianceRelatedRequirements,
                 }
             )
 
         print(f"Processed {len(processedFindings)} findings")
 
         return processedFindings
+    
+    def nist_csf_v_1_1_controls_crosswalk(self, nistCsfSubcategory):
+        """
+        This function returns a list of additional control framework control IDs that mapped into a provided
+        NIST CSF V1.1 Subcategory (control)
+        """
+
+        # Not every single NIST CSF Control maps across to other frameworks
+        try:
+            return CONTROLS_CROSSWALK[nistCsfSubcategory]
+        except KeyError:
+            return None
 
     def get_unique_controls(self, processedFindings):
         """
