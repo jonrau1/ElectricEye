@@ -636,10 +636,91 @@ class JsonProvider(object):
             imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/iso_27k1_2013.jpg" class="framework__header__image">'
             frameworkInfo = "ISO 27001 is an international standard that provides a framework for establishing, implementing, maintaining, and continually improving an information security management system (ISMS). The standard defines a set of requirements and controls to help organizations manage and protect their information assets. Annex A of ISO 27001 contains a comprehensive list of controls that organizations can choose to implement based on their specific needs and risk assessment. These controls are categorized into 14 sections, covering various aspects of information security. Organizations use the Annex A controls as a reference to identify the specific measures they need to implement to protect their information assets. These controls are based on best practices and provide a systematic approach to managing information security risks. By implementing these controls, organizations can establish a robust information security management system, reduce the likelihood and impact of security incidents, meet regulatory requirements, and build trust with customers and stakeholders. The ISO 27001 standard and Annex A controls are widely recognized and adopted globally as a means to ensure the confidentiality, integrity, and availability of information assets and to demonstrate a commitment to information security management."
         
+        # CIS Critical Security Controls V8
+        elif framework == "CIS Critical Security Controls V8":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/cis_critical_controls_v8.jpg" class="framework__header__image">'
+            frameworkInfo = "TODO"
+
+        # 800-53 R5
+        elif framework == "NIST SP 800-53 Rev. 5":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/nist_80053_rev5.jpg" class="framework__header__image">'
+            frameworkInfo = "TODO"
+        
         # 800-171 R2
         elif framework == "NIST SP 800-171 Rev. 2":
             imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/nist_800171_rev2.jpg" class="framework__header__image">'
             frameworkInfo = "TODO"
+
+        # CSA Cloud Controls Matrix V4.0
+        elif framework == "CSA Cloud Controls Matrix V4.0":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/csa_ccm_v4.jpg" class="framework__header__image">'
+            frameworkInfo = "TODO"
+
+        # CMMC 2.0
+        elif framework == "CMMC 2.0":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/cmmc_v2.jpg" class="framework__header__image">'
+            frameworkInfo = "TODO"
+
+        # UK NCSC Cyber Essentials V2.2
+        elif framework == "UK NCSC Cyber Essentials V2.2":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/uk_ncsc_cyber_essentials.jpg" class="framework__header__image">'
+            frameworkInfo = "TODO"
+
+        # HIPAA Security Rule 45 CFR Part 164 Subpart C
+        elif framework == "HIPAA Security Rule 45 CFR Part 164 Subpart C":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/hipaa_security_rule.jpg" class="framework__header__image">'
+            frameworkInfo = "TODO"
+
+        # FFIEC Cybersecurity Assessment Tool
+        elif framework == "FFIEC Cybersecurity Assessment Tool":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/ffiec_cat.jpg" class="framework__header__image">'
+            frameworkInfo = "TODO"
+
+        # NERC Critical Infrastructure Protection
+        elif framework == "NERC Critical Infrastructure Protection":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/nerc_cip.jpg" class="framework__header__image">'
+            frameworkInfo = "TODO"
+
+        # NYDFS 23 NYCRR Part 500
+        elif framework == "NYDFS 23 NYCRR Part 500":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/nydfs500_title23.jpg" class="framework__header__image">'
+            frameworkInfo = "TODO"
+
+        # UK NCSC Cyber Assessment Framework V3.1
+        elif framework == "UK NCSC Cyber Assessment Framework V3.1":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/uk_ncsc_caf_v3_1.jpg" class="framework__header__image">'
+            frameworkInfo = "TODO"
+
+        # PCI-DSS V4.0
+        elif framework == "UK NCSC Cyber Assessment Framework V3.1":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/pci_dss_v4_0.jpg" class="framework__header__image">'
+            frameworkInfo = "TODO"
+
+        # NZISM V3.5
+        elif framework == "NZISM V3.5":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/nzism.jpg" class="framework__header__image">'
+            frameworkInfo = "TODO"
+
+        # ISO 27001:2022
+        elif framework == "NZISM V3.5":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/iso_27001_2022.jpg" class="framework__header__image">'
+            frameworkInfo = "TODO"
+
+        # Critical Risk Profile V1.2
+        elif framework == "Critical Risk Profile V1.2":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/cri_profile_v12.jpg" class="framework__header__image">'
+            frameworkInfo = "TODO"
+
+        # ECB CROE
+        elif framework == "ECB CROE":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/euro_central_bank_croe.jpg" class="framework__header__image">'
+            frameworkInfo = "TODO"
+
+        # Equifax SCF V1.0
+        elif framework == "Equifax SCF V1.0":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/equifax_scf_v1_0.jpg" class="framework__header__image">'
+            frameworkInfo = "TODO"
+
         else:
             return []
 
