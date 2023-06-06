@@ -794,7 +794,7 @@ class JsonProvider(object):
         <body>
         <section class="summary__header">
             <figure>
-                <img src="https://raw.githubusercontent.com/jonrau1/ElectricEye/oracle-cloud-1/screenshots/logo.svg" class="summary__header__image">
+                <img src="https://raw.githubusercontent.com/jonrau1/ElectricEye/master/screenshots/logo.svg" class="summary__header__image">
                 <figcaption>ElectricEye Audit Readiness Report -- {dateNow}</figcaption>
             </figure>
             <h4>{self.generate_executive_summary(processedFindings)}</h4>
