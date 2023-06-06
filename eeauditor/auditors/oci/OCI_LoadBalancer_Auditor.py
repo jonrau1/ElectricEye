@@ -676,14 +676,21 @@ def oci_load_balancer_unhealthy_check(cache, awsAccountId, awsRegion, awsPartiti
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 ID.AM-2",
-                        "NIST SP 800-53 Rev. 4 CM-8",
-                        "NIST SP 800-53 Rev. 4 PM-5",
-                        "AICPA TSC CC3.2",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.1.1",
-                        "ISO 27001:2013 A.8.1.2",
-                        "ISO 27001:2013 A.12.5.1"
+                        "NIST CSF V1.1 DE.AE-4",
+                        "NIST CSF V1.1 DE.DP-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-2",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 RA-3",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.2",
+                        "AICPA TSC CC7.3",
+                        "ISO 27001:2013 A.16.1.2",
+                        "ISO 27001:2013 A.16.1.3",
+                        "ISO 27001:2013 A.16.1.4"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -744,14 +751,21 @@ def oci_load_balancer_unhealthy_check(cache, awsAccountId, awsRegion, awsPartiti
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 ID.AM-2",
-                        "NIST SP 800-53 Rev. 4 CM-8",
-                        "NIST SP 800-53 Rev. 4 PM-5",
-                        "AICPA TSC CC3.2",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.1.1",
-                        "ISO 27001:2013 A.8.1.2",
-                        "ISO 27001:2013 A.12.5.1"
+                        "NIST CSF V1.1 DE.AE-4",
+                        "NIST CSF V1.1 DE.DP-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-2",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 RA-3",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.2",
+                        "AICPA TSC CC7.3",
+                        "ISO 27001:2013 A.16.1.2",
+                        "ISO 27001:2013 A.16.1.3",
+                        "ISO 27001:2013 A.16.1.4"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},

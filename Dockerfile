@@ -18,20 +18,17 @@
 #specific language governing permissions and limitations
 #under the License.
 
-# latest hash as of 9 MAY 2023 - Alpine 3.18.0 / alpine:latest
-# https://hub.docker.com/layers/library/alpine/3.18.0/images/sha256-c0669ef34cdc14332c0f1ab0c2c01acb91d96014b172f1a76f3a39e63d1f0bda?context=explore
+# latest hash as of 5 JUNE 2023 - Alpine 3.18.0 / alpine:latest
+# https://hub.docker.com/layers/library/alpine/3.18.0/images/sha256-02bb6f428431fbc2809c5d1b41eab5a68350194fb508869a33cb1af4444c9b11?context=explore
 # use as builder image to pull in required deps
-FROM alpine@sha256:c0669ef34cdc14332c0f1ab0c2c01acb91d96014b172f1a76f3a39e63d1f0bda AS builder
+FROM alpine@sha256:02bb6f428431fbc2809c5d1b41eab5a68350194fb508869a33cb1af4444c9b11 AS builder
 
 LABEL org.opencontainers.image.source="https://github.com/alpinelinux/docker-alpine"
 
-# This hack is widely applied to avoid python printing issues in docker containers.
-# See: https://github.com/Docker-Hub-frolvlad/docker-alpine-python3/pull/13
 ENV PYTHONUNBUFFERED=1
 
 COPY requirements-docker.txt /tmp/requirements-docker.txt
 
-# Installing dependencies
 RUN \
     apk update && \
     apk add --no-cache python3 postgresql-libs && \
@@ -44,9 +41,9 @@ RUN \
     rm -rf /tmp/* && \
     rm -f /var/cache/apk/*
 
-# latest hash as of 9 MAY 2023 - Alpine 3.18.0 / alpine:latest
-# https://hub.docker.com/layers/library/alpine/3.18.0/images/sha256-c0669ef34cdc14332c0f1ab0c2c01acb91d96014b172f1a76f3a39e63d1f0bda?context=explore
-FROM alpine@sha256:c0669ef34cdc14332c0f1ab0c2c01acb91d96014b172f1a76f3a39e63d1f0bda as electriceye
+# latest hash as of 5 JUNE 2023 - Alpine 3.18.0 / alpine:latest
+# https://hub.docker.com/layers/library/alpine/3.18.0/images/sha256-02bb6f428431fbc2809c5d1b41eab5a68350194fb508869a33cb1af4444c9b11?context=explore
+FROM alpine@sha256:02bb6f428431fbc2809c5d1b41eab5a68350194fb508869a33cb1af4444c9b11 as electriceye
 
 COPY --from=builder /usr /usr
 
@@ -63,8 +60,7 @@ LABEL \
     maintainer="opensource@electriceye.cloud" \
     version="3.0" \
     license="Apache-2.0" \
-    org.opencontainers.image.source="https://github.com/jonrau1/ElectricEye" \
-    description="ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Management supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapping for NIST CSF, 800-53, 800-171, ISO 27001, AICPA TSC (SOC2), and more!"
+    description="ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to over 20 industry, regulatory, and best practice controls frameworks."
 
 # Create a System Group and User for ElectricEye so we don't run as root
 RUN \
