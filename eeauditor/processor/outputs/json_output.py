@@ -63,7 +63,7 @@ class JsonProvider(object):
         del findings
 
         # Map in the new compliance controls
-        for finding in findings:
+        for finding in decodedFindings:
             complianceRelatedRequirements = finding["Compliance"]["RelatedRequirements"]
             nistCsfControls = [control for control in complianceRelatedRequirements if control.startswith("NIST CSF V1.1")]
             for control in nistCsfControls:
