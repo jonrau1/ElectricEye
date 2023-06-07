@@ -10174,5 +10174,345 @@
   {
     "ControlTitle": "Equifax SCF V1.0 VM-CS-9",
     "ControlDescription": "The Company performs testing or scanning to confirm remediation of identified vulnerabilities."
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.1.1.1",
+    "ControlDescription":"Information Handling"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.1.2",
+    "ControlDescription":"Monitoring,Review,and Delivery of Services"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.1.2.1",
+    "ControlDescription":"Managing Changes to Service Providers"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.3.1",
+    "ControlDescription":"Reporting Security Events"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.3.1.1.1",
+    "ControlDescription":"FBI CJIS Division Responsibilities"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.3.1.1.2",
+    "ControlDescription":"CSA ISO Responsibilities"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.3.2",
+    "ControlDescription":"Management of Security Incidents"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.3.2.1",
+    "ControlDescription":"Incident Handling"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.3.2.2",
+    "ControlDescription":"Collection of Evidence"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.3.4",
+    "ControlDescription":"Incident Monitoring"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.4.1",
+    "ControlDescription":"Auditable Events and Content(Information Systems)"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.4.1.1",
+    "ControlDescription":"Events"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.4.1.1.1",
+    "ControlDescription":"Content"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.4.2",
+    "ControlDescription":"Response to Audit Processing Failures"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.4.3",
+    "ControlDescription":"Audit Monitoring,Analysis,and Reporting"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.4.5",
+    "ControlDescription":"Protection of Audit Information"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.4.6",
+    "ControlDescription":"Audit Record Retention"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.4.7",
+    "ControlDescription":"Logging NCIC and III Transactions"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.5.1",
+    "ControlDescription":"Account Management"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.5.2",
+    "ControlDescription":"Access Enforcement"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.5.2.1",
+    "ControlDescription":"Least Privilege"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.5.2.2",
+    "ControlDescription":"System Access Control"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.5.2.3",
+    "ControlDescription":"Access Control Criteria"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.5.2.4",
+    "ControlDescription":"Access Control Mechanisms"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.5.3",
+    "ControlDescription":"Unsuccessful Login Attempts"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.5.4",
+    "ControlDescription":"System Use Notification"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.5.5",
+    "ControlDescription":"Session Lock"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.5.6",
+    "ControlDescription":"Remote Access"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.5.6.1",
+    "ControlDescription":"Personally Owned Information Systems"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.5.6.2",
+    "ControlDescription":"Publicly Accessible Computers"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.6.1",
+    "ControlDescription":"Identification Policy and Procedures"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.6.1.1",
+    "ControlDescription":"Use of Originating Agency Identifiers in Transactions and Information Exchanges"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.6.2",
+    "ControlDescription":"Authentication Policy and Procedures"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.6.2.1",
+    "ControlDescription":"Standard Authenticators"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.6.2.1.1",
+    "ControlDescription":"Password"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.6.2.1.1.1",
+    "ControlDescription":"Basic Password Standards"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.6.2.1.1.2",
+    "ControlDescription":"Advanced Password Standards"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.6.2.1.2",
+    "ControlDescription":"Personal Identification Number(PIN)"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.6.2.1.3",
+    "ControlDescription":"One-time Passwords(OTP)"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.6.2.2",
+    "ControlDescription":"Advanced Authentication"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.6.2.2.1",
+    "ControlDescription":"Advanced Authentication Policy and Rationale"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.6.2.2.2",
+    "ControlDescription":"Advanced Authentication Decision Tree"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.6.3",
+    "ControlDescription":"Identifier and Authenticator Management"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.6.3.1",
+    "ControlDescription":"Identifier Management"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.6.4",
+    "ControlDescription":"Assertions"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.7.1",
+    "ControlDescription":"Access Restrictions for Changes"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.7.1.1",
+    "ControlDescription":"Least Functionality"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.7.1.2",
+    "ControlDescription":"Network Diagram"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.7.2",
+    "ControlDescription":"Security of Configuration Documentation"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.10.1",
+    "ControlDescription":"Information Flow Enforcement"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.10.1.1",
+    "ControlDescription":"Boundary Protection"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.10.1.2",
+    "ControlDescription":"Encryption"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.10.1.2.1",
+    "ControlDescription":"Encryption for CJI in Transit"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.10.1.2.2",
+    "ControlDescription":"Encryption for CJI at Rest"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.10.1.2.3",
+    "ControlDescription":"Public Key Infrastructure(PKI) Technology"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.10.1.3",
+    "ControlDescription":"Intrusion Detection Tools and Techniques"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.10.1.5",
+    "ControlDescription":"Cloud Computing"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.10.3",
+    "ControlDescription":"Partitioning and Virtualization"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.10.3.1",
+    "ControlDescription":"Partitioning"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.10.3.2",
+    "ControlDescription":"Virtualization"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.10.4.1",
+    "ControlDescription":"Patch Management"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.10.4.2",
+    "ControlDescription":"Malicious Code Protection"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.10.4.3",
+    "ControlDescription":"Spam and Spyware Protection"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.10.4.4",
+    "ControlDescription":"Security Alerts and Advisories"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.10.4.5",
+    "ControlDescription":"Information Input Restrictions"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.11.1.1",
+    "ControlDescription":"Triennial Compliance Audits by the FBI CJIS Division"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.11.1.2",
+    "ControlDescription":"Triennial Security Audits by the FBI CJIS Division"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.11.2",
+    "ControlDescription":"Audits by the CSA"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.11.3",
+    "ControlDescription":"Special Security Inquiries and Audits"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.11.4",
+    "ControlDescription":"Compliance Subcommittees"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.12.2",
+    "ControlDescription":"Personnel Termination"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.12.3",
+    "ControlDescription":"Personnel Transfer"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.12.4",
+    "ControlDescription":"Personnel Sanctions"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.13.1",
+    "ControlDescription":"Wireless Communications Technologies"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.13.2",
+    "ControlDescription":"Mobile Device Management(MDM)"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.13.3",
+    "ControlDescription":"Wireless Device Risk Management"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.13.4",
+    "ControlDescription":"System Integrity"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.13.4.1",
+    "ControlDescription":"Patching\/Updates"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.13.4.2",
+    "ControlDescription":"Malicious Code Protection"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.13.4.3",
+    "ControlDescription":"Personal Firewall"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.13.5",
+    "ControlDescription":"Incident Response"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.13.6",
+    "ControlDescription":"Access Control"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.13.7",
+    "ControlDescription":"Identification and Authentication"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.13.7.2",
+    "ControlDescription":"Advanced Authentication"
+  },
+  {
+    "ControlTitle":"FBI CJIS Security Policy V5.9 5.13.7.2.1",
+    "ControlDescription":"Compensating Controls"
   }
 ]
