@@ -109,7 +109,7 @@ class JsonProvider(object):
             for control in nistCsfControls:
                 crosswalkedControls = self.nist_csf_v_1_1_controls_crosswalk(control)
                 # Not every single NIST CSF Control maps across to other frameworks
-                if crosswalkedControls is not None:
+                if crosswalkedControls:
                     complianceRelatedRequirements.extend(crosswalkedControls)
                 else:
                     continue
@@ -142,7 +142,7 @@ class JsonProvider(object):
         try:
             return CONTROLS_CROSSWALK[nistCsfSubcategory]
         except KeyError:
-            return None
+            return []
 
     def get_unique_controls(self, processedFindings):
         """
@@ -339,8 +339,9 @@ class JsonProvider(object):
         assetComponentSentence = ", ".join(assetComponentsAssessed)
 
         summary = f"""
-            ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to NIST CSF, 800-53, ISO 27001, AICPA TSC (SOC2), and more! Each Check within ElectricEye evaluates a specific component for a specific service for a specific Cloud Service Provider or SasS Vendor such as Amazon EC2 Instance, Oracle Cloud Autonomous Date Warehouses, Google Cloud SQL instances, M365 Conditional Access Policies, ServiceNow Secure Access Configurations, and more. For each of those checks, several controls mapping to NIST CSF are provided which are in turn mapped to other major frameworks which can aid in audit readiness or other internal audit or controls management exercises. This report is not an attestation, certificate, or fancy plaque you paid for that says "SOC2" on it.</br>
-
+            ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to over two dozen controls frameworks, standards, laws, and policies. Each Check within ElectricEye evaluates a specific component for a specific service for a specific Cloud Service Provider or SasS Vendor such as ensuring storage for a compute service is encrypted, or if a particular type of logging for a service is enabled. For each of those checks, several controls mapping to NIST CSF V1.1 are provided which are in turn mapped to other major frameworks which can aid in audit readiness or other internal audit or controls management exercises.</br> 
+            
+            </br>This report is not an attestation, certificate, or fancy plaque you paid for that says "SOC2" on it. For enhanced mapping, each NIST CSF V1.1 Subcategory is mapped to CIS Critical Controls V8 which (unless otherwise noted) provide a bulk of the "back-mapping" to other controls and requirements.</br>
 
             </br>During the evaluation for {providerAssesed}, ElectricEye generated {countFindings} findings with a passing rate for every single finding is {roundedPercentage} for {countUniqueResourceIds} unique Assets across {countAccountsAssessed} Cloud/SaaS Accounts ({accountSentence}) in {countRegionsAssessed} cloud Regions/Zones/Datacenter locations ({regionSentence}).</br>
             
@@ -355,7 +356,7 @@ class JsonProvider(object):
 
             </br>This report provides a per-Control breakdown for each Framework that ElectricEye supports, showing you both how many Findings were passed or failed as well as the total passing score per Framework. Below each set of graphics, a table is provided which includes the specific Control identifiers that were checked for the current evaluation, the control description or control objectives (provided by the owners/authors of the standard or framework itself), as well as aggregated Asset information which includes how many unique Classes, Services, and Components were covered per Control as well as the overall Findings per Control.</br>
 
-            </br>This report can be used as a point-in-time snapshot for control sampling or as a guideline before the start of an engagement for audit readiness, cloud hygeine, or other internal audit or GRC related projects. For better and more controlled sampling and time-series analysis, it is recommended to use another output such as JSON or CSV and storing those data snapshots within a data lake or data warehouse for better aggregation and querying.</br>
+            </br>This report can be used as a point-in-time snapshot for control sampling or as a guideline before the start of an engagement for audit readiness, cloud hygeine, or other internal audit or GRC related projects. For controlled sampling and time-series analysis, it is recommended to use another output such as JSON or CSV and storing those data snapshots within a data lake or data warehouse for better aggregation and querying. Each standard, law, or framework contains information about the scope, applicability, formal certification/examination processes, recommendation for use, and information about mapping.</br>
         """
 
         print("Generating Summary report.")
@@ -839,7 +840,7 @@ class JsonProvider(object):
             frameworkInfo = """
             The United States Federal Bureau of Investigation (FBI) Criminal Justice Information Services (CJIS) Division is a 'high-tech hub in the hills of West Virginia that provides a range of state of-the-art tools and services to law enforcement, national security and intelligence community partners, and the general public.' The CJIS Division's Security Policy is a set of security requirements and guidelines established by the FBI for organizations that access, store, process, or transmit criminal justice information (CJI). The CJIS Security Policy ensures the protection, integrity, and confidentiality of sensitive criminal justice data. It covers Authentication, Access Control, Physical Security, Mobile Devices, Cloud Computing, Training & Awareness among other areas of importance.</br>
 
-            </br>The CJIS Security Policy applies to any organizations which handles or processes CJI, regardless of the industry or if they work within intelligence or law enforcement, while there is not a formal certification process the FBI can and will conduct Security Policy Compliance Audits against processes and subsystems which handle (or support the handling of) CJI. ElectricEye does not cover every single control, the United States Department of Justice provides mappings of several FBI CJIS Security Policy requirements to NIST Special Publication 800-53 Revision 5 which are in turn mapped against the CIS Critical Controls V8 control framework which is mapped to the NIST CSF V1.1 Subcategories that every single ElectricEye Check is mapped to.</br 
+            </br>The CJIS Security Policy applies to any organizations which handles or processes CJI, regardless of the industry or if they work within intelligence or law enforcement, while there is not a formal certification process the FBI can and will conduct Security Policy Compliance Audits against processes and subsystems which handle (or support the handling of) CJI. ElectricEye does not cover every single control, the United States Department of Justice provides mappings of several FBI CJIS Security Policy requirements to NIST Special Publication 800-53 Revision 5 which are in turn mapped against the CIS Critical Controls V8 control framework which is mapped to the NIST CSF V1.1 Subcategories that every single ElectricEye Check is mapped to.</br>
             
             </br>Every CJIS Requirement that was related to handling of evidence, training, awareness, and other physical security and endpoint management requirements were manually removed to reduce over-mapping. As these requirements are closer to law than to controls, it is up to an organization to ensure that ElectricEye is ran against their CJI systems and understand the requirement instead of simply relying on these mappings. ElectricEye can help you prepare for certain parts of the FBI CJIS Security Policy Compliance Audit but should not be taken as a qualified opinion. ElectricEye will not contextualize any compensating controls or exceptions that you define.
             """
@@ -879,7 +880,7 @@ class JsonProvider(object):
         <section class="summary__header">
             <figure>
                 <img src="https://raw.githubusercontent.com/jonrau1/ElectricEye/master/screenshots/logo.svg" class="summary__header__image">
-                <figcaption>ElectricEye Audit Readiness Report -- {dateNow}</figcaption>
+                <figcaption>ElectricEye Audit Readiness Report | {dateNow}</figcaption>
             </figure>
             <h4>{self.generate_executive_summary(processedFindings)}</h4>
         </section>
@@ -906,8 +907,8 @@ class JsonProvider(object):
                             <th>Unique Asset Services Impacted</th>
                             <th>Unique Asset Components Impacted</th>
                             <th>Total Check Evaluations in Scope</th>
-                            <th>Passing Controls</th>
-                            <th>Failing Controls</th>
+                            <th>Passing Checks</th>
+                            <th>Failing Checks</th>
                         </tr>
                     </thead>
                 <tbody>
