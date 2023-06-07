@@ -105,12 +105,15 @@ class JsonProvider(object):
 
         for finding in findings:
             complianceRelatedRequirements = finding["Compliance"]["RelatedRequirements"]
+            newControls = []
             nistCsfControls = [control for control in complianceRelatedRequirements if control.startswith("NIST CSF V1.1")]
             for control in nistCsfControls:
                 crosswalkedControls = self.nist_csf_v_1_1_controls_crosswalk(control)
                 # Not every single NIST CSF Control maps across to other frameworks
                 if crosswalkedControls:
-                    complianceRelatedRequirements.extend(crosswalkedControls)
+                    for crosswalk in crosswalkedControls:
+                        if crosswalk not in newControls:
+                            newControls.append(crosswalk)
                 else:
                     continue
             
