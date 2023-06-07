@@ -49,7 +49,8 @@ SUPPORTED_FRAMEWORKS = [
     "ISO 27001:2022",
     "Critical Risk Profile V1.2",
     "ECB CROE",
-    "Equifax SCF V1.0"
+    "Equifax SCF V1.0",
+    "FBI CJIS Security Policy V5.9"
 ]
 
 with open(f"{here}/mapped_compliance_controls.json") as jsonfile:
@@ -658,7 +659,7 @@ class JsonProvider(object):
         
         # ISO 27001:2013/2017
         elif framework == "ISO 27001:2013":
-            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/iso_27k1_2013.jpg" class="framework__header__image">'
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/iso_27001_2013.jpg" class="framework__header__image">'
             frameworkInfo = "ISO 27001 is an international standard that provides a framework for establishing, implementing, maintaining, and continually improving an information security management system (ISMS). The standard defines a set of requirements and controls to help organizations manage and protect their information assets. Annex A of ISO 27001 contains a comprehensive list of controls that organizations can choose to implement based on their specific needs and risk assessment. These controls are categorized into 14 sections, covering various aspects of information security. Organizations use the Annex A controls as a reference to identify the specific measures they need to implement to protect their information assets. These controls are based on best practices and provide a systematic approach to managing information security risks. By implementing these controls, organizations can establish a robust information security management system, reduce the likelihood and impact of security incidents, meet regulatory requirements, and build trust with customers and stakeholders. The ISO 27001 standard and Annex A controls are widely recognized and adopted globally as a means to ensure the confidentiality, integrity, and availability of information assets and to demonstrate a commitment to information security management."
         
         # CIS Critical Security Controls V8
@@ -805,7 +806,7 @@ class JsonProvider(object):
 
         # Critical Risk Profile V1.2
         elif framework == "Critical Risk Profile V1.2":
-            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/cri_profile_v12.jpg" class="framework__header__image">'
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/cri__crp_v1_2.jpg" class="framework__header__image">'
             frameworkInfo = """
             The Cyber Risk Institute (CRI) is a not-for-profit coalition of financial institutions and trade associations, working to protect the global economy by enhancing cybersecurity and resiliency through standardization. The Cyber Profile tool is the benchmark for cyber security and resiliency in the financial services industry. This ever-evolving and concise list of assessment questions is curated based on the intersection of global regulations and cyber standards, such as ISO and NIST. The (Critical Risk) Profile (V1.2) eases this burden on the financial services industry while still meeting regulatory expectations. Focusing cybersecurity experts' time on protecting global financial platforms, rather than compliance activity, will significantly enhance security efforts. For an industry already burdened by a shortage of adequately skilled individuals, reducing this percentage by streamlining compliance activity is an immediate gain in efficiency and managed risk. For the regulatory community, Profile use would enhance transparency and improve visibility across institutions, subsectors, third-parties, and across sectors, enabling better analysis and mitigation of systemic and concentration risks. When industry can focus on cybersecurity, and when regulators have more confidence in compliance, the consumer benefits.</br>
 
@@ -830,6 +831,17 @@ class JsonProvider(object):
             The Equifax Security Controls Framework is a blueprint for how a company can protect its data and infrastructure. Five core capabilities - cybersecurity, privacy, fraud prevention, crisis management, and physical security - are represented in these unified controls framework. NIST CSF and NIST PF were selected as the foundation for the security controls framework because it supports a comprehensive, defense-in-depth approach to security and privacy. Its flexible, risk-based structure can also be tailored to meet a company's specific needs. This controls framework was released to the public domain by the Equifax cybersecurity function in May 2023.</br>
 
             </br>This controls framework can be used by anyone in any industry as it is broadly based on NIST CSF V1.1 and the controls are meant to help support your security program's data protection and infrastructure security best practices. ElectricEye does not cover every single control, Equifax provides a first-party mapping to the NIST CSF V1.1 subcategories that all ElectricEye Checks are mapped against. There is not an examination or accredation that goes alongside this controls framework and ElectricEye will not contextualize any compensating controls or exceptions that you define.
+            """
+
+        # FBI CJIS Security Policy V5.9
+        elif framework == "FBI CJIS Security Policy V5.9":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/fbi_cjis_sp_v5_9.jpg" class="framework__header__image">'
+            frameworkInfo = """
+            The United States Federal Bureau of Investigation (FBI) Criminal Justice Information Services (CJIS) Division is a 'high-tech hub in the hills of West Virginia that provides a range of state of-the-art tools and services to law enforcement, national security and intelligence community partners, and the general public.' The CJIS Division's Security Policy is a set of security requirements and guidelines established by the FBI for organizations that access, store, process, or transmit criminal justice information (CJI). The CJIS Security Policy ensures the protection, integrity, and confidentiality of sensitive criminal justice data. It covers Authentication, Access Control, Physical Security, Mobile Devices, Cloud Computing, Training & Awareness among other areas of importance.</br>
+
+            </br>The CJIS Security Policy applies to any organizations which handles or processes CJI, regardless of the industry or if they work within intelligence or law enforcement, while there is not a formal certification process the FBI can and will conduct Security Policy Compliance Audits against processes and subsystems which handle (or support the handling of) CJI. ElectricEye does not cover every single control, the United States Department of Justice provides mappings of several FBI CJIS Security Policy requirements to NIST Special Publication 800-53 Revision 5 which are in turn mapped against the CIS Critical Controls V8 control framework which is mapped to the NIST CSF V1.1 Subcategories that every single ElectricEye Check is mapped to.</br 
+            
+            </br>Every CJIS Requirement that was related to handling of evidence, training, awareness, and other physical security and endpoint management requirements were manually removed to reduce over-mapping. As these requirements are closer to law than to controls, it is up to an organization to ensure that ElectricEye is ran against their CJI systems and understand the requirement instead of simply relying on these mappings. ElectricEye can help you prepare for certain parts of the FBI CJIS Security Policy Compliance Audit but should not be taken as a qualified opinion. ElectricEye will not contextualize any compensating controls or exceptions that you define.
             """
 
         else:
