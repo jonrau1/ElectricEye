@@ -26,24 +26,66 @@ import json
 registry = CheckRegister()
 
 def describe_vpcs(cache, session):
-    ec2 = session.client("ec2")
     response = cache.get("describe_vpcs")
     if response:
         return response
-    cache["describe_vpcs"] = ec2.describe_vpcs(DryRun=False)
+    
+    ec2 = session.client("ec2")
+
+    cache["describe_vpcs"] = ec2.describe_vpcs(DryRun=False)["Vpcs"]
     return cache["describe_vpcs"]
 
+def describe_verified_access_instances(cache, session):
+    response = cache.get("describe_verified_access_instances")
+    
+    if response:
+        return response
+    
+    ec2 = session.client("ec2")
+
+    cache["describe_verified_access_instances"] = ec2.describe_verified_access_instances(DryRun=False)["VerifiedAccessInstances"]
+    return cache["describe_verified_access_instances"]
+
+def get_verified_access_instance_logging_configuration(session, verifiedInstanceId):
+    ec2 = session.client("ec2")
+
+    return ec2.describe_verified_access_instance_logging_configurations(
+        VerifiedAccessInstanceIds=[verifiedInstanceId]
+    )["LoggingConfigurations"]
+
+def check_verified_access_instance_web_acl_protection(session, verifiedInstanceArn):
+    wafv2 = session.client("wafv2")
+
+    try:
+        if "WebACL" in wafv2.get_web_acl_for_resource(ResourceArn=verifiedInstanceArn):
+            return True
+        else:
+            return False
+    except Exception:
+        return False
+    
+def describe_network_interfaces(cache, session):
+    response = cache.get("describe_network_interfaces")
+    
+    if response:
+        return response
+    
+    ec2 = session.client("ec2")
+
+    cache["describe_network_interfaces"] = ec2.describe_network_interfaces(DryRun=False, MaxResults=500)["NetworkInterfaces"]
+    return cache["describe_network_interfaces"]
+
 @registry.register_check("ec2")
-def vpc_default_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def aws_vpc_default_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[VPC.1] Consider deleting the Default VPC if unused"""
-    for vpcs in describe_vpcs(cache, session)["Vpcs"]:
+    for vpcs in describe_vpcs(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(vpcs,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        vpcId = str(vpcs["VpcId"])
+        vpcId = vpcs["VpcId"]
         vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        if vpcs["IsDefault"] == True:
+        if vpcs["IsDefault"] is True:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": vpcArn + "/vpc-is-default-check",
@@ -59,7 +101,7 @@ def vpc_default_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
                 "Title": "[VPC.1] Consider deleting the Default VPC if unused",
                 "Description": "VPC "
                 + vpcId
-                + " has been identified as the Default VPC, consider deleting this VPC if it is not necessary for daily operations. The Default VPC in AWS Regions not typically used can serve as a persistence area for malicious actors, additionally, many services will automatically use this VPC which can lead to a degraded security posture. Refer to the remediation instructions if this configuration is not intended",
+                + " has been identified as the Default VPC, consider deleting this VPC if it is not necessary for daily operations. The Default VPC in AWS Regions not typically used can serve as a persistence area for malicious actors, additionally, many services will automatically use this VPC which can lead to a degraded security posture. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on the default VPC refer to the Deleting Your Default Subnets and Default VPC section of the Amazon Virtual Private Cloud User Guide",
@@ -171,14 +213,14 @@ def vpc_default_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
             yield finding
 
 @registry.register_check("ec2")
-def vpc_flow_logs_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def aws_vpc_flow_logs_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[VPC.2] Flow Logs should be enabled for all VPCs"""
     ec2 = session.client("ec2")
-    for vpcs in describe_vpcs(cache, session)["Vpcs"]:
+    for vpcs in describe_vpcs(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(vpcs,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        vpcId = str(vpcs["VpcId"])
+        vpcId = vpcs["VpcId"]
         vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
         response = ec2.describe_flow_logs(
             DryRun=False, Filters=[{"Name": "resource-id", "Values": [vpcId]}]
@@ -200,7 +242,7 @@ def vpc_flow_logs_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                 "Title": "[VPC.2] Flow Logs should be enabled for all VPCs",
                 "Description": "VPC "
                 + vpcId
-                + " does not have flow logging enabled. Refer to the remediation instructions if this configuration is not intended",
+                + " does not have flow logging enabled. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on flow logs refer to the VPC Flow Logs section of the Amazon Virtual Private Cloud User Guide",
@@ -372,22 +414,22 @@ def vpc_flow_logs_check(cache: dict, session, awsAccountId: str, awsRegion: str,
             yield finding
 
 @registry.register_check("ec2")
-def subnet_public_ip_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def aws_subnet_public_ip_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[VPC.3] Subnets should not automatically map Public IP addresses on launch"""
     ec2 = session.client("ec2")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for vpcs in describe_vpcs(cache, session)["Vpcs"]:
+    for vpcs in describe_vpcs(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(vpcs,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        vpcId = str(vpcs["VpcId"])
+        vpcId = vpcs["VpcId"]
         # Get subnets for the VPC
         for snet in ec2.describe_subnets(Filters=[{'Name': 'vpc-id','Values': [vpcId]}])["Subnets"]:
             # B64 encode all of the details for the Asset
             assetJson = json.dumps(snet,default=str).encode("utf-8")
             assetB64 = base64.b64encode(assetJson)
-            snetArn = str(snet["SubnetArn"])
-            snetId = str(snet["SubnetId"])
+            snetArn = snet["SubnetArn"]
+            snetId = snet["SubnetId"]
             if snet["MapPublicIpOnLaunch"] == True:
                 # This is a failing check
                 finding = {
@@ -405,7 +447,7 @@ def subnet_public_ip_check(cache: dict, session, awsAccountId: str, awsRegion: s
                     "Title": "[VPC.3] Subnets should not automatically map Public IP addresses on launch",
                     "Description": "Subnet "
                     + snetId
-                    + " maps Public IPs on Launch, consider disabling this to avoid unncessarily exposing workloads to the internet. Refer to the remediation instructions if this configuration is not intended",
+                    + " maps Public IPs on Launch, consider disabling this to avoid unncessarily exposing workloads to the internet. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For information on IP addressing refer to the IP Addressing in your VPC section of the Amazon Virtual Private Cloud User Guide",
@@ -525,19 +567,19 @@ def subnet_public_ip_check(cache: dict, session, awsAccountId: str, awsRegion: s
                 yield finding
 
 @registry.register_check("ec2")
-def subnet_no_ip_space_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def aws_subnet_no_ip_space_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[VPC.4] Subnets should be monitored for available IP address space"""
     ec2 = session.client("ec2")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for vpcs in describe_vpcs(cache, session)["Vpcs"]:
-        vpcId = str(vpcs["VpcId"])
+    for vpcs in describe_vpcs(cache, session):
+        vpcId = vpcs["VpcId"]
         # Get subnets for the VPC
         for snet in ec2.describe_subnets(Filters=[{'Name': 'vpc-id','Values': [vpcId]}])["Subnets"]:
             # B64 encode all of the details for the Asset
             assetJson = json.dumps(snet,default=str).encode("utf-8")
             assetB64 = base64.b64encode(assetJson)
-            snetArn = str(snet["SubnetArn"])
-            snetId = str(snet["SubnetId"])   
+            snetArn = snet["SubnetArn"]
+            snetId = snet["SubnetId"] 
             if int(snet["AvailableIpAddressCount"]) <= 1:
                 # This is a failing check
                 finding = {
@@ -555,7 +597,7 @@ def subnet_no_ip_space_check(cache: dict, session, awsAccountId: str, awsRegion:
                     "Title": "[VPC.4] Subnets should be monitored for available IP address space",
                     "Description": "Subnet "
                     + snetId
-                    + " does not have any available IP address space, consider terminating unncessary workloads or expanding CIDR capacity to avoid availability losses. Refer to the remediation instructions if this configuration is not intended",
+                    + " does not have any available IP address space, consider terminating unncessary workloads or expanding CIDR capacity to avoid availability losses. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For information on IP addressing refer to the IP Addressing in your VPC section of the Amazon Virtual Private Cloud User Guide",
@@ -695,3 +737,472 @@ def subnet_no_ip_space_check(cache: dict, session, awsAccountId: str, awsRegion:
                     "RecordState": "ARCHIVED"
                 }
                 yield finding
+
+@registry.register_check("ec2")
+def aws_verified_access_instances_logging_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[VPC.5] Verified Access instances should have at least one logging configuration source enabled"""
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for instance in describe_verified_access_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(instance,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        vaiId = instance["VerifiedAccessInstanceId"]
+        vaiArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:verified-access-instance/{vaiId}"
+        # Retrieve & check logging - if any one of the destinations are enabled this will pass
+        loggingConfig = get_verified_access_instance_logging_configuration(session, vaiId)
+        enabledLogs = [config["AccessLogs"][service]["Enabled"] for config in loggingConfig for service in config["AccessLogs"]]
+        # This is a failing check
+        if any(enabledLogs) is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{vaiArn}/aws-verified-access-instances-logging-enabled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{vaiArn}/aws-verified-access-instances-logging-enabled-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[VPC.5] Verified Access instances should have at least one logging configuration source enabled",
+                "Description": f"Verified Access instance {vaiId} does not have any of the possible logging destinations enabled. After AWS Verified Access evaluates each access request, it logs all access attempts. This provides centralized visibility into application access and helps you quickly respond to security incidents and audit requests. Verified Access supports the following destinations for publishing access logs: Amazon CloudWatch Logs log groups, Amazon S3 buckets, and/or Amazon Kinesis Data Firehose delivery streams. Verified Access supports the Open Cybersecurity Schema Framework (OCSF) logging format for storage in AWS Security Lake or other data warehouse or data lakes. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on enabling logging for your Verified Access instances refer to the Enable Verified Access logs section of the AWS Verified Access User Guide",
+                        "Url": "https://docs.aws.amazon.com/verified-access/latest/ug/access-logs-enable.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Verified Access",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2VerifiedAccessInstance",
+                        "Id": vaiArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{vaiArn}/aws-verified-access-instances-logging-enabled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{vaiArn}/aws-verified-access-instances-logging-enabled-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[VPC.5] Verified Access instances should have at least one logging configuration source enabled",
+                "Description": f"Verified Access instance {vaiId} does have at least one of the possible logging destinations enabled. The logging configuration is as follows: {str(loggingConfig)}.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on enabling logging for your Verified Access instances refer to the Enable Verified Access logs section of the AWS Verified Access User Guide",
+                        "Url": "https://docs.aws.amazon.com/verified-access/latest/ug/access-logs-enable.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Verified Access",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2VerifiedAccessInstance",
+                        "Id": vaiArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("ec2")
+def aws_verified_access_instances_trust_provider_associated_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[VPC.6] Verified Access instances should be associated with a Verified Access trust provider"""
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for instance in describe_verified_access_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(instance,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        vaiId = instance["VerifiedAccessInstanceId"]
+        vaiArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:verified-access-instance/{vaiId}"
+        # This is a failing check
+        if not instance["VerifiedAccessTrustProviders"]:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{vaiArn}/aws-verified-access-instances-trust-provider-association-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{vaiArn}/aws-verified-access-instances-trust-provider-association-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[VPC.6] Verified Access instances should be associated with a Verified Access trust provider",
+                "Description": f"Verified Access instance {vaiId} does not have any Verified Access trust providers associated. A trust provider is a service that sends information about users and devices, called trust data, to AWS Verified Access. Trust data may include attributes based on user identity such as an email address or membership in the 'sales' organization, or device management information such as security patches or antivirus software version. Verified Access instances without trust providers associated may not be in-use and should be removed as non-compliant providers may be inadvertently (or rarely, maliciously) attached. Ensuring only the right amount of assets are provisioned and are in-use is an important part of long term healthy asset management and cyber hygeine. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on attaching trust providers to your Verified Access instances refer to the Tutorial: Getting started with Verified Access section of the AWS Verified Access User Guide",
+                        "Url": "https://docs.aws.amazon.com/verified-access/latest/ug/getting-started.html#getting-started-step3"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Verified Access",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2VerifiedAccessInstance",
+                        "Id": vaiArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{vaiArn}/aws-verified-access-instances-trust-provider-association-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{vaiArn}/aws-verified-access-instances-trust-provider-association-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[VPC.6] Verified Access instances should be associated with a Verified Access trust provider",
+                "Description": f"Verified Access instance {vaiId} does not have a Verified Access trust provider associated.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on attaching trust providers to your Verified Access instances refer to the Tutorial: Getting started with Verified Access section of the AWS Verified Access User Guide",
+                        "Url": "https://docs.aws.amazon.com/verified-access/latest/ug/getting-started.html#getting-started-step3"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Verified Access",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2VerifiedAccessInstance",
+                        "Id": vaiArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "ARCHIVED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("ec2")
+def aws_verified_access_instances_wafv2_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[VPC.7] Verified Access instances should be protected by an AWS WAFv2 Web ACL"""
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for instance in describe_verified_access_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(instance,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        vaiId = instance["VerifiedAccessInstanceId"]
+        vaiArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:verified-access-instance/{vaiId}"
+        # This is a failing check
+        if check_verified_access_instance_web_acl_protection(session, vaiArn) is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{vaiArn}/aws-verified-access-instances-wafv2-protection-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{vaiArn}/aws-verified-access-instances-wafv2-protection-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[VPC.7] Verified Access instances should be protected by an AWS WAFv2 Web ACL",
+                "Description": f"Verified Access instance {vaiId} does not have an AWS WAFv2 Web ACL associated with it. In addition to the authentication and authorization rules enforced by Verified Access, you may also want to apply perimeter protection. This can help you protect your applications from additional threats. You can accomplish this by integrating AWS WAF into your Verified Access deployment. AWS WAF is a web application firewall that lets you monitor the HTTP(S) requests that are forwarded to your protected web application resources. You can integrate AWS WAF with Verified Access by associating an AWS WAF web access control list (ACL) with a Verified Access instance. A web ACL is a AWS WAF resource that gives you fine-grained control over all of the HTTP(S) web requests that your protected resource responds to. While the AWS WAF association or disassociation request is being processed, the status of any Verified Access endpoints attached to the instance are shown as updating. After the request is complete, the status returns to active. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on attaching WAFv2 Web ACLs to your Verified Access instances refer to the Integrating with AWS WAF section of the AWS Verified Access User Guide",
+                        "Url": "https://docs.aws.amazon.com/verified-access/latest/ug/waf-integration.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Verified Access",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2VerifiedAccessInstance",
+                        "Id": vaiArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.AE-2",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4",
+                        "MITRE ATT&CK T1595",
+                        "MITRE ATT&CK T1590",
+                        "MITRE ATT&CK T1190"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{vaiArn}/aws-verified-access-instances-wafv2-protection-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{vaiArn}/aws-verified-access-instances-wafv2-protection-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[VPC.7] Verified Access instances should be protected by an AWS WAFv2 Web ACL",
+                "Description": f"Verified Access instance {vaiId} does have an AWS WAFv2 Web ACL associated with it.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on attaching WAFv2 Web ACLs to your Verified Access instances refer to the Integrating with AWS WAF section of the AWS Verified Access User Guide",
+                        "Url": "https://docs.aws.amazon.com/verified-access/latest/ug/waf-integration.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Verified Access",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2VerifiedAccessInstance",
+                        "Id": vaiArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.AE-2",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4",
+                        "MITRE ATT&CK T1595",
+                        "MITRE ATT&CK T1590",
+                        "MITRE ATT&CK T1190"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+# [VPC.8] Amazon Elastic Network Interfaces (ENIs) should be attached and in-use
+
+# [VPC.9] Amazon Virtual Private Gateways should be attached and in-use
+
+# [VPC.10] Amazon Customer Gateways should be attached and in-use
+
+# [VPC.11] Amazon Site-to-Site VPNs (S2S VPN) should have two active tunnels
+
+# [VPC.12] Amazon Site-to-Site VPNs (S2S VPN) should have logging enabled
+
+## EOF?

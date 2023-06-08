@@ -32,7 +32,11 @@ def describe_volumes(cache, session):
     
     ec2 = session.client("ec2")
 
-    cache["describe_volumes"] = ec2.describe_volumes(DryRun=False, MaxResults=500)["Volumes"]
+    cache["describe_volumes"] = ec2.describe_volumes(
+        DryRun=False,
+        MaxResults=500,
+        Filters=[{"Name": "status", "Values": ["available", "in-use"]}]
+    )["Volumes"]
     return cache["describe_volumes"]
 
 def describe_snapshots(cache, session, awsAccountId):
@@ -121,8 +125,8 @@ def ebs_volume_attachment_check(cache: dict, session, awsAccountId: str, awsRegi
                             "AICPA TSC CC6.1",
                             "ISO 27001:2013 A.8.1.1",
                             "ISO 27001:2013 A.8.1.2",
-                            "ISO 27001:2013 A.12.5.1",
-                        ],
+                            "ISO 27001:2013 A.12.5.1"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
                     "RecordState": "ACTIVE",
