@@ -124,14 +124,23 @@ def neptune_instance_multi_az_check(cache: dict, session, awsAccountId: str, aws
                     "Status": "FAILED",
                     "RelatedRequirements": [
                         "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.DS-4",
                         "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 AU-4",
                         "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-7",
+                        "NIST SP 800-53 Rev. 4 CP-8",
                         "NIST SP 800-53 Rev. 4 CP-11",
-                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 CP-13",
+                        "NIST SP 800-53 Rev. 4 PL-8",
                         "NIST SP 800-53 Rev. 4 SA-14",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-6",
                         "AICPA TSC CC3.1",
+                        "AICPA TSC A1.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.12.3.1",
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
                         "ISO 27001:2013 A.17.2.1"
@@ -200,14 +209,23 @@ def neptune_instance_multi_az_check(cache: dict, session, awsAccountId: str, aws
                     "Status": "PASSED",
                     "RelatedRequirements": [
                         "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.DS-4",
                         "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 AU-4",
                         "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-7",
+                        "NIST SP 800-53 Rev. 4 CP-8",
                         "NIST SP 800-53 Rev. 4 CP-11",
-                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 CP-13",
+                        "NIST SP 800-53 Rev. 4 PL-8",
                         "NIST SP 800-53 Rev. 4 SA-14",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-6",
                         "AICPA TSC CC3.1",
+                        "AICPA TSC A1.1",
                         "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.12.3.1",
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
                         "ISO 27001:2013 A.17.2.1"
@@ -708,133 +726,6 @@ def neptune_cluster_parameter_ssl_enforcement_check(cache: dict, session, awsAcc
             else:
                 continue
 
-'''
-THIS CHECK HAS BEEN RETIRED AND A NEW [Neptune.5] has been created in its place
-
-@registry.register_check("neptune")
-def neptune_cluster_parameter_audit_log_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Neptune.5] Neptune cluster parameter groups should enforce audit logging for Neptune databases"""
-    # ISO Time
-    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for parametergroup in describe_db_cluster_parameter_groups(cache, session)["DBClusterParameterGroups"]:
-        # B64 encode all of the details for the Asset
-        assetJson = json.dumps(parametergroup,default=str).encode("utf-8")
-        assetB64 = base64.b64encode(assetJson)
-        parameterGroupName = str(parametergroup["DBClusterParameterGroupName"])
-        parameterGroupArn = str(parametergroup["DBClusterParameterGroupArn"])
-        # Parse the parameters in the PG
-        r = neptune.describe_db_cluster_parameters(DBClusterParameterGroupName=parameterGroupName)
-        for parameters in r["Parameters"]:
-            if str(parameters["ParameterName"]) == "neptune_enable_audit_log":
-                auditLogCheck = str(parameters["ParameterValue"])
-                # this is a failing check
-                if auditLogCheck == "0":
-                    finding = {
-                        "SchemaVersion": "2018-10-08",
-                        "Id": f"{parameterGroupArn}/neptune-cluster-param-group-audit-logging-check",
-                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": parameterGroupArn,
-                        "AwsAccountId": awsAccountId,
-                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                        "FirstObservedAt": iso8601Time,
-                        "CreatedAt": iso8601Time,
-                        "UpdatedAt": iso8601Time,
-                        "Severity": {"Label": "MEDIUM"},
-                        "Confidence": 99,
-                        "Title": "[Neptune.5] Neptune cluster parameter groups should enforce audit logging for Neptune databases",
-                        "Description": f"Neptune cluster parameter group {parameterGroupName} does not enforce audit logging. To audit Amazon Neptune DB cluster activity, enable the collection of audit logs by setting a DB cluster parameter. When audit logs are enabled, you can use it to log any combination of supported events. You can view or download the audit logs to review them. Refer to the remediation instructions to remediate this behavior.",
-                        "Remediation": {
-                            "Recommendation": {
-                                "Text": "For more information on audit logging for Neptune instances refer to the Enabling Neptune Audit Logs section of the Amazon Neptune User Guide.",
-                                "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/auditing.html#auditing-enable",
-                            }
-                        },
-                        "ProductFields": {"Product Name": "ElectricEye"},
-                        "Resources": [
-                            {
-                                "Type": "AwsNeptuneParameterGroup",
-                                "Id": parameterGroupArn,
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                                "Details": {"Other": {"ParameterGroupName": parameterGroupName}},
-                            }
-                        ],
-                        "Compliance": {
-                            "Status": "FAILED",
-                            "RelatedRequirements": [
-                                "NIST CSF V1.1 DE.AE-3",
-                                "NIST SP 800-53 Rev. 4 AU-6",
-                                "NIST SP 800-53 Rev. 4 CA-7",
-                                "NIST SP 800-53 Rev. 4 IR-4",
-                                "NIST SP 800-53 Rev. 4 IR-5",
-                                "NIST SP 800-53 Rev. 4 IR-8",
-                                "NIST SP 800-53 Rev. 4 SI-4",
-                                "AICPA TSC CC7.2",
-                                "ISO 27001:2013 A.12.4.1",
-                                "ISO 27001:2013 A.16.1.7"
-                            ]
-                        },
-                        "Workflow": {"Status": "NEW"},
-                        "RecordState": "ACTIVE"
-                    }
-                    yield finding
-                # this is a passing check
-                else:
-                    finding = {
-                        "SchemaVersion": "2018-10-08",
-                        "Id": f"{parameterGroupArn}/neptune-cluster-param-group-audit-logging-check",
-                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": parameterGroupArn,
-                        "AwsAccountId": awsAccountId,
-                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                        "FirstObservedAt": iso8601Time,
-                        "CreatedAt": iso8601Time,
-                        "UpdatedAt": iso8601Time,
-                        "Severity": {"Label": "INFORMATIONAL"},
-                        "Confidence": 99,
-                        "Title": "[Neptune.5] Neptune cluster parameter groups should enforce audit logging for Neptune databases",
-                        "Description": f"Neptune cluster parameter group {parameterGroupName} enforces audit logging.",
-                        "Remediation": {
-                            "Recommendation": {
-                                "Text": "For more information on audit logging for Neptune instances refer to the Enabling Neptune Audit Logs section of the Amazon Neptune User Guide.",
-                                "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/auditing.html#auditing-enable",
-                            }
-                        },
-                        "ProductFields": {"Product Name": "ElectricEye"},
-                        "Resources": [
-                            {
-                                "Type": "AwsNeptuneParameterGroup",
-                                "Id": parameterGroupArn,
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                                "Details": {"Other": {"ParameterGroupName": parameterGroupName}},
-                            }
-                        ],
-                        "Compliance": {
-                            "Status": "PASSED",
-                            "RelatedRequirements": [
-                                "NIST CSF V1.1 DE.AE-3",
-                                "NIST SP 800-53 Rev. 4 AU-6",
-                                "NIST SP 800-53 Rev. 4 CA-7",
-                                "NIST SP 800-53 Rev. 4 IR-4",
-                                "NIST SP 800-53 Rev. 4 IR-5",
-                                "NIST SP 800-53 Rev. 4 IR-8",
-                                "NIST SP 800-53 Rev. 4 SI-4",
-                                "AICPA TSC CC7.2",
-                                "ISO 27001:2013 A.12.4.1",
-                                "ISO 27001:2013 A.16.1.7",
-                            ],
-                        },
-                        "Workflow": {"Status": "RESOLVED"},
-                        "RecordState": "ARCHIVED",
-                    }
-                    yield finding
-                # complete the loop
-                break
-            else:
-                continue
-'''
-
 @registry.register_check("neptune")
 def neptune_instance_audit_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Neptune.5] Neptune database instaces should send audit logs to CloudWatch"""
@@ -906,15 +797,47 @@ def neptune_instance_audit_logging_check(cache: dict, session, awsAccountId: str
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
                         "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
                         "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
                         "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
                         "NIST SP 800-53 Rev. 4 IR-4",
                         "NIST SP 800-53 Rev. 4 IR-5",
                         "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
                         "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
                         "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
                         "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7"
                     ]
                 },
@@ -981,15 +904,47 @@ def neptune_instance_audit_logging_check(cache: dict, session, awsAccountId: str
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
                         "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
                         "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
                         "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
                         "NIST SP 800-53 Rev. 4 IR-4",
                         "NIST SP 800-53 Rev. 4 IR-5",
                         "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
                         "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
                         "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
                         "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7"
                     ]
                 },
@@ -1069,16 +1024,29 @@ def neptune_instance_deletion_protection_check(cache: dict, session, awsAccountI
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.IP-3",
                         "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 AU-4",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-4",
                         "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-7",
+                        "NIST SP 800-53 Rev. 4 CP-8",
                         "NIST SP 800-53 Rev. 4 CP-11",
-                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 CP-13",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SA-10",
                         "NIST SP 800-53 Rev. 4 SA-14",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-6",
+                        "AICPA TSC CC8.1",
                         "AICPA TSC A1.2",
-                        "AICPA TSC CC3.1",
-                        "ISO 27001:2013 A.11.1.4",
-                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.12.6.2",
+                        "ISO 27001:2013 A.14.2.2",
+                        "ISO 27001:2013 A.14.2.3",
+                        "ISO 27001:2013 A.14.2.4",
                         "ISO 27001:2013 A.17.1.2",
                         "ISO 27001:2013 A.17.2.1"
                     ]
@@ -1146,16 +1114,29 @@ def neptune_instance_deletion_protection_check(cache: dict, session, awsAccountI
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.IP-3",
                         "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 AU-4",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-4",
                         "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-7",
+                        "NIST SP 800-53 Rev. 4 CP-8",
                         "NIST SP 800-53 Rev. 4 CP-11",
-                        "NIST SP 800-53 Rev. 4 SA-13",
+                        "NIST SP 800-53 Rev. 4 CP-13",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SA-10",
                         "NIST SP 800-53 Rev. 4 SA-14",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-6",
+                        "AICPA TSC CC8.1",
                         "AICPA TSC A1.2",
-                        "AICPA TSC CC3.1",
-                        "ISO 27001:2013 A.11.1.4",
-                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.12.6.2",
+                        "ISO 27001:2013 A.14.2.2",
+                        "ISO 27001:2013 A.14.2.3",
+                        "ISO 27001:2013 A.14.2.4",
                         "ISO 27001:2013 A.17.1.2",
                         "ISO 27001:2013 A.17.2.1"
                     ]
@@ -1167,7 +1148,7 @@ def neptune_instance_deletion_protection_check(cache: dict, session, awsAccountI
 
 @registry.register_check("neptune")
 def neptune_instance_minor_version_upgrade_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Neptune.7] Neptune database instances should be protected from deletion"""
+    """[Neptune.7] Neptune database instances should be configured to automatically upgrade minor versions"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for instances in describe_db_instances(cache, session)["DBInstances"]:
@@ -1176,9 +1157,8 @@ def neptune_instance_minor_version_upgrade_check(cache: dict, session, awsAccoun
         assetB64 = base64.b64encode(assetJson)
         neptuneInstanceArn = str(instances["DBInstanceArn"])
         neptuneDbId = str(instances["DBInstanceIdentifier"])
-        minorVersionUpgradeCheck = str(instances["AutoMinorVersionUpgrade"])
         # this is a failing check
-        if minorVersionUpgradeCheck == "False":
+        if instances["AutoMinorVersionUpgrade"] is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{neptuneInstanceArn}/neptune-instance-minor-version-auto-update-check",
@@ -1191,7 +1171,7 @@ def neptune_instance_minor_version_upgrade_check(cache: dict, session, awsAccoun
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[Neptune.7] Neptune database instances should be protected from deletion",
+                "Title": "[Neptune.7] Neptune database instances should be configured to automatically upgrade minor versions",
                 "Description": f"Neptune database instance {neptuneDbId} does not have minor version auto-updates enabled. Periodically, Neptune performs maintenance on Neptune resources. Maintenance most often involves updates to the DB cluster's underlying operating system or database engine version. Updates to the operating system most often occur for security issues and should be done as soon as possible. DB instances are not automatically backed up when an OS update is applied. So you should back up your DB instances before you apply an update. Refer to the remediation instructions to remediate this behavior.",
                 "Remediation": {
                     "Recommendation": {
@@ -1266,7 +1246,7 @@ def neptune_instance_minor_version_upgrade_check(cache: dict, session, awsAccoun
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Neptune.7] Neptune database instances should be protected from deletion",
+                "Title": "[Neptune.7] Neptune database instances should be configured to automatically upgrade minor versions",
                 "Description": f"Neptune database instance {neptuneDbId} has minor version auto-updates enabled.",
                 "Remediation": {
                     "Recommendation": {
@@ -1407,14 +1387,23 @@ def neptune_cluster_autoscaling_check(cache: dict, session, awsAccountId: str, a
                             "Status": "FAILED",
                             "RelatedRequirements": [
                                 "NIST CSF V1.1 ID.BE-5",
+                                "NIST CSF V1.1 PR.DS-4",
                                 "NIST CSF V1.1 PR.PT-5",
+                                "NIST SP 800-53 Rev. 4 AU-4",
                                 "NIST SP 800-53 Rev. 4 CP-2",
+                                "NIST SP 800-53 Rev. 4 CP-7",
+                                "NIST SP 800-53 Rev. 4 CP-8",
                                 "NIST SP 800-53 Rev. 4 CP-11",
-                                "NIST SP 800-53 Rev. 4 SA-13",
+                                "NIST SP 800-53 Rev. 4 CP-13",
+                                "NIST SP 800-53 Rev. 4 PL-8",
                                 "NIST SP 800-53 Rev. 4 SA-14",
-                                "AICPA TSC A1.2",
+                                "NIST SP 800-53 Rev. 4 SC-5",
+                                "NIST SP 800-53 Rev. 4 SC-6",
                                 "AICPA TSC CC3.1",
+                                "AICPA TSC A1.1",
+                                "AICPA TSC A1.2",
                                 "ISO 27001:2013 A.11.1.4",
+                                "ISO 27001:2013 A.12.3.1",
                                 "ISO 27001:2013 A.17.1.1",
                                 "ISO 27001:2013 A.17.1.2",
                                 "ISO 27001:2013 A.17.2.1"
@@ -1486,14 +1475,23 @@ def neptune_cluster_autoscaling_check(cache: dict, session, awsAccountId: str, a
                             "Status": "PASSED",
                             "RelatedRequirements": [
                                 "NIST CSF V1.1 ID.BE-5",
+                                "NIST CSF V1.1 PR.DS-4",
                                 "NIST CSF V1.1 PR.PT-5",
+                                "NIST SP 800-53 Rev. 4 AU-4",
                                 "NIST SP 800-53 Rev. 4 CP-2",
+                                "NIST SP 800-53 Rev. 4 CP-7",
+                                "NIST SP 800-53 Rev. 4 CP-8",
                                 "NIST SP 800-53 Rev. 4 CP-11",
-                                "NIST SP 800-53 Rev. 4 SA-13",
+                                "NIST SP 800-53 Rev. 4 CP-13",
+                                "NIST SP 800-53 Rev. 4 PL-8",
                                 "NIST SP 800-53 Rev. 4 SA-14",
-                                "AICPA TSC A1.2",
+                                "NIST SP 800-53 Rev. 4 SC-5",
+                                "NIST SP 800-53 Rev. 4 SC-6",
                                 "AICPA TSC CC3.1",
+                                "AICPA TSC A1.1",
+                                "AICPA TSC A1.2",
                                 "ISO 27001:2013 A.11.1.4",
+                                "ISO 27001:2013 A.12.3.1",
                                 "ISO 27001:2013 A.17.1.1",
                                 "ISO 27001:2013 A.17.1.2",
                                 "ISO 27001:2013 A.17.2.1"
@@ -1586,14 +1584,23 @@ def neptune_cluster_gremlin_query_result_cache_check(cache: dict, session, awsAc
                             "Status": "FAILED",
                             "RelatedRequirements": [
                                 "NIST CSF V1.1 ID.BE-5",
+                                "NIST CSF V1.1 PR.DS-4",
                                 "NIST CSF V1.1 PR.PT-5",
+                                "NIST SP 800-53 Rev. 4 AU-4",
                                 "NIST SP 800-53 Rev. 4 CP-2",
+                                "NIST SP 800-53 Rev. 4 CP-7",
+                                "NIST SP 800-53 Rev. 4 CP-8",
                                 "NIST SP 800-53 Rev. 4 CP-11",
-                                "NIST SP 800-53 Rev. 4 SA-13",
+                                "NIST SP 800-53 Rev. 4 CP-13",
+                                "NIST SP 800-53 Rev. 4 PL-8",
                                 "NIST SP 800-53 Rev. 4 SA-14",
+                                "NIST SP 800-53 Rev. 4 SC-5",
+                                "NIST SP 800-53 Rev. 4 SC-6",
                                 "AICPA TSC CC3.1",
+                                "AICPA TSC A1.1",
                                 "AICPA TSC A1.2",
                                 "ISO 27001:2013 A.11.1.4",
+                                "ISO 27001:2013 A.12.3.1",
                                 "ISO 27001:2013 A.17.1.1",
                                 "ISO 27001:2013 A.17.1.2",
                                 "ISO 27001:2013 A.17.2.1"
@@ -1665,14 +1672,23 @@ def neptune_cluster_gremlin_query_result_cache_check(cache: dict, session, awsAc
                             "Status": "PASSED",
                             "RelatedRequirements": [
                                 "NIST CSF V1.1 ID.BE-5",
+                                "NIST CSF V1.1 PR.DS-4",
                                 "NIST CSF V1.1 PR.PT-5",
+                                "NIST SP 800-53 Rev. 4 AU-4",
                                 "NIST SP 800-53 Rev. 4 CP-2",
+                                "NIST SP 800-53 Rev. 4 CP-7",
+                                "NIST SP 800-53 Rev. 4 CP-8",
                                 "NIST SP 800-53 Rev. 4 CP-11",
-                                "NIST SP 800-53 Rev. 4 SA-13",
+                                "NIST SP 800-53 Rev. 4 CP-13",
+                                "NIST SP 800-53 Rev. 4 PL-8",
                                 "NIST SP 800-53 Rev. 4 SA-14",
+                                "NIST SP 800-53 Rev. 4 SC-5",
+                                "NIST SP 800-53 Rev. 4 SC-6",
                                 "AICPA TSC CC3.1",
+                                "AICPA TSC A1.1",
                                 "AICPA TSC A1.2",
                                 "ISO 27001:2013 A.11.1.4",
+                                "ISO 27001:2013 A.12.3.1",
                                 "ISO 27001:2013 A.17.1.1",
                                 "ISO 27001:2013 A.17.1.2",
                                 "ISO 27001:2013 A.17.2.1"

@@ -19,6 +19,7 @@
 #under the License.
 
 import boto3
+from os import path
 import tomli
 import os
 import sys
@@ -35,6 +36,10 @@ asm = boto3.client("secretsmanager")
 
 # These Constants define legitimate values for certain parameters within the external_providers.toml file
 CREDENTIALS_LOCATION_CHOICES = ["AWS_SSM", "AWS_SECRETS_MANAGER", "CONFIG_FILE"]
+
+here = path.abspath(path.dirname(__file__))
+with open(f"{here}/mapped_compliance_controls.json") as jsonfile:
+    CONTROLS_CROSSWALK = json.load(jsonfile)
 
 @ElectricEyeOutput
 class PostgresProvider(object):
@@ -385,6 +390,21 @@ class PostgresProvider(object):
             #severity = finding["Severity"]["Label"]
             #findingState = finding["RecordState"]
             relatedControls = ""
+            complianceRelatedRequirements = finding["Compliance"]["RelatedRequirements"]
+            newControls = []
+            nistCsfControls = [control for control in complianceRelatedRequirements if control.startswith("NIST CSF V1.1")]
+            for control in nistCsfControls:
+                crosswalkedControls = self.nist_csf_v_1_1_controls_crosswalk(control)
+                # Not every single NIST CSF Control maps across to other frameworks
+                if crosswalkedControls:
+                    for crosswalk in crosswalkedControls:
+                        if crosswalk not in newControls:
+                            newControls.append(crosswalk)
+                else:
+                    continue
+
+            complianceRelatedRequirements.extend(newControls)
+            
             for control in finding["Compliance"]["RelatedRequirements"]:
                 relatedControls += f"`{control}` \n "
 
@@ -500,5 +520,17 @@ class PostgresProvider(object):
         print(f"Processed {len(aBlockyListOfSlackBlocks)} findings - after filtering them - to send to Slack.")
 
         return aBlockyListOfSlackBlocks
+
+    def nist_csf_v_1_1_controls_crosswalk(self, nistCsfSubcategory):
+        """
+        This function returns a list of additional control framework control IDs that mapped into a provided
+        NIST CSF V1.1 Subcategory (control)
+        """
+
+        # Not every single NIST CSF Control maps across to other frameworks
+        try:
+            return CONTROLS_CROSSWALK[nistCsfSubcategory]
+        except KeyError:
+            return []
 
 ## EOF

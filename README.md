@@ -4,7 +4,7 @@
   <img src="./screenshots/logo.svg" width="420" height="420">
 </p>
 
-ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to NIST CSF, 800-53, ISO 27001, AICPA TSC (SOC2), and more!
+ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to over 20 industry, regulatory, and best practice controls frameworks.
 
 ![VulnScan](https://github.com/jonrau1/ElectricEye/actions/workflows/sbom-vulns.yml/badge.svg)  ![CodeQL](https://github.com/jonrau1/ElectricEye/actions/workflows/codeql-analysis.yml/badge.svg) ![EcrBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-ecr-public.yml/badge.svg) ![OcrBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-ocr-public.yml/badge.svg) ![DockerHubBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-docker-hub.yml/badge.svg)
 
@@ -19,7 +19,7 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 
 <p align="center">
   <a href="https://gallery.ecr.aws/t4o3u7t2/electriceye"><img width="150" height=40" alt="AWS ECR Gallery" src="https://user-images.githubusercontent.com/3985464/151531396-b6535a68-c907-44eb-95a1-a09508178616.png"></a>
-  <a href="https://hub.docker.com/repository/docker/electriceye/electriceye/general"><img width="150" height=40" alt="Docker Hub" src="https://www.unixtutorial.org/images/software/docker-hub.png"></a>
+  <a href="https://hub.docker.com/r/electriceye/electriceye"><img width="150" height=40" alt="Docker Hub" src="https://www.unixtutorial.org/images/software/docker-hub.png"></a>
 </p>
 
 ***Up here in space***<br/>
@@ -53,7 +53,7 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 
 - ElectricEye offers over *900* checks for security, reliability, monitoring, and exposure across more than 100 CSP & SaaS services, including atypical services not supported by AWS Config/Google Cloud Asset API or mainstream CSPM & CNAPP tools.
 
-- All checks are currently mapped to NIST Cybersecurity Framework V1.1, NIST Special Publication 800-53 Revision 4, AICPA 2020 Trust Service Criteria (TSCs), and ISO 27001:2013 Annex A controls for Audit Readiness and internal GRC requirements.
+- Every single Check is mapped to over 20 controls frameworks covering general best practices, regulatory, industry-specific, and legal frameworks such as NIST CSF, AICPA TSCs (for SOC 2), the HIPAA Security Rule, NIST 800-171 Rev. 2, CMMC V2.0, European Central Bank's CROE Section 2, PCI-DSS V4.0, and more!
 
 - Multi-faceted Attack Surface Monitoring uses tools such as VirusTotal, Nmap, Shodan.io, Detect-Secrets, and CISA's KEV to locate assets indexed on the internet, find exposed services, locate exploitable vulnerabilities, and malicious packages in artifact repositories.
 
@@ -151,7 +151,7 @@ cd ElectricEye
 docker build -t electriceye:local .
 ```
 
-From here you can push to your repository of chocie, be sure to change the tag from `local` to whichever tag your repository is expecting or whatever you prefer. Maybe just latest, like a chad?
+From here you can push to your repository of choice, be sure to change the tag from `local` to whichever tag your repository is expecting or whatever you prefer. Maybe just `latest`, like a decabillionaire sigma grindset gigachad?
 
 ### Pulling Images
 

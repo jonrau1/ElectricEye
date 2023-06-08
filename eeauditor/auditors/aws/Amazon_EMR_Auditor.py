@@ -1047,19 +1047,32 @@ def emr_cluster_termination_protection_check(cache: dict, session, awsAccountId:
                     "Compliance": {
                         "Status": "FAILED",
                         "RelatedRequirements": [
-                            "NIST CSF V1.1 ID.BE-5",
+                            "NIST CSF V1.1 PR.IP-3",
                             "NIST CSF V1.1 PR.PT-5",
+                            "NIST SP 800-53 Rev. 4 AU-4",
+                            "NIST SP 800-53 Rev. 4 CM-3",
+                            "NIST SP 800-53 Rev. 4 CM-4",
                             "NIST SP 800-53 Rev. 4 CP-2",
+                            "NIST SP 800-53 Rev. 4 CP-7",
+                            "NIST SP 800-53 Rev. 4 CP-8",
                             "NIST SP 800-53 Rev. 4 CP-11",
-                            "NIST SP 800-53 Rev. 4 SA-13",
+                            "NIST SP 800-53 Rev. 4 CP-13",
+                            "NIST SP 800-53 Rev. 4 PL-8",
+                            "NIST SP 800-53 Rev. 4 SA-10",
                             "NIST SP 800-53 Rev. 4 SA-14",
-                            "AICPA TSC CC3.1",
+                            "NIST SP 800-53 Rev. 4 SC-5",
+                            "NIST SP 800-53 Rev. 4 SC-6",
+                            "AICPA TSC CC8.1",
                             "AICPA TSC A1.2",
-                            "ISO 27001:2013 A.11.1.4",
-                            "ISO 27001:2013 A.17.1.1",
+                            "ISO 27001:2013 A.12.1.2",
+                            "ISO 27001:2013 A.12.5.1",
+                            "ISO 27001:2013 A.12.6.2",
+                            "ISO 27001:2013 A.14.2.2",
+                            "ISO 27001:2013 A.14.2.3",
+                            "ISO 27001:2013 A.14.2.4",
                             "ISO 27001:2013 A.17.1.2",
-                            "ISO 27001:2013 A.17.2.1",
-                        ],
+                            "ISO 27001:2013 A.17.2.1"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
                     "RecordState": "ACTIVE",
@@ -1113,19 +1126,32 @@ def emr_cluster_termination_protection_check(cache: dict, session, awsAccountId:
                     "Compliance": {
                         "Status": "PASSED",
                         "RelatedRequirements": [
-                            "NIST CSF V1.1 ID.BE-5",
+                            "NIST CSF V1.1 PR.IP-3",
                             "NIST CSF V1.1 PR.PT-5",
+                            "NIST SP 800-53 Rev. 4 AU-4",
+                            "NIST SP 800-53 Rev. 4 CM-3",
+                            "NIST SP 800-53 Rev. 4 CM-4",
                             "NIST SP 800-53 Rev. 4 CP-2",
+                            "NIST SP 800-53 Rev. 4 CP-7",
+                            "NIST SP 800-53 Rev. 4 CP-8",
                             "NIST SP 800-53 Rev. 4 CP-11",
-                            "NIST SP 800-53 Rev. 4 SA-13",
+                            "NIST SP 800-53 Rev. 4 CP-13",
+                            "NIST SP 800-53 Rev. 4 PL-8",
+                            "NIST SP 800-53 Rev. 4 SA-10",
                             "NIST SP 800-53 Rev. 4 SA-14",
-                            "AICPA TSC CC3.1",
+                            "NIST SP 800-53 Rev. 4 SC-5",
+                            "NIST SP 800-53 Rev. 4 SC-6",
+                            "AICPA TSC CC8.1",
                             "AICPA TSC A1.2",
-                            "ISO 27001:2013 A.11.1.4",
-                            "ISO 27001:2013 A.17.1.1",
+                            "ISO 27001:2013 A.12.1.2",
+                            "ISO 27001:2013 A.12.5.1",
+                            "ISO 27001:2013 A.12.6.2",
+                            "ISO 27001:2013 A.14.2.2",
+                            "ISO 27001:2013 A.14.2.3",
+                            "ISO 27001:2013 A.14.2.4",
                             "ISO 27001:2013 A.17.1.2",
-                            "ISO 27001:2013 A.17.2.1",
-                        ],
+                            "ISO 27001:2013 A.17.2.1"
+                        ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
                     "RecordState": "ARCHIVED",
@@ -1202,89 +1228,150 @@ def emr_cluster_logging_check(cache: dict, session, awsAccountId: str, awsRegion
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
                         "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
                         "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
                         "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
                         "NIST SP 800-53 Rev. 4 IR-4",
                         "NIST SP 800-53 Rev. 4 IR-5",
                         "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
                         "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
                         "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
                         "ISO 27001:2013 A.12.4.1",
-                        "ISO 27001:2013 A.16.1.7",
-                    ],
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED",
             }
             yield finding
-        except Exception as e:
-            if str(e) == "'LogUri'":
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": clusterArn + "/emr-cluster-logging-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": clusterArn,
-                    "AwsAccountId": awsAccountId,
-                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "LOW"},
-                    "Confidence": 99,
-                    "Title": "[EMR.7] EMR Clusters should have logging enabled",
-                    "Description": "EMR Cluster "
-                    + clusterName
-                    + " does not have logging enabled. You do not need to enable anything to have log files written on the master node. This is the default behavior of Amazon EMR and Hadoop, but can be turned off on creation. If this configuration is not intentional refer to the remediation section.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For information on EMR cluster logging and debugging refer to the Configure Cluster Logging and Debugging section of the Amazon EMR Management Guide",
-                            "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-plan-debugging.html",
-                        }
-                    },
-                    "ProductFields": {
-                        "ProductName": "ElectricEye",
-                        "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
-                        "AssetClass": "Analytics",
-                        "AssetService": "Amazon Elastic MapReduce",
-                        "AssetComponent": "Cluster"
-                    },
-                    "Resources": [
-                        {
-                            "Type": "AwsEmrCluster",
-                            "Id": clusterArn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {
-                                "Other": {"ClusterId": clusterId, "ClusterName": clusterName,}
-                            },
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "FAILED",
-                        "RelatedRequirements": [
-                            "NIST CSF V1.1 DE.AE-3",
-                            "NIST SP 800-53 Rev. 4 AU-6",
-                            "NIST SP 800-53 Rev. 4 CA-7",
-                            "NIST SP 800-53 Rev. 4 IR-4",
-                            "NIST SP 800-53 Rev. 4 IR-5",
-                            "NIST SP 800-53 Rev. 4 IR-8",
-                            "NIST SP 800-53 Rev. 4 SI-4",
-                            "AICPA TSC CC7.2",
-                            "ISO 27001:2013 A.12.4.1",
-                            "ISO 27001:2013 A.16.1.7",
-                        ],
-                    },
-                    "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
-                }
-                yield finding
-            else:
-                print(e)
+        except KeyError:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": clusterArn + "/emr-cluster-logging-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": clusterArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[EMR.7] EMR Clusters should have logging enabled",
+                "Description": "EMR Cluster "
+                + clusterName
+                + " does not have logging enabled. You do not need to enable anything to have log files written on the master node. This is the default behavior of Amazon EMR and Hadoop, but can be turned off on creation. If this configuration is not intentional refer to the remediation section.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on EMR cluster logging and debugging refer to the Configure Cluster Logging and Debugging section of the Amazon EMR Management Guide",
+                        "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-plan-debugging.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Elastic MapReduce",
+                    "AssetComponent": "Cluster"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEmrCluster",
+                        "Id": clusterArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {"ClusterId": clusterId, "ClusterName": clusterName,}
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding
 
 @registry.register_check("elasticmapreduce")
 def emr_cluster_block_secgroup_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
