@@ -26,35 +26,50 @@ import json
 registry = CheckRegister()
 
 def describe_volumes(cache, session):
-    ec2 = session.client("ec2")
     response = cache.get("describe_volumes")
     if response:
         return response
-    cache["describe_volumes"] = ec2.describe_volumes(DryRun=False, MaxResults=500)
+    
+    ec2 = session.client("ec2")
+
+    cache["describe_volumes"] = ec2.describe_volumes(DryRun=False, MaxResults=500)["Volumes"]
     return cache["describe_volumes"]
 
 def describe_snapshots(cache, session, awsAccountId):
-    ec2 = session.client("ec2")
     response = cache.get("describe_snapshots")
     if response:
         return response
-    cache["describe_snapshots"] = ec2.describe_snapshots(OwnerIds=[awsAccountId], DryRun=False)
+    
+    ec2 = session.client("ec2")
+
+    cache["describe_snapshots"] = ec2.describe_snapshots(OwnerIds=[awsAccountId], DryRun=False)["Snapshots"]
     return cache["describe_snapshots"]
+
+def describe_images(cache, session, awsAccountId):
+    response = cache.get("describe_images")
+    if response:
+        return response
+    
+    ec2 = session.client("ec2")
+    
+    cache["describe_images"] = ec2.describe_images(
+        Filters=[{"Name": "owner-id", "Values": [awsAccountId]}], DryRun=False
+    )["Images"]
+    return cache["describe_images"]
 
 @registry.register_check("ec2")
 def ebs_volume_attachment_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EBS.1] EBS Volumes should be in an attached state"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for volumes in describe_volumes(cache, session)["Volumes"]:
+    for volumes in describe_volumes(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(volumes,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        volumeId = str(volumes["VolumeId"])
+        volumeId = volumes["VolumeId"]
         volumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:volume/{volumeId}"
-        ebsAttachments = volumes["Attachments"]
-        for attachments in ebsAttachments:
-            ebsAttachmentState = str(attachments["State"])
+        for attachments in volumes["Attachments"]:
+            ebsAttachmentState = attachments["State"]
             # this is a failing check
             if ebsAttachmentState != "attached":
                 finding = {
@@ -177,11 +192,11 @@ def ebs_volume_delete_on_termination_check(cache: dict, session, awsAccountId: s
     """[EBS.2] EBS Volumes should be configured to be deleted on termination"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for volumes in describe_volumes(cache, session)["Volumes"]:
+    for volumes in describe_volumes(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(volumes,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        volumeId = str(volumes["VolumeId"])
+        volumeId = volumes["VolumeId"]
         volumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:volume/{volumeId}"
         ebsAttachments = volumes["Attachments"]
         for attachments in ebsAttachments:
@@ -308,11 +323,11 @@ def ebs_volume_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
     """[EBS.3] EBS Volumes should be encrypted"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for volumes in describe_volumes(cache, session)["Volumes"]:
+    for volumes in describe_volumes(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(volumes,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        volumeId = str(volumes["VolumeId"])
+        volumeId = volumes["VolumeId"]
         volumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:volume/{volumeId}"
         ebsEncryptionCheck = volumes["Encrypted"]
         # this is a failing check
@@ -449,15 +464,14 @@ def ebs_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRe
     """[EBS.4] EBS Snapshots should be encrypted"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for snapshots in describe_snapshots(cache, session, awsAccountId)["Snapshots"]:
+    for snapshots in describe_snapshots(cache, session, awsAccountId):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(snapshots,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        snapshotId = str(snapshots["SnapshotId"])
+        snapshotId = snapshots["SnapshotId"]
         snapshotArn = f"arn:{awsPartition}:ec2:{awsRegion}::snapshot/{snapshotId}"
-        snapshotEncryptionCheck = snapshots["Encrypted"]
         # this is a failing check
-        if snapshotEncryptionCheck == False:
+        if snapshots["Encrypted"] is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{snapshotArn}/ebs-snapshot-encryption-check",
@@ -593,11 +607,11 @@ def ebs_snapshot_public_check(cache: dict, session, awsAccountId: str, awsRegion
     ec2 = session.client("ec2")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for snapshots in describe_snapshots(cache, session, awsAccountId)["Snapshots"]:
+    for snapshots in describe_snapshots(cache, session, awsAccountId):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(snapshots,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        snapshotId = str(snapshots["SnapshotId"])
+        snapshotId = snapshots["SnapshotId"]
         snapshotArn = f"arn:{awsPartition}:ec2:{awsRegion}::snapshot/{snapshotId}"
         # determine if there are any permissions to share the snapshot
         r = ec2.describe_snapshot_attribute(
@@ -950,11 +964,11 @@ def ebs_volume_snapshot_check(cache: dict, session, awsAccountId: str, awsRegion
     """[EBS.7] EBS Volumes should have snapshots"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for volumes in describe_volumes(cache, session)["Volumes"]:
+    for volumes in describe_volumes(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(volumes,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        volumeId = str(volumes["VolumeId"])
+        volumeId = volumes["VolumeId"]
         volumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:volume/{volumeId}"
         # Check if there is a volume
         try:
@@ -1118,3 +1132,307 @@ def ebs_volume_snapshot_check(cache: dict, session, awsAccountId: str, awsRegion
                 "RecordState": "ACTIVE"
             }
             yield finding
+
+@registry.register_check("ec2")
+def public_ami_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EBS.8] Self-managed Amazon Machine Images (AMIs) should not be publicly available"""
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for ami in describe_images(cache, session, awsAccountId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(ami,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        imageId = ami["ImageId"]
+        amiArn = f"arn:{awsPartition}:ec2:{awsRegion}::image/{imageId}"
+        imageName = ami["Name"]
+        imageCreatedDate = str(ami["CreationDate"])        
+        if ami["Public"] == True:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{amiArn}/public-ami",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": amiArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure",
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[EBS.8] Self-managed Amazon Machine Images (AMIs) should not be publicly available",
+                "Description": "Amazon Machine Image (AMI) "
+                + imageName
+                + " is exposed to the public. Refer to the remediation instructions if this configuration is not intended",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your AMI is not intended to be public refer to the Sharing an AMI with Specific AWS Accounts section of the EC2 user guide",
+                        "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/sharingamis-explicit.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Image"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2Image",
+                        "Id": amiArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "ImageId": imageId, 
+                                "ImageCreatedDate": imageCreatedDate
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                    ],
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{amiArn}/public-ami",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": amiArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure",
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[EBS.8] Self-managed Amazon Machine Images (AMIs) should not be publicly available",
+                "Description": "Amazon Machine Image (AMI) " + imageName + " is private.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your AMI is not intended to be public refer to the Sharing an AMI with Specific AWS Accounts section of the EC2 user guide",
+                        "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/sharingamis-explicit.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Image"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2Image",
+                        "Id": amiArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "ImageId": imageId, 
+                                "ImageCreatedDate": imageCreatedDate
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                    ],
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED",
+            }
+            yield finding
+
+@registry.register_check("ec2")
+def encrypted_ami_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EBS.9] Self-managed Amazon Machine Images (AMIs) should be encrypted"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for ami in describe_images(cache, session, awsAccountId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(ami,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        imageId = ami["ImageId"]
+        amiArn = f"arn:{awsPartition}:ec2:{awsRegion}::image/{imageId}"
+        imageName = ami["Name"]
+        imageCreatedDate = str(ami["CreationDate"])
+        for ebsmapping in ami["BlockDeviceMappings"]:
+            try:
+                encryptionCheck = ebsmapping["Ebs"]["Encrypted"]
+            except KeyError:
+                encryptionCheck = False
+            if encryptionCheck is False:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{amiArn}/encrypted-ami",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": amiArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices",
+                        "Effects/Data Exposure",
+                    ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "HIGH"},
+                    "Confidence": 99,
+                    "Title": "[EBS.9] Self-managed Amazon Machine Images (AMIs) should be encrypted",
+                    "Description": f"Amazon Machine Image (AMI) {imageName} is not encrypted. AMIs that are backed by Amazon EBS snapshots can take advantage of Amazon EBS encryption. Snapshots of both data and root volumes can be encrypted and attached to an AMI. You can launch instances and copy images with full EBS encryption support included. Encryption parameters for these operations are supported in all Regions where AWS KMS is available. EC2 instances with encrypted EBS volumes are launched from AMIs in the same way as other instances. In addition, when you launch an instance from an AMI backed by unencrypted EBS snapshots, you can encrypt some or all of the volumes during launch. Refer to the remediation instructions if this configuration is not intended",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "If your AMI should be encrypted refer to the Image-Copying Scenarios section of the EC2 user guide",
+                            "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIEncryption.html#AMI-encryption-copy",
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Storage",
+                        "AssetService": "Amazon EC2",
+                        "AssetComponent": "Image"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "AwsEc2Image",
+                            "Id": amiArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "Other": {
+                                    "ImageId": imageId, 
+                                    "ImageCreatedDate": imageCreatedDate
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 PR.DS-1",
+                            "NIST SP 800-53 Rev. 4 MP-8",
+                            "NIST SP 800-53 Rev. 4 SC-12",
+                            "NIST SP 800-53 Rev. 4 SC-28",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.8.2.3"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
+            else:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{amiArn}/encrypted-ami",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": amiArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices",
+                        "Effects/Data Exposure",
+                    ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[EBS.9] Self-managed Amazon Machine Images (AMIs) should be encrypted",
+                    "Description": "Amazon Machine Image (AMI) " + imageName + " is encrypted.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "If your AMI should be encrypted refer to the Image-Copying Scenarios section of the EC2 user guide",
+                            "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIEncryption.html#AMI-encryption-copy",
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Storage",
+                        "AssetService": "Amazon EC2",
+                        "AssetComponent": "Image"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "AwsEc2Image",
+                            "Id": amiArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "Other": {
+                                    "ImageId": imageId, 
+                                    "ImageCreatedDate": imageCreatedDate
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 PR.DS-1",
+                            "NIST SP 800-53 Rev. 4 MP-8",
+                            "NIST SP 800-53 Rev. 4 SC-12",
+                            "NIST SP 800-53 Rev. 4 SC-28",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.8.2.3"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
+
+## EOF?

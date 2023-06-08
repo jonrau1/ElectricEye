@@ -225,7 +225,7 @@ The ASM Module uses NMAP at its core and will be expanded to include ZAP and Sho
 
 ## AWS Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **569 Checks** across **80 Auditors** that support the secure configuration of **106 services/components**
+These are the following services and checks perform by each Auditor, there are currently **569 Checks** across **79 Auditors** that support the secure configuration of **106 services/components**
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service**: AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
@@ -300,6 +300,8 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_EBS_Auditor | EBS Snapshot | Is the Snapshot public |
 | Amazon_EBS_Auditor | Account | Is account level encryption by default enabled |
 | Amazon_EBS_Auditor | EBS Volume | Does the Volume have a snapshot |
+| Amazon_EBS_Auditor | Amazon Machine Image (AMI) | Are owned AMIs public |
+| Amazon_EBS_Auditor | Amazon Machine Image (AMI) | Are owned AMIs encrypted |
 | Amazon_EC2_Auditor | EC2 Instance | Is IMDSv2 enabled |
 | Amazon_EC2_Auditor | EC2 Instance | Is Secure Enclave used |
 | Amazon_EC2_Auditor | EC2 Instance | Is the instance internet-facing |
@@ -524,8 +526,6 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_WorkSpaces_Auditor | Workspace | Is running mode set to auto-off |
 | Amazon_WorkSpaces_Auditor | DS Directory | Does directory allow default internet access |
 | Amazon_Xray_Auditor | XRay Encryption Config | Is KMS CMK encryption used |
-| AMI_Auditor | Amazon Machine Image (AMI) | Are owned AMIs public |
-| AMI_Auditor | Amazon Machine Image (AMI) | Are owned AMIs encrypted |
 | AWS_Accounts_Auditor | AWS Account alternate contacts | Is a Billing alternative contact identified |
 | AWS_Accounts_Auditor | AWS Account alternate contacts | Is a Operations alternative contact identified |
 | AWS_Accounts_Auditor | AWS Account alternate contacts | Is a Security alternative contact identified |
