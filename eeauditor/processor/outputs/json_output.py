@@ -18,10 +18,10 @@
 #specific language governing permissions and limitations
 #under the License.
 
+from os import path
 from processor.outputs.output_base import ElectricEyeOutput
 import json
 from base64 import b64decode
-from os import path
 
 here = path.abspath(path.dirname(__file__))
 with open(f"{here}/mapped_compliance_controls.json") as jsonfile:

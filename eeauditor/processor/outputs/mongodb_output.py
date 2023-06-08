@@ -19,6 +19,7 @@
 #under the License.
 
 import boto3
+from os import path
 import tomli
 import os
 import sys
@@ -32,6 +33,10 @@ from processor.outputs.output_base import ElectricEyeOutput
 # Boto3 Clients
 ssm = boto3.client("ssm")
 asm = boto3.client("secretsmanager")
+
+here = path.abspath(path.dirname(__file__))
+with open(f"{here}/mapped_compliance_controls.json") as jsonfile:
+    CONTROLS_CROSSWALK = json.load(jsonfile)
 
 # These Constants define legitimate values for certain parameters within the external_providers.toml file
 CREDENTIALS_LOCATION_CHOICES = ["AWS_SSM", "AWS_SECRETS_MANAGER", "CONFIG_FILE"]
@@ -168,6 +173,26 @@ class JsonProvider(object):
         ]
 
         del findings
+
+        # Map in the new compliance controls
+        for finding in decodedFindings:
+            complianceRelatedRequirements = finding["Compliance"]["RelatedRequirements"]
+            newControls = []
+            nistCsfControls = [control for control in complianceRelatedRequirements if control.startswith("NIST CSF V1.1")]
+            for control in nistCsfControls:
+                crosswalkedControls = self.nist_csf_v_1_1_controls_crosswalk(control)
+                # Not every single NIST CSF Control maps across to other frameworks
+                if crosswalkedControls:
+                    for crosswalk in crosswalkedControls:
+                        if crosswalk not in newControls:
+                            newControls.append(crosswalk)
+                else:
+                    continue
+
+            complianceRelatedRequirements.extend(newControls)
+            
+            del finding["Compliance"]["RelatedRequirements"]
+            finding["Compliance"]["RelatedRequirements"] = complianceRelatedRequirements
 
         print(f"Attempting to upsert {len(decodedFindings)} findings to MongoDB.")
 

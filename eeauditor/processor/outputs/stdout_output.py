@@ -18,9 +18,14 @@
 #specific language governing permissions and limitations
 #under the License.
 
+from os import path
 from processor.outputs.output_base import ElectricEyeOutput
 import base64
 import json
+
+here = path.abspath(path.dirname(__file__))
+with open(f"{here}/mapped_compliance_controls.json") as jsonfile:
+    CONTROLS_CROSSWALK = json.load(jsonfile)
 
 @ElectricEyeOutput
 class StdoutProvider(object):
@@ -55,7 +60,26 @@ class StdoutProvider(object):
 
         del findings
 
+        # Map in the new compliance controls
         for finding in decodedFindings:
+            complianceRelatedRequirements = finding["Compliance"]["RelatedRequirements"]
+            newControls = []
+            nistCsfControls = [control for control in complianceRelatedRequirements if control.startswith("NIST CSF V1.1")]
+            for control in nistCsfControls:
+                crosswalkedControls = self.nist_csf_v_1_1_controls_crosswalk(control)
+                # Not every single NIST CSF Control maps across to other frameworks
+                if crosswalkedControls:
+                    for crosswalk in crosswalkedControls:
+                        if crosswalk not in newControls:
+                            newControls.append(crosswalk)
+                else:
+                    continue
+
+            complianceRelatedRequirements.extend(newControls)
+            
+            del finding["Compliance"]["RelatedRequirements"]
+            finding["Compliance"]["RelatedRequirements"] = complianceRelatedRequirements
+
             parsedFinding = json.loads(json.dumps(finding, default=str))
             # This is used to ignore duplicate Finding IDs
             if parsedFinding["Id"] not in checkedIds:
