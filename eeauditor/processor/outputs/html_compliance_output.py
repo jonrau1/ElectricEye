@@ -116,6 +116,8 @@ class JsonProvider(object):
                             newControls.append(crosswalk)
                 else:
                     continue
+
+            complianceRelatedRequirements.extend(newControls)
             
             processedFindings.append(
                 {
