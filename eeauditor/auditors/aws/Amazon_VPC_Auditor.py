@@ -1195,14 +1195,144 @@ def aws_verified_access_instances_wafv2_protection_check(cache: dict, session, a
             }
             yield finding
 
-# [VPC.8] Amazon Elastic Network Interfaces (ENIs) should be attached and in-use
-
-# [VPC.9] Amazon Virtual Private Gateways should be attached and in-use
-
-# [VPC.10] Amazon Customer Gateways should be attached and in-use
-
-# [VPC.11] Amazon Site-to-Site VPNs (S2S VPN) should have two active tunnels
-
-# [VPC.12] Amazon Site-to-Site VPNs (S2S VPN) should have logging enabled
+@registry.register_check("ec2")
+def aws_eni_attached_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[VPC.8] Amazon Elastic Network Interfaces (ENIs) should be attached and in-use"""
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for eni in describe_network_interfaces(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(eni,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        eniId = eni["VerifiedAccessInstanceId"]
+        eniArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:network-interface/{eniId}"
+        # This is a failing check
+        if eni["Status"] == "available" or "detaching":
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{eniArn}/aws-eni-attached-in-use-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{eniArn}/aws-eni-attached-in-use-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[VPC.8] Amazon Elastic Network Interfaces (ENIs) should be attached and in-use",
+                "Description": f"Elastic Network Interface (ENI) {eniId} is not in an attached and in-use state. An elastic network interface is a logical networking component in a VPC that represents a virtual network card, you can create and configure network interfaces and attach them to instances in the same Availability Zone. Your account might also have requester-managed network interfaces, which are created and managed by AWS services to enable you to use other resources and services. You cannot manage these network interfaces yourself. Even when in a detached state, ENIs consume IP space and quota limits within your Account and Region, and should be deleted when not in use. In rarer circumstances, adversaries and malicious insiders can attach secondary interfaces to other resources to masquerade as another resource or otherwise evade detection and defenses looking for new IPs or new activity. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on ENIs and how to manage them refer to the Elastic network interfaces section of the Amazon Elastic Compute Cloud User Guide for Linux Instances",
+                        "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Virtual Private Cloud",
+                    "AssetComponent": "Network Interface"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2NetworkInterface",
+                        "Id": eniArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2NetworkInterface": {
+                                "Attachment": eni["Attachment"],
+                                "NetworkInterfaceId": eniId,
+                                "SecurityGroups": eni["Groups"]
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{eniArn}/aws-eni-attached-in-use-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{eniArn}/aws-eni-attached-in-use-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[VPC.8] Amazon Elastic Network Interfaces (ENIs) should be attached and in-use",
+                "Description": f"Elastic Network Interface (ENI) {eniId} is in an attached and in-use state.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on ENIs and how to manage them refer to the Elastic network interfaces section of the Amazon Elastic Compute Cloud User Guide for Linux Instances",
+                        "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Virtual Private Cloud",
+                    "AssetComponent": "Network Interface"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2NetworkInterface",
+                        "Id": eniArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2NetworkInterface": {
+                                "Attachment": eni["Attachment"],
+                                "NetworkInterfaceId": eniId,
+                                "SecurityGroups": eni["Groups"]
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 ## EOF?
