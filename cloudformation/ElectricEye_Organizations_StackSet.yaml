@@ -35,10 +35,10 @@ Resources:
                 - kms:Decrypt
                 - access-analyzer:ListAnalyzers
                 - ec2:Describe*
+                - ec2:Get*
                 - kms:ListKeys
                 - cloudformation:ListStacks
                 - kinesisanalytics:ListApplications
-                - ec2:Get*
                 - cassandra:Select
                 - kms:ListAliases
                 - ram:GetResourceShares
@@ -49,6 +49,8 @@ Resources:
                 - ssm:ListDocuments
                 - ssm:ListAssociations
                 - ssm:DescribeDocumentPermission
+                - ssm:DescribeInstance*
+                - ssm:GetP*
                 - ecs:ListClusters
                 - ecs:DescribeClusters
                 - elasticloadbalancing:DescribeLoadBalancers
@@ -82,7 +84,7 @@ Resources:
                 - appmesh:DescribeVirtualNode
                 - appmesh:ListMeshes
                 - appmesh:ListVirtualNodes
-                - support:DescribeTrustedAdvisor*
+                - support:DescribeTrustedA*
                 - health:DescribeEvents
                 - iam:GetAccountPasswordPolicy
                 - iam:List*
@@ -140,7 +142,6 @@ Resources:
                 - s3:GetBucketPolicyStatus
                 - s3:GetBucketVersioning
                 - es:DescribeElasticsearchDomain
-                - ssm:DescribeInstance*
                 - redshift:DescribeLoggingStatus
                 - redshift:DescribeClusters
                 - redshift:DescribeClusterParameters
@@ -165,11 +166,10 @@ Resources:
                 - es:ListDomainNames
                 - s3:GetAccountPublicAccessBlock
                 - s3:ListAllMyBuckets
-                - ssm:GetP*
+                - logs:ListLogDeliveries
                 - wafv2:ListWebACLs
                 - wafv2:GetLoggingConfiguration
-                - wafv2:GetWebACL
-                - wafv2:GetWebACLForResource
+                - wafv2:GetWeb*
                 - cloudfront:ListDistributions
                 - sagemaker:ListModels
                 - ds:DescribeDirectories
@@ -229,6 +229,13 @@ Resources:
                 - imagebuilder:ListImage*
                 - imagebuilder:GetImage*
                 - cloudfront:GetDistribution
+                - elastictranscoder:ReadPipeline
+                - fis:ListExperimentTemplates
+                - apprunner:DescribeService
+                - fis:GetExperimentTemplate
+                - elastictranscoder:ListPipelines
+                - apprunner:ListServices
+                - apprunner:DescribeWebAclForService
               Resource: "*"
       AssumeRolePolicyDocument:
         Version: 2012-10-17
