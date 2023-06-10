@@ -225,7 +225,7 @@ The ASM Module uses NMAP at its core and will be expanded to include ZAP and Sho
 
 ## AWS Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **579 Checks** across **80 Auditors** that support the secure configuration of **111 services/components**
+These are the following services and checks perform by each Auditor, there are currently **581 Checks** across **81 Auditors** that support the secure configuration of **112 services/components**
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service**: AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
@@ -580,6 +580,8 @@ These are the following services and checks perform by each Auditor, there are c
 | AWS_DMS_Auditor | DMS Replication Instance | Are DMS instances publicly accessible |
 | AWS_DMS_Auditor | DMS Replication Instance | Is DMS multi-az configured |
 | AWS_DMS_Auditor | DMS Replication Instance | Are minor version updates configured |
+| AWS_FIS_Auditor | FIS Experiment Template | Do experiment templates enable logging |
+| AWS_FIS_Auditor | FIS Experiment Template | Do experiment templates define a stop condition |
 | AWS_Global_Accelerator_Auditor | Global Accelerator Endpoint | Is the endpoint healthy |
 | AWS_Global_Accelerator_Auditor | Global Accelerator Accelerator | Are flow logs enabled for accelerator |
 | AWS_Health_Auditor | AWS Health Event | Are there active Security Events |

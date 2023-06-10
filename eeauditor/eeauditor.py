@@ -148,6 +148,12 @@ class EEAuditor(object):
             "aws-global", "fips-aws-global", "aws-cn-global", "aws-us-gov-global", "aws-us-gov-global-fips", "iam-govcloud", "iam-govcloud-fips", "aws-iso-global", "aws-iso-b-global", "aws-iso-e-global"
         ]
 
+        # FIS isn't in the endpoints for some reason, which is stupid, so I need to have a list of FIS regions
+        # https://docs.aws.amazon.com/general/latest/gr/fis.html
+        fisRegions = [
+            "us-east-2", "us-east-1", "us-west-2", "us-west-1", "af-south-1", "ap-east-1", "ap-south-1", "ap-northeast-2", "ap-southeast-1", "ap-southeast-2", "ap-northeast-1", "ca-central-1", "eu-central-1", "eu-west-1", "eu-west-2", "eu-south-1", "eu-west-3", "eu-north-1", "me-south-1", "sa-east-1", "us-gov-east-1", "us-gov-west-1"
+        ]
+
         # overrides - some services fall under a service's "endpoint" and not so much a dedicated namespace from what I can tell??
         # we're overriding these just to trick ElectricEye into *not* aborting for certain services and also not re-naming plugins which use the same cache
         if service == "globalaccelerator":
@@ -156,10 +162,15 @@ class EEAuditor(object):
             service = "ec2"
         elif service == "elasticloadbalancingv2":
             service = "elasticloadbalancing"
+        elif service == "fis":
+            if awsRegion in fisRegions:
+                return True
+            else:
+                return False
 
-        for partition in endpointData['partitions']:
-            if awsPartition == partition['partition']:
-                services = partition['services']
+        for partition in endpointData["partitions"]:
+            if awsPartition == partition["partition"]:
+                services = partition["services"]
                 for serviceName, serviceData in services.items():
                     try:
                         # ecr, sagemaker, and a few other services have "api." on their names
@@ -170,7 +181,7 @@ class EEAuditor(object):
                     
                     # Compare the provided service name (from ElectricEye Plugin name) to service derived from the endpoint data
                     if service == serviceName:
-                        regions = list(serviceData['endpoints'].keys())
+                        regions = list(serviceData["endpoints"].keys())
                         # Backcheck on the "global" services e.g., Support, Trustedadvisor, CloudFront, IAM
                         if any(item in globalEndpointPseudoRegions for item in regions):
                             serviceAvailable = True
@@ -525,7 +536,7 @@ class EEAuditor(object):
                 else:
                     description = "TELL_THE_MAINTAINER_TO_FIX_ME_PLZ"
 
-                auditorFile = getfile(check).rpartition('/')[2]
+                auditorFile = getfile(check).rpartition("/")[2]
                 auditorName = auditorFile.split(".py")[0]
                 
                 table.append(
