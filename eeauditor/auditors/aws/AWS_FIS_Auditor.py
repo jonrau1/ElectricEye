@@ -29,7 +29,6 @@ def get_fis_experiment_templates(cache, session):
     response = cache.get("get_fis_experiment_templates")
 
     if response:
-        print("cache hit")
         return response
     
     experimentTemplates = []

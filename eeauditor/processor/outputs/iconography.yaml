@@ -165,6 +165,10 @@
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Analytics/64/Arch_Amazon-EMR_64.svg">
 - AssetService: Amazon Inspector V2
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Security-Identity-Compliance/64/Arch_Amazon-Inspector_64.svg">
+- AssetService: AWS Site-to-Site VPN
+  ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Networking-Content-Delivery/64/Arch_AWS-Site-to-Site-VPN_64.svg">
+- AssetService: AWS Fault Injection Simulator
+  ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Management-Governance/64/Arch_AWS-Fault-Injection-Simulator_64.svg">
 #########################################
 # AWS - ASSET_SERVICE + COMPONENT ICONS #
 #########################################
