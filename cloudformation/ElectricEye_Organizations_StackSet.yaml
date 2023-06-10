@@ -236,6 +236,8 @@ Resources:
                 - elastictranscoder:ListPipelines
                 - apprunner:ListServices
                 - apprunner:DescribeWebAclForService
+                - vpc-lattice:Get*
+				        - vpc-lattice:List*
               Resource: "*"
       AssumeRolePolicyDocument:
         Version: 2012-10-17

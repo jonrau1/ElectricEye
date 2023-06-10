@@ -218,6 +218,8 @@
                 "route53resolver:ListResolverQueryLogConfigAssociations",
                 "route53resolver:GetFirewallConfig",
                 "route53resolver:ListResolverDnssecConfigs",
+                "vpc-lattice:Get*",
+				"vpc-lattice:List*",
                 "route53resolver:ListFirewallRuleGroupAssociations"
             ],
             "Resource": "*"

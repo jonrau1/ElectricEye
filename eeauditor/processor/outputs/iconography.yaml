@@ -169,6 +169,8 @@
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Networking-Content-Delivery/64/Arch_AWS-Site-to-Site-VPN_64.svg">
 - AssetService: AWS Fault Injection Simulator
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Management-Governance/64/Arch_AWS-Fault-Injection-Simulator_64.svg">
+- AssetService: AWS VPC Lattice
+  ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Networking-Content-Delivery/64/Arch_Amazon-VPC-Lattice_64.svg">
 #########################################
 # AWS - ASSET_SERVICE + COMPONENT ICONS #
 #########################################
