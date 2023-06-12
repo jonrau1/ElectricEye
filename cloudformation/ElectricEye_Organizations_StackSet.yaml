@@ -237,7 +237,7 @@ Resources:
                 - apprunner:ListServices
                 - apprunner:DescribeWebAclForService
                 - vpc-lattice:Get*
-				        - vpc-lattice:List*
+		- vpc-lattice:List*
               Resource: "*"
       AssumeRolePolicyDocument:
         Version: 2012-10-17
