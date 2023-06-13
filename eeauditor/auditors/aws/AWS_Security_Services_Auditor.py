@@ -28,7 +28,7 @@ registry = CheckRegister()
 
 @registry.register_check("access-analyzer")
 def iam_access_analyzer_detector_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[SecSvcs.1] Amazon IAM Access Analyzer should be enabled"""
+    """[AccessAnalyzer.1] Amazon IAM Access Analyzer should be enabled"""
     accessanalyzer = session.client("accessanalyzer")
     response = accessanalyzer.list_analyzers()
     # B64 encode all of the details for the Asset
@@ -51,7 +51,7 @@ def iam_access_analyzer_detector_check(cache: dict, session, awsAccountId: str, 
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SecSvcs.1] Amazon IAM Access Analyzer should be enabled",
+            "Title": "[AccessAnalyzer.1] Amazon IAM Access Analyzer should be enabled",
             "Description": f"Amazon IAM Access Analyzer is not enabled in {awsRegion}. AWS IAM Access Analyzer is a fully managed security service that helps you identify and prevent unintended public and cross-account access to your AWS resources. By using Access Analyzer, you can quickly and easily analyze your policies, identify potential security issues, and take action to remediate them. Access Analyzer provides actionable recommendations and visualizations of access paths, making it easy to understand how access is granted and identify any unintended access. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -109,7 +109,7 @@ def iam_access_analyzer_detector_check(cache: dict, session, awsAccountId: str, 
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SecSvcs.1] Amazon IAM Access Analyzer should be enabled",
+            "Title": "[AccessAnalyzer.1] Amazon IAM Access Analyzer should be enabled",
             "Description": f"Amazon IAM Access Analyzer is enabled in {awsRegion}.",
             "Remediation": {
                 "Recommendation": {
@@ -157,7 +157,7 @@ def iam_access_analyzer_detector_check(cache: dict, session, awsAccountId: str, 
 
 @registry.register_check("guardduty")
 def guard_duty_detector_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[SecSvcs.2] Amazon GuardDuty should be enabled"""
+    """[GuardDuty.1] Amazon GuardDuty should be enabled"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # unique ID
@@ -180,7 +180,7 @@ def guard_duty_detector_check(cache: dict, session, awsAccountId: str, awsRegion
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SecSvcs.2] Amazon GuardDuty should be enabled",
+            "Title": "[GuardDuty.1] Amazon GuardDuty should be enabled",
             "Description": f"Amazon GuardDuty is not enabled in {awsRegion}. AWS GuardDuty is a threat detection service that continuously monitors your AWS accounts and workloads for malicious activity and unauthorized behavior. By enabling GuardDuty, you can detect and respond to security threats faster and with more accuracy, reducing the risk of security breaches and data loss. GuardDuty uses machine learning and threat intelligence to analyze event data from multiple sources, including VPC Flow Logs, DNS logs, and AWS CloudTrail logs. It also provides actionable findings and prioritizes security alerts based on their severity, allowing you to focus on the most critical threats first. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -238,7 +238,7 @@ def guard_duty_detector_check(cache: dict, session, awsAccountId: str, awsRegion
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SecSvcs.2] Amazon GuardDuty should be enabled",
+            "Title": "[GuardDuty.1] Amazon GuardDuty should be enabled",
             "Description": f"Amazon GuardDuty is enabled in {awsRegion}.",
             "Remediation": {
                 "Recommendation": {
@@ -286,7 +286,7 @@ def guard_duty_detector_check(cache: dict, session, awsAccountId: str, awsRegion
 
 @registry.register_check("detective")
 def detective_graph_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[SecSvcs.3] Amazon Detective should be enabled"""
+    """[Detective.1] Amazon Detective should be enabled"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # unique ID
@@ -312,7 +312,7 @@ def detective_graph_check(cache: dict, session, awsAccountId: str, awsRegion: st
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SecSvcs.3] Amazon Detective should be enabled",
+            "Title": "[Detective.1] Amazon Detective should be enabled",
             "Description": f"Amazon Detective is not enabled in {awsRegion}. Amazon Detective is a fully managed security service that helps you investigate and identify the root cause of potential security issues or suspicious activities across your AWS environment. By using Amazon Detective, you can quickly and easily analyze log data from multiple sources, including VPC Flow Logs, AWS CloudTrail, and DNS logs, and visualize the relationships between resources and events, making it easier to understand and identify security incidents. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -372,7 +372,7 @@ def detective_graph_check(cache: dict, session, awsAccountId: str, awsRegion: st
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SecSvcs.3] Amazon Detective should be enabled",
+            "Title": "[Detective.1] Amazon Detective should be enabled",
             "Description": f"Amazon Detective is enabled in {awsRegion}.",
             "Remediation": {
                 "Recommendation": {
@@ -420,7 +420,7 @@ def detective_graph_check(cache: dict, session, awsAccountId: str, awsRegion: st
 
 @registry.register_check("macie2")
 def macie_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[SecSvcs.4] Amazon Macie V2 should be enabled"""
+    """[Macie.1] Amazon Macie V2 should be enabled"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # unique ID
@@ -452,7 +452,7 @@ def macie_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SecSvcs.4] Amazon Macie V2 should be enabled",
+            "Title": "[Macie.1] Amazon Macie V2 should be enabled",
             "Description": f"Amazon Macie V2 is enabled in {awsRegion}.",
             "Remediation": {
                 "Recommendation": {
@@ -512,7 +512,7 @@ def macie_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SecSvcs.4] Amazon Macie V2 should be enabled",
+            "Title": "[Macie.1] Amazon Macie V2 should be enabled",
             "Description": f"Amazon Macie V2 is not enabled in {awsRegion}. This is either due to insufficient permissions to check, Macie2 not being activiated, or the Macie2 Session being paused or disabled. AWS Macie is a fully managed data security and privacy service that uses machine learning to automatically discover, classify, and protect sensitive data stored in AWS. By enabling Macie, you can improve your data security posture, comply with regulatory requirements, and prevent data breaches. Macie scans data stored in S3 buckets, analyzes access patterns, and provides detailed visibility and insights into your data, including identifying sensitive data such as personally identifiable information (PII) and intellectual property. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {

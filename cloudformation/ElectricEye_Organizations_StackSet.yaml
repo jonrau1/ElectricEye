@@ -31,6 +31,7 @@ Resources:
                 - autoscaling:DescribeAutoScalingGroups
                 - cloudtrail:DescribeTrails
                 - cloudtrail:ListTrails
+                - cloudtrail:LookupEvents
                 - kms:DescribeKey
                 - kms:Decrypt
                 - access-analyzer:ListAnalyzers
@@ -86,8 +87,6 @@ Resources:
                 - appmesh:ListVirtualNodes
                 - support:DescribeTrustedA*
                 - health:DescribeEvents
-                - iam:GetAccountPasswordPolicy
-                - iam:List*
                 - rolesanywhere:List*
                 - macie2:GetMacieSession
                 - managedblockchain:Get*
@@ -210,15 +209,13 @@ Resources:
                 - shield:ListAttacks
                 - cloudhsm:DescribeClusters
                 - cloudhsm:DescribeBackups
-                - iam:ListRolePolicies
-                - iam:ListRoles
+                - iam:GetAccountPasswordPolicy
+                - iam:GetAccountSummary
                 - iam:GetRolePolicy
                 - iam:GetUserPolicy
-                - iam:ListGroupPolicies
-                - iam:ListGroups
-                - iam:GetGroupPolicy
-                - iam:ListPolicies
                 - iam:GetPolicyVersion
+                - iam:GetGroupPolicy
+                - iam:List*
                 - inspector2:BatchGetAccountStatus
                 - inspector2:ListCov*
                 - inspector2:ListFind*
