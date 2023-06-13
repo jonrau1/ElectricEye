@@ -53,7 +53,7 @@ def get_service_network_with_metadata(cache, session):
                 serviceNetworkPayload["authPolicy"] = json.loads(authPolicy["policy"])
             del authPolicy
         # Get the access log subscriptions
-        serviceNetworkPayload["accessLogSubscriptions"] = vpclattice.list_access_log_subscriptions(resourceIdentifier=snetwork["id"])["items"]
+        serviceNetworkPayload["accessLogSubscriptions"] = vpclattice.list_access_log_subscriptions(resourceIdentifier=snetwork["arn"])["items"]
         
         serviceNetworksWithMetadata.append(serviceNetworkPayload)
         
@@ -87,7 +87,7 @@ def get_services_with_metadata(cache, session):
                 servicePayload["authPolicy"] = json.loads(authPolicy["policy"])
             del authPolicy
         # Get the access log subscriptions
-        servicePayload["accessLogSubscriptions"] = vpclattice.list_access_log_subscriptions(resourceIdentifier=service["id"])["items"]
+        servicePayload["accessLogSubscriptions"] = vpclattice.list_access_log_subscriptions(resourceIdentifier=service["arn"])["items"]
         
         servicesWithMetadata.append(servicePayload)
 
