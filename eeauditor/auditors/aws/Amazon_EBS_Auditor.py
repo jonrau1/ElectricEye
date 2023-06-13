@@ -356,7 +356,7 @@ def ebs_volume_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your EBS volume should be encrypted refer to the Amazon EBS Encryption section of the Amazon Elastic Compute Cloud User Guide",
-                        "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html",
+                        "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html"
                     }
                 },
                 "ProductFields": {
@@ -391,7 +391,8 @@ def ebs_volume_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
                         "NIST SP 800-53 Rev. 4 SC-12",
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3"
+                        "ISO 27001:2013 A.8.2.3",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.2.1"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -420,7 +421,7 @@ def ebs_volume_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your EBS volume should be encrypted refer to the Amazon EBS Encryption section of the Amazon Elastic Compute Cloud User Guide",
-                        "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html",
+                        "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html"
                     }
                 },
                 "ProductFields": {
@@ -456,10 +457,11 @@ def ebs_volume_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3",
-                    ],
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
 
@@ -532,7 +534,8 @@ def ebs_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRe
                         "NIST SP 800-53 Rev. 4 SC-12",
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3"
+                        "ISO 27001:2013 A.8.2.3",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.2.1"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -597,7 +600,8 @@ def ebs_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRe
                         "NIST SP 800-53 Rev. 4 SC-12",
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3"
+                        "ISO 27001:2013 A.8.2.3",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.2.1"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -899,7 +903,8 @@ def ebs_account_encryption_by_default_check(cache: dict, session, awsAccountId: 
                     "NIST SP 800-53 Rev. 4 SC-12",
                     "NIST SP 800-53 Rev. 4 SC-28",
                     "AICPA TSC CC6.1",
-                    "ISO 27001:2013 A.8.2.3"
+                    "ISO 27001:2013 A.8.2.3",
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 2.2.1"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -955,7 +960,8 @@ def ebs_account_encryption_by_default_check(cache: dict, session, awsAccountId: 
                     "NIST SP 800-53 Rev. 4 SC-12",
                     "NIST SP 800-53 Rev. 4 SC-28",
                     "AICPA TSC CC6.1",
-                    "ISO 27001:2013 A.8.2.3"
+                    "ISO 27001:2013 A.8.2.3",
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 2.2.1"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -1367,7 +1373,8 @@ def encrypted_ami_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                             "NIST SP 800-53 Rev. 4 SC-12",
                             "NIST SP 800-53 Rev. 4 SC-28",
                             "AICPA TSC CC6.1",
-                            "ISO 27001:2013 A.8.2.3"
+                            "ISO 27001:2013 A.8.2.3",
+                            "CIS Amazon Web Services Foundations Benchmark V1.5 2.2.1"
                         ]
                     },
                     "Workflow": {"Status": "NEW"},
@@ -1431,7 +1438,8 @@ def encrypted_ami_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                             "NIST SP 800-53 Rev. 4 SC-12",
                             "NIST SP 800-53 Rev. 4 SC-28",
                             "AICPA TSC CC6.1",
-                            "ISO 27001:2013 A.8.2.3"
+                            "ISO 27001:2013 A.8.2.3",
+                            "CIS Amazon Web Services Foundations Benchmark V1.5 2.2.1"
                         ]
                     },
                     "Workflow": {"Status": "RESOLVED"},

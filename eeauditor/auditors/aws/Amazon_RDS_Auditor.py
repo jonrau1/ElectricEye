@@ -97,14 +97,13 @@ def rds_instance_ha_check(cache: dict, session, awsAccountId: str, awsRegion: st
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        instanceArn = str(dbinstances["DBInstanceArn"])
-        instanceId = str(dbinstances["DBInstanceIdentifier"])
-        instanceClass = str(dbinstances["DBInstanceClass"])
-        instancePort = int(dbinstances["Endpoint"]["Port"])
-        instanceEngine = str(dbinstances["Engine"])
-        instanceEngineVersion = str(dbinstances["EngineVersion"])
-        highAvailabilityCheck = str(dbinstances["MultiAZ"])
-        if highAvailabilityCheck == "False":
+        instanceArn = dbinstances["DBInstanceArn"]
+        instanceId = dbinstances["DBInstanceIdentifier"]
+        instanceClass = dbinstances["DBInstanceClass"]
+        instancePort = dbinstances["Endpoint"]["Port"]
+        instanceEngine = dbinstances["Engine"]
+        instanceEngineVersion = dbinstances["EngineVersion"]
+        if dbinstances["MultiAZ"] is False:
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -274,12 +273,12 @@ def rds_instance_public_access_check(cache: dict, session, awsAccountId: str, aw
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        instanceArn = str(dbinstances["DBInstanceArn"])
-        instanceId = str(dbinstances["DBInstanceIdentifier"])
-        instanceClass = str(dbinstances["DBInstanceClass"])
-        instancePort = int(dbinstances["Endpoint"]["Port"])
-        instanceEngine = str(dbinstances["Engine"])
-        instanceEngineVersion = str(dbinstances["EngineVersion"])
+        instanceArn = dbinstances["DBInstanceArn"]
+        instanceId = dbinstances["DBInstanceIdentifier"]
+        instanceClass = dbinstances["DBInstanceClass"]
+        instancePort = dbinstances["Endpoint"]["Port"]
+        instanceEngine = dbinstances["Engine"]
+        instanceEngineVersion = dbinstances["EngineVersion"]
         if dbinstances["PubliclyAccessible"] == True:
             # this is a failing check
             finding = {
@@ -348,7 +347,8 @@ def rds_instance_public_access_check(cache: dict, session, awsAccountId: str, aw
                         "ISO 27001:2013 A.6.2.2",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1"
+                        "ISO 27001:2013 A.13.2.1",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.3"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -422,7 +422,8 @@ def rds_instance_public_access_check(cache: dict, session, awsAccountId: str, aw
                         "ISO 27001:2013 A.6.2.2",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1"
+                        "ISO 27001:2013 A.13.2.1",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.3"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -439,12 +440,12 @@ def rds_instance_storage_encryption_check(cache: dict, session, awsAccountId: st
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        instanceArn = str(dbinstances["DBInstanceArn"])
-        instanceId = str(dbinstances["DBInstanceIdentifier"])
-        instanceClass = str(dbinstances["DBInstanceClass"])
-        instancePort = int(dbinstances["Endpoint"]["Port"])
-        instanceEngine = str(dbinstances["Engine"])
-        instanceEngineVersion = str(dbinstances["EngineVersion"])
+        instanceArn = dbinstances["DBInstanceArn"]
+        instanceId = dbinstances["DBInstanceIdentifier"]
+        instanceClass = dbinstances["DBInstanceClass"]
+        instancePort = dbinstances["Endpoint"]["Port"]
+        instanceEngine = dbinstances["Engine"]
+        instanceEngineVersion = dbinstances["EngineVersion"]
         rdsStorageEncryptionCheck = str(dbinstances["StorageEncrypted"])
         if rdsStorageEncryptionCheck == "False":
             finding = {
@@ -509,7 +510,8 @@ def rds_instance_storage_encryption_check(cache: dict, session, awsAccountId: st
                         "NIST SP 800-53 Rev. 4 SC-12",
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3"
+                        "ISO 27001:2013 A.8.2.3",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.1"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -577,7 +579,8 @@ def rds_instance_storage_encryption_check(cache: dict, session, awsAccountId: st
                         "NIST SP 800-53 Rev. 4 SC-12",
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3"
+                        "ISO 27001:2013 A.8.2.3",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.1"
                     ],
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -599,12 +602,12 @@ def rds_instance_iam_auth_check(cache: dict, session, awsAccountId: str, awsRegi
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        instanceArn = str(dbinstances["DBInstanceArn"])
-        instanceId = str(dbinstances["DBInstanceIdentifier"])
-        instanceClass = str(dbinstances["DBInstanceClass"])
-        instancePort = int(dbinstances["Endpoint"]["Port"])
-        instanceEngine = str(dbinstances["Engine"])
-        instanceEngineVersion = str(dbinstances["EngineVersion"])
+        instanceArn = dbinstances["DBInstanceArn"]
+        instanceId = dbinstances["DBInstanceIdentifier"]
+        instanceClass = dbinstances["DBInstanceClass"]
+        instancePort = dbinstances["Endpoint"]["Port"]
+        instanceEngine = dbinstances["Engine"]
+        instanceEngineVersion = dbinstances["EngineVersion"]
         iamDbAuthCheck = str(dbinstances["IAMDatabaseAuthenticationEnabled"])
         # determine in the engine supports IAM-based AuthN
         if instanceEngine in iamAuthNSupportedEngines:
@@ -868,12 +871,12 @@ def rds_instance_domain_join_check(cache: dict, session, awsAccountId: str, awsR
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        instanceArn = str(dbinstances["DBInstanceArn"])
-        instanceId = str(dbinstances["DBInstanceIdentifier"])
-        instanceClass = str(dbinstances["DBInstanceClass"])
-        instancePort = int(dbinstances["Endpoint"]["Port"])
-        instanceEngine = str(dbinstances["Engine"])
-        instanceEngineVersion = str(dbinstances["EngineVersion"])
+        instanceArn = dbinstances["DBInstanceArn"]
+        instanceId = dbinstances["DBInstanceIdentifier"]
+        instanceClass = dbinstances["DBInstanceClass"]
+        instancePort = dbinstances["Endpoint"]["Port"]
+        instanceEngine = dbinstances["Engine"]
+        instanceEngineVersion = dbinstances["EngineVersion"]
         # Check to make sure engine supports Kerberos
         if instanceEngine in kerberosAuthNSupportedEngines:
             # if the DomainMemberships array is empty there is likely not any Kerb AuthN
@@ -1119,12 +1122,12 @@ def rds_instance_performance_insights_check(cache: dict, session, awsAccountId: 
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        instanceArn = str(dbinstances["DBInstanceArn"])
-        instanceId = str(dbinstances["DBInstanceIdentifier"])
-        instanceClass = str(dbinstances["DBInstanceClass"])
-        instancePort = int(dbinstances["Endpoint"]["Port"])
-        instanceEngine = str(dbinstances["Engine"])
-        instanceEngineVersion = str(dbinstances["EngineVersion"])
+        instanceArn = dbinstances["DBInstanceArn"]
+        instanceId = dbinstances["DBInstanceIdentifier"]
+        instanceClass = dbinstances["DBInstanceClass"]
+        instancePort = dbinstances["Endpoint"]["Port"]
+        instanceEngine = dbinstances["Engine"]
+        instanceEngineVersion = dbinstances["EngineVersion"]
         perfInsightsCheck = str(dbinstances["PerformanceInsightsEnabled"])
         if perfInsightsCheck == "False":
             finding = {
@@ -1340,12 +1343,12 @@ def rds_instance_deletion_protection_check(cache: dict, session, awsAccountId: s
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        instanceArn = str(dbinstances["DBInstanceArn"])
-        instanceId = str(dbinstances["DBInstanceIdentifier"])
-        instanceClass = str(dbinstances["DBInstanceClass"])
-        instancePort = int(dbinstances["Endpoint"]["Port"])
-        instanceEngine = str(dbinstances["Engine"])
-        instanceEngineVersion = str(dbinstances["EngineVersion"])
+        instanceArn = dbinstances["DBInstanceArn"]
+        instanceId = dbinstances["DBInstanceIdentifier"]
+        instanceClass = dbinstances["DBInstanceClass"]
+        instancePort = dbinstances["Endpoint"]["Port"]
+        instanceEngine = dbinstances["Engine"]
+        instanceEngineVersion = dbinstances["EngineVersion"]
         deletionProtectionCheck = str(dbinstances["DeletionProtection"])
         if deletionProtectionCheck == "False":
             finding = {
@@ -1527,12 +1530,12 @@ def rds_instance_cloudwatch_logging_check(cache: dict, session, awsAccountId: st
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        instanceArn = str(dbinstances["DBInstanceArn"])
-        instanceId = str(dbinstances["DBInstanceIdentifier"])
-        instanceClass = str(dbinstances["DBInstanceClass"])
-        instancePort = int(dbinstances["Endpoint"]["Port"])
-        instanceEngine = str(dbinstances["Engine"])
-        instanceEngineVersion = str(dbinstances["EngineVersion"])
+        instanceArn = dbinstances["DBInstanceArn"]
+        instanceId = dbinstances["DBInstanceIdentifier"]
+        instanceClass = dbinstances["DBInstanceClass"]
+        instancePort = dbinstances["Endpoint"]["Port"]
+        instanceEngine = dbinstances["Engine"]
+        instanceEngineVersion = dbinstances["EngineVersion"]
         try:
             logCheck = str(dbinstances["EnabledCloudwatchLogsExports"])
             # this is a passing check
@@ -1783,10 +1786,10 @@ def rds_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRe
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Relational Database Service",
                     "AssetComponent": "Snapshot"
@@ -1808,7 +1811,8 @@ def rds_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRe
                         "NIST SP 800-53 Rev. 4 SC-12",
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3"
+                        "ISO 27001:2013 A.8.2.3",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.1"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -1842,10 +1846,10 @@ def rds_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRe
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Relational Database Service",
                     "AssetComponent": "Snapshot"
@@ -1867,7 +1871,8 @@ def rds_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRe
                         "NIST SP 800-53 Rev. 4 SC-12",
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3"
+                        "ISO 27001:2013 A.8.2.3",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.1"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -1923,10 +1928,10 @@ def rds_snapshot_public_share_check(cache: dict, session, awsAccountId: str, aws
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Database",
                             "AssetService": "Amazon Relational Database Service",
                             "AssetComponent": "Snapshot"
@@ -1954,7 +1959,8 @@ def rds_snapshot_public_share_check(cache: dict, session, awsAccountId: str, aws
                                 "ISO 27001:2013 A.6.2.2",
                                 "ISO 27001:2013 A.11.2.6",
                                 "ISO 27001:2013 A.13.1.1",
-                                "ISO 27001:2013 A.13.2.1"
+                                "ISO 27001:2013 A.13.2.1",
+                                "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.3"
                             ]
                         },
                         "Workflow": {"Status": "NEW"},
@@ -1989,10 +1995,10 @@ def rds_snapshot_public_share_check(cache: dict, session, awsAccountId: str, aws
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Database",
                             "AssetService": "Amazon Relational Database Service",
                             "AssetComponent": "Snapshot"
@@ -2020,7 +2026,8 @@ def rds_snapshot_public_share_check(cache: dict, session, awsAccountId: str, aws
                                 "ISO 27001:2013 A.6.2.2",
                                 "ISO 27001:2013 A.11.2.6",
                                 "ISO 27001:2013 A.13.1.1",
-                                "ISO 27001:2013 A.13.2.1"
+                                "ISO 27001:2013 A.13.2.1",
+                                "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.3"
                             ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
@@ -2240,10 +2247,10 @@ def rds_aurora_cluster_encryption_check(cache: dict, session, awsAccountId: str,
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Relational Database Service",
                     "AssetComponent": "Database Cluster"
@@ -2275,6 +2282,7 @@ def rds_aurora_cluster_encryption_check(cache: dict, session, awsAccountId: str,
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.1"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -2310,10 +2318,10 @@ def rds_aurora_cluster_encryption_check(cache: dict, session, awsAccountId: str,
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Relational Database Service",
                     "AssetComponent": "Database Cluster"
@@ -2345,6 +2353,7 @@ def rds_aurora_cluster_encryption_check(cache: dict, session, awsAccountId: str,
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.1"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -2362,12 +2371,12 @@ def rds_instance_snapshot_check(cache: dict, session, awsAccountId: str, awsRegi
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        instanceArn = str(dbinstances["DBInstanceArn"])
-        instanceId = str(dbinstances["DBInstanceIdentifier"])
-        instanceClass = str(dbinstances["DBInstanceClass"])
-        instancePort = int(dbinstances["Endpoint"]["Port"])
-        instanceEngine = str(dbinstances["Engine"])
-        instanceEngineVersion = str(dbinstances["EngineVersion"])
+        instanceArn = dbinstances["DBInstanceArn"]
+        instanceId = dbinstances["DBInstanceIdentifier"]
+        instanceClass = dbinstances["DBInstanceClass"]
+        instancePort = dbinstances["Endpoint"]["Port"]
+        instanceEngine = dbinstances["Engine"]
+        instanceEngineVersion = dbinstances["EngineVersion"]
         # evaluate snapshots
         snapshots = rds.describe_db_snapshots(DBInstanceIdentifier=instanceId)
         # this is a passing check, we're just interested in the existance of Snapshots, not their configuration (other checks do it)
@@ -2550,12 +2559,12 @@ def rds_instance_secgroup_risk_check(cache: dict, session, awsAccountId: str, aw
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        instanceArn = str(dbinstances["DBInstanceArn"])
-        instanceId = str(dbinstances["DBInstanceIdentifier"])
-        instanceClass = str(dbinstances["DBInstanceClass"])
-        instancePort = int(dbinstances["Endpoint"]["Port"])
-        instanceEngine = str(dbinstances["Engine"])
-        instanceEngineVersion = str(dbinstances["EngineVersion"])
+        instanceArn = dbinstances["DBInstanceArn"]
+        instanceId = dbinstances["DBInstanceIdentifier"]
+        instanceClass = dbinstances["DBInstanceClass"]
+        instancePort = dbinstances["Endpoint"]["Port"]
+        instanceEngine = dbinstances["Engine"]
+        instanceEngineVersion = dbinstances["EngineVersion"]
         # details for SG comparison
         endpointPort = str(dbinstances["Endpoint"]["Port"])
         # loop list of SGs
@@ -3364,12 +3373,12 @@ def rds_postgresql_log_fwd_vuln_check(cache: dict, session, awsAccountId: str, a
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        instanceArn = str(dbinstances["DBInstanceArn"])
-        instanceId = str(dbinstances["DBInstanceIdentifier"])
-        instanceClass = str(dbinstances["DBInstanceClass"])
-        instancePort = int(dbinstances["Endpoint"]["Port"])
-        instanceEngine = str(dbinstances["Engine"])
-        instanceEngineVersion = str(dbinstances["EngineVersion"])
+        instanceArn = dbinstances["DBInstanceArn"]
+        instanceId = dbinstances["DBInstanceIdentifier"]
+        instanceClass = dbinstances["DBInstanceClass"]
+        instancePort = dbinstances["Endpoint"]["Port"]
+        instanceEngine = dbinstances["Engine"]
+        instanceEngineVersion = dbinstances["EngineVersion"]
         # skip over "aurora-postgresql" as we have a seperate check for it
         if instanceEngine == "aurora-postgresql":
             continue
@@ -3672,12 +3681,12 @@ def rds_aurora_postgresql_log_fwd_vuln_check(cache: dict, session, awsAccountId:
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        instanceArn = str(dbinstances["DBInstanceArn"])
-        instanceId = str(dbinstances["DBInstanceIdentifier"])
-        instanceClass = str(dbinstances["DBInstanceClass"])
-        instancePort = int(dbinstances["Endpoint"]["Port"])
-        instanceEngine = str(dbinstances["Engine"])
-        instanceEngineVersion = str(dbinstances["EngineVersion"])
+        instanceArn = dbinstances["DBInstanceArn"]
+        instanceId = dbinstances["DBInstanceIdentifier"]
+        instanceClass = dbinstances["DBInstanceClass"]
+        instancePort = dbinstances["Endpoint"]["Port"]
+        instanceEngine = dbinstances["Engine"]
+        instanceEngineVersion = dbinstances["EngineVersion"]
         # skip over "postgres" as we have a seperate check for it
         if instanceEngine == "postgres":
             continue
@@ -3961,3 +3970,160 @@ def rds_aurora_postgresql_log_fwd_vuln_check(cache: dict, session, awsAccountId:
                 "RecordState": "ARCHIVED"
             }
             yield finding
+
+@registry.register_check("rds")
+def rds_instance_ha_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.19] RDS instances should be configured to automatically apply minor engine version upgrades"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for dbinstances in describe_db_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        instanceArn = dbinstances["DBInstanceArn"]
+        instanceId = dbinstances["DBInstanceIdentifier"]
+        instanceClass = dbinstances["DBInstanceClass"]
+        instancePort = dbinstances["Endpoint"]["Port"]
+        instanceEngine = dbinstances["Engine"]
+        instanceEngineVersion = dbinstances["EngineVersion"]
+        if dbinstances["AutoMinorVersionUpgrade"] is False:
+            # this is a failing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{instanceArn}/rds-instance-auto-upgrade-minor-version-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{instanceArn}/rds-instance-auto-upgrade-minor-version-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[RDS.19] RDS instances should be configured to automatically apply minor engine version upgrades",
+                "Description": f"RDS DB instance {instanceId} is not configured to automatically apply minor engine version upgrades. Amazon RDS provides newer versions of each supported database engine so you can keep your DB instance up-to-date. Newer versions can include bug fixes, security enhancements, and other improvements for the database engine. When Amazon RDS supports a new version of a database engine, you can choose how and when to upgrade your database DB instances. A minor engine version is an update to a DB engine version within a major engine version. For example, a major engine version might be 9.6 with the minor engine versions 9.6.11 and 9.6.12 within it. If you want Amazon RDS to upgrade the DB engine version of a database automatically, you can enable auto minor version upgrades for the database. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on RDS auto minor version upgrades and how to configure it refer to the Automatically upgrading the minor engine version section of the Amazon Relational Database Service User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.Upgrading.html#USER_UpgradeDBInstance.Upgrading.AutoMinorVersionUpgrades",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsRdsDbInstance",
+                        "Id": instanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsRdsDbInstance": {
+                                "DBInstanceIdentifier": instanceId,
+                                "DBInstanceClass": instanceClass,
+                                "DbInstancePort": instancePort,
+                                "Engine": instanceEngine,
+                                "EngineVersion": instanceEngineVersion,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.MA-1",
+                        "NIST SP 800-53 Rev. 4 MA-2",
+                        "NIST SP 800-53 Rev. 4 MA-3",
+                        "NIST SP 800-53 Rev. 4 MA-5",
+                        "NIST SP 800-53 Rev. 4 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.2"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{instanceArn}/rds-instance-auto-upgrade-minor-version-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{instanceArn}/rds-instance-auto-upgrade-minor-version-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[RDS.19] RDS instances should be configured to automatically apply minor engine version upgrades",
+                "Description": f"RDS DB instance {instanceId} is configured to automatically apply minor engine version upgrades.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on RDS auto minor version upgrades and how to configure it refer to the Automatically upgrading the minor engine version section of the Amazon Relational Database Service User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.Upgrading.html#USER_UpgradeDBInstance.Upgrading.AutoMinorVersionUpgrades",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsRdsDbInstance",
+                        "Id": instanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsRdsDbInstance": {
+                                "DBInstanceIdentifier": instanceId,
+                                "DBInstanceClass": instanceClass,
+                                "DbInstancePort": instancePort,
+                                "Engine": instanceEngine,
+                                "EngineVersion": instanceEngineVersion,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.MA-1",
+                        "NIST SP 800-53 Rev. 4 MA-2",
+                        "NIST SP 800-53 Rev. 4 MA-3",
+                        "NIST SP 800-53 Rev. 4 MA-5",
+                        "NIST SP 800-53 Rev. 4 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.2"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+## EOF ?
