@@ -225,7 +225,7 @@ The ASM Module uses NMAP at its core and will be expanded to include ZAP and Sho
 
 ## AWS Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **581 Checks** across **81 Auditors** that support the secure configuration of **112 services/components**
+These are the following services and checks perform by each Auditor, there are currently **593 Checks** across **82 Auditors** that support the secure configuration of **114 services/components**
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service**: AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
@@ -650,6 +650,18 @@ These are the following services and checks perform by each Auditor, there are c
 | AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | Is the Trusted Advisor check for CloudFront SSL Certs in IAM Cert Store failing |
 | AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | Is the Trusted Advisor check for CloudFront SSL Cert on Origin Server failing |
 | AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | Is the Trusted Advisor check for Exposed Access Keys failing |
+| AWS_VPC_Lattice_Auditor | VPC Lattice service networks | VPC Lattice Service Networks should be associated with a VPC |
+| AWS_VPC_Lattice_Auditor | VPC Lattice service networks | VPC Lattice Service Networks should be associated with a VPC Lattice Service |
+| AWS_VPC_Lattice_Auditor | VPC Lattice service networks | VPC Lattice Service Networks should use IAM Auth |
+| AWS_VPC_Lattice_Auditor | VPC Lattice service networks | VPC Lattice Service Networks should enable logging |
+| AWS_VPC_Lattice_Auditor | VPC Lattice service networks | VPC Lattice Service Networks should define a minimal Auth Policy with Conditions |
+| AWS_VPC_Lattice_Auditor | VPC Lattice services | VPC Lattice Services should use IAM Auth |
+| AWS_VPC_Lattice_Auditor | VPC Lattice services | VPC Lattice Services should enable logging |
+| AWS_VPC_Lattice_Auditor | VPC Lattice services | VPC Lattice Services should define a minimal Auth Policy with Conditions |
+| AWS_VPC_Lattice_Auditor | VPC Lattice target groups | VPC Lattice Target Groups should enforce HTTPS connections |
+| AWS_VPC_Lattice_Auditor | VPC Lattice target groups | VPC Lattice Target Groups should define health checks for IP/Instance targets |
+| AWS_VPC_Lattice_Auditor | VPC Lattice target groups | VPC Lattice Target Groups should be associated with a VPC Lattice Service |
+| AWS_VPC_Lattice_Auditor | VPC Lattice listener | VPC Lattice Listeners should enforce HTTPS connections |
 | AWS_VPN_Auditor | Virtual Private Gateway (VGW) | VGWs should be attached to VPCs |
 | AWS_VPN_Auditor | Customer Gateway (CGW) | Consider using Certificate-based authentication with CGWs |
 | AWS_VPN_Auditor | Site-to-Site VPN | S2S VPNs should have two active tunnels |
