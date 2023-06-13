@@ -298,24 +298,8 @@ class EEAuditor(object):
 
         region = boto3.Session().region_name
         account = sts.get_caller_identity()["Account"]
-
-        # GovCloud partition override
-        if region in ["us-gov-east-1", "us-gov-west-1"]:
-            partition = "aws-us-gov"
-        # China partition override
-        elif region in ["cn-north-1", "cn-northwest-1"]:
-            partition = "aws-cn"
-        # AWS Secret Region override - sc2s.sgov.gov
-        elif region in ["us-isob-east-1", "us-isob-west-1"]:
-            partition = "aws-isob"
-        # AWS Top Secret Region override - c2s.ic.gov
-        elif region in ["us-iso-east-1", "us-iso-west-1"]:
-            partition = "aws-iso"
-        # UK GCHQ Classified Region override - cloud.adc-e.uk
-        elif region in ["eu-isoe-west-1", "eu-isoe-west-2"]:
-            partition = "aws-isoe"
-        else:
-            partition = "aws"
+        # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
+        partition = CloudConfig.check_aws_partition(region)
 
         for project in self.gcpProjectIds:
             for serviceName, checkList in self.registry.checks.items():
@@ -356,24 +340,8 @@ class EEAuditor(object):
 
         region = boto3.Session().region_name
         account = sts.get_caller_identity()["Account"]
-
-        # GovCloud partition override
-        if region in ["us-gov-east-1", "us-gov-west-1"]:
-            partition = "aws-us-gov"
-        # China partition override
-        elif region in ["cn-north-1", "cn-northwest-1"]:
-            partition = "aws-cn"
-        # AWS Secret Region override - sc2s.sgov.gov
-        elif region in ["us-isob-east-1", "us-isob-west-1"]:
-            partition = "aws-isob"
-        # AWS Top Secret Region override - c2s.ic.gov
-        elif region in ["us-iso-east-1", "us-iso-west-1"]:
-            partition = "aws-iso"
-        # UK GCHQ Classified Region override - cloud.adc-e.uk
-        elif region in ["eu-isoe-west-1", "eu-isoe-west-2"]:
-            partition = "aws-isoe"
-        else:
-            partition = "aws"
+        # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
+        partition = CloudConfig.check_aws_partition(region)
 
         for serviceName, checkList in self.registry.checks.items():
             # Pass the Cache at the "serviceName" level aka Plugin
@@ -418,24 +386,8 @@ class EEAuditor(object):
 
         region = boto3.Session().region_name
         account = sts.get_caller_identity()["Account"]
-
-        # GovCloud partition override
-        if region in ["us-gov-east-1", "us-gov-west-1"]:
-            partition = "aws-us-gov"
-        # China partition override
-        elif region in ["cn-north-1", "cn-northwest-1"]:
-            partition = "aws-cn"
-        # AWS Secret Region override - sc2s.sgov.gov
-        elif region in ["us-isob-east-1", "us-isob-west-1"]:
-            partition = "aws-isob"
-        # AWS Top Secret Region override - c2s.ic.gov
-        elif region in ["us-iso-east-1", "us-iso-west-1"]:
-            partition = "aws-iso"
-        # UK GCHQ Classified Region override - cloud.adc-e.uk
-        elif region in ["eu-isoe-west-1", "eu-isoe-west-2"]:
-            partition = "aws-isoe"
-        else:
-            partition = "aws"
+        # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
+        partition = CloudConfig.check_aws_partition(region)
 
         for serviceName, checkList in self.registry.checks.items():
             # Pass the Cache at the "serviceName" level aka Plugin
@@ -478,24 +430,8 @@ class EEAuditor(object):
 
         region = boto3.Session().region_name
         account = sts.get_caller_identity()["Account"]
-
-        # GovCloud partition override
-        if region in ["us-gov-east-1", "us-gov-west-1"]:
-            partition = "aws-us-gov"
-        # China partition override
-        elif region in ["cn-north-1", "cn-northwest-1"]:
-            partition = "aws-cn"
-        # AWS Secret Region override - sc2s.sgov.gov
-        elif region in ["us-isob-east-1", "us-isob-west-1"]:
-            partition = "aws-isob"
-        # AWS Top Secret Region override - c2s.ic.gov
-        elif region in ["us-iso-east-1", "us-iso-west-1"]:
-            partition = "aws-iso"
-        # UK GCHQ Classified Region override - cloud.adc-e.uk
-        elif region in ["eu-isoe-west-1", "eu-isoe-west-2"]:
-            partition = "aws-isoe"
-        else:
-            partition = "aws"
+        # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
+        partition = CloudConfig.check_aws_partition(region)
 
         for serviceName, checkList in self.registry.checks.items():
             # Pass the Cache at the "serviceName" level aka Plugin

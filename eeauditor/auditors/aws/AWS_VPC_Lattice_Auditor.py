@@ -18,8 +18,9 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import datetime
 from check_register import CheckRegister
+import botocore
+import datetime
 import base64
 import json
 
@@ -37,7 +38,8 @@ def get_service_network_with_metadata(cache, session):
     
     # Get the Service Networks, we will need to retrieve Authentication Policies & Logging Configuration and add them as needed
     for snetwork in vpclattice.list_service_networks()["items"]:
-        serviceNetworkPayload = vpclattice.get_service_network(serviceNetworkIdentifier=snetwork["id"])
+        snetworkId = snetwork["id"]
+        serviceNetworkPayload = vpclattice.get_service_network(serviceNetworkIdentifier=snetworkId)
         # Remove the metadata on response, we need to use the Get API to get the "authType"
         del serviceNetworkPayload["ResponseMetadata"]
         # Check if we need to get the auth policy first
@@ -45,7 +47,7 @@ def get_service_network_with_metadata(cache, session):
             serviceNetworkPayload["authPolicy"] = None
         else:
             authPolicy = vpclattice.get_auth_policy(
-                resourceIdentifier=snetwork["id"]
+                resourceIdentifier=snetworkId
             )
             if "policy" not in authPolicy:
                 serviceNetworkPayload["authPolicy"] = None
@@ -53,7 +55,11 @@ def get_service_network_with_metadata(cache, session):
                 serviceNetworkPayload["authPolicy"] = json.loads(authPolicy["policy"])
             del authPolicy
         # Get the access log subscriptions
-        serviceNetworkPayload["accessLogSubscriptions"] = vpclattice.list_access_log_subscriptions(resourceIdentifier=snetwork["arn"])["items"]
+        try:
+            serviceNetworkPayload["accessLogSubscriptions"] = vpclattice.list_access_log_subscriptions(resourceIdentifier=snetworkId)["items"]
+        except botocore.exceptions.ClientError as error:
+            print(f"Failed to get logging info for VPC Lattice service network {snetworkId} due to {error}")
+            serviceNetworkPayload["accessLogSubscriptions"] = []
         
         serviceNetworksWithMetadata.append(serviceNetworkPayload)
         
@@ -71,7 +77,8 @@ def get_services_with_metadata(cache, session):
     servicesWithMetadata = []
 
     for service in vpclattice.list_services()["items"]:
-        servicePayload = vpclattice.get_service(serviceIdentifier=service["id"])
+        serviceId = service["id"]
+        servicePayload = vpclattice.get_service(serviceIdentifier=serviceId)
         # Remove the metadata on response, we need to use the Get API to get the "authType"
         del servicePayload["ResponseMetadata"]
         # Check if we need to get the auth policy first
@@ -79,7 +86,7 @@ def get_services_with_metadata(cache, session):
             servicePayload["authPolicy"] = None
         else:
             authPolicy = vpclattice.get_auth_policy(
-                resourceIdentifier=service["id"]
+                resourceIdentifier=serviceId
             )
             if "policy" not in authPolicy:
                 servicePayload["authPolicy"] = None
@@ -87,7 +94,11 @@ def get_services_with_metadata(cache, session):
                 servicePayload["authPolicy"] = json.loads(authPolicy["policy"])
             del authPolicy
         # Get the access log subscriptions
-        servicePayload["accessLogSubscriptions"] = vpclattice.list_access_log_subscriptions(resourceIdentifier=service["arn"])["items"]
+        try:
+            servicePayload["accessLogSubscriptions"] = vpclattice.list_access_log_subscriptions(resourceIdentifier=serviceId)["items"]
+        except botocore.exceptions.ClientError as error:
+            print(f"Failed to get logging info for VPC Lattice service {serviceId} due to {error}")
+            servicePayload["accessLogSubscriptions"] = []
         
         servicesWithMetadata.append(servicePayload)
 
