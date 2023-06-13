@@ -225,7 +225,7 @@ The ASM Module uses NMAP at its core and will be expanded to include ZAP and Sho
 
 ## AWS Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **595 Checks** across **83 Auditors** that support the secure configuration of **115 services/components**
+These are the following services and checks perform by each Auditor, there are currently **600 Checks** across **83 Auditors** that support the secure configuration of **116 services/components**
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service**: AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
@@ -601,11 +601,17 @@ These are the following services and checks perform by each Auditor, there are c
 | AWS_IAM_Auditor | IAM User | Do users have in-line policies attached |
 | AWS_IAM_Auditor | IAM User | Do users have managed policies attached |
 | AWS_IAM_Auditor | Password policy (Account) | Does the IAM password policy meet or exceed AWS CIS Foundations Benchmark standards |
-| AWS_IAM_Auditor | Server certs (Account) | Are they any Server certificates stored by IAM |
+| AWS_IAM_Auditor | Server certifcates | Are they any Server certificates stored by IAM |
 | AWS_IAM_Auditor | IAM Policy | Do managed IAM policies adhere to least privilege principles |
 | AWS_IAM_Auditor | IAM User | Do User IAM inline policies adhere to least privilege principles |
 | AWS_IAM_Auditor | IAM Group | Do Group IAM inline policies adhere to least privilege principles |
 | AWS_IAM_Auditor | IAM Role | Do Role IAM inline policies adhere to least privilege principles |
+| AWS_IAM_Auditor | Root User | Does the root user have access keys |
+| AWS_IAM_Auditor | Root User | Does the root user use any MFA |
+| AWS_IAM_Auditor | Root User | Does the root user use hardware MFA |
+| AWS_IAM_Auditor | IAM Access Key | Access Keys that have been unused for 45 days should be disabled |
+| AWS_IAM_Auditor | Root User | Has the Root User been used in the last 90 days |
+| AWS_IAM_Auditor | IAM Access Analyzer | Is IAM Access Analyzer enabled |
 | AWS_IAMRA_Auditor | IAMRA Trust Anchor | Do Trust Anchors contain self-signed certificates |
 | AWS_IAMRA_Auditor | IAMRA Trust Anchor | Do Trust Anchors use a Certificate Revocation List (CRL) |
 | AWS_IAMRA_Auditor | IAMRA Profile | Do IAMRA Profiles specify a Session Policy |
@@ -637,7 +643,6 @@ These are the following services and checks perform by each Auditor, there are c
 | AWS_Secrets_Manager_Auditor | Secrets Manager secret | Is the secret over 90 days old |
 | AWS_Secrets_Manager_Auditor | Secrets Manager secret | Is secret auto-rotation enabled |
 | AWS_Security_Hub_Auditor | Security Hub (Account) | Are there active high or critical findings in Security Hub |
-| AWS_Security_Services_Auditor | IAM Access Analyzer (Account) | Is IAM Access Analyzer enabled |
 | AWS_Security_Services_Auditor | GuardDuty (Account) | Is GuardDuty enabled |
 | AWS_Security_Services_Auditor | Detective (Account) | Is Detective enabled |
 | AWS_Security_Services_Auditor | Macie2 | Is Macie enabled |
