@@ -45,11 +45,10 @@ def efs_filesys_encryption_check(cache: dict, session, awsAccountId: str, awsReg
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(filesys,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        encryptionCheck = str(filesys["Encrypted"])
-        fileSysId = str(filesys["FileSystemId"])
+        fileSysId = filesys["FileSystemId"]
         fileSysArn = f"arn:{awsPartition}:elasticfilesystem:{awsRegion}:{awsAccountId}:file-system/{fileSysId}"
         # this is a failing chec
-        if encryptionCheck == "False":
+        if filesys["Encrypted"] is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{fileSysArn}/efs-encryption-check",
@@ -100,7 +99,8 @@ def efs_filesys_encryption_check(cache: dict, session, awsAccountId: str, awsReg
                         "NIST SP 800-53 Rev. 4 SC-12",
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3"
+                        "ISO 27001:2013 A.8.2.3",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.4.1"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -159,7 +159,8 @@ def efs_filesys_encryption_check(cache: dict, session, awsAccountId: str, awsReg
                         "NIST SP 800-53 Rev. 4 SC-12",
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3"
+                        "ISO 27001:2013 A.8.2.3",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.4.1"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -177,7 +178,7 @@ def efs_filesys_policy_check(cache: dict, session, awsAccountId: str, awsRegion:
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(filesys,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        fileSysId = str(filesys["FileSystemId"])
+        fileSysId = filesys["FileSystemId"]
         fileSysArn = f"arn:{awsPartition}:elasticfilesystem:{awsRegion}:{awsAccountId}:file-system/{fileSysId}"
         # this is a passing check
         try:
