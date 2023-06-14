@@ -32,6 +32,7 @@ Resources:
                 - cloudtrail:DescribeTrails
                 - cloudtrail:ListTrails
                 - cloudtrail:LookupEvents
+                - cloudtrail:GetEventSelectors
                 - kms:DescribeKey
                 - kms:Decrypt
                 - access-analyzer:ListAnalyzers

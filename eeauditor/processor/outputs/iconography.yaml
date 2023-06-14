@@ -173,6 +173,8 @@
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Networking-Content-Delivery/64/Arch_Amazon-VPC-Lattice_64.svg">
 - AssetService: Amazon Elastic Transcoder
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Media-Services/64/Arch_Amazon-Elastic-Transcoder_64.svg">
+- AssetService: AWS PrivateLink
+  ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Networking-Content-Delivery/64/Arch_AWS-PrivateLink_64.svg">
 #########################################
 # AWS - ASSET_SERVICE + COMPONENT ICONS #
 #########################################

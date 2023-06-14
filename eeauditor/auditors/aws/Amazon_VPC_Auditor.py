@@ -75,6 +75,43 @@ def describe_network_interfaces(cache, session):
     cache["describe_network_interfaces"] = ec2.describe_network_interfaces(DryRun=False, MaxResults=500)["NetworkInterfaces"]
     return cache["describe_network_interfaces"]
 
+def describe_network_acls(cache, session):
+    response = cache.get("describe_network_acls")
+    
+    if response:
+        return response
+    
+    ec2 = session.client("ec2")
+
+    cache["describe_network_acls"] = ec2.describe_network_acls()["NetworkAcls"]
+    return cache["describe_network_acls"]
+
+def describe_vpc_endpoints(cache, session):
+    response = cache.get("describe_vpc_endpoints")
+    
+    if response:
+        return response
+    
+    ec2 = session.client("ec2")
+
+    cache["describe_vpc_endpoints"] = ec2.describe_vpc_endpoints()["VpcEndpoints"]
+    return cache["describe_vpc_endpoints"]
+
+def check_vpc_endpoint_policy_support(cache, session):
+    response = cache.get("check_vpc_endpoint_policy_support")
+    
+    if response:
+        return response
+    
+    ec2 = session.client("ec2")
+    # Return VPC Endpoint service names that support Endpoint Policies
+    supportedServices = [
+        endpoint["ServiceName"] for endpoint in ec2.describe_vpc_endpoint_services()["ServiceDetails"] if endpoint["VpcEndpointPolicySupported"] is True
+    ]
+
+    cache["check_vpc_endpoint_policy_support"] = supportedServices
+    return cache["check_vpc_endpoint_policy_support"]
+
 @registry.register_check("ec2")
 def aws_vpc_default_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[VPC.1] Consider deleting the Default VPC if unused"""
@@ -214,7 +251,7 @@ def aws_vpc_default_check(cache: dict, session, awsAccountId: str, awsRegion: st
 
 @registry.register_check("ec2")
 def aws_vpc_flow_logs_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[VPC.2] Flow Logs should be enabled for all VPCs"""
+    """[VPC.2] Amazon Virtual Private Cloud (VPC) flow logs should be enabled for all Amazon Virtual Private Cloud (VPC)s"""
     ec2 = session.client("ec2")
     for vpcs in describe_vpcs(cache, session):
         # B64 encode all of the details for the Asset
@@ -239,7 +276,7 @@ def aws_vpc_flow_logs_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[VPC.2] Flow Logs should be enabled for all VPCs",
+                "Title": "[VPC.2] Amazon Virtual Private Cloud (VPC) flow logs should be enabled for all Amazon Virtual Private Cloud (VPC)s",
                 "Description": "VPC "
                 + vpcId
                 + " does not have flow logging enabled. Refer to the remediation instructions if this configuration is not intended.",
@@ -334,7 +371,7 @@ def aws_vpc_flow_logs_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[VPC.2] Flow Logs should be enabled for all VPCs",
+                "Title": "[VPC.2] Amazon Virtual Private Cloud (VPC) flow logs should be enabled for all Amazon Virtual Private Cloud (VPC)s",
                 "Description": "VPC " + vpcId + " has flow logging enabled.",
                 "Remediation": {
                     "Recommendation": {
@@ -417,7 +454,7 @@ def aws_vpc_flow_logs_check(cache: dict, session, awsAccountId: str, awsRegion: 
 
 @registry.register_check("ec2")
 def aws_subnet_public_ip_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[VPC.3] Subnets should not automatically map Public IP addresses on launch"""
+    """[VPC.3] Amazon Virtual Private Cloud (VPC) subnets should not automatically map Public IP addresses on launch"""
     ec2 = session.client("ec2")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for vpcs in describe_vpcs(cache, session):
@@ -446,7 +483,7 @@ def aws_subnet_public_ip_check(cache: dict, session, awsAccountId: str, awsRegio
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
-                    "Title": "[VPC.3] Subnets should not automatically map Public IP addresses on launch",
+                    "Title": "[VPC.3] Amazon Virtual Private Cloud (VPC) subnets should not automatically map Public IP addresses on launch",
                     "Description": "Subnet "
                     + snetId
                     + " maps Public IPs on Launch, consider disabling this to avoid unncessarily exposing workloads to the internet. Refer to the remediation instructions if this configuration is not intended.",
@@ -513,7 +550,7 @@ def aws_subnet_public_ip_check(cache: dict, session, awsAccountId: str, awsRegio
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
-                    "Title": "[VPC.3] Subnets should not automatically map Public IP addresses on launch",
+                    "Title": "[VPC.3] Amazon Virtual Private Cloud (VPC) subnets should not automatically map Public IP addresses on launch",
                     "Description": "Subnet "
                     + snetId
                     + " does not map Public IPs on Launch.",
@@ -570,7 +607,7 @@ def aws_subnet_public_ip_check(cache: dict, session, awsAccountId: str, awsRegio
 
 @registry.register_check("ec2")
 def aws_subnet_no_ip_space_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[VPC.4] Subnets should be monitored for available IP address space"""
+    """[VPC.4] Amazon Virtual Private Cloud (VPC) subnets should be monitored for available IP address space"""
     ec2 = session.client("ec2")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for vpcs in describe_vpcs(cache, session):
@@ -596,7 +633,7 @@ def aws_subnet_no_ip_space_check(cache: dict, session, awsAccountId: str, awsReg
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "MEDIUM"},
                     "Confidence": 99,
-                    "Title": "[VPC.4] Subnets should be monitored for available IP address space",
+                    "Title": "[VPC.4] Amazon Virtual Private Cloud (VPC) subnets should be monitored for available IP address space",
                     "Description": "Subnet "
                     + snetId
                     + " does not have any available IP address space, consider terminating unncessary workloads or expanding CIDR capacity to avoid availability losses. Refer to the remediation instructions if this configuration is not intended.",
@@ -674,7 +711,7 @@ def aws_subnet_no_ip_space_check(cache: dict, session, awsAccountId: str, awsReg
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
-                    "Title": "[VPC.4] Subnets should be monitored for available IP address space",
+                    "Title": "[VPC.4] Amazon Virtual Private Cloud (VPC) subnets should be monitored for available IP address space",
                     "Description": "Subnet "
                     + snetId
                     + " has available IP address space, well, at least 2 lol...",
@@ -742,7 +779,7 @@ def aws_subnet_no_ip_space_check(cache: dict, session, awsAccountId: str, awsReg
 
 @registry.register_check("ec2")
 def aws_verified_access_instances_logging_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[VPC.5] Verified Access instances should have at least one logging configuration source enabled"""
+    """[VPC.5] AWS Verified Access instances should have at least one logging configuration source enabled"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for instance in describe_verified_access_instances(cache, session):
         # B64 encode all of the details for the Asset
@@ -767,7 +804,7 @@ def aws_verified_access_instances_logging_enabled_check(cache: dict, session, aw
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[VPC.5] Verified Access instances should have at least one logging configuration source enabled",
+                "Title": "[VPC.5] AWS Verified Access instances should have at least one logging configuration source enabled",
                 "Description": f"Verified Access instance {vaiId} does not have any of the possible logging destinations enabled. After AWS Verified Access evaluates each access request, it logs all access attempts. This provides centralized visibility into application access and helps you quickly respond to security incidents and audit requests. Verified Access supports the following destinations for publishing access logs: Amazon CloudWatch Logs log groups, Amazon S3 buckets, and/or Amazon Kinesis Data Firehose delivery streams. Verified Access supports the Open Cybersecurity Schema Framework (OCSF) logging format for storage in AWS Security Lake or other data warehouse or data lakes. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -858,7 +895,7 @@ def aws_verified_access_instances_logging_enabled_check(cache: dict, session, aw
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[VPC.5] Verified Access instances should have at least one logging configuration source enabled",
+                "Title": "[VPC.5] AWS Verified Access instances should have at least one logging configuration source enabled",
                 "Description": f"Verified Access instance {vaiId} does have at least one of the possible logging destinations enabled. The logging configuration is as follows: {str(loggingConfig)}.",
                 "Remediation": {
                     "Recommendation": {
@@ -939,7 +976,7 @@ def aws_verified_access_instances_logging_enabled_check(cache: dict, session, aw
 
 @registry.register_check("ec2")
 def aws_verified_access_instances_trust_provider_associated_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[VPC.6] Verified Access instances should be associated with a Verified Access trust provider"""
+    """[VPC.6] AWS Verified Access instances should be associated with a Verified Access trust provider"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for instance in describe_verified_access_instances(cache, session):
         # B64 encode all of the details for the Asset
@@ -961,7 +998,7 @@ def aws_verified_access_instances_trust_provider_associated_check(cache: dict, s
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[VPC.6] Verified Access instances should be associated with a Verified Access trust provider",
+                "Title": "[VPC.6] AWS Verified Access instances should be associated with a Verified Access trust provider",
                 "Description": f"Verified Access instance {vaiId} does not have any Verified Access trust providers associated. A trust provider is a service that sends information about users and devices, called trust data, to AWS Verified Access. Trust data may include attributes based on user identity such as an email address or membership in the 'sales' organization, or device management information such as security patches or antivirus software version. Verified Access instances without trust providers associated may not be in-use and should be removed as non-compliant providers may be inadvertently (or rarely, maliciously) attached. Ensuring only the right amount of assets are provisioned and are in-use is an important part of long term healthy asset management and cyber hygeine. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -1018,7 +1055,7 @@ def aws_verified_access_instances_trust_provider_associated_check(cache: dict, s
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[VPC.6] Verified Access instances should be associated with a Verified Access trust provider",
+                "Title": "[VPC.6] AWS Verified Access instances should be associated with a Verified Access trust provider",
                 "Description": f"Verified Access instance {vaiId} does not have a Verified Access trust provider associated.",
                 "Remediation": {
                     "Recommendation": {
@@ -1065,7 +1102,7 @@ def aws_verified_access_instances_trust_provider_associated_check(cache: dict, s
 
 @registry.register_check("ec2")
 def aws_verified_access_instances_wafv2_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[VPC.7] Verified Access instances should be protected by an AWS WAFv2 Web ACL"""
+    """[VPC.7] AWS Verified Access instances should be protected by an AWS WAFv2 Web ACL"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for instance in describe_verified_access_instances(cache, session):
         # B64 encode all of the details for the Asset
@@ -1087,7 +1124,7 @@ def aws_verified_access_instances_wafv2_protection_check(cache: dict, session, a
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[VPC.7] Verified Access instances should be protected by an AWS WAFv2 Web ACL",
+                "Title": "[VPC.7] AWS Verified Access instances should be protected by an AWS WAFv2 Web ACL",
                 "Description": f"Verified Access instance {vaiId} does not have an AWS WAFv2 Web ACL associated with it. In addition to the authentication and authorization rules enforced by Verified Access, you may also want to apply perimeter protection. This can help you protect your applications from additional threats. You can accomplish this by integrating AWS WAF into your Verified Access deployment. AWS WAF is a web application firewall that lets you monitor the HTTP(S) requests that are forwarded to your protected web application resources. You can integrate AWS WAF with Verified Access by associating an AWS WAF web access control list (ACL) with a Verified Access instance. A web ACL is a AWS WAF resource that gives you fine-grained control over all of the HTTP(S) web requests that your protected resource responds to. While the AWS WAF association or disassociation request is being processed, the status of any Verified Access endpoints attached to the instance are shown as updating. After the request is complete, the status returns to active. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -1148,7 +1185,7 @@ def aws_verified_access_instances_wafv2_protection_check(cache: dict, session, a
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[VPC.7] Verified Access instances should be protected by an AWS WAFv2 Web ACL",
+                "Title": "[VPC.7] AWS Verified Access instances should be protected by an AWS WAFv2 Web ACL",
                 "Description": f"Verified Access instance {vaiId} does have an AWS WAFv2 Web ACL associated with it.",
                 "Remediation": {
                     "Recommendation": {
@@ -1330,6 +1367,522 @@ def aws_eni_attached_in_use_check(cache: dict, session, awsAccountId: str, awsRe
                         "ISO 27001:2013 A.8.1.1",
                         "ISO 27001:2013 A.8.1.2",
                         "ISO 27001:2013 A.12.5.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("ec2")
+def aws_network_acl_allow_unrestricted_ssh_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[VPC.9] Amazon Virtual Private Cloud (VPC) network access control lists (NACLs) should not allowed unrestricted access to the Secure Shell (SSH) protocol"""
+    protocolPort = 22
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for nacl in describe_network_acls(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(nacl,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        naclId = nacl["NetworkAclId"]
+        naclArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:network-acl/{naclId}"
+        # Evaluate the rules within the NACL - this check will fail on either IPv4 or IPv6 with only the specified protocol
+        # as the default rules within a NACL are the "last place" DENY ALL and "first place" ALLOW ALL
+        # this is only for CIS Benchmarking, as using NACLs is not considered best practice anymore, depending on what you're doing
+        unrestrictedAccess = False
+        for entry in nacl["Entries"]:
+            egress = entry.get("Egress", False)
+            ipV4CidrBlock = entry.get("CidrBlock")
+            ipV6CidrBlock = entry.get("Ipv6CidrBlock")
+            portRange = entry.get("PortRange", {})
+            fromPort = portRange.get("From")
+            toPort = portRange.get("To")
+            # Override Bool if any IPv4 or IPv6 allows ingress
+            if (
+                not egress
+                and (
+                    ipV4CidrBlock == "0.0.0.0/0"
+                    or ipV6CidrBlock == "::/0"
+                )
+                and (fromPort == protocolPort)
+                and (toPort == protocolPort)
+            ):
+                allounrestrictedAccesswsSsh = True
+                break
+        # this is a failing finding
+        if unrestrictedAccess is True:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{naclArn}/network-acl-allows-unrestricted-ssh-access-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{naclArn}/network-acl-allows-unrestricted-ssh-access-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[VPC.9] Amazon Virtual Private Cloud (VPC) network access control lists (NACLs) should not allowed unrestricted access to the Secure Shell (SSH) protocol",
+                "Description": f"Amazon Virtual Private Cloud (VPC) network access control lists (NACLs) {naclId} allows unrestricted ingress to SSH (TCP Port 22) to either IPv4 or IPv6 public CIDRs. A network access control list (ACL) allows or denies specific inbound or outbound traffic at the subnet level. You can use the default network ACL for your VPC, or you can create a custom network ACL for your VPC with rules that are similar to the rules for your security groups in order to add an additional layer of security to your VPC. You can create a custom network ACL and associate it with a subnet to allow or deny specific inbound or outbound traffic at the subnet level. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on configuring NACLs for your Subnets refer to the Control traffic to subnets using network ACLs section of the Amazon Virtual Private Cloud User Guide",
+                        "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html#nacl-ephemeral-ports"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Virtual Private Cloud",
+                    "AssetComponent": "Network Access Control List"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2NetworkAcl",
+                        "Id": naclArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2NetworkAcl": {
+                                "NetworkAclId": naclId,
+                                "VpcId": nacl["VpcId"],
+                                "OwnerId": nacl["OwnerId"],
+                                "Entries": nacl["Entries"]
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 5.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{naclArn}/network-acl-allows-unrestricted-ssh-access-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{naclArn}/network-acl-allows-unrestricted-ssh-access-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[VPC.9] Amazon Virtual Private Cloud (VPC) network access control lists (NACLs) should not allowed unrestricted access to the Secure Shell (SSH) protocol",
+                "Description": f"Amazon Virtual Private Cloud (VPC) network access control lists (NACLs) {naclId} does not allow unrestricted ingress to SSH (TCP Port 22) to either IPv4 or IPv6 public CIDRs.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on configuring NACLs for your Subnets refer to the Control traffic to subnets using network ACLs section of the Amazon Virtual Private Cloud User Guide",
+                        "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html#nacl-ephemeral-ports"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Virtual Private Cloud",
+                    "AssetComponent": "Network Access Control List"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2NetworkAcl",
+                        "Id": naclArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2NetworkAcl": {
+                                "NetworkAclId": naclId,
+                                "VpcId": nacl["VpcId"],
+                                "OwnerId": nacl["OwnerId"],
+                                "Entries": nacl["Entries"]
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 5.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("ec2")
+def aws_network_acl_allow_unrestricted_rdp_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[VPC.10] Amazon Virtual Private Cloud (VPC) network access control lists (NACLs) should not allowed unrestricted access to the Remote Desktop Protocol (RDP) protocol"""
+    protocolPort = 3389
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for nacl in describe_network_acls(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(nacl,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        naclId = nacl["NetworkAclId"]
+        naclArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:network-acl/{naclId}"
+        # Evaluate the rules within the NACL - this check will fail on either IPv4 or IPv6 with only the specified protocol
+        # as the default rules within a NACL are the "last place" DENY ALL and "first place" ALLOW ALL
+        # this is only for CIS Benchmarking, as using NACLs is not considered best practice anymore, depending on what you're doing
+        unrestrictedAccess = False
+        for entry in nacl["Entries"]:
+            egress = entry.get("Egress", False)
+            ipV4CidrBlock = entry.get("CidrBlock")
+            ipV6CidrBlock = entry.get("Ipv6CidrBlock")
+            portRange = entry.get("PortRange", {})
+            fromPort = portRange.get("From")
+            toPort = portRange.get("To")
+            # Override Bool if any IPv4 or IPv6 allows ingress
+            if (
+                not egress
+                and (
+                    ipV4CidrBlock == "0.0.0.0/0"
+                    or ipV6CidrBlock == "::/0"
+                )
+                and (fromPort == protocolPort)
+                and (toPort == protocolPort)
+            ):
+                unrestrictedAccess = True
+                break
+        # this is a failing finding
+        if unrestrictedAccess is True:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{naclArn}/network-acl-allows-unrestricted-rdp-access-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{naclArn}/network-acl-allows-unrestricted-rdp-access-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[VPC.10] Amazon Virtual Private Cloud (VPC) network access control lists (NACLs) should not allowed unrestricted access to the Remote Desktop Protocol (RDP) protocol",
+                "Description": f"Amazon Virtual Private Cloud (VPC) network access control lists (NACLs) {naclId} allows unrestricted ingress to RDP (TCP Port 3389) to either IPv4 or IPv6 public CIDRs. A network access control list (ACL) allows or denies specific inbound or outbound traffic at the subnet level. You can use the default network ACL for your VPC, or you can create a custom network ACL for your VPC with rules that are similar to the rules for your security groups in order to add an additional layer of security to your VPC. You can create a custom network ACL and associate it with a subnet to allow or deny specific inbound or outbound traffic at the subnet level. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on configuring NACLs for your Subnets refer to the Control traffic to subnets using network ACLs section of the Amazon Virtual Private Cloud User Guide",
+                        "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html#nacl-ephemeral-ports"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Virtual Private Cloud",
+                    "AssetComponent": "Network Access Control List"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2NetworkAcl",
+                        "Id": naclArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2NetworkAcl": {
+                                "NetworkAclId": naclId,
+                                "VpcId": nacl["VpcId"],
+                                "OwnerId": nacl["OwnerId"],
+                                "Entries": nacl["Entries"]
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 5.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{naclArn}/network-acl-allows-unrestricted-rdp-access-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{naclArn}/network-acl-allows-unrestricted-rdp-access-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[VPC.10] Amazon Virtual Private Cloud (VPC) network access control lists (NACLs) should not allowed unrestricted access to the Remote Desktop Protocol (RDP) protocol",
+                "Description": f"Amazon Virtual Private Cloud (VPC) network access control lists (NACLs) {naclId} does not allow unrestricted ingress to RDP (TCP Port 3389) to either IPv4 or IPv6 public CIDRs.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on configuring NACLs for your Subnets refer to the Control traffic to subnets using network ACLs section of the Amazon Virtual Private Cloud User Guide",
+                        "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html#nacl-ephemeral-ports"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Virtual Private Cloud",
+                    "AssetComponent": "Network Access Control List"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2NetworkAcl",
+                        "Id": naclArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2NetworkAcl": {
+                                "NetworkAclId": naclId,
+                                "VpcId": nacl["VpcId"],
+                                "OwnerId": nacl["OwnerId"],
+                                "Entries": nacl["Entries"]
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 5.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("ec2")
+def aws_privatelink_endpoint_unrestricted_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[VPC.11] AWS PrivateLink endpoints should not allow unrestricted access"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for endpoint in describe_vpc_endpoints(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(endpoint,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        endpointId = endpoint["VpcEndpointId"]
+        endpointArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:vpc-endpoint/{endpointId}"
+        serviceName = endpoint["ServiceName"]
+        # Evaluate the Policy - if at least one of Action, Principal or Resource is NOT an asterisk (*)
+        # OR if they are but a Condition is present, then this boolean will be overriden
+        policyPassing = True
+        if endpoint.get("PolicyDocument"):
+            for statement in json.loads(endpoint.get("PolicyDocument")).get("Statement", []):
+                # Break the loop if the VPC Endpoint doesn't support a policy - that's considered a Pass
+                if serviceName not in check_vpc_endpoint_policy_support(cache, session):
+                    break
+                if (
+                    statement.get("Action") == "*"
+                    and statement.get("Principal") == "*"
+                    and statement.get("Resource") == "*"
+                    and "Condition" not in statement
+                ):
+                    policyPassing = False
+                    break
+        # this is a failing check
+        if policyPassing is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{endpointArn}/vpc-endpoint-unrestricted-access-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{endpointArn}/vpc-endpoint-unrestricted-access-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[VPC.11] AWS PrivateLink endpoints should not allow unrestricted access",
+                "Description": f"AWS PrivateLink endpoint {endpointId} for service {serviceName} does allow unrestricted acces. AWS PrivateLink is a highly available, scalable technology that you can use to privately connect your VPC to services as if they were in your VPC. You do not need to use an internet gateway, NAT device, public IP address, AWS Direct Connect connection, or AWS Site-to-Site VPN connection to allow communication with the service from your private subnets. Therefore, you control the specific API endpoints, sites, and services that are reachable from your VPC. An endpoint policy is a resource-based policy that you attach to a VPC endpoint to control which AWS principals can use the endpoint to access an AWS service. An endpoint policy does not override or replace identity-based policies or resource-based policies. For example, if you're using an interface endpoint to connect to Amazon S3, you can also use Amazon S3 bucket policies to control access to buckets from specific endpoints or specific VPCs. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on the default VPC refer to the Deleting Your Default Subnets and Default VPC section of the Amazon Virtual Private Cloud AWS PrivateLink Guide",
+                        "Url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS PrivateLink",
+                    "AssetComponent": "VPC Endpoint"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2VpcEndpoint",
+                        "Id": endpointArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "VpcEndpointId": endpointId,
+                                "ServiceName": serviceName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{endpointArn}/vpc-endpoint-unrestricted-access-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{endpointArn}/vpc-endpoint-unrestricted-access-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[VPC.11] AWS PrivateLink endpoints should not allow unrestricted access",
+                "Description": f"AWS PrivateLink endpoint {endpointId} for service {serviceName} does not allow unrestricted access or the service does not support Endpoint Policies.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on the default VPC refer to the Deleting Your Default Subnets and Default VPC section of the Amazon Virtual Private Cloud AWS PrivateLink Guide",
+                        "Url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS PrivateLink",
+                    "AssetComponent": "VPC Endpoint"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2VpcEndpoint",
+                        "Id": endpointArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "VpcEndpointId": endpointId,
+                                "ServiceName": serviceName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
