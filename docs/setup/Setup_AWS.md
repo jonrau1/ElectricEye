@@ -225,7 +225,7 @@ The ASM Module uses NMAP at its core and will be expanded to include ZAP and Sho
 
 ## AWS Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **604 Checks** across **83 Auditors** that support the secure configuration of **116 services/components**
+These are the following services and checks perform by each Auditor, there are currently **605 Checks** across **83 Auditors** that support the secure configuration of **116 services/components**
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service**: AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
@@ -350,6 +350,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_EC2_Security_Group_Auditor | Security Group | Is Spark WebUI (tcp4040) open to the internet |
 | Amazon_EC2_Security_Group_Auditor | Security Group | Is POP3 (tcp110) open to the internet |
 | Amazon_EC2_Security_Group_Auditor | Security Group | Is VMWare ESXi (tcp8182) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Does the default security group contain any rules |
 | Amazon_ECR_Auditor | ECR Registry (Account) | Is there a registry access policy |
 | Amazon_ECR_Auditor | ECR Registry (Account) | Is image replication configured |
 | Amazon_ECR_Auditor | ECR Repository | Is the Repository vuln scanning with Basic or Enhanced (Inspector V2) scanning |
@@ -568,6 +569,7 @@ These are the following services and checks perform by each Auditor, there are c
 | AWS_CloudTrail_Auditor | CloudTrail trail | Is log file validation enabled |
 | AWS_CloudTrail_Auditor | CloudTrail trail | Is the log bucket publicly accessible |
 | AWS_CloudTrail_Auditor | CloudTrail trail | Does the log bucket enable server access logging |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail log S3 Read & Write Data Events |
 | AWS_CodeArtifact_Auditor | CodeArtifact Repo | Does the CodeArtifact Repo have a least privilege resource policy attached |
 | AWS_CodeArtifact_Auditor | CodeArtifact Domain | Does the CodeArtifact Domain have a least privilege resource policy attached |
 | AWS_CodeBuild_Auditor | CodeBuild project | Is artifact encryption enabled |

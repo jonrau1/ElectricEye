@@ -1274,4 +1274,234 @@ def cloudtrail_bucket_server_access_logging_check(cache: dict, session, awsAccou
             }
             yield finding
 
+@registry.register_check("cloudtrail")
+def cloudtrail_s3_read_and_write_data_events_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudTrail.8] AWS CloudTrail trails should record Amazon S3 Read and Write Data Events"""
+    cloudtrail = session.client("cloudtrail")
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for trail in get_all_shadow_trails(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(trail,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        trailArn = trail["TrailARN"]
+        trailName = trail["Name"]
+        # Get Event Selectors, if there are not any filters for Management Events or Data Events at all, this will fail
+        try:
+            dataEvents = cloudtrail.get_event_selectors(TrailName=trail["TrailARN"])
+            if not "AdvancedEventSelectors" in dataEvents:
+                allS3DataEvents = False
+            else:
+            # Check if there is a combination of eventCategory and resources.Type matching the desired values
+                dataEventsCaptured = False
+                s3ReadAndWrite = False
+                for eventSelector in dataEvents["AdvancedEventSelectors"]:
+                    fieldSelectors = eventSelector.get("FieldSelectors", [])
+                    # Look for the right combos of Data Event and S3 log types and override the above Bools
+                    for fieldSelector in fieldSelectors:
+                        field = fieldSelector.get("Field", "")
+                        equals = fieldSelector.get("Equals", [])
+                        # Data Events within the "Advanced" selectors for CloudTrail
+                        if field == "eventCategory" and "Data" in equals:
+                            dataEventsCaptured = True
+                        # "AWS::S3::Object" in the supported Resources, this is both Read and Write Data Events
+                        if field == "resources.type" and "AWS::S3::Object" in equals:
+                            s3ReadAndWrite = True
+                    # Finish up if both are true
+                    if dataEventsCaptured and s3ReadAndWrite:
+                        allS3DataEvents = True
+                        break
+                else:
+                    allS3DataEvents = False
+        except ClientError:
+            allS3DataEvents = False
+
+        # this is a failing check
+        if allS3DataEvents is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-s3-read-write-data-events-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-s3-read-write-data-events-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.8] AWS CloudTrail trails should record Amazon S3 Read and Write Data Events",
+                "Description": f"AWS CloudTrail trail {trailName} does not record Amazon S3 Read and Write Data Events. By default, trails and event data stores do not log data events and dditional charges do apply for data events. Data events provide visibility into the resource operations performed on or within a resource. These are also known as data plane operations. Data events are often high-volume activities. Amazon S3 Data Events capture object-level API activity (for example, GetObject, DeleteObject, and PutObject API operations) on buckets and objects in buckets. If you are logging data events for specific Amazon S3 buckets, we recommend you do not use an Amazon S3 bucket for which you are logging data events to receive log files that you have specified in the data events section. Using the same Amazon S3 bucket causes your trail or event data store to log a data event each time log files are delivered to your Amazon S3 bucket. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on configuring S3 Data Events for your trails refer to the Logging data events section of the AWS CloudTrail User Guide",
+                        "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.10",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.11"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-s3-read-write-data-events-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-s3-read-write-data-events-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.8] AWS CloudTrail trails should record Amazon S3 Read and Write Data Events",
+                "Description": f"AWS CloudTrail trail {trailName} does record Amazon S3 Read and Write Data Events.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on configuring S3 Data Events for your trails refer to the Logging data events section of the AWS CloudTrail User Guide",
+                        "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.10",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.11"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
 ## EOF?
