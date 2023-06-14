@@ -18,7 +18,6 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import uuid
 import datetime
 from check_register import CheckRegister
 import base64
@@ -31,8 +30,9 @@ def guard_duty_detector_check(cache: dict, session, awsAccountId: str, awsRegion
     """[GuardDuty.1] Amazon GuardDuty should be enabled"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    # unique ID
-    generatorUuid = str(uuid.uuid4())
+    # GuardDuty "account level" ARN
+    guarddutyAccountArn = f"arn:{awsPartition}:guardduty:{awsRegion}:{awsAccountId}:detector"
+    
     guardduty = session.client("guardduty")
     r = guardduty.list_detectors()
     # B64 encode all of the details for the Asset
@@ -41,9 +41,9 @@ def guard_duty_detector_check(cache: dict, session, awsAccountId: str, awsRegion
     if not r["DetectorIds"]:
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": awsAccountId + awsRegion + "/security-services-guardduty-enabled-check",
+            "Id": f"{guarddutyAccountArn}/guardduty-enabled-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": generatorUuid,
+            "GeneratorId": f"{guarddutyAccountArn}/guardduty-enabled-check",
             "AwsAccountId": awsAccountId,
             "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
             "FirstObservedAt": iso8601Time,
@@ -72,8 +72,8 @@ def guard_duty_detector_check(cache: dict, session, awsAccountId: str, awsRegion
             },
             "Resources": [
                 {
-                    "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/AWS_GuardDuty_Check",
+                    "Type": "AwsGuardDutyDetector",
+                    "Id": guarddutyAccountArn,
                     "Partition": "aws",
                     "Region": awsRegion,
                 }
@@ -99,9 +99,9 @@ def guard_duty_detector_check(cache: dict, session, awsAccountId: str, awsRegion
     else:
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": awsAccountId + awsRegion + "/security-services-guardduty-enabled-check",
+            "Id": f"{guarddutyAccountArn}/guardduty-enabled-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": generatorUuid,
+            "GeneratorId": f"{guarddutyAccountArn}/guardduty-enabled-check",
             "AwsAccountId": awsAccountId,
             "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
             "FirstObservedAt": iso8601Time,
@@ -126,12 +126,12 @@ def guard_duty_detector_check(cache: dict, session, awsAccountId: str, awsRegion
                 "AssetDetails": assetB64,
                 "AssetClass": "Security Services",
                 "AssetService": "Amazon GuardDuty",
-                "AssetComponent": "Account Activation"
+                "AssetComponent": "Detector"
             },
             "Resources": [
                 {
-                    "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/AWS_GuardDuty_Check",
+                    "Type": "AwsGuardDutyDetector",
+                    "Id": guarddutyAccountArn,
                     "Partition": "aws",
                     "Region": awsRegion,
                 }
@@ -160,8 +160,8 @@ def detective_graph_check(cache: dict, session, awsAccountId: str, awsRegion: st
     """[Detective.1] Amazon Detective should be enabled"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    # unique ID
-    generatorUuid = str(uuid.uuid4())
+    # Detective "account level" ARN
+    detectiveAccountArn = f"arn:{awsPartition}:detective:{awsRegion}:{awsAccountId}:graph"
     
     detective = session.client("detective")
     r = detective.list_graphs(MaxResults=200)
@@ -171,9 +171,9 @@ def detective_graph_check(cache: dict, session, awsAccountId: str, awsRegion: st
     if not r["GraphList"]:
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": awsAccountId + awsRegion + "/security-services-detective-enabled-check",
+            "Id": f"{detectiveAccountArn}/detective-activated-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": generatorUuid,
+            "GeneratorId": f"{detectiveAccountArn}/detective-activated-check",
             "AwsAccountId": awsAccountId,
             "Types": [
                 "Software and Configuration Checks/AWS Security Best Practices"
@@ -200,12 +200,12 @@ def detective_graph_check(cache: dict, session, awsAccountId: str, awsRegion: st
                 "AssetDetails": assetB64,
                 "AssetClass": "Security Services",
                 "AssetService": "Amazon Detective",
-                "AssetComponent": "Account Activation"
+                "AssetComponent": "Graph"
             },
             "Resources": [
                 {
-                    "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/Amazon_Detective_Check",
+                    "Type": "AwsDetectiveGraph",
+                    "Id": detectiveAccountArn,
                     "Partition": "aws",
                     "Region": awsRegion,
                 }
@@ -231,9 +231,9 @@ def detective_graph_check(cache: dict, session, awsAccountId: str, awsRegion: st
     else:
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": awsAccountId + awsRegion + "/security-services-detective-enabled-check",
+            "Id": f"{detectiveAccountArn}/detective-activated-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": generatorUuid,
+            "GeneratorId": f"{detectiveAccountArn}/detective-activated-check",
             "AwsAccountId": awsAccountId,
             "Types": [
                 "Software and Configuration Checks/AWS Security Best Practices"
@@ -260,12 +260,12 @@ def detective_graph_check(cache: dict, session, awsAccountId: str, awsRegion: st
                 "AssetDetails": assetB64,
                 "AssetClass": "Security Services",
                 "AssetService": "Amazon Detective",
-                "AssetComponent": "Account Activation"
+                "AssetComponent": "Graph"
             },
             "Resources": [
                 {
-                    "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/Amazon_Detective_Check",
+                    "Type": "AwsDetectiveGraph",
+                    "Id": detectiveAccountArn,
                     "Partition": "aws",
                     "Region": awsRegion,
                 }
@@ -294,8 +294,9 @@ def macie_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
     """[Macie.1] Amazon Macie V2 should be enabled"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    # unique ID
-    generatorUuid = str(uuid.uuid4())
+    # Macie2 "account level" ARN
+    macieAccountArn = f"arn:{awsPartition}:macie2:{awsRegion}:{awsAccountId}"
+
     macie2 = session.client("macie2")
     try:
         r = macie2.get_macie_session()
@@ -307,13 +308,15 @@ def macie_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
         assetB64 = base64.b64encode(assetJson)
     except Exception:
         macieEnabled = False
-        assetB64 = base64.b64encode("None.".encode("utf-8"))
-    if macieEnabled == True:
+        assetB64 = None
+    
+    # This is a passing check
+    if macieEnabled is True:
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": awsAccountId + awsRegion + "/security-services-macie-in-use-check",
+            "Id": f"{macieAccountArn}/macie2-activated-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": generatorUuid,
+            "GeneratorId": f"{macieAccountArn}/macie2-activated-check",
             "AwsAccountId": awsAccountId,
             "Types": [
                 "Software and Configuration Checks/AWS Security Best Practices"
@@ -340,12 +343,12 @@ def macie_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
                 "AssetDetails": assetB64,
                 "AssetClass": "Security Services",
                 "AssetService": "Amazon Macie",
-                "AssetComponent": "Account Activation"
+                "AssetComponent": "Session"
             },
             "Resources": [
                 {
-                    "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/Amazon_Macie_Check",
+                    "Type": "AwsMacie2Session",
+                    "Id": macieAccountArn,
                     "Partition": "aws",
                     "Region": awsRegion,
                 }
@@ -361,7 +364,8 @@ def macie_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
                     "AICPA TSC CC7.2",
                     "ISO 27001:2013 A.12.4.1",
                     "ISO 27001:2013 A.16.1.1",
-                    "ISO 27001:2013 A.16.1.4"
+                    "ISO 27001:2013 A.16.1.4",
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.4"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -371,9 +375,9 @@ def macie_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
     else:
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": awsAccountId + awsRegion + "/security-services-macie-in-use-check",
+            "Id": f"{macieAccountArn}/macie2-activated-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": generatorUuid,
+            "GeneratorId": f"{macieAccountArn}/macie2-activated-check",
             "AwsAccountId": awsAccountId,
             "Types": [
                 "Software and Configuration Checks/AWS Security Best Practices"
@@ -400,12 +404,12 @@ def macie_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
                 "AssetDetails": assetB64,
                 "AssetClass": "Security Services",
                 "AssetService": "Amazon Macie",
-                "AssetComponent": "Account Activation"
+                "AssetComponent": "Session"
             },
             "Resources": [
                 {
-                    "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/Amazon_Macie_Check",
+                    "Type": "AwsMacie2Session",
+                    "Id": macieAccountArn,
                     "Partition": "aws",
                     "Region": awsRegion,
                 }
@@ -422,9 +426,12 @@ def macie_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
                     "ISO 27001:2013 A.12.4.1",
                     "ISO 27001:2013 A.16.1.1",
                     "ISO 27001:2013 A.16.1.4",
-                ],
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.4"
+                ]
             },
             "Workflow": {"Status": "NEW"},
             "RecordState": "ACTIVE",
         }
         yield finding
+
+## END FOR NOW...
