@@ -18,10 +18,11 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import datetime
 from check_register import CheckRegister
+import datetime
 import base64
 import json
+from botocore.exceptions import ClientError
 
 registry = CheckRegister()
 
@@ -531,155 +532,153 @@ def aws_s3_bucket_policy_allows_public_access_check(cache: dict, session, awsAcc
     """[S3.4] AWS S3 Bucket Policies should not allow public access to the bucket"""
     s3 = session.client("s3")
     # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for buckets in list_buckets(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(buckets,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         bucketName = buckets["Name"]
         s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
-        iso8601Time = (
-            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        )
+        # A bucket (for the most part) requires explicit settings in a Bucket Polocy to make it Public
+        # if there is not a Policy, or the Policy doesn't return "IsPublic" then it's not
         try:
-            s3.get_bucket_policy(Bucket=bucketName)
-            try:
-                if s3.get_bucket_policy_status(Bucket=bucketName)["PolicyStatus"]["IsPublic"] is not False:
-                    finding = {
-                        "SchemaVersion": "2018-10-08",
-                        "Id": s3Arn + "/s3-bucket-policy-allows-public-access-check",
-                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": s3Arn,
-                        "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices",
-                            "Effects/Data Exposure",
-                        ],
-                        "FirstObservedAt": iso8601Time,
-                        "CreatedAt": iso8601Time,
-                        "UpdatedAt": iso8601Time,
-                        "Severity": {"Label": "CRITICAL"},
-                        "Confidence": 99,
-                        "Title": "[S3.4] AWS S3 Bucket Policies should not allow public access to the bucket",
-                        "Description": f"AWS S3 bucket {bucketName} has a bucket policy attached that allows public access. When a Bucket Policy is assessed as being public it means that unauthenticated and anonymous users can access the objects within the bucket and download them. While there are some business use cases such as serving up static assets or public datasets, you should still use Amazon CloudFront (or another Content Delivery Network solution) and other safeguards to prevent abuse. Several large data breaches have been from the result of having a public bucket, this is a high priority finding to investigate! Refer to the remediation instructions if this configuration is not intended.",
-                        "Remediation": {
-                            "Recommendation": {
-                                "Text": "For more information on Bucket Policies and how to configure it refer to the Bucket Policy Examples section of the Amazon Simple Storage Service Developer Guide",
-                                "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html",
-                            }
-                        },
-                        "ProductFields": {
-                            "ProductName": "ElectricEye",
-                            "Provider": "AWS",
-                            "ProviderType": "CSP",
-                            "ProviderAccountId": awsAccountId,
-                            "AssetRegion": global_region_generator(awsPartition),
-                            "AssetDetails": assetB64,
-                            "AssetClass": "Storage",
-                            "AssetService": "Amazon S3",
-                            "AssetComponent": "Bucket"
-                        },
-                        "Resources": [
-                            {
-                                "Type": "AwsS3Bucket",
-                                "Id": s3Arn,
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                            }
-                        ],
-                        "Compliance": {
-                            "Status": "FAILED",
-                            "RelatedRequirements": [
-                                "NIST CSF V1.1 PR.AC-3",
-                                "NIST SP 800-53 Rev. 4 AC-1",
-                                "NIST SP 800-53 Rev. 4 AC-17",
-                                "NIST SP 800-53 Rev. 4 AC-19",
-                                "NIST SP 800-53 Rev. 4 AC-20",
-                                "NIST SP 800-53 Rev. 4 SC-15",
-                                "AICPA TSC CC6.6",
-                                "ISO 27001:2013 A.6.2.1",
-                                "ISO 27001:2013 A.6.2.2",
-                                "ISO 27001:2013 A.11.2.6",
-                                "ISO 27001:2013 A.13.1.1",
-                                "ISO 27001:2013 A.13.2.1",
-                                "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.5"
-                            ]
-                        },
-                        "Workflow": {"Status": "NEW"},
-                        "RecordState": "ACTIVE",
+            bucketPublic = s3.get_bucket_policy_status(Bucket=bucketName)["PolicyStatus"]["IsPublic"]
+        except ClientError:
+            bucketPublic = False
+
+        # this is a failing check
+        if bucketPublic is True:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": s3Arn + "/s3-bucket-policy-allows-public-access-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": s3Arn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure",
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "CRITICAL"},
+                "Confidence": 99,
+                "Title": "[S3.4] AWS S3 Bucket Policies should not allow public access to the bucket",
+                "Description": f"AWS S3 bucket {bucketName} has a bucket policy attached that allows public access. When a Bucket Policy is assessed as being public it means that unauthenticated and anonymous users can access the objects within the bucket and download them. While there are some business use cases such as serving up static assets or public datasets, you should still use Amazon CloudFront (or another Content Delivery Network solution) and other safeguards to prevent abuse. Several large data breaches have been from the result of having a public bucket, this is a high priority finding to investigate! Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Bucket Policies and how to configure it refer to the Bucket Policy Examples section of the Amazon Simple Storage Service Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html"
                     }
-                    yield finding
-                else:
-                    finding = {
-                        "SchemaVersion": "2018-10-08",
-                        "Id": s3Arn + "/s3-bucket-policy-allows-public-access-check",
-                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": s3Arn,
-                        "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices",
-                            "Effects/Data Exposure",
-                        ],
-                        "FirstObservedAt": iso8601Time,
-                        "CreatedAt": iso8601Time,
-                        "UpdatedAt": iso8601Time,
-                        "Severity": {"Label": "INFORMATIONAL"},
-                        "Confidence": 99,
-                        "Title": "[S3.4] AWS S3 Bucket Policies should not allow public access to the bucket",
-                        "Description": "AWS S3 bucket "
-                        + bucketName
-                        + " has a bucket policy attached and it does not allow public access.",
-                        "Remediation": {
-                            "Recommendation": {
-                                "Text": "For more information on Bucket Policies and how to configure it refer to the Bucket Policy Examples section of the Amazon Simple Storage Service Developer Guide",
-                                "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html",
-                            }
-                        },
-                        "ProductFields": {
-                            "ProductName": "ElectricEye",
-                            "Provider": "AWS",
-                            "ProviderType": "CSP",
-                            "ProviderAccountId": awsAccountId,
-                            "AssetRegion": global_region_generator(awsPartition),
-                            "AssetDetails": assetB64,
-                            "AssetClass": "Storage",
-                            "AssetService": "Amazon S3",
-                            "AssetComponent": "Bucket"
-                        },
-                        "Resources": [
-                            {
-                                "Type": "AwsS3Bucket",
-                                "Id": s3Arn,
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                            }
-                        ],
-                        "Compliance": {
-                            "Status": "PASSED",
-                            "RelatedRequirements": [
-                                "NIST CSF V1.1 PR.AC-3",
-                                "NIST SP 800-53 Rev. 4 AC-1",
-                                "NIST SP 800-53 Rev. 4 AC-17",
-                                "NIST SP 800-53 Rev. 4 AC-19",
-                                "NIST SP 800-53 Rev. 4 AC-20",
-                                "NIST SP 800-53 Rev. 4 SC-15",
-                                "AICPA TSC CC6.6",
-                                "ISO 27001:2013 A.6.2.1",
-                                "ISO 27001:2013 A.6.2.2",
-                                "ISO 27001:2013 A.11.2.6",
-                                "ISO 27001:2013 A.13.1.1",
-                                "ISO 27001:2013 A.13.2.1",
-                                "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.5"
-                            ]
-                        },
-                        "Workflow": {"Status": "RESOLVED"},
-                        "RecordState": "ARCHIVED"
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": global_region_generator(awsPartition),
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon S3",
+                    "AssetComponent": "Bucket"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsS3Bucket",
+                        "Id": s3Arn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
                     }
-                    yield finding
-            except Exception as e:
-                print(e)
-        except Exception as e:
-            # This bucket does not have a bucket policy and the status cannot be checked
-            pass
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.5"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": s3Arn + "/s3-bucket-policy-allows-public-access-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": s3Arn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure",
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[S3.4] AWS S3 Bucket Policies should not allow public access to the bucket",
+                "Description": "AWS S3 bucket "
+                + bucketName
+                + " has a bucket policy attached and it does not allow public access.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Bucket Policies and how to configure it refer to the Bucket Policy Examples section of the Amazon Simple Storage Service Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": global_region_generator(awsPartition),
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon S3",
+                    "AssetComponent": "Bucket"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsS3Bucket",
+                        "Id": s3Arn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.5"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 @registry.register_check("s3")
 def aws_s3_bucket_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -873,7 +872,7 @@ def aws_s3_bucket_access_logging_check(cache: dict, session, awsAccountId: str, 
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Bucket Policies and how to configure it refer to the Amazon S3 Server Access Logging section of the Amazon Simple Storage Service Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html",
+                        "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html"
                     }
                 },
                 "ProductFields": {
@@ -946,7 +945,7 @@ def aws_s3_bucket_access_logging_check(cache: dict, session, awsAccountId: str, 
                 "RecordState": "ARCHIVED",
             }
             yield finding
-        except KeyError:
+        except ClientError or KeyError:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": s3Arn + "/s3-bucket-server-access-logging-check",

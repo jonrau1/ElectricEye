@@ -225,7 +225,7 @@ The ASM Module uses NMAP at its core and will be expanded to include ZAP and Sho
 
 ## AWS Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **602 Checks** across **83 Auditors** that support the secure configuration of **116 services/components**
+These are the following services and checks perform by each Auditor, there are currently **604 Checks** across **83 Auditors** that support the secure configuration of **116 services/components**
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service**: AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
@@ -561,11 +561,13 @@ These are the following services and checks perform by each Auditor, there are c
 | AWS_CloudHSM_Auditor | CloudHSM Cluster | Is the CloudHSM Cluster in a degraded state |
 | AWS_CloudHSM_Auditor | CloudHSM HSM Module | Is the CloudHSM hardware security module in a degraded state |
 | AWS_CloudHSM_Auditor | CloudHSM Backups | Is there at least one backup in a READY state |
-| AWS_CloudTrail_Auditor | CloudTrail | Is the trail multi-region |
-| AWS_CloudTrail_Auditor | CloudTrail | Does the trail send logs to CWL |
-| AWS_CloudTrail_Auditor | CloudTrail | Is the trail encrypted by KMS |
-| AWS_CloudTrail_Auditor | CloudTrail | Are global/management events logged |
-| AWS_CloudTrail_Auditor | CloudTrail | Is log file validation enabled |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Is the trail multi-region |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail send logs to CWL |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Are the trail logs encrypted by a KMS CMK |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Are global/management events logged |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Is log file validation enabled |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Is the log bucket publicly accessible |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the log bucket enable server access logging |
 | AWS_CodeArtifact_Auditor | CodeArtifact Repo | Does the CodeArtifact Repo have a least privilege resource policy attached |
 | AWS_CodeArtifact_Auditor | CodeArtifact Domain | Does the CodeArtifact Domain have a least privilege resource policy attached |
 | AWS_CodeBuild_Auditor | CodeBuild project | Is artifact encryption enabled |

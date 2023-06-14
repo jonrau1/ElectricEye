@@ -22,6 +22,7 @@ from check_register import CheckRegister
 import datetime
 import base64
 import json
+from botocore.exceptions import ClientError
 
 registry = CheckRegister()
 
@@ -34,6 +35,27 @@ def get_all_shadow_trails(cache, session):
 
     cache["get_all_shadow_trails"] = cloudtrail.describe_trails(includeShadowTrails=True)["trailList"]
     return cache["get_all_shadow_trails"]
+
+def check_if_bucket_is_public(session, bucketName):
+    s3 = session.client("s3")
+
+    try:
+        bucketPublic = s3.get_bucket_policy_status(Bucket=bucketName)["PolicyStatus"]["IsPublic"]
+    except ClientError:
+        bucketPublic = False
+
+    return bucketPublic
+
+def check_bucket_server_access_logging(session, bucketName):
+    s3 = session.client("s3")
+
+    logging = s3.get_bucket_logging(Bucket=bucketName)
+    if "LoggingEnabled" in logging:
+        serverAccessLogging = True
+    else:
+        serverAccessLogging = False
+
+    return serverAccessLogging
 
 @registry.register_check("cloudtrail")
 def cloudtrail_multi_region_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -879,6 +901,372 @@ def cloudtrail_log_file_validation_check(cache: dict, session, awsAccountId: str
                         "ISO 27001:2013 A.14.1.3",
                         "ISO 27001:2013 A.14.2.4",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 3.2"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("cloudtrail")
+def cloudtrail_bucket_public_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudTrail.6] AWS CloudTrail trail Amazon S3 logs bucket should not be publicly accessible"""
+    s3 = session.client("s3")
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for trail in get_all_shadow_trails(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(trail,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        trailArn = trail["TrailARN"]
+        trailName = trail["Name"]
+        bucketName = trail["S3BucketName"]
+        # Get the bucket from the trail and pass it to another function to check if it is public facing. If so, that's really fucking bad and stupid
+        # first, we need to use HeadBucket to make sure it's in our Account, if not we'll skip it
+        try:
+            s3.head_bucket(Bucket=bucketName)
+            bucketInAccount = True
+        except ClientError:
+            print(f"S3 Bucket {bucketName} for AWS CloudTrail trail {trailName} is not located in this Account - skipping!")
+            bucketInAccount = False
+
+        if bucketInAccount is False:
+            continue
+        else:
+            bucketPublic = check_if_bucket_is_public(session, bucketName)
+
+        # this is a failing check
+        if bucketPublic is True:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-s3-bucket-is-public-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-s3-bucket-is-public-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "CRITICAL"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.6] AWS CloudTrail trail Amazon S3 logs bucket should not be publicly accessible",
+                "Description": f"AWS CloudTrail trail {trailName} Amazon S3 logs bucket is publicly accessible. Allowing public access to CloudTrail log content may aid an adversary in identifying weaknesses in the affected account's use or configuration. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Bucket Policies and how to configure it refer to the Bucket Policy Examples section of the Amazon Simple Storage Service Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-s3-bucket-is-public-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-s3-bucket-is-public-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.6] AWS CloudTrail trail Amazon S3 logs bucket should not be publicly accessible",
+                "Description": f"AWS CloudTrail trail {trailName} Amazon S3 logs bucket is not publicly accessible.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Bucket Policies and how to configure it refer to the Bucket Policy Examples section of the Amazon Simple Storage Service Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("cloudtrail")
+def cloudtrail_bucket_server_access_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudTrail.7] AWS CloudTrail trail Amazon S3 logs bucket should enable server access logging"""
+    s3 = session.client("s3")
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for trail in get_all_shadow_trails(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(trail,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        trailArn = trail["TrailARN"]
+        trailName = trail["Name"]
+        bucketName = trail["S3BucketName"]
+        # Get the bucket from the trail and pass it to another function to check if it is public facing. If so, that's really fucking bad and stupid
+        # first, we need to use HeadBucket to make sure it's in our Account, if not we'll skip it
+        try:
+            s3.head_bucket(Bucket=bucketName)
+            bucketInAccount = True
+        except ClientError:
+            print(f"S3 Bucket {bucketName} for AWS CloudTrail trail {trailName} is not located in this Account - skipping!")
+            bucketInAccount = False
+
+        if bucketInAccount is False:
+            continue
+        else:
+            serverAccessLogging = check_bucket_server_access_logging(session, bucketName)
+
+        # this is a failing check
+        if serverAccessLogging is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-s3-bucket-server-access-logging-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-s3-bucket-server-access-logging-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.7] AWS CloudTrail trail Amazon S3 logs bucket should enable server access logging",
+                "Description": f"AWS CloudTrail trail {trailName} Amazon S3 logs bucket does not enable server access logging. By enabling S3 bucket logging on target S3 buckets, it is possible to capture all events which may affect objects within any target buckets. Configuring logs to be placed in a separate bucket allows access to log information which can be useful in security and incident response workflows. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Bucket Policies and how to configure it refer to the Amazon S3 Server Access Logging section of the Amazon Simple Storage Service Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.6"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-s3-bucket-server-access-logging-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-s3-bucket-server-access-logging-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.7] AWS CloudTrail trail Amazon S3 logs bucket should enable server access logging",
+                "Description": f"AWS CloudTrail trail {trailName} Amazon S3 logs bucket does enable server access logging.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Bucket Policies and how to configure it refer to the Amazon S3 Server Access Logging section of the Amazon Simple Storage Service Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.6"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
