@@ -313,7 +313,8 @@ def aws_vpc_flow_logs_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "ISO 27001:2013 A.13.2.2",
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
-                        "ISO 27001:2013 A.16.1.7"
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.9"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -405,7 +406,8 @@ def aws_vpc_flow_logs_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "ISO 27001:2013 A.13.2.2",
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
-                        "ISO 27001:2013 A.16.1.7"
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.9"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
