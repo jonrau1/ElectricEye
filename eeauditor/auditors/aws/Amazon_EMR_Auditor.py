@@ -35,7 +35,7 @@ def list_clusters(cache, session):
 
 @registry.register_check("elasticmapreduce")
 def emr_cluster_security_configuration_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EMR.1] EMR Clusters should have a security configuration specified"""
+    """[EMR.1] Amazon Elastic MapReduce (EMR) Clusters should have a security configuration specified"""
     emr = session.client("emr")
     for cluster in list_clusters(cache, session)["Clusters"]:
         clusterId = str(cluster["Id"])
@@ -62,13 +62,13 @@ def emr_cluster_security_configuration_check(cache: dict, session, awsAccountId:
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[EMR.1] EMR Clusters should have a security configuration specified",
-                "Description": "EMR Cluster "
+                "Title": "[EMR.1] Amazon Elastic MapReduce (EMR) Clusters should have a security configuration specified",
+                "Description": "Amazon Elastic MapReduce (EMR) Cluster "
                 + clusterName
                 + " has a security configuration specified.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "EMR cluster security configurations cannot be specified after creation. For information on creating and attaching a security configuration refer to the Use Security Configurations to Set Up Cluster Security section of the Amazon EMR Management Guide",
+                        "Text": "Amazon Elastic MapReduce (EMR) cluster security configurations cannot be specified after creation. For information on creating and attaching a security configuration refer to the Use Security Configurations to Set Up Cluster Security section of the Amazon EMR Management Guide",
                         "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-security-configurations.html",
                     }
                 },
@@ -143,13 +143,13 @@ def emr_cluster_security_configuration_check(cache: dict, session, awsAccountId:
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "MEDIUM"},
                     "Confidence": 99,
-                    "Title": "[EMR.1] EMR Clusters should have a security configuration specified",
-                    "Description": "EMR Cluster "
+                    "Title": "[EMR.1] Amazon Elastic MapReduce (EMR) Clusters should have a security configuration specified",
+                    "Description": "Amazon Elastic MapReduce (EMR) Cluster "
                     + clusterName
                     + " does not have a security configuration specified. Security configurations are used to define encryption, authorization and authentication strategies for your EMR cluster. Clusters cannot be modified after creation, for more information refer to the remediation section.",
                     "Remediation": {
                         "Recommendation": {
-                            "Text": "EMR cluster security configurations cannot be specified after creation. For information on creating and attaching a security configuration refer to the Use Security Configurations to Set Up Cluster Security section of the Amazon EMR Management Guide",
+                            "Text": "Amazon Elastic MapReduce (EMR) cluster security configurations cannot be specified after creation. For information on creating and attaching a security configuration refer to the Use Security Configurations to Set Up Cluster Security section of the Amazon EMR Management Guide",
                             "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-security-configurations.html",
                         }
                     },
@@ -211,7 +211,7 @@ def emr_cluster_security_configuration_check(cache: dict, session, awsAccountId:
 
 @registry.register_check("elasticmapreduce")
 def emr_security_config_encryption_in_transit_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EMR.2] EMR Cluster security configurations should enforce encryption in transit"""
+    """[EMR.2] Amazon Elastic MapReduce (EMR) Cluster security configurations should enforce encryption in transit"""
     emr = session.client("emr")
     for cluster in list_clusters(cache, session)["Clusters"]:
         clusterId = str(cluster["Id"])
@@ -252,13 +252,13 @@ def emr_security_config_encryption_in_transit_check(cache: dict, session, awsAcc
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "HIGH"},
                             "Confidence": 99,
-                            "Title": "[EMR.2] EMR Cluster security configurations should enforce encryption in transit",
-                            "Description": "EMR Cluster "
+                            "Title": "[EMR.2] Amazon Elastic MapReduce (EMR) Cluster security configurations should enforce encryption in transit",
+                            "Description": "Amazon Elastic MapReduce (EMR) Cluster "
                             + clusterName
                             + " has a security configuration specified that does not enforce encryption in transit. Security configurations are used to define encryption, authorization and authentication strategies for your EMR cluster. Clusters cannot be modified after creation, for more information refer to the remediation section.",
                             "Remediation": {
                                 "Recommendation": {
-                                    "Text": "EMR cluster security configurations cannot be specified after creation. For information on encryption in transit refer to the Encryption in Transit section of the Amazon EMR Management Guide",
+                                    "Text": "Amazon Elastic MapReduce (EMR) cluster security configurations cannot be specified after creation. For information on encryption in transit refer to the Encryption in Transit section of the Amazon EMR Management Guide",
                                     "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-data-encryption-options.html#emr-encryption-intransit",
                                 }
                             },
@@ -323,13 +323,13 @@ def emr_security_config_encryption_in_transit_check(cache: dict, session, awsAcc
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "INFORMATIONAL"},
                             "Confidence": 99,
-                            "Title": "[EMR.2] EMR Cluster security configurations should enforce encryption in transit",
-                            "Description": "EMR Cluster "
+                            "Title": "[EMR.2] Amazon Elastic MapReduce (EMR) Cluster security configurations should enforce encryption in transit",
+                            "Description": "Amazon Elastic MapReduce (EMR) Cluster "
                             + clusterName
                             + " has a security configuration specified that enforces encryption in transit.",
                             "Remediation": {
                                 "Recommendation": {
-                                    "Text": "EMR cluster security configurations cannot be specified after creation. For information on encryption in transit refer to the Encryption in Transit section of the Amazon EMR Management Guide",
+                                    "Text": "Amazon Elastic MapReduce (EMR) cluster security configurations cannot be specified after creation. For information on encryption in transit refer to the Encryption in Transit section of the Amazon EMR Management Guide",
                                     "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-data-encryption-options.html#emr-encryption-intransit",
                                 }
                             },
@@ -391,7 +391,7 @@ def emr_security_config_encryption_in_transit_check(cache: dict, session, awsAcc
 
 @registry.register_check("elasticmapreduce")
 def emr_security_config_encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EMR.3] EMR Cluster security configurations should enforce encryption at rest for EMRFS"""
+    """[EMR.3] Amazon Elastic MapReduce (EMR) Cluster security configurations should enforce encryption at rest for EMRFS"""
     emr = session.client("emr")
     for cluster in list_clusters(cache, session)["Clusters"]:
         clusterId = str(cluster["Id"])
@@ -430,13 +430,13 @@ def emr_security_config_encryption_at_rest_check(cache: dict, session, awsAccoun
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "HIGH"},
                             "Confidence": 99,
-                            "Title": "[EMR.3] EMR Cluster security configurations should enforce encryption at rest for EMRFS",
-                            "Description": "EMR Cluster "
+                            "Title": "[EMR.3] Amazon Elastic MapReduce (EMR) Cluster security configurations should enforce encryption at rest for EMRFS",
+                            "Description": "Amazon Elastic MapReduce (EMR) Cluster "
                             + clusterName
                             + " has a security configuration specified that does not enforce encryption at rest for EMRFS. Security configurations are used to define encryption, authorization and authentication strategies for your EMR cluster. Clusters cannot be modified after creation, for more information refer to the remediation section.",
                             "Remediation": {
                                 "Recommendation": {
-                                    "Text": "EMR cluster security configurations cannot be specified after creation. For information on encryption at rest for EMRFS refer to the Encryption at Rest for EMRFS Data in Amazon S3 section of the Amazon EMR Management Guide",
+                                    "Text": "Amazon Elastic MapReduce (EMR) cluster security configurations cannot be specified after creation. For information on encryption at rest for EMRFS refer to the Encryption at Rest for EMRFS Data in Amazon S3 section of the Amazon EMR Management Guide",
                                     "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-data-encryption-options.html#emr-encryption-s3",
                                 }
                             },
@@ -496,13 +496,13 @@ def emr_security_config_encryption_at_rest_check(cache: dict, session, awsAccoun
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "INFORMATIONAL"},
                             "Confidence": 99,
-                            "Title": "[EMR.3] EMR Cluster security configurations should enforce encryption at rest for EMRFS",
-                            "Description": "EMR Cluster "
+                            "Title": "[EMR.3] Amazon Elastic MapReduce (EMR) Cluster security configurations should enforce encryption at rest for EMRFS",
+                            "Description": "Amazon Elastic MapReduce (EMR) Cluster "
                             + clusterName
                             + " has a security configuration specified that does not enforce encryption at rest for EMRFS. Security configurations are used to define encryption, authorization and authentication strategies for your EMR cluster. Clusters cannot be modified after creation, for more information refer to the remediation section.",
                             "Remediation": {
                                 "Recommendation": {
-                                    "Text": "EMR cluster security configurations cannot be specified after creation. For information on encryption at rest for EMRFS refer to the Encryption at Rest for EMRFS Data in Amazon S3 section of the Amazon EMR Management Guide",
+                                    "Text": "Amazon Elastic MapReduce (EMR) cluster security configurations cannot be specified after creation. For information on encryption at rest for EMRFS refer to the Encryption at Rest for EMRFS Data in Amazon S3 section of the Amazon EMR Management Guide",
                                     "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-data-encryption-options.html#emr-encryption-s3",
                                 }
                             },
@@ -559,7 +559,7 @@ def emr_security_config_encryption_at_rest_check(cache: dict, session, awsAccoun
 
 @registry.register_check("elasticmapreduce")
 def emr_security_config_config_ebs_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EMR.4] EMR Cluster security configurations should enforce encryption at rest for EBS"""
+    """[EMR.4] Amazon Elastic MapReduce (EMR) Cluster security configurations should enforce encryption at rest for EBS"""
     emr = session.client("emr")
     for cluster in list_clusters(cache, session)["Clusters"]:
         clusterId = str(cluster["Id"])
@@ -600,13 +600,13 @@ def emr_security_config_config_ebs_encryption_check(cache: dict, session, awsAcc
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "HIGH"},
                             "Confidence": 99,
-                            "Title": "[EMR.4] EMR Cluster security configurations should enforce encryption at rest for EBS",
-                            "Description": "EMR Cluster "
+                            "Title": "[EMR.4] Amazon Elastic MapReduce (EMR) Cluster security configurations should enforce encryption at rest for EBS",
+                            "Description": "Amazon Elastic MapReduce (EMR) Cluster "
                             + clusterName
                             + " has a security configuration specified that does not enforce encryption at rest for EBS. Security configurations are used to define encryption, authorization and authentication strategies for your EMR cluster. Clusters cannot be modified after creation, for more information refer to the remediation section.",
                             "Remediation": {
                                 "Recommendation": {
-                                    "Text": "EMR cluster security configurations cannot be specified after creation. For information on encryption at rest for EBS refer to the Local Disk Encryption section of the Amazon EMR Management Guide",
+                                    "Text": "Amazon Elastic MapReduce (EMR) cluster security configurations cannot be specified after creation. For information on encryption at rest for EBS refer to the Local Disk Encryption section of the Amazon EMR Management Guide",
                                     "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-data-encryption-options.html#emr-encryption-localdisk",
                                 }
                             },
@@ -666,13 +666,13 @@ def emr_security_config_config_ebs_encryption_check(cache: dict, session, awsAcc
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "INFORMATIONAL"},
                             "Confidence": 99,
-                            "Title": "[EMR.4] EMR Cluster security configurations should enforce encryption at rest for EBS",
-                            "Description": "EMR Cluster "
+                            "Title": "[EMR.4] Amazon Elastic MapReduce (EMR) Cluster security configurations should enforce encryption at rest for EBS",
+                            "Description": "Amazon Elastic MapReduce (EMR) Cluster "
                             + clusterName
                             + " has a security configuration specified that enforces encryption at rest for EBS.",
                             "Remediation": {
                                 "Recommendation": {
-                                    "Text": "EMR cluster security configurations cannot be specified after creation. For information on encryption at rest for EBS refer to the Local Disk Encryption section of the Amazon EMR Management Guide",
+                                    "Text": "Amazon Elastic MapReduce (EMR) cluster security configurations cannot be specified after creation. For information on encryption at rest for EBS refer to the Local Disk Encryption section of the Amazon EMR Management Guide",
                                     "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-data-encryption-options.html#emr-encryption-localdisk",
                                 }
                             },
@@ -734,13 +734,13 @@ def emr_security_config_config_ebs_encryption_check(cache: dict, session, awsAcc
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "MEDIUM"},
                             "Confidence": 99,
-                            "Title": "[EMR.4] EMR Cluster security configurations should enforce encryption at rest for EBS",
-                            "Description": "EMR Cluster "
+                            "Title": "[EMR.4] Amazon Elastic MapReduce (EMR) Cluster security configurations should enforce encryption at rest for EBS",
+                            "Description": "Amazon Elastic MapReduce (EMR) Cluster "
                             + clusterName
                             + " has a security configuration that does not have any local disk encryption configured. Security configurations are used to define encryption, authorization and authentication strategies for your EMR cluster. Clusters cannot be modified after creation, for more information refer to the remediation section.",
                             "Remediation": {
                                 "Recommendation": {
-                                    "Text": "EMR cluster security configurations cannot be specified after creation. For information on encryption at rest for EBS refer to the Local Disk Encryption section of the Amazon EMR Management Guide",
+                                    "Text": "Amazon Elastic MapReduce (EMR) cluster security configurations cannot be specified after creation. For information on encryption at rest for EBS refer to the Local Disk Encryption section of the Amazon EMR Management Guide",
                                     "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-data-encryption-options.html#emr-encryption-localdisk",
                                 }
                             },
@@ -797,7 +797,7 @@ def emr_security_config_config_ebs_encryption_check(cache: dict, session, awsAcc
 
 @registry.register_check("elasticmapreduce")
 def emr_security_config_kerberos_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EMR.5] EMR Cluster security configurations should enable Kerberos authentication"""
+    """[EMR.5] Amazon Elastic MapReduce (EMR) Cluster security configurations should enable Kerberos authentication"""
     emr = session.client("emr")
     for cluster in list_clusters(cache, session)["Clusters"]:
         clusterId = str(cluster["Id"])
@@ -831,13 +831,13 @@ def emr_security_config_kerberos_check(cache: dict, session, awsAccountId: str, 
                         "UpdatedAt": iso8601Time,
                         "Severity": {"Label": "INFORMATIONAL"},
                         "Confidence": 99,
-                        "Title": "[EMR.5] EMR Cluster security configurations should enable Kerberos authentication",
-                        "Description": "EMR Cluster "
+                        "Title": "[EMR.5] Amazon Elastic MapReduce (EMR) Cluster security configurations should enable Kerberos authentication",
+                        "Description": "Amazon Elastic MapReduce (EMR) Cluster "
                         + clusterName
                         + " has a security configuration specified that does not enable Kerberos authentication. Security configurations are used to define encryption, authorization and authentication strategies for your EMR cluster. Clusters cannot be modified after creation, for more information refer to the remediation section.",
                         "Remediation": {
                             "Recommendation": {
-                                "Text": "EMR cluster security configurations cannot be specified after creation. For information on Kerberized EMR clusters refer to the Use Kerberos Authentication section of the Amazon EMR Management Guide",
+                                "Text": "Amazon Elastic MapReduce (EMR) cluster security configurations cannot be specified after creation. For information on Kerberized EMR clusters refer to the Use Kerberos Authentication section of the Amazon EMR Management Guide",
                                 "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-kerberos.html",
                             }
                         },
@@ -909,13 +909,13 @@ def emr_security_config_kerberos_check(cache: dict, session, awsAccountId: str, 
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "MEDIUM"},
                             "Confidence": 99,
-                            "Title": "[EMR.5] EMR Cluster security configurations should enable Kerberos authentication",
-                            "Description": "EMR Cluster "
+                            "Title": "[EMR.5] Amazon Elastic MapReduce (EMR) Cluster security configurations should enable Kerberos authentication",
+                            "Description": "Amazon Elastic MapReduce (EMR) Cluster "
                             + clusterName
                             + " has a security configuration specified that does not enable Kerberos authentication. Security configurations are used to define encryption, authorization and authentication strategies for your EMR cluster. Clusters cannot be modified after creation, for more information refer to the remediation section.",
                             "Remediation": {
                                 "Recommendation": {
-                                    "Text": "EMR cluster security configurations cannot be specified after creation. For information on Kerberized EMR clusters refer to the Use Kerberos Authentication section of the Amazon EMR Management Guide",
+                                    "Text": "Amazon Elastic MapReduce (EMR) cluster security configurations cannot be specified after creation. For information on Kerberized EMR clusters refer to the Use Kerberos Authentication section of the Amazon EMR Management Guide",
                                     "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-kerberos.html",
                                 }
                             },
@@ -983,7 +983,7 @@ def emr_security_config_kerberos_check(cache: dict, session, awsAccountId: str, 
 
 @registry.register_check("elasticmapreduce")
 def emr_cluster_termination_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EMR.6] EMR Clusters should have termination protection enabled"""
+    """[EMR.6] Amazon Elastic MapReduce (EMR) Clusters should have termination protection enabled"""
     emr = session.client("emr")
     for cluster in list_clusters(cache, session)["Clusters"]:
         clusterId = str(cluster["Id"])
@@ -1012,8 +1012,8 @@ def emr_cluster_termination_protection_check(cache: dict, session, awsAccountId:
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
-                    "Title": "[EMR.6] EMR Clusters should have termination protection enabled",
-                    "Description": "EMR Cluster "
+                    "Title": "[EMR.6] Amazon Elastic MapReduce (EMR) Clusters should have termination protection enabled",
+                    "Description": "Amazon Elastic MapReduce (EMR) Cluster "
                     + clusterName
                     + " does not have termination protection enabled. When termination protection is enabled on a long-running cluster, you can still terminate the cluster, but you must explicitly remove termination protection from the cluster first. This helps ensure that EC2 instances are not shut down by an accident or error. If this configuration is not intentional refer to the remediation section.",
                     "Remediation": {
@@ -1091,8 +1091,8 @@ def emr_cluster_termination_protection_check(cache: dict, session, awsAccountId:
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
-                    "Title": "[EMR.6] EMR Clusters should have termination protection enabled",
-                    "Description": "EMR Cluster "
+                    "Title": "[EMR.6] Amazon Elastic MapReduce (EMR) Clusters should have termination protection enabled",
+                    "Description": "Amazon Elastic MapReduce (EMR) Cluster "
                     + clusterName
                     + " has termination protection enabled.",
                     "Remediation": {
@@ -1162,7 +1162,7 @@ def emr_cluster_termination_protection_check(cache: dict, session, awsAccountId:
 
 @registry.register_check("elasticmapreduce")
 def emr_cluster_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EMR.7] EMR Clusters should have logging enabled"""
+    """[EMR.7] Amazon Elastic MapReduce (EMR) Clusters should have logging enabled"""
     emr = session.client("emr")
     for cluster in list_clusters(cache, session)["Clusters"]:
         clusterId = str(cluster["Id"])
@@ -1191,8 +1191,8 @@ def emr_cluster_logging_check(cache: dict, session, awsAccountId: str, awsRegion
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[EMR.7] EMR Clusters should have logging enabled",
-                "Description": "EMR Cluster " + clusterName + " does has logging enabled.",
+                "Title": "[EMR.7] Amazon Elastic MapReduce (EMR) Clusters should have logging enabled",
+                "Description": "Amazon Elastic MapReduce (EMR) Cluster " + clusterName + " does has logging enabled.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on EMR cluster logging and debugging refer to the Configure Cluster Logging and Debugging section of the Amazon EMR Management Guide",
@@ -1289,8 +1289,8 @@ def emr_cluster_logging_check(cache: dict, session, awsAccountId: str, awsRegion
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[EMR.7] EMR Clusters should have logging enabled",
-                "Description": "EMR Cluster "
+                "Title": "[EMR.7] Amazon Elastic MapReduce (EMR) Clusters should have logging enabled",
+                "Description": "Amazon Elastic MapReduce (EMR) Cluster "
                 + clusterName
                 + " does not have logging enabled. You do not need to enable anything to have log files written on the master node. This is the default behavior of Amazon EMR and Hadoop, but can be turned off on creation. If this configuration is not intentional refer to the remediation section.",
                 "Remediation": {
@@ -1375,22 +1375,29 @@ def emr_cluster_logging_check(cache: dict, session, awsAccountId: str, awsRegion
 
 @registry.register_check("elasticmapreduce")
 def emr_cluster_block_secgroup_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EMR.8] EMR account-level public security group access block should be enabled"""
+    """[EMR.8] Amazon Elastic MapReduce (EMR) account-level public security group access block should be enabled"""
     emr = session.client("emr")
-    response = emr.get_block_public_access_configuration()
-    # B64 encode all of the details for the Asset
-    assetJson = json.dumps(response,default=str).encode("utf-8")
-    assetB64 = base64.b64encode(assetJson)
-    blockPubSgCheck = str(
-        response["BlockPublicAccessConfiguration"]["BlockPublicSecurityGroupRules"]
-    )
+    # ISO Time
+    # Fake ARN
+    emrBlockPublicAccessConfigArn = f"arn:{awsPartition}:elasticmapreduce:{awsRegion}:{awsAccountId}:block-public-access-configuration"
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    if blockPubSgCheck == "False":
+    # Check if a public access config exists at all
+    try:
+        response = emr.get_block_public_access_configuration()
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        blockPubSgCheck = response["BlockPublicAccessConfiguration"]["BlockPublicSecurityGroupRules"]
+    except KeyError:
+        blockPubSgCheck = False
+        assetB64 = None
+    # this is a failing check
+    if blockPubSgCheck is False:
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": awsAccountId + "/account-level-emr-block-public-sg-check",
+            "Id": f"{emrBlockPublicAccessConfigArn}/account-level-emr-block-public-sg-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": awsAccountId + "/" + awsRegion + "/" + "emr-acct-sg-block",
+            "GeneratorId": f"{emrBlockPublicAccessConfigArn}/account-level-emr-block-public-sg-check",
             "AwsAccountId": awsAccountId,
             "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
             "FirstObservedAt": iso8601Time,
@@ -1398,16 +1405,12 @@ def emr_cluster_block_secgroup_check(cache: dict, session, awsAccountId: str, aw
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[EMR.8] EMR account-level public security group access block should be enabled",
-            "Description": "EMR account-level public security group access block is not enabled for "
-            + awsAccountId
-            + " in AWS region "
-            + awsRegion
-            + ". Amazon EMR block public access prevents a cluster from launching when any security group associated with the cluster has a rule that allows inbound traffic from IPv4 0.0.0.0/0 or IPv6 ::/0 (public access) on a port, unless the port has been specified as an exception. Port 22 is an exception by default. This is the default behavior of Amazon EMR and Hadoop, but can be turned off on creation. If this configuration is not intentional refer to the remediation section.",
+            "Title": "[EMR.8] Amazon Elastic MapReduce (EMR) account-level public security group access block should be enabled",
+            "Description": f"Amazon Elastic MapReduce (EMR) account-level public security group access block is not enabled for {awsAccountId} in AWS region {awsRegion}. Amazon EMR block public access prevents a cluster from launching when any security group associated with the cluster has a rule that allows inbound traffic from IPv4 0.0.0.0/0 or IPv6 ::/0 (public access) on a port, unless the port has been specified as an exception. Port 22 is an exception by default. This is the default behavior of Amazon EMR and Hadoop, but can be turned off on creation. If this configuration is not intentional refer to the remediation section.",
             "Remediation": {
                 "Recommendation": {
                     "Text": "For information on EMR Block Public Access refer to the Using Amazon EMR Block Public Access section of the Amazon EMR Management Guide",
-                    "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-block-public-access.html",
+                    "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-block-public-access.html"
                 }
             },
             "ProductFields": {
@@ -1419,14 +1422,14 @@ def emr_cluster_block_secgroup_check(cache: dict, session, awsAccountId: str, aw
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "Amazon Elastic MapReduce",
-                "AssetComponent": "Account Configuration"
+                "AssetComponent": "Block Public Access Configuration"
             },
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/EMR_Block_Public_Access_Configuration",
+                    "Id": emrBlockPublicAccessConfigArn,
                     "Partition": awsPartition,
-                    "Region": awsRegion,
+                    "Region": awsRegion
                 }
             ],
             "Compliance": {
@@ -1443,19 +1446,19 @@ def emr_cluster_block_secgroup_check(cache: dict, session, awsAccountId: str, aw
                     "ISO 27001:2013 A.6.2.2",
                     "ISO 27001:2013 A.11.2.6",
                     "ISO 27001:2013 A.13.1.1",
-                    "ISO 27001:2013 A.13.2.1",
-                ],
+                    "ISO 27001:2013 A.13.2.1"
+                ]
             },
             "Workflow": {"Status": "NEW"},
-            "RecordState": "ACTIVE",
+            "RecordState": "ACTIVE"
         }
         yield finding
     else:
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": awsAccountId + "/account-level-emr-block-public-sg-check",
+            "Id": f"{emrBlockPublicAccessConfigArn}/account-level-emr-block-public-sg-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": awsAccountId + "/" + awsRegion + "/" + "emr-acct-sg-block",
+            "GeneratorId": f"{emrBlockPublicAccessConfigArn}/account-level-emr-block-public-sg-check",
             "AwsAccountId": awsAccountId,
             "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
             "FirstObservedAt": iso8601Time,
@@ -1463,16 +1466,12 @@ def emr_cluster_block_secgroup_check(cache: dict, session, awsAccountId: str, aw
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[EMR.8] EMR account-level public security group access block should be enabled",
-            "Description": "EMR account-level public security group access block is not enabled for "
-            + awsAccountId
-            + " in AWS region "
-            + awsRegion
-            + ". Amazon EMR block public access prevents a cluster from launching when any security group associated with the cluster has a rule that allows inbound traffic from IPv4 0.0.0.0/0 or IPv6 ::/0 (public access) on a port, unless the port has been specified as an exception. Port 22 is an exception by default. This is the default behavior of Amazon EMR and Hadoop, but can be turned off on creation. If this configuration is not intentional refer to the remediation section.",
+            "Title": "[EMR.8] Amazon Elastic MapReduce (EMR) account-level public security group access block should be enabled",
+            "Description": f"Amazon Elastic MapReduce (EMR) account-level public security group access block is enabled for {awsAccountId} in AWS region {awsRegion}.",
             "Remediation": {
                 "Recommendation": {
                     "Text": "For information on EMR Block Public Access refer to the Using Amazon EMR Block Public Access section of the Amazon EMR Management Guide",
-                    "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-block-public-access.html",
+                    "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-block-public-access.html"
                 }
             },
             "ProductFields": {
@@ -1484,14 +1483,14 @@ def emr_cluster_block_secgroup_check(cache: dict, session, awsAccountId: str, aw
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "Amazon Elastic MapReduce",
-                "AssetComponent": "Account Configuration"
+                "AssetComponent": "Block Public Access Configuration"
             },
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/EMR_Block_Public_Access_Configuration",
+                    "Id": emrBlockPublicAccessConfigArn,
                     "Partition": awsPartition,
-                    "Region": awsRegion,
+                    "Region": awsRegion
                 }
             ],
             "Compliance": {
@@ -1508,10 +1507,10 @@ def emr_cluster_block_secgroup_check(cache: dict, session, awsAccountId: str, aw
                     "ISO 27001:2013 A.6.2.2",
                     "ISO 27001:2013 A.11.2.6",
                     "ISO 27001:2013 A.13.1.1",
-                    "ISO 27001:2013 A.13.2.1",
-                ],
+                    "ISO 27001:2013 A.13.2.1"
+                ]
             },
             "Workflow": {"Status": "RESOLVED"},
-            "RecordState": "ARCHIVED",
+            "RecordState": "ARCHIVED"
         }
         yield finding
