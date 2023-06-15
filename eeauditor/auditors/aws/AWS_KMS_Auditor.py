@@ -42,7 +42,7 @@ def kms_key_rotation_check(cache: dict, session, awsAccountId: str, awsRegion: s
     kms = session.client("kms")
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for key in list_keys(cache, session)["Keys"]:
+    for key in list_keys(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(key,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -224,7 +224,7 @@ def kms_key_exposed_check(cache: dict, session, awsAccountId: str, awsRegion: st
     kms = session.client("kms")
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for key in list_keys(cache, session)["Keys"]:
+    for key in list_keys(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(key,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)

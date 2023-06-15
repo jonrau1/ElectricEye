@@ -18,7 +18,7 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import botocore.exceptions
+import botocore
 import datetime
 from check_register import CheckRegister
 import base64
@@ -989,6 +989,8 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccoun
     # B64 encode all of the details for the Asset
     assetJson = json.dumps(response,default=str).encode("utf-8")
     assetB64 = base64.b64encode(assetJson)
+    # PW Policy ARN
+    pwPolicyArn = f"arn:{awsPartition}:iam::{awsAccountId}:account-password-policy"
 
     # Sometimes, PW Policy attributes are missing which would make it a fail - different than the error of it not being enabled at all
     try:
@@ -1021,13 +1023,17 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccoun
         if error.response["Error"]["Code"] == "NoSuchEntity":
             cisCompliantPolicy = False
             assetB64 = None
+    except botocore.errorfactory.NoSuchEntityException:
+        cisCompliantPolicy = False
+        assetB64 = None
+
     
     if cisCompliantPolicy is True:
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": awsAccountId + "/cis-aws-foundations-benchmark-pw-policy-check",
+            "Id": f"{pwPolicyArn}/cis-aws-foundations-benchmark-pw-policy-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": awsAccountId + "iam-password-policy",
+            "GeneratorId": f"{pwPolicyArn}/cis-aws-foundations-benchmark-pw-policy-check",
             "AwsAccountId": awsAccountId,
             "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
             "FirstObservedAt": iso8601Time,
@@ -1059,7 +1065,7 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccoun
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/Password_Policy",
+                    "Id": pwPolicyArn,
                     "Partition": awsPartition,
                     "Region": awsRegion,
                 }
@@ -1102,9 +1108,9 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccoun
     else:
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": awsAccountId + "/cis-aws-foundations-benchmark-pw-policy-check",
+            "Id": f"{pwPolicyArn}/cis-aws-foundations-benchmark-pw-policy-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": awsAccountId + "iam-password-policy",
+            "GeneratorId": f"{pwPolicyArn}/cis-aws-foundations-benchmark-pw-policy-check",
             "AwsAccountId": awsAccountId,
             "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
             "FirstObservedAt": iso8601Time,
@@ -1134,7 +1140,7 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccoun
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/Password_Policy",
+                    "Id": pwPolicyArn,
                     "Partition": awsPartition,
                     "Region": awsRegion,
                 }

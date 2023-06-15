@@ -18,8 +18,8 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import datetime
 from check_register import CheckRegister
+import datetime
 import base64
 import json
 
@@ -1242,7 +1242,7 @@ def aws_eni_attached_in_use_check(cache: dict, session, awsAccountId: str, awsRe
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(eni,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        eniId = eni["VerifiedAccessInstanceId"]
+        eniId = eni["NetworkInterfaceId"]
         eniArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:network-interface/{eniId}"
         # This is a failing check
         if eni["Status"] == "available" or "detaching":

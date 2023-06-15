@@ -839,23 +839,28 @@ def aws_s3_bucket_access_logging_check(cache: dict, session, awsAccountId: str, 
     """[S3.6] AWS S3 Buckets should have server access logging enabled"""
     s3 = session.client("s3")
     # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for buckets in list_buckets(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(buckets,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         bucketName = buckets["Name"]
         s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
-        iso8601Time = (
-            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        )
+        # attempt to get server access logging
         try:
             s3.get_bucket_logging(Bucket=bucketName)["LoggingEnabled"]
-            # this is a passing check
+            bucketServerLogging = True
+        except ClientError:
+            bucketServerLogging = False
+        except KeyError:
+            bucketServerLogging = False
+        # this is a passing check
+        if bucketServerLogging is True:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": s3Arn + "/s3-bucket-server-access-logging-check",
+                "Id": f"{s3Arn}/s3-bucket-server-access-logging-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": s3Arn,
+                "GeneratorId": f"{s3Arn}/s3-bucket-server-access-logging-check",
                 "AwsAccountId": awsAccountId,
                 "Types": [
                     "Software and Configuration Checks/AWS Security Best Practices"
@@ -866,9 +871,7 @@ def aws_s3_bucket_access_logging_check(cache: dict, session, awsAccountId: str, 
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[S3.6] AWS S3 Buckets should have server access logging enabled",
-                "Description": "AWS S3 bucket "
-                + bucketName
-                + " does not have server access logging enabled. Refer to the remediation instructions if this configuration is not intended.",
+                "Description": f"AWS S3 bucket {bucketName} does have server access logging enabled.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Bucket Policies and how to configure it refer to the Amazon S3 Server Access Logging section of the Amazon Simple Storage Service Developer Guide",
@@ -945,12 +948,12 @@ def aws_s3_bucket_access_logging_check(cache: dict, session, awsAccountId: str, 
                 "RecordState": "ARCHIVED",
             }
             yield finding
-        except ClientError or KeyError:
+        else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": s3Arn + "/s3-bucket-server-access-logging-check",
+                "Id": f"{s3Arn}/s3-bucket-server-access-logging-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": s3Arn,
+                "GeneratorId": f"{s3Arn}/s3-bucket-server-access-logging-check",
                 "AwsAccountId": awsAccountId,
                 "Types": [
                     "Software and Configuration Checks/AWS Security Best Practices"
@@ -1044,229 +1047,162 @@ def s3_account_level_block(cache: dict, session, awsAccountId: str, awsRegion: s
     """[S3.7] Account-level S3 public access block should be configured"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     s3control = session.client("s3control")
-
+    # Make a fake ARN
+    accountBlockArn = f"arn:{awsPartition}:s3::{awsAccountId}:account-public-access-block"
     # If a Public Access Block is not configured at all we will fail with a higher severity
     try:
-        response = s3control.get_public_access_block(AccountId=awsAccountId)
+        blocker = s3control.get_public_access_block(AccountId=awsAccountId)["PublicAccessBlockConfiguration"]
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetJson = json.dumps(blocker,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        accountBlock = response["PublicAccessBlockConfiguration"]
-        blockAcl = str(accountBlock["BlockPublicAcls"])
-        ignoreAcl = str(accountBlock["IgnorePublicAcls"])
-        blockPubPolicy = str(accountBlock["BlockPublicPolicy"])
-        restrictPubBuckets = str(accountBlock["RestrictPublicBuckets"])
-
+        # If they're all True it's good
         if (
-            blockAcl 
-            and ignoreAcl
-            and blockPubPolicy 
-            and restrictPubBuckets == "True"
+            blocker["BlockPublicAcls"]
+            and blocker["IgnorePublicAcls"]
+            and blocker["BlockPublicPolicy"]
+            and blocker["RestrictPublicBuckets"]
         ):
-        # This is a passing check
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": awsAccountId + "/s3-account-level-public-access-block-check",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": awsAccountId,
-                "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices",
-                    "Effects/Data Exposure",
-                ],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "INFORMATIONAL"},
-                "Confidence": 99,
-                "Title": "[S3.7] Account-level S3 public access block should be configured",
-                "Description": "Account-level S3 public access block for account "
-                + awsAccountId
-                + " is enabled",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "For more information on Account level S3 public access block and how to configure it refer to the Using Amazon S3 Block Public Access section of the Amazon Simple Storage Service Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html",
-                    }
-                },
-                "ProductFields": {
-                    "ProductName": "ElectricEye",
-                    "Provider": "AWS",
-                    "ProviderType": "CSP",
-                    "ProviderAccountId": awsAccountId,
-                    "AssetRegion": global_region_generator(awsPartition),
-                    "AssetDetails": assetB64,
-                    "AssetClass": "Management & Governance",
-                    "AssetService": "Amazon S3",
-                    "AssetComponent": "Account Configuration"
-                },
-                "Resources": [
-                    {
-                        "Type": "AwsAccount",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                    }
-                ],
-                "Compliance": {
-                    "Status": "PASSED",
-                    "RelatedRequirements": [
-                        "NIST CSF V1.1 PR.AC-3",
-                        "NIST SP 800-53 Rev. 4 AC-1",
-                        "NIST SP 800-53 Rev. 4 AC-17",
-                        "NIST SP 800-53 Rev. 4 AC-19",
-                        "NIST SP 800-53 Rev. 4 AC-20",
-                        "NIST SP 800-53 Rev. 4 SC-15",
-                        "AICPA TSC CC6.6",
-                        "ISO 27001:2013 A.6.2.1",
-                        "ISO 27001:2013 A.6.2.2",
-                        "ISO 27001:2013 A.11.2.6",
-                        "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.5"
-                    ]
-                },
-                "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED"
-            }
-            yield finding
+            accountPublicBlock = True
         else:
-            # this is a failing check
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": awsAccountId + "/s3-account-level-public-access-block-check",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": awsAccountId,
-                "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices",
-                    "Effects/Data Exposure",
-                ],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "MEDIUM"},
-                "Confidence": 99,
-                "Title": "[S3.7] Account-level S3 public access block should be configured",
-                "Description": "Account-level S3 public access block for account "
-                + awsAccountId
-                + " is either inactive or is not block all possible scenarios. Refer to the remediation instructions if this configuration is not intended.",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "For more information on Account level S3 public access block and how to configure it refer to the Using Amazon S3 Block Public Access section of the Amazon Simple Storage Service Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html",
-                    }
-                },
-                "ProductFields": {
-                    "ProductName": "ElectricEye",
-                    "Provider": "AWS",
-                    "ProviderType": "CSP",
-                    "ProviderAccountId": awsAccountId,
-                    "AssetRegion": global_region_generator(awsPartition),
-                    "AssetDetails": assetB64,
-                    "AssetClass": "Management & Governance",
-                    "AssetService": "Amazon S3",
-                    "AssetComponent": "Account Configuration"
-                },
-                "Resources": [
-                    {
-                        "Type": "AwsAccount",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                    }
-                ],
-                "Compliance": {
-                    "Status": "FAILED",
-                    "RelatedRequirements": [
-                        "NIST CSF V1.1 PR.AC-3",
-                        "NIST SP 800-53 Rev. 4 AC-1",
-                        "NIST SP 800-53 Rev. 4 AC-17",
-                        "NIST SP 800-53 Rev. 4 AC-19",
-                        "NIST SP 800-53 Rev. 4 AC-20",
-                        "NIST SP 800-53 Rev. 4 SC-15",
-                        "AICPA TSC CC6.6",
-                        "ISO 27001:2013 A.6.2.1",
-                        "ISO 27001:2013 A.6.2.2",
-                        "ISO 27001:2013 A.11.2.6",
-                        "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
-                    ],
-                },
-                "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
-            }
-            yield finding
-    except Exception as e:
-        if str(e) == "An error occurred (NoSuchPublicAccessBlockConfiguration) when calling the GetPublicAccessBlock operation: The public access block configuration was not found":
-            assetB64 = None
-            # this is a failing check
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": awsAccountId + "/s3-account-level-public-access-block-check",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": awsAccountId,
-                "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices",
-                    "Effects/Data Exposure",
-                ],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "HIGH"},
-                "Confidence": 99,
-                "Title": "[S3.7] Account-level S3 public access block should be configured",
-                "Description": f"Account-level S3 public access block for account {awsAccountId} is not configured. Refer to the remediation instructions if this configuration is not intended.",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "For more information on Account level S3 public access block and how to configure it refer to the Using Amazon S3 Block Public Access section of the Amazon Simple Storage Service Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html",
-                    }
-                },
-                "ProductFields": {
-                    "ProductName": "ElectricEye",
-                    "Provider": "AWS",
-                    "ProviderType": "CSP",
-                    "ProviderAccountId": awsAccountId,
-                    "AssetRegion": global_region_generator(awsPartition),
-                    "AssetDetails": assetB64,
-                    "AssetClass": "Management & Governance",
-                    "AssetService": "Amazon S3",
-                    "AssetComponent": "Account Configuration"
-                },
-                "Resources": [
-                    {
-                        "Type": "AwsAccount",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                    }
-                ],
-                "Compliance": {
-                    "Status": "FAILED",
-                    "RelatedRequirements": [
-                        "NIST CSF V1.1 PR.AC-3",
-                        "NIST SP 800-53 Rev. 4 AC-1",
-                        "NIST SP 800-53 Rev. 4 AC-17",
-                        "NIST SP 800-53 Rev. 4 AC-19",
-                        "NIST SP 800-53 Rev. 4 AC-20",
-                        "NIST SP 800-53 Rev. 4 SC-15",
-                        "AICPA TSC CC6.6",
-                        "ISO 27001:2013 A.6.2.1",
-                        "ISO 27001:2013 A.6.2.2",
-                        "ISO 27001:2013 A.11.2.6",
-                        "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.5"
-                    ]
-                },
-                "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE"
-            }
-            yield finding
-        else:
-            pass
+            accountPublicBlock = False
+    except Exception:
+        accountPublicBlock = False
+        assetB64 = None
+
+    # This is a passing check
+    if accountPublicBlock is True:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{accountBlockArn}/s3-account-level-public-access-block-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"{accountBlockArn}/s3-account-level-public-access-block-check",
+            "AwsAccountId": awsAccountId,
+            "Types": [
+                "Software and Configuration Checks/AWS Security Best Practices",
+                "Effects/Data Exposure",
+            ],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[S3.7] Account-level S3 public access block should be configured",
+            "Description": "Account-level S3 public access block for account "
+            + awsAccountId
+            + " is enabled",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information on Account level S3 public access block and how to configure it refer to the Using Amazon S3 Block Public Access section of the Amazon Simple Storage Service Developer Guide",
+                    "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html"
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": global_region_generator(awsPartition),
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Amazon S3",
+                "AssetComponent": "Account Public Access Block Configuration"
+            },
+            "Resources": [
+                {
+                    "Type": "AwsAccount",
+                    "Id": accountBlockArn,
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.AC-3",
+                    "NIST SP 800-53 Rev. 4 AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-17",
+                    "NIST SP 800-53 Rev. 4 AC-19",
+                    "NIST SP 800-53 Rev. 4 AC-20",
+                    "NIST SP 800-53 Rev. 4 SC-15",
+                    "AICPA TSC CC6.6",
+                    "ISO 27001:2013 A.6.2.1",
+                    "ISO 27001:2013 A.6.2.2",
+                    "ISO 27001:2013 A.11.2.6",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.13.2.1",
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.5"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{accountBlockArn}/s3-account-level-public-access-block-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"{accountBlockArn}/s3-account-level-public-access-block-check",
+            "AwsAccountId": awsAccountId,
+            "Types": [
+                "Software and Configuration Checks/AWS Security Best Practices",
+                "Effects/Data Exposure",
+            ],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "MEDIUM"},
+            "Confidence": 99,
+            "Title": "[S3.7] Account-level S3 public access block should be configured",
+            "Description": f"Account-level S3 public access block for account {awsAccountId} is either inactive or is not block all possible scenarios. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information on Account level S3 public access block and how to configure it refer to the Using Amazon S3 Block Public Access section of the Amazon Simple Storage Service Developer Guide",
+                    "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html"
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": global_region_generator(awsPartition),
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Amazon S3",
+                "AssetComponent": "Account Public Access Block Configuration"
+            },
+            "Resources": [
+                {
+                    "Type": "AwsAccount",
+                    "Id": accountBlockArn,
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.AC-3",
+                    "NIST SP 800-53 Rev. 4 AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-17",
+                    "NIST SP 800-53 Rev. 4 AC-19",
+                    "NIST SP 800-53 Rev. 4 AC-20",
+                    "NIST SP 800-53 Rev. 4 SC-15",
+                    "AICPA TSC CC6.6",
+                    "ISO 27001:2013 A.6.2.1",
+                    "ISO 27001:2013 A.6.2.2",
+                    "ISO 27001:2013 A.11.2.6",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.13.2.1",
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.5"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+
 
 @registry.register_check("s3")
 def aws_s3_bucket_deny_http_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
