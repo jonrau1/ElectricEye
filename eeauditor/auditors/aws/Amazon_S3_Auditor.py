@@ -594,17 +594,58 @@ def aws_s3_bucket_policy_allows_public_access_check(cache: dict, session, awsAcc
                     "Status": "FAILED",
                     "RelatedRequirements": [
                         "NIST CSF V1.1 PR.AC-3",
+                        "NIST CSF V1.1 PR.AC-4",
+                        "NIST CSF V1.1 PR.DS-5",
                         "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AC-5",
+                        "NIST SP 800-53 Rev. 4 AC-6",
+                        "NIST SP 800-53 Rev. 4 AC-14",
+                        "NIST SP 800-53 Rev. 4 AC-16",
                         "NIST SP 800-53 Rev. 4 AC-17",
                         "NIST SP 800-53 Rev. 4 AC-19",
                         "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 AC-24",
+                        "NIST SP 800-53 Rev. 4 PE-19",
+                        "NIST SP 800-53 Rev. 4 PS-3",
+                        "NIST SP 800-53 Rev. 4 PS-6",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SC-8",
+                        "NIST SP 800-53 Rev. 4 SC-13",
                         "NIST SP 800-53 Rev. 4 SC-15",
+                        "NIST SP 800-53 Rev. 4 SC-31",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC6.3",
                         "AICPA TSC CC6.6",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.6.1.2",
                         "ISO 27001:2013 A.6.2.1",
                         "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.7.1.1",
+                        "ISO 27001:2013 A.7.1.2",
+                        "ISO 27001:2013 A.7.3.1",
+                        "ISO 27001:2013 A.8.2.2",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.9.1.1",
+                        "ISO 27001:2013 A.9.1.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.4.1",
+                        "ISO 27001:2013 A.9.4.4",
+                        "ISO 27001:2013 A.9.4.5",
+                        "ISO 27001:2013 A.10.1.1",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.11.1.5",
+                        "ISO 27001:2013 A.11.2.1",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.1.3",
                         "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.13.2.4",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.5"
                     ]
                 },
@@ -661,17 +702,58 @@ def aws_s3_bucket_policy_allows_public_access_check(cache: dict, session, awsAcc
                     "Status": "PASSED",
                     "RelatedRequirements": [
                         "NIST CSF V1.1 PR.AC-3",
+                        "NIST CSF V1.1 PR.AC-4",
+                        "NIST CSF V1.1 PR.DS-5",
                         "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AC-5",
+                        "NIST SP 800-53 Rev. 4 AC-6",
+                        "NIST SP 800-53 Rev. 4 AC-14",
+                        "NIST SP 800-53 Rev. 4 AC-16",
                         "NIST SP 800-53 Rev. 4 AC-17",
                         "NIST SP 800-53 Rev. 4 AC-19",
                         "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 AC-24",
+                        "NIST SP 800-53 Rev. 4 PE-19",
+                        "NIST SP 800-53 Rev. 4 PS-3",
+                        "NIST SP 800-53 Rev. 4 PS-6",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SC-8",
+                        "NIST SP 800-53 Rev. 4 SC-13",
                         "NIST SP 800-53 Rev. 4 SC-15",
+                        "NIST SP 800-53 Rev. 4 SC-31",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC6.3",
                         "AICPA TSC CC6.6",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.6.1.2",
                         "ISO 27001:2013 A.6.2.1",
                         "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.7.1.1",
+                        "ISO 27001:2013 A.7.1.2",
+                        "ISO 27001:2013 A.7.3.1",
+                        "ISO 27001:2013 A.8.2.2",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.9.1.1",
+                        "ISO 27001:2013 A.9.1.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.4.1",
+                        "ISO 27001:2013 A.9.4.4",
+                        "ISO 27001:2013 A.9.4.5",
+                        "ISO 27001:2013 A.10.1.1",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.11.1.5",
+                        "ISO 27001:2013 A.11.2.1",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.1.3",
                         "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.13.2.4",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.5"
                     ]
                 },
@@ -685,24 +767,26 @@ def aws_s3_bucket_policy_check(cache: dict, session, awsAccountId: str, awsRegio
     """[S3.5] AWS S3 Buckets should have a bucket policy configured"""
     s3 = session.client("s3")
     # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for buckets in list_buckets(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(buckets,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         bucketName = buckets["Name"]
         s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
-        iso8601Time = (
-            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        )
+        # Check to see if there is a policy at all
         try:
             s3.get_bucket_policy(Bucket=bucketName)
-            # print("This bucket has a policy but we wont be printing that in the logs lol")
-            # this is a passing check
+            bucketHasPolicy = True
+        except ClientError:
+            bucketHasPolicy = False
+        # this is a failing check
+        if bucketHasPolicy is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": s3Arn + "/s3-bucket-policy-exists-check",
+                "Id": f"{s3Arn}/s3-bucket-policy-exists-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": s3Arn,
+                "GeneratorId": f"{s3Arn}/s3-bucket-policy-exists-check",
                 "AwsAccountId": awsAccountId,
                 "Types": [
                     "Software and Configuration Checks/AWS Security Best Practices"
@@ -710,16 +794,14 @@ def aws_s3_bucket_policy_check(cache: dict, session, awsAccountId: str, awsRegio
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "INFORMATIONAL"},
+                "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[S3.5] AWS S3 Buckets should have a bucket policy configured",
-                "Description": "AWS S3 bucket "
-                + bucketName
-                + " has a bucket policy configured.",
+                "Description": f"AWS S3 bucket {bucketName} does not have a bucket policy configured. A bucket policy is a resource-based policy that you can use to grant access permissions to your Amazon S3 bucket and the objects in it. Only the bucket owner can associate a policy with a bucket. The permissions attached to the bucket apply to all of the objects in the bucket that are owned by the bucket owner. These permissions do not apply to objects that are owned by other AWS accounts. S3 Object Ownership is an Amazon S3 bucket-level setting that you can use to control ownership of objects uploaded to your bucket and to disable or enable ACLs. By default, Object Ownership is set to the Bucket owner enforced setting and all ACLs are disabled. The bucket owner owns all the objects in the bucket and manages access to data exclusively using policies. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For more information on Bucket Policies and how to configure it refer to the Bucket Policy Examples section of the Amazon Simple Storage Service Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html",
+                        "Text": "For more information on Bucket Policies and how to configure it refer to the Using bucket policies section of the Amazon Simple Storage Service Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-policies.html"
                     }
                 },
                 "ProductFields": {
@@ -738,101 +820,177 @@ def aws_s3_bucket_policy_check(cache: dict, session, awsAccountId: str, awsRegio
                         "Type": "AwsS3Bucket",
                         "Id": s3Arn,
                         "Partition": awsPartition,
-                        "Region": awsRegion,
+                        "Region": awsRegion
                     }
                 ],
                 "Compliance": {
-                    "Status": "PASSED",
+                    "Status": "FAILED",
                     "RelatedRequirements": [
                         "NIST CSF V1.1 PR.AC-3",
+                        "NIST CSF V1.1 PR.AC-4",
+                        "NIST CSF V1.1 PR.DS-5",
                         "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AC-5",
+                        "NIST SP 800-53 Rev. 4 AC-6",
+                        "NIST SP 800-53 Rev. 4 AC-14",
+                        "NIST SP 800-53 Rev. 4 AC-16",
                         "NIST SP 800-53 Rev. 4 AC-17",
                         "NIST SP 800-53 Rev. 4 AC-19",
                         "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 AC-24",
+                        "NIST SP 800-53 Rev. 4 PE-19",
+                        "NIST SP 800-53 Rev. 4 PS-3",
+                        "NIST SP 800-53 Rev. 4 PS-6",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SC-8",
+                        "NIST SP 800-53 Rev. 4 SC-13",
                         "NIST SP 800-53 Rev. 4 SC-15",
+                        "NIST SP 800-53 Rev. 4 SC-31",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC6.3",
                         "AICPA TSC CC6.6",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.6.1.2",
                         "ISO 27001:2013 A.6.2.1",
                         "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.7.1.1",
+                        "ISO 27001:2013 A.7.1.2",
+                        "ISO 27001:2013 A.7.3.1",
+                        "ISO 27001:2013 A.8.2.2",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.9.1.1",
+                        "ISO 27001:2013 A.9.1.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.4.1",
+                        "ISO 27001:2013 A.9.4.4",
+                        "ISO 27001:2013 A.9.4.5",
+                        "ISO 27001:2013 A.10.1.1",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.11.1.5",
+                        "ISO 27001:2013 A.11.2.1",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.1.3",
                         "ISO 27001:2013 A.13.2.1",
-                    ],
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.13.2.4",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.5"
+                    ]
                 },
-                "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
             }
             yield finding
-        except Exception as e:
-            if (
-                str(e)
-                == "An error occurred (NoSuchBucketPolicy) when calling the GetBucketPolicy operation: The bucket policy does not exist"
-            ):
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": s3Arn + "/s3-bucket-policy-exists-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": s3Arn,
-                    "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "MEDIUM"},
-                    "Confidence": 99,
-                    "Title": "[S3.5] AWS S3 Buckets should have a bucket policy configured",
-                    "Description": "AWS S3 bucket "
-                    + bucketName
-                    + " does not have a bucket policy configured. Refer to the remediation instructions if this configuration is not intended.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For more information on Bucket Policies and how to configure it refer to the Bucket Policy Examples section of the Amazon Simple Storage Service Developer Guide",
-                            "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html",
-                        }
-                    },
-                    "ProductFields": {
-                        "ProductName": "ElectricEye",
-                        "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": global_region_generator(awsPartition),
-                        "AssetDetails": assetB64,
-                        "AssetClass": "Storage",
-                        "AssetService": "Amazon S3",
-                        "AssetComponent": "Bucket"
-                    },
-                    "Resources": [
-                        {
-                            "Type": "AwsS3Bucket",
-                            "Id": s3Arn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "FAILED",
-                        "RelatedRequirements": [
-                            "NIST CSF V1.1 PR.AC-3",
-                            "NIST SP 800-53 Rev. 4 AC-1",
-                            "NIST SP 800-53 Rev. 4 AC-17",
-                            "NIST SP 800-53 Rev. 4 AC-19",
-                            "NIST SP 800-53 Rev. 4 AC-20",
-                            "NIST SP 800-53 Rev. 4 SC-15",
-                            "AICPA TSC CC6.6",
-                            "ISO 27001:2013 A.6.2.1",
-                            "ISO 27001:2013 A.6.2.2",
-                            "ISO 27001:2013 A.11.2.6",
-                            "ISO 27001:2013 A.13.1.1",
-                            "ISO 27001:2013 A.13.2.1",
-                        ],
-                    },
-                    "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
-                }
-                yield finding
-            else:
-                print(e)
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{s3Arn}/s3-bucket-policy-exists-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{s3Arn}/s3-bucket-policy-exists-check",
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[S3.5] AWS S3 Buckets should have a bucket policy configured",
+                "Description": f"AWS S3 bucket {bucketName} does have a bucket policy configured.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Bucket Policies and how to configure it refer to the Using bucket policies section of the Amazon Simple Storage Service Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-policies.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": global_region_generator(awsPartition),
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon S3",
+                    "AssetComponent": "Bucket"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsS3Bucket",
+                        "Id": s3Arn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST CSF V1.1 PR.AC-4",
+                        "NIST CSF V1.1 PR.DS-5",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AC-5",
+                        "NIST SP 800-53 Rev. 4 AC-6",
+                        "NIST SP 800-53 Rev. 4 AC-14",
+                        "NIST SP 800-53 Rev. 4 AC-16",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 AC-24",
+                        "NIST SP 800-53 Rev. 4 PE-19",
+                        "NIST SP 800-53 Rev. 4 PS-3",
+                        "NIST SP 800-53 Rev. 4 PS-6",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SC-8",
+                        "NIST SP 800-53 Rev. 4 SC-13",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "NIST SP 800-53 Rev. 4 SC-31",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC6.3",
+                        "AICPA TSC CC6.6",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.6.1.2",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.7.1.1",
+                        "ISO 27001:2013 A.7.1.2",
+                        "ISO 27001:2013 A.7.3.1",
+                        "ISO 27001:2013 A.8.2.2",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.9.1.1",
+                        "ISO 27001:2013 A.9.1.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.4.1",
+                        "ISO 27001:2013 A.9.4.4",
+                        "ISO 27001:2013 A.9.4.5",
+                        "ISO 27001:2013 A.10.1.1",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.11.1.5",
+                        "ISO 27001:2013 A.11.2.1",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.1.3",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.13.2.4",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.5"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 @registry.register_check("s3")
 def aws_s3_bucket_access_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -1119,17 +1277,58 @@ def s3_account_level_block(cache: dict, session, awsAccountId: str, awsRegion: s
                 "Status": "PASSED",
                 "RelatedRequirements": [
                     "NIST CSF V1.1 PR.AC-3",
+                    "NIST CSF V1.1 PR.AC-4",
+                    "NIST CSF V1.1 PR.DS-5",
                     "NIST SP 800-53 Rev. 4 AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-2",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 AC-4",
+                    "NIST SP 800-53 Rev. 4 AC-5",
+                    "NIST SP 800-53 Rev. 4 AC-6",
+                    "NIST SP 800-53 Rev. 4 AC-14",
+                    "NIST SP 800-53 Rev. 4 AC-16",
                     "NIST SP 800-53 Rev. 4 AC-17",
                     "NIST SP 800-53 Rev. 4 AC-19",
                     "NIST SP 800-53 Rev. 4 AC-20",
+                    "NIST SP 800-53 Rev. 4 AC-24",
+                    "NIST SP 800-53 Rev. 4 PE-19",
+                    "NIST SP 800-53 Rev. 4 PS-3",
+                    "NIST SP 800-53 Rev. 4 PS-6",
+                    "NIST SP 800-53 Rev. 4 SC-7",
+                    "NIST SP 800-53 Rev. 4 SC-8",
+                    "NIST SP 800-53 Rev. 4 SC-13",
                     "NIST SP 800-53 Rev. 4 SC-15",
+                    "NIST SP 800-53 Rev. 4 SC-31",
+                    "NIST SP 800-53 Rev. 4 SI-4",
+                    "AICPA TSC CC6.3",
                     "AICPA TSC CC6.6",
+                    "AICPA TSC CC7.2",
+                    "ISO 27001:2013 A.6.1.2",
                     "ISO 27001:2013 A.6.2.1",
                     "ISO 27001:2013 A.6.2.2",
+                    "ISO 27001:2013 A.7.1.1",
+                    "ISO 27001:2013 A.7.1.2",
+                    "ISO 27001:2013 A.7.3.1",
+                    "ISO 27001:2013 A.8.2.2",
+                    "ISO 27001:2013 A.8.2.3",
+                    "ISO 27001:2013 A.9.1.1",
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.2.3",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.10.1.1",
+                    "ISO 27001:2013 A.11.1.4",
+                    "ISO 27001:2013 A.11.1.5",
+                    "ISO 27001:2013 A.11.2.1",
                     "ISO 27001:2013 A.11.2.6",
                     "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.13.1.3",
                     "ISO 27001:2013 A.13.2.1",
+                    "ISO 27001:2013 A.13.2.3",
+                    "ISO 27001:2013 A.13.2.4",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.5"
                 ]
             },
@@ -1184,17 +1383,58 @@ def s3_account_level_block(cache: dict, session, awsAccountId: str, awsRegion: s
                 "Status": "FAILED",
                 "RelatedRequirements": [
                     "NIST CSF V1.1 PR.AC-3",
+                    "NIST CSF V1.1 PR.AC-4",
+                    "NIST CSF V1.1 PR.DS-5",
                     "NIST SP 800-53 Rev. 4 AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-2",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 AC-4",
+                    "NIST SP 800-53 Rev. 4 AC-5",
+                    "NIST SP 800-53 Rev. 4 AC-6",
+                    "NIST SP 800-53 Rev. 4 AC-14",
+                    "NIST SP 800-53 Rev. 4 AC-16",
                     "NIST SP 800-53 Rev. 4 AC-17",
                     "NIST SP 800-53 Rev. 4 AC-19",
                     "NIST SP 800-53 Rev. 4 AC-20",
+                    "NIST SP 800-53 Rev. 4 AC-24",
+                    "NIST SP 800-53 Rev. 4 PE-19",
+                    "NIST SP 800-53 Rev. 4 PS-3",
+                    "NIST SP 800-53 Rev. 4 PS-6",
+                    "NIST SP 800-53 Rev. 4 SC-7",
+                    "NIST SP 800-53 Rev. 4 SC-8",
+                    "NIST SP 800-53 Rev. 4 SC-13",
                     "NIST SP 800-53 Rev. 4 SC-15",
+                    "NIST SP 800-53 Rev. 4 SC-31",
+                    "NIST SP 800-53 Rev. 4 SI-4",
+                    "AICPA TSC CC6.3",
                     "AICPA TSC CC6.6",
+                    "AICPA TSC CC7.2",
+                    "ISO 27001:2013 A.6.1.2",
                     "ISO 27001:2013 A.6.2.1",
                     "ISO 27001:2013 A.6.2.2",
+                    "ISO 27001:2013 A.7.1.1",
+                    "ISO 27001:2013 A.7.1.2",
+                    "ISO 27001:2013 A.7.3.1",
+                    "ISO 27001:2013 A.8.2.2",
+                    "ISO 27001:2013 A.8.2.3",
+                    "ISO 27001:2013 A.9.1.1",
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.2.3",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.10.1.1",
+                    "ISO 27001:2013 A.11.1.4",
+                    "ISO 27001:2013 A.11.1.5",
+                    "ISO 27001:2013 A.11.2.1",
                     "ISO 27001:2013 A.11.2.6",
                     "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.13.1.3",
                     "ISO 27001:2013 A.13.2.1",
+                    "ISO 27001:2013 A.13.2.3",
+                    "ISO 27001:2013 A.13.2.4",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.5"
                 ]
             },
@@ -1203,10 +1443,9 @@ def s3_account_level_block(cache: dict, session, awsAccountId: str, awsRegion: s
         }
         yield finding
 
-
 @registry.register_check("s3")
 def aws_s3_bucket_deny_http_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[S3.8] AWS S3 Buckets should define a policy block unsecure (HTTP) access to all objects"""
+    """[S3.8] AWS S3 Buckets should define a policy block insecure (HTTP) access to all objects"""
     s3 = session.client("s3")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -1216,7 +1455,8 @@ def aws_s3_bucket_deny_http_access_check(cache: dict, session, awsAccountId: str
         assetB64 = base64.b64encode(assetJson)
         bucketName = buckets["Name"]
         s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
-        # Attempt to find a blocking policy for HTTP
+        # Attempt to find a blocking policy for HTTP - default the status to not passing
+        blockHttpObjectAccess = False
         try:
             bucketPolicy = s3.get_bucket_policy(Bucket=bucketName)["Policy"]
             for statement in bucketPolicy["Statement"]:
@@ -1227,15 +1467,16 @@ def aws_s3_bucket_deny_http_access_check(cache: dict, session, awsAccountId: str
                                 if statement["Condition"]["Bool"].get("aws:SecureTransport") == "false":
                                     blockHttpObjectAccess = True
                                     break
-        except s3.exceptions.NoSuchBucketPolicy:
+        except ClientError:
             blockHttpObjectAccess = False
+        
         # This is a failing check
         if blockHttpObjectAccess is not True:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": s3Arn + "/s3-bucket-encryption-check",
+                "Id": f"{s3Arn}/s3-bucket-block-insecure-http-access-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": s3Arn,
+                "GeneratorId": f"{s3Arn}/s3-bucket-block-insecure-http-access-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
@@ -1243,7 +1484,7 @@ def aws_s3_bucket_deny_http_access_check(cache: dict, session, awsAccountId: str
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[S3.8] AWS S3 Buckets should define a policy block unsecure (HTTP) access to all objects",
+                "Title": "[S3.8] AWS S3 Buckets should define a policy block insecure (HTTP) access to all objects",
                 "Description": f"AWS S3 bucket {bucketName} does not define a policy to block insecure (HTTP) access to all objects. Amazon S3 offers encryption in transit and encryption at rest. Encryption in transit refers to HTTPS and encryption at rest refers to client-side or server-side encryption. Amazon S3 allows both HTTP and HTTPS requests. By default, requests are made through the AWS Management Console, AWS Command Line Interface (AWS CLI), or HTTPS. To prevent any insecure requests, confirm that your bucket policies explicitly deny access to objects without HTTPs by using. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -1294,9 +1535,9 @@ def aws_s3_bucket_deny_http_access_check(cache: dict, session, awsAccountId: str
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": s3Arn + "/s3-bucket-encryption-check",
+                "Id": f"{s3Arn}/s3-bucket-block-insecure-http-access-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": s3Arn,
+                "GeneratorId": f"{s3Arn}/s3-bucket-block-insecure-http-access-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
@@ -1304,7 +1545,7 @@ def aws_s3_bucket_deny_http_access_check(cache: dict, session, awsAccountId: str
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[S3.8] AWS S3 Buckets should define a policy block unsecure (HTTP) access to all objects",
+                "Title": "[S3.8] AWS S3 Buckets should define a policy block insecure (HTTP) access to all objects",
                 "Description": f"AWS S3 bucket {bucketName} does define a policy to block insecure (HTTP) access to all objects.",
                 "Remediation": {
                     "Recommendation": {
