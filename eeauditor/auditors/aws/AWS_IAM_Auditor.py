@@ -985,15 +985,15 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccoun
     iam = session.client("iam")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    response = iam.get_account_password_policy()
-    # B64 encode all of the details for the Asset
-    assetJson = json.dumps(response,default=str).encode("utf-8")
-    assetB64 = base64.b64encode(assetJson)
     # PW Policy ARN
     pwPolicyArn = f"arn:{awsPartition}:iam::{awsAccountId}:account-password-policy"
-
     # Sometimes, PW Policy attributes are missing which would make it a fail - different than the error of it not being enabled at all
     try:
+        response = iam.get_account_password_policy()
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        # parse the PW policy
         pwPolicy = response["PasswordPolicy"]
         minPwLength = pwPolicy["MinimumPasswordLength"]
         symbolReq = pwPolicy["RequireSymbols"]
@@ -1002,7 +1002,7 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccoun
         lowercaseReq = pwPolicy["RequireLowercaseCharacters"]
         maxPwAge = pwPolicy["MaxPasswordAge"]
         pwReuse = pwPolicy["PasswordReusePrevention"]
-
+        # eval the policy
         if (
             minPwLength >= 14
             and maxPwAge <= 90
@@ -1018,14 +1018,12 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccoun
     except KeyError:
         print("IAM Password Policy is missing one or more attributes, this is a failing check.")
         cisCompliantPolicy = False
+        assetB64 = None
     except botocore.exceptions.ClientError as error:
         # Handle "NoSuchEntity" exception which means the PW policy does not exist
         if error.response["Error"]["Code"] == "NoSuchEntity":
             cisCompliantPolicy = False
             assetB64 = None
-    except botocore.errorfactory.NoSuchEntityException:
-        cisCompliantPolicy = False
-        assetB64 = None
 
     
     if cisCompliantPolicy is True:

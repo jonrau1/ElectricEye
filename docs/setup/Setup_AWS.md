@@ -225,7 +225,7 @@ The ASM Module uses NMAP at its core and will be expanded to include ZAP and Sho
 
 ## AWS Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **608 Checks** across **83 Auditors** that support the secure configuration of **118 services/components**
+These are the following services and checks perform by each Auditor, there are currently **609 Checks** across **83 Auditors** that support the secure configuration of **118 services/components**
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service**: AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
@@ -412,6 +412,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_EMR_Auditor | AWS Account | Is EMR public SG block configured for the Account in the region |
 | Amazon_EMR_Serverless_Auditor | EMR Serverless Application | Is Application in a VPC |
 | Amazon_EMR_Serverless_Auditor | EMR Serverless Application | Does Application use custom container runtime |
+| Amazon_EMR_Serverless_Auditor | EMR Serverless Application | Does Application configure auto-stopping jobs |
 | Amazon_InspectorV2_Audtior | Inspector scanning configuration | Is Inspector V2 scanning enabled at all |
 | Amazon_InspectorV2_Audtior | Inspector scanning configuration | Is Inspector V2 scanning enabled for EC2 |
 | Amazon_InspectorV2_Audtior | Inspector scanning configuration | Is Inspector V2 scanning enabled for ECR |

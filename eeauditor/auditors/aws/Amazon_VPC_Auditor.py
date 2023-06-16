@@ -1285,9 +1285,7 @@ def aws_eni_attached_in_use_check(cache: dict, session, awsAccountId: str, awsRe
                         "Region": awsRegion,
                         "Details": {
                             "AwsEc2NetworkInterface": {
-                                "Attachment": eni["Attachment"],
-                                "NetworkInterfaceId": eniId,
-                                "SecurityGroups": eni["Groups"]
+                                "NetworkInterfaceId": eniId
                             }
                         }
                     }
@@ -1349,9 +1347,7 @@ def aws_eni_attached_in_use_check(cache: dict, session, awsAccountId: str, awsRe
                         "Region": awsRegion,
                         "Details": {
                             "AwsEc2NetworkInterface": {
-                                "Attachment": eni["Attachment"],
-                                "NetworkInterfaceId": eniId,
-                                "SecurityGroups": eni["Groups"]
+                                "NetworkInterfaceId": eniId
                             }
                         }
                     }

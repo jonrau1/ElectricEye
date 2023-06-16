@@ -65,6 +65,7 @@
                 "appmesh:ListVirtualNodes",
                 "support:DescribeTrustedA*",
                 "health:DescribeEvents",
+                "iam:GetAccessKeyLastUsed",
                 "iam:GetAccountPasswordPolicy",
                 "iam:GetAccountSummary",
                 "iam:GetRolePolicy",
