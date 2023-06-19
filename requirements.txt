@@ -1,8 +1,8 @@
-awscli==1.27.152
-boto3==1.26.152
+awscli==1.27.155
+boto3==1.26.155
 click==8.1.3
 detect-secrets==1.4.0
-google-api-python-client==2.88.0
+google-api-python-client==2.89.0
 matplotlib==3.7.1
 oci==2.104.2
 pandas==2.0.2
