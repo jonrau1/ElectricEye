@@ -18,13 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
+from botocore.config import Config
+from check_register import CheckRegister
 import requests
 import datetime
 from dateutil.parser import parse
-from check_register import CheckRegister
 import base64
 import json
-from botocore.config import Config
 
 # Adding backoff and retries for SSM - this API gets throttled a lot
 config = Config(
@@ -79,6 +79,16 @@ def describe_instances(cache, session):
 
         cache["describe_instances"] = instanceList
         return cache["describe_instances"]
+
+def describe_elastic_ips(cache, session):
+    response = cache.get("describe_elastic_ips")
+    if response:
+        return response
+    
+    ec2 = session.client("ec2")
+
+    cache["describe_elastic_ips"] = ec2.describe_addresses()["Addresses"]
+    return cache["describe_elastic_ips"]
 
 def get_cisa_kev():
     """
@@ -784,9 +794,7 @@ def ec2_source_dest_verification_check(cache: dict, session, awsAccountId: str, 
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
                 "Title": "[EC2.4] EC2 Instances should use Source-Destination checks unless absolutely not required",
-                "Description": "EC2 Instance "
-                + instanceId
-                + " does have have the Source-Destination Check enabled. Typically, this is done for self-managed Network Address Translation (NAT), Forward Proxies (such as Squid, for URL Filtering/DNS Protection) or self-managed Firewalls (ModSecurity). These settings should be verified, and underlying technology must be patched to avoid exploits or availability loss. Refer to the remediation instructions if this configuration is not intended.",
+                "Description": f"EC2 Instance{instanceId} does have have the Source-Destination Check enabled. Typically, this is done for self-managed Network Address Translation (NAT), Forward Proxies (such as Squid, for URL Filtering/DNS Protection) or self-managed Firewalls (ModSecurity). These settings should be verified, and underlying technology must be patched to avoid exploits or availability loss. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "To learn more about Source/destination checking refer to the Elastic network interfaces section of the Amazon Elastic Compute Cloud User Guide",
@@ -859,9 +867,7 @@ def ec2_source_dest_verification_check(cache: dict, session, awsAccountId: str, 
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[EC2.4] EC2 Instances should use Source-Destination checks unless absolutely not required",
-                "Description": "EC2 Instance "
-                + instanceId
-                + " has the Source-Destination Check enabled.",
+                "Description": f"EC2 Instance {instanceId} has the Source-Destination Check enabled.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "To learn more about Source/destination checking refer to the Elastic network interfaces section of the Amazon Elastic Compute Cloud User Guide",
@@ -2823,6 +2829,154 @@ def ec2_instance_exploitable_vulnerability_check(cache: dict, session, awsAccoun
                         "ISO 27001:2013 A.12.6.1",
                         "ISO 27001:2013 A.12.6.4",
                         "ISO 27001:2013 A.18.2.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("ec2")
+def aws_elastic_ip_assigned_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2.15] Amazon Elastic IP (EIP) addresses should not be unassigned"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for eip in describe_elastic_ips(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(eip,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        allocationId = eip["AllocationId"]
+        publicIp = eip["PublicIp"]
+        eipArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:elastic-ip/{allocationId}"     
+           
+        if "AssociationId" not in eip:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{eipArn}/elastic-ip-is-unassigned-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{eipArn}/elastic-ip-is-unassigned-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[EC2.15] Amazon Elastic IP (EIP) addresses should not be unassigned",
+                "Description": f"Amazon Elastic IP (EIP) address {allocationId} is not assigned. An Elastic IP address is a static IPv4 address designed for dynamic cloud computing. An Elastic IP address is allocated to your AWS account, and is yours until you release it. By using an Elastic IP address, you can mask the failure of an instance or software by rapidly remapping the address to another instance in your account. Alternatively, you can specify the Elastic IP address in a DNS record for your domain, so that your domain points to your instance. To ensure efficient use of Elastic IP addresses, we impose a small hourly charge if an Elastic IP address is not associated with a running instance, or if it is associated with a stopped instance or an unattached network interface. Ensure unassigned addresses are released so that you will not be charged for them, and while rare, you can prevent crafty adversaries from assigning the address to illicit infrastructure in your account that can circumvent trusted network access restrictions. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To learn more about Elastic IPs refer to the Elastic IP addresses section of the Amazon Elastic Compute Cloud User Guide",
+                        "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Elastic IP Address"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2Eip",
+                        "Id": eipArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2Eip": {
+                                "PublicIp": publicIp,
+                                "AllocationId": allocationId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 MP-6",
+                        "NIST SP 800-53 Rev. 4 PE-16",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.5",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.8.3.1",
+                        "ISO 27001:2013 A.8.3.2",
+                        "ISO 27001:2013 A.8.3.3",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.7"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{eipArn}/elastic-ip-is-unassigned-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{eipArn}/elastic-ip-is-unassigned-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[EC2.15] Amazon Elastic IP (EIP) addresses should not be unassigned",
+                "Description": f"Amazon Elastic IP (EIP) address {allocationId} is assigned.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To learn more about Elastic IPs refer to the Elastic IP addresses section of the Amazon Elastic Compute Cloud User Guide",
+                        "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Elastic IP Address"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2Eip",
+                        "Id": eipArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2Eip": {
+                                "PublicIp": publicIp,
+                                "AllocationId": allocationId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 MP-6",
+                        "NIST SP 800-53 Rev. 4 PE-16",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.5",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.8.3.1",
+                        "ISO 27001:2013 A.8.3.2",
+                        "ISO 27001:2013 A.8.3.3",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.7"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},

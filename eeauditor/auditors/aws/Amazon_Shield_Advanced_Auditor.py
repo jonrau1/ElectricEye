@@ -80,6 +80,34 @@ def describe_app_load_balancers(cache, session):
     cache["describe_load_balancers"] = appLoadBalancers
     return cache["describe_load_balancers"]
 
+def describe_elastic_ips(cache, session):
+    response = cache.get("describe_elastic_ips")
+    if response:
+        return response
+    
+    ec2 = session.client("ec2")
+
+    cache["describe_elastic_ips"] = ec2.describe_addresses()["Addresses"]
+    return cache["describe_elastic_ips"]
+
+def paginate_distributions(cache, session):
+    cloudfront = session.client("cloudfront")
+
+    itemList = []
+    response = cache.get("items")
+    if response:
+        return response
+    paginator = cloudfront.get_paginator("list_distributions")
+    if paginator:
+        for page in paginator.paginate():
+            try:
+                for items in page["DistributionList"]["Items"]:
+                    itemList.append(items)
+            except KeyError:
+                return {}
+        cache["items"] = itemList
+        return cache["items"]
+
 @registry.register_check("shield")
 def shield_advanced_route_53_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ShieldAdvanced.1] Route 53 Hosted Zones should be protected by Shield Advanced"""
@@ -710,19 +738,19 @@ def shield_advanced_elb_v2_protection_check(cache: dict, session, awsAccountId: 
 def shield_advanced_eip_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ShieldAdvanced.4] Elastic IPs should be protected by Shield Advanced"""
     shield = session.client("shield", region_name="us-east-1")
-    ec2 = session.client("ec2")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for elasticip in ec2.describe_addresses()["Addresses"]:
+    for eip in describe_elastic_ips(cache, session):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(elasticip,default=str).encode("utf-8")
+        assetJson = json.dumps(eip,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        allocationId = str(elasticip["AllocationId"])
-        eipAllocationArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:eip-allocation/{allocationId}"
-        protectionArn = f"arn:{awsPartition}:shield::{awsAccountId}:protection/{eipAllocationArn}"
+        allocationId = eip["AllocationId"]
+        publicIp = eip["PublicIp"]
+        eipArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:elastic-ip/{allocationId}"  
+        protectionArn = f"arn:{awsPartition}:shield::{awsAccountId}:protection/{eipArn}"
         try:
             # this is a passing check
-            shield.describe_protection(ResourceArn=eipAllocationArn)
+            shield.describe_protection(ResourceArn=eipArn)
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{protectionArn}/elasticip-shield-adv-protection-check",
@@ -757,10 +785,15 @@ def shield_advanced_eip_protection_check(cache: dict, session, awsAccountId: str
                 "Resources": [
                     {
                         "Type": "AwsEc2Eip",
-                        "Id": eipAllocationArn,
+                        "Id": eipArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"AllocationId": allocationId}},
+                        "Details": {
+                            "AwsEc2Eip": {
+                                "PublicIp": publicIp,
+                                "AllocationId": allocationId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -843,10 +876,15 @@ def shield_advanced_eip_protection_check(cache: dict, session, awsAccountId: str
                 "Resources": [
                     {
                         "Type": "AwsEc2Eip",
-                        "Id": eipAllocationArn,
+                        "Id": eipArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"AllocationId": allocationId}},
+                        "Details": {
+                            "AwsEc2Eip": {
+                                "PublicIp": publicIp,
+                                "AllocationId": allocationId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -899,22 +937,20 @@ def shield_advanced_eip_protection_check(cache: dict, session, awsAccountId: str
 def shield_advanced_cloudfront_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ShieldAdvanced.5] CloudFront distributions should be protected by Shield Advanced"""
     shield = session.client("shield", region_name="us-east-1")
-    cloudfront = session.client("cloudfront", region_name="us-east-1")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    response = cloudfront.list_distributions()
-    cfDistros = response["DistributionList"].get("Items", [])
-    for distro in cfDistros:
+    for dist in paginate_distributions(cache, session):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(distro,default=str).encode("utf-8")
+        assetJson = json.dumps(dist,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        distroId = str(distro["Id"])
-        distroArn = str(distro["ARN"])
-        protectionArn = f"arn:{awsPartition}:shield::{awsAccountId}:protection/{distroArn}"
-        distroDomainName = str(distro["DomainName"])
+        distributionId = dist["Id"]
+        distributionArn = dist["ARN"]
+        domainName = dist["DomainName"]
+        distStatus = dist["Status"]
+        protectionArn = f"arn:{awsPartition}:shield::{awsAccountId}:protection/{distributionArn}"
         try:
             # this is a passing check
-            shield.describe_protection(ResourceArn=distroArn)
+            shield.describe_protection(ResourceArn=distributionArn)
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{protectionArn}/cloudfront-shield-adv-protection-check",
@@ -928,7 +964,7 @@ def shield_advanced_cloudfront_protection_check(cache: dict, session, awsAccount
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[ShieldAdvanced.5] CloudFront distributions should be protected by Shield Advanced",
-                "Description": f"CloudFront distribution {distroId} is protected by Shield Advanced.",
+                "Description": f"CloudFront distribution {distributionId} is protected by Shield Advanced.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on adding Shield Advanced protection to resources refer to the AWS Shield Advanced protected resources section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide",
@@ -949,12 +985,15 @@ def shield_advanced_cloudfront_protection_check(cache: dict, session, awsAccount
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
-                        "Id": distroArn,
+                        "Id": distributionArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "AwsCloudFrontDistribution": {"DomainName": distroDomainName}
-                        },
+                            "AwsCloudFrontDistribution": {
+                                "DomainName": domainName,
+                                "Status": distStatus
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -999,7 +1038,7 @@ def shield_advanced_cloudfront_protection_check(cache: dict, session, awsAccount
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
         except ClientError:
@@ -1016,7 +1055,7 @@ def shield_advanced_cloudfront_protection_check(cache: dict, session, awsAccount
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[ShieldAdvanced.5] CloudFront distributions should be protected by Shield Advanced",
-                "Description": f"CloudFront distribution {distroId} is not protected by Shield Advanced. AWS Shield Advanced is a managed service that helps you protect your application against external threats, like DDoS attacks, volumetric bots, and vulnerability exploitation attempts. For higher levels of protection against attacks, you can subscribe to AWS Shield Advanced. When you subscribe to Shield Advanced and add protection to your resources, Shield Advanced provides expanded DDoS attack protection for those resources. The protections that you receive from Shield Advanced can vary depending on your architecture and configuration choices. Refer to the remediation instructions if this configuration is not intended.",
+                "Description": f"CloudFront distribution {distributionId} is not protected by Shield Advanced. AWS Shield Advanced is a managed service that helps you protect your application against external threats, like DDoS attacks, volumetric bots, and vulnerability exploitation attempts. For higher levels of protection against attacks, you can subscribe to AWS Shield Advanced. When you subscribe to Shield Advanced and add protection to your resources, Shield Advanced provides expanded DDoS attack protection for those resources. The protections that you receive from Shield Advanced can vary depending on your architecture and configuration choices. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on adding Shield Advanced protection to resources refer to the AWS Shield Advanced protected resources section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide",
@@ -1037,12 +1076,15 @@ def shield_advanced_cloudfront_protection_check(cache: dict, session, awsAccount
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
-                        "Id": distroArn,
+                        "Id": distributionArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "AwsCloudFrontDistribution": {"DomainName": distroDomainName}
-                        },
+                            "AwsCloudFrontDistribution": {
+                                "DomainName": domainName,
+                                "Status": distStatus
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -1087,7 +1129,7 @@ def shield_advanced_cloudfront_protection_check(cache: dict, session, awsAccount
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
 
@@ -1251,11 +1293,12 @@ def shield_advanced_subscription_autorenew_check(cache: dict, session, awsAccoun
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        renewCheck = str(response["Subscription"]["AutoRenew"])
+        response["Subscription"]["AutoRenew"]
+        renewel = True
     except ClientError:
-        renewCheck = "DISABLED"
+        renewel = False
 
-    if renewCheck == "DISABLED":
+    if renewel is False:
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": f"{subscriptionArn}/shield-adv-subscription-auto-renew-check",

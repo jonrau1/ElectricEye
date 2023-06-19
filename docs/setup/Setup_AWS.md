@@ -225,7 +225,7 @@ The ASM Module uses NMAP at its core and will be expanded to include ZAP and Sho
 
 ## AWS Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **609 Checks** across **83 Auditors** that support the secure configuration of **118 services/components**
+These are the following services and checks perform by each Auditor, there are currently **610 Checks** across **83 Auditors** that support the secure configuration of **119 services/components**
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service**: AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
@@ -316,6 +316,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_EC2_Auditor | EC2 Instance | Is the Patch status up to date |
 | Amazon_EC2_Auditor | EC2 Instance | Is the instance scanned by Amazon Inspector V2 |
 | Amazon_EC2_Auditor | EC2 Instance | Are there any explotiable vulnerabilities |
+| Amazon_EC2_Auditor | Elastic IP Address | Are there any unassigned EIPs |
 | Amazon_EC2_Image_Builder_Auditor | Image Builder | Are pipeline tests enabled |
 | Amazon_EC2_Image_Builder_Auditor | Image Builder | Is EBS encrypted |
 | Amazon_EC2_Security_Group_Auditor | Security Group | Are all ports (-1) open to the internet |
