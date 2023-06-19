@@ -476,6 +476,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_RDS_Auditor | RDS DB Instance | Do PostgreSQL instances use a version susceptible to Lightspin "log_fwd" attack |
 | Amazon_RDS_Auditor | RDS DB Instance | Do Aurora PostgreSQL instances use a version susceptible to Lightspin "log_fwd" attack |
 | Amazon_RDS_Auditor | RDS DB Instance | Do instances automatically upgrade minor versions |
+| Amazon_RDS_Auditor | RDS Instance | Are public accessible RDS instances indexed |
 | Amazon_Redshift_Auditor | Redshift cluster | Is the cluster publicly accessible |
 | Amazon_Redshift_Auditor | Redshift cluster | Is the cluster encrypted at rest |
 | Amazon_Redshift_Auditor | Redshift cluster | Is enhanced VPC routing enabled |
@@ -851,7 +852,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_Secrets_Auditor | EC2 Instance | Do EC2 instances have secrets in User Data |
 
 
-| Amazon_Shodan_Auditor | RDS Instance | Are public accessible RDS instances indexed |
+
 | Amazon_Shodan_Auditor | OpenSearch domain | Are ES Domains outside a VPC indexed |
 | Amazon_Shodan_Auditor | ELB (CLB) | Are internet-facing CLBs indexed |
 | Amazon_Shodan_Auditor | DMS Replication Instance | Are public accessible DMS instances indexed |
