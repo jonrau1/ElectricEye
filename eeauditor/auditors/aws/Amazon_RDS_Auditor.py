@@ -4390,11 +4390,10 @@ def public_rds_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
     """[RDS.20] Public accessible RDS instances should be monitored for being indexed by Shodan"""
     shodanApiKey = get_shodan_api_key(cache)
     # ISO Time
-    iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for rdsdb in describe_db_instances(cache, session):
-        if shodanApiKey == None:
-            continue
+    iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()        
     for dbinstances in describe_db_instances(cache, session):
+        if shodanApiKey is None:
+            continue
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -4405,7 +4404,7 @@ def public_rds_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
         endpointAddress = dbinstances["Endpoint"]["Address"]
         instanceEngine = dbinstances["Engine"]
         instanceEngineVersion = dbinstances["EngineVersion"]
-        if rdsdb["PubliclyAccessible"] == True:
+        if dbinstances["PubliclyAccessible"] is True:
             # Use Google DNS to resolve
             rdsIp = google_dns_resolver(endpointAddress)
             if rdsIp is None:
@@ -4492,7 +4491,7 @@ def public_rds_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 yield finding
             else:
                 assetPayload = {
-                    "DbInstance": rdsdb,
+                    "DbInstance": dbinstances,
                     "Shodan": r
                 }
                 assetJson = json.dumps(assetPayload,default=str).encode("utf-8")

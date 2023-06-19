@@ -272,6 +272,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros have default root objects |
 | Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros enforce Default Viewer HTTPS-only connections |
 | Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros enforce S3 Origin Object Access Identity |
+| Amazon_CloudFront_Auditor | CloudFront Distribution | Are CloudFront distros indexed by Shodan |
 | Amazon_CloudSearch_Auditor | CloudSearch Domain | Do Domains enforce HTTPS-only |
 | Amazon_CloudSearch_Auditor | CloudSearch Domain | Do Domains use TLS 1.2 |
 | Amazon_CognitoIdP_Auditor | Cognito Identity Pool | Does the Password policy comply with AWS CIS Foundations Benchmark |
@@ -389,6 +390,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_ElasticsearchService_Auditor | OpenSearch domain | Are there available version updates |
 | Amazon_ElasticsearchService_Auditor | OpenSearch domain | Is ES in a VPC |
 | Amazon_ElasticsearchService_Auditor | OpenSearch domain | Is ES Publicly Accessible |
+| Amazon_ElasticsearchService_Auditor | OpenSearch domain | Are ES/OS Domains indexed by Shodan |
 | Amazon_ElasticTranscoder_Auditor | Elastic Transcoder pipeline | Do pipelines enable notifications |
 | Amazon_ElasticTranscoder_Auditor | Elastic Transcoder pipeline | Do pipelines have active alerts |
 | Amazon_ELB_Auditor | ELB (Classic Load Balancer) | Do internet facing ELBs have a secure listener |
@@ -396,6 +398,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_ELB_Auditor | ELB (Classic Load Balancer) | Is cross zone load balancing enabled |
 | Amazon_ELB_Auditor | ELB (Classic Load Balancer) | Is connection draining enabled |
 | Amazon_ELB_Auditor | ELB (Classic Load Balancer) | Is access logging enabled |
+| Amazon_ELB_Auditor | ELB (Classic Load Balancer) | Are internet-facing CLBs indexed by Shodan |
 | Amazon_ELBv2_Auditor | ELBv2 (ALB) | Is access logging enabled for ALBs |
 | Amazon_ELBv2_Auditor | ELBv2 (ALB/NLB) | Is deletion protection enabled |
 | Amazon_ELBv2_Auditor | ELBv2 (ALB/NLB) | Do internet facing ELBs have a secure listener |
@@ -405,7 +408,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_ELBv2_Auditor | ELBv2 (ALB) | Do ALBs have HTTP Desync protection enabled |
 | Amazon_ELBv2_Auditor | ELBv2 (ALB) | Do ALBs SGs allow access to non-Listener ports |
 | Amazon_ELBv2_Auditor | ELBv2 (ALB) | Ares ALBs protected by WAF |
-| Amazon_Shodan_Auditor | ELBv2 (ALB) | Are internet-facing ALBs indexed by Shodan |
+| Amazon_ELBv2_Auditor | ELBv2 (ALB) | Are internet-facing ALBs indexed by Shodan |
 | Amazon_EMR_Auditor | EMR Cluster | Do clusters have a sec configuration attached |
 | Amazon_EMR_Auditor | EMR Cluster | Do cluster sec configs enforce encryption in transit |
 | Amazon_EMR_Auditor | EMR Cluster | Do cluster sec configs enforce encryption at rest for EMRFS |
@@ -434,6 +437,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_MQ_Auditor | Amazon MQ message broker | Message brokers should have general logging enabled |
 | Amazon_MQ_Auditor | Amazon MQ message broker | Message broker should not be publicly accessible |
 | Amazon_MQ_Auditor | Amazon MQ message broker | Message brokers should be configured to auto upgrade to the latest minor version |
+| Amazon_MQ_Auditor | Amazon MQ message broker | Are public accessible message brokers indexed by Shodan |
 | Amazon_MSK_Auditor | MSK Cluster | Is inter-cluster encryption used |
 | Amazon_MSK_Auditor | MSK Cluster | Is client-broker communications TLS-only |
 | Amazon_MSK_Auditor | MSK Cluster | Is enhanced monitoring used |
@@ -476,7 +480,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_RDS_Auditor | RDS DB Instance | Do PostgreSQL instances use a version susceptible to Lightspin "log_fwd" attack |
 | Amazon_RDS_Auditor | RDS DB Instance | Do Aurora PostgreSQL instances use a version susceptible to Lightspin "log_fwd" attack |
 | Amazon_RDS_Auditor | RDS DB Instance | Do instances automatically upgrade minor versions |
-| Amazon_RDS_Auditor | RDS Instance | Are public accessible RDS instances indexed |
+| Amazon_RDS_Auditor | RDS Instance | Are public accessible RDS instances indexed by Shodan |
 | Amazon_Redshift_Auditor | Redshift cluster | Is the cluster publicly accessible |
 | Amazon_Redshift_Auditor | Redshift cluster | Is the cluster encrypted at rest |
 | Amazon_Redshift_Auditor | Redshift cluster | Is enhanced VPC routing enabled |
@@ -853,11 +857,11 @@ These are the following services and checks perform by each Auditor, there are c
 
 
 
-| Amazon_Shodan_Auditor | OpenSearch domain | Are ES Domains outside a VPC indexed |
-| Amazon_Shodan_Auditor | ELB (CLB) | Are internet-facing CLBs indexed |
+
+
 | Amazon_Shodan_Auditor | DMS Replication Instance | Are public accessible DMS instances indexed |
-| Amazon_Shodan_Auditor | Amazon MQ message broker | Are public accessible message brokers indexed |
-| Amazon_Shodan_Auditor | CloudFront Distribution | Are CloudFront distros indexed |
+
+
 | Amazon_Shodan_Auditor | Global Accelerator Accelerator | Are Global Accelerator Accelerators indexed |
 
 Continue to check this section for information on active, retired, and renamed checks or using the `--list-checks` command in the CLI!

@@ -18,12 +18,109 @@
 #specific language governing permissions and limitations
 #under the License.
 
+import tomli
+import os
+import sys
+import boto3
+import requests
+import ipaddress
 import datetime
-from check_register import CheckRegister
 import base64
 import json
+from botocore.exceptions import ClientError
+from check_register import CheckRegister
 
 registry = CheckRegister()
+
+registry = CheckRegister()
+
+SHODAN_HOSTS_URL = "https://api.shodan.io/shodan/host/"
+
+def get_shodan_api_key(cache):
+
+    response = cache.get("get_shodan_api_key")
+    if response:
+        return response
+
+    validCredLocations = ["AWS_SSM", "AWS_SECRETS_MANAGER", "CONFIG_FILE"]
+
+    # Get the absolute path of the current directory
+    currentDir = os.path.abspath(os.path.dirname(__file__))
+    # Go two directories back to /eeauditor/
+    twoBack = os.path.abspath(os.path.join(currentDir, "../../"))
+
+    # TOML is located in /eeauditor/ directory
+    tomlFile = f"{twoBack}/external_providers.toml"
+    with open(tomlFile, "rb") as f:
+        data = tomli.load(f)
+
+    # Parse from [global] to determine credential location of PostgreSQL Password
+    credLocation = data["global"]["credentials_location"]
+    shodanCredValue = data["global"]["shodan_api_key_value"]
+    if credLocation not in validCredLocations:
+        print(f"Invalid option for [global.credLocation]. Must be one of {str(validCredLocations)}.")
+        sys.exit(2)
+    if not shodanCredValue:
+        apiKey = None
+    else:
+
+        # Boto3 Clients
+        ssm = boto3.client("ssm")
+        asm = boto3.client("secretsmanager")
+
+        # Retrieve API Key
+        if credLocation == "CONFIG_FILE":
+            apiKey = shodanCredValue
+
+        # Retrieve the credential from SSM Parameter Store
+        elif credLocation == "AWS_SSM":
+            
+            try:
+                apiKey = ssm.get_parameter(
+                    Name=shodanCredValue,
+                    WithDecryption=True
+                )["Parameter"]["Value"]
+            except ClientError as e:
+                print(f"Error retrieving API Key from SSM, skipping all Shodan checks, error: {e}")
+                apiKey = None
+
+        # Retrieve the credential from AWS Secrets Manager
+        elif credLocation == "AWS_SECRETS_MANAGER":
+            try:
+                apiKey = asm.get_secret_value(
+                    SecretId=shodanCredValue,
+                )["SecretString"]
+            except ClientError as e:
+                print(f"Error retrieving API Key from ASM, skipping all Shodan checks, error: {e}")
+                apiKey = None
+        
+    cache["get_shodan_api_key"] = apiKey
+    return cache["get_shodan_api_key"]
+
+def google_dns_resolver(target):
+    """
+    Accepts a Public DNS name and attempts to use Google's DNS A record resolver to determine an IP address
+    """
+    url = f"https://dns.google/resolve?name={target}&type=A"
+    
+    r = requests.get(url=url)
+    if r.status_code != 200:
+        return None
+    else:
+        for result in json.loads(r.text)["Answer"]:
+            try:
+                if not (
+                    ipaddress.IPv4Address(result["data"]).is_private
+                    or ipaddress.IPv4Address(result["data"]).is_loopback
+                    or ipaddress.IPv4Address(result["data"]).is_link_local
+                ):
+                    return result["data"]
+                else:
+                    continue
+            except ipaddress.AddressValueError:
+                continue
+        # if the loop terminates without any result return None
+        return None
 
 def describe_clbs(cache, session):
     response = cache.get("describe_load_balancers")
@@ -770,9 +867,7 @@ def clb_access_logging_check(cache: dict, session, awsAccountId: str, awsRegion:
         lbVpc = lb["VPCId"]
         clbScheme = lb["Scheme"]
         # Get Attrs
-        response = elb.describe_load_balancer_attributes(LoadBalancerName=clbName)
-        accessLogCheck = str(response["LoadBalancerAttributes"]["AccessLog"]["Enabled"])
-        if accessLogCheck == "False":
+        if elb.describe_load_balancer_attributes(LoadBalancerName=clbName)["LoadBalancerAttributes"]["AccessLog"]["Enabled"] is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clbArn + "/classic-loadbalancer-access-logging-check",
@@ -980,3 +1075,198 @@ def clb_access_logging_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "RecordState": "ARCHIVED"
             }
             yield finding
+
+@registry.register_check("elasticloadbalancing")
+def public_clb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ELB.6] Internet-facing Classic Load Balancers should be monitored for being indexed by Shodan"""
+    shodanApiKey = get_shodan_api_key(cache)
+    # ISO Time
+    iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()        
+    for lb in describe_clbs(cache, session):
+        if shodanApiKey is None:
+            continue
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(lb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        clbName = lb["LoadBalancerName"]
+        clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
+        dnsName = lb["DNSName"]
+        lbSgs = lb["SecurityGroups"]
+        lbSubnets = lb["Subnets"]
+        lbAzs = lb["AvailabilityZones"]
+        lbVpc = lb["VPCId"]
+        clbScheme = lb["Scheme"]
+        if clbScheme == "internet-facing":
+            # Use Google DNS to resolve
+            clbIp = google_dns_resolver(dnsName)
+            if clbIp is None:
+                continue
+            # check if IP indexed by Shodan
+            r = requests.get(url=f"{SHODAN_HOSTS_URL}{clbIp}?key={shodanApiKey}").json()
+            if str(r) == "{'error': 'No information available for that IP.'}":
+                # this is a passing check
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{clbArn}/{dnsName}/classic-load-balancer-shodan-index-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": f"{clbArn}/{dnsName}/classic-load-balancer-shodan-index-check",
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Effects/Data Exposure"],
+                    "CreatedAt": iso8601time,
+                    "UpdatedAt": iso8601time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Title": "[ELB.6] Internet-facing Classic Load Balancers should be monitored for being indexed by Shodan",
+                    "Description": f"Classic Load Balancer {clbName} has not been indexed by Shodan.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
+                            "Url": SHODAN_HOSTS_URL
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "AWS Elastic Load Balancer",
+                        "AssetComponent": "Classic Load Balancer"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "AwsElbLoadBalancer",
+                            "Id": clbArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsElbLoadBalancer": {
+                                    "DnsName": dnsName,
+                                    "Scheme": clbScheme,
+                                    "SecurityGroups": lbSgs,
+                                    "Subnets": lbSubnets,
+                                    "VpcId": lbVpc,
+                                    "AvailabilityZones": lbAzs,
+                                    "LoadBalancerName": clbName
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 ID.RA-2",
+                            "NIST CSF V1.1 DE.AE-2",
+                            "NIST SP 800-53 Rev. 4 AU-6",
+                            "NIST SP 800-53 Rev. 4 CA-7",
+                            "NIST SP 800-53 Rev. 4 IR-4",
+                            "NIST SP 800-53 Rev. 4 PM-15",
+                            "NIST SP 800-53 Rev. 4 PM-16",
+                            "NIST SP 800-53 Rev. 4 SI-4",
+                            "NIST SP 800-53 Rev. 4 SI-5",
+                            "AIPCA TSC CC3.2",
+                            "AIPCA TSC CC7.2",
+                            "ISO 27001:2013 A.6.1.4",
+                            "ISO 27001:2013 A.12.4.1",
+                            "ISO 27001:2013 A.16.1.1",
+                            "ISO 27001:2013 A.16.1.4",
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
+            else:
+                assetPayload = {
+                    "LoadBalancer": lb,
+                    "Shodan": r
+                }
+                assetJson = json.dumps(assetPayload,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{clbArn}/{dnsName}/classic-load-balancer-shodan-index-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": f"{clbArn}/{dnsName}/classic-load-balancer-shodan-index-check",
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Effects/Data Exposure"],
+                    "CreatedAt": iso8601time,
+                    "UpdatedAt": iso8601time,
+                    "Severity": {"Label": "MEDIUM"},
+                    "Title": "[ELB.6] Internet-facing Classic Load Balancers should be monitored for being indexed by Shodan",
+                    "Description": f"Classic Load Balancer {clbName} has been indexed by Shodan on IP address {clbIp} - resolved from DNS name {dnsName}. Shodan is an 'internet search engine' which continuously crawls and scans across the entire internet to capture host, geolocation, TLS, and running service information. Shodan is a popular tool used by blue teams, security researchers and adversaries alike. Having your asset indexed on Shodan, depending on its configuration, may increase its risk of unauthorized access and further compromise. Review your configuration and refer to the Shodan URL in the remediation section to take action to reduce your exposure and harden your host.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
+                            "Url": f"{SHODAN_HOSTS_URL}{clbIp}"
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "AWS Elastic Load Balancer",
+                        "AssetComponent": "Classic Load Balancer"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "AwsElbLoadBalancer",
+                            "Id": clbArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsElbLoadBalancer": {
+                                    "DnsName": dnsName,
+                                    "Scheme": clbScheme,
+                                    "SecurityGroups": lbSgs,
+                                    "Subnets": lbSubnets,
+                                    "VpcId": lbVpc,
+                                    "AvailabilityZones": lbAzs,
+                                    "LoadBalancerName": clbName
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 ID.RA-2",
+                            "NIST CSF V1.1 DE.AE-2",
+                            "NIST SP 800-53 Rev. 4 AU-6",
+                            "NIST SP 800-53 Rev. 4 CA-7",
+                            "NIST SP 800-53 Rev. 4 IR-4",
+                            "NIST SP 800-53 Rev. 4 PM-15",
+                            "NIST SP 800-53 Rev. 4 PM-16",
+                            "NIST SP 800-53 Rev. 4 SI-4",
+                            "NIST SP 800-53 Rev. 4 SI-5",
+                            "AIPCA TSC CC3.2",
+                            "AIPCA TSC CC7.2",
+                            "ISO 27001:2013 A.6.1.4",
+                            "ISO 27001:2013 A.12.4.1",
+                            "ISO 27001:2013 A.16.1.1",
+                            "ISO 27001:2013 A.16.1.4",
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
+
+## END ??

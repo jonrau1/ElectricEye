@@ -18,12 +18,107 @@
 #specific language governing permissions and limitations
 #under the License.
 
+import tomli
+import os
+import sys
+import boto3
+import requests
+import ipaddress
 import datetime
-from check_register import CheckRegister
 import base64
 import json
+from botocore.exceptions import ClientError
+from check_register import CheckRegister
 
 registry = CheckRegister()
+
+SHODAN_HOSTS_URL = "https://api.shodan.io/shodan/host/"
+
+def get_shodan_api_key(cache):
+
+    response = cache.get("get_shodan_api_key")
+    if response:
+        return response
+
+    validCredLocations = ["AWS_SSM", "AWS_SECRETS_MANAGER", "CONFIG_FILE"]
+
+    # Get the absolute path of the current directory
+    currentDir = os.path.abspath(os.path.dirname(__file__))
+    # Go two directories back to /eeauditor/
+    twoBack = os.path.abspath(os.path.join(currentDir, "../../"))
+
+    # TOML is located in /eeauditor/ directory
+    tomlFile = f"{twoBack}/external_providers.toml"
+    with open(tomlFile, "rb") as f:
+        data = tomli.load(f)
+
+    # Parse from [global] to determine credential location of PostgreSQL Password
+    credLocation = data["global"]["credentials_location"]
+    shodanCredValue = data["global"]["shodan_api_key_value"]
+    if credLocation not in validCredLocations:
+        print(f"Invalid option for [global.credLocation]. Must be one of {str(validCredLocations)}.")
+        sys.exit(2)
+    if not shodanCredValue:
+        apiKey = None
+    else:
+
+        # Boto3 Clients
+        ssm = boto3.client("ssm")
+        asm = boto3.client("secretsmanager")
+
+        # Retrieve API Key
+        if credLocation == "CONFIG_FILE":
+            apiKey = shodanCredValue
+
+        # Retrieve the credential from SSM Parameter Store
+        elif credLocation == "AWS_SSM":
+            
+            try:
+                apiKey = ssm.get_parameter(
+                    Name=shodanCredValue,
+                    WithDecryption=True
+                )["Parameter"]["Value"]
+            except ClientError as e:
+                print(f"Error retrieving API Key from SSM, skipping all Shodan checks, error: {e}")
+                apiKey = None
+
+        # Retrieve the credential from AWS Secrets Manager
+        elif credLocation == "AWS_SECRETS_MANAGER":
+            try:
+                apiKey = asm.get_secret_value(
+                    SecretId=shodanCredValue,
+                )["SecretString"]
+            except ClientError as e:
+                print(f"Error retrieving API Key from ASM, skipping all Shodan checks, error: {e}")
+                apiKey = None
+        
+    cache["get_shodan_api_key"] = apiKey
+    return cache["get_shodan_api_key"]
+
+def google_dns_resolver(target):
+    """
+    Accepts a Public DNS name and attempts to use Google's DNS A record resolver to determine an IP address
+    """
+    url = f"https://dns.google/resolve?name={target}&type=A"
+    
+    r = requests.get(url=url)
+    if r.status_code != 200:
+        return None
+    else:
+        for result in json.loads(r.text)["Answer"]:
+            try:
+                if not (
+                    ipaddress.IPv4Address(result["data"]).is_private
+                    or ipaddress.IPv4Address(result["data"]).is_loopback
+                    or ipaddress.IPv4Address(result["data"]).is_link_local
+                ):
+                    return result["data"]
+                else:
+                    continue
+            except ipaddress.AddressValueError:
+                continue
+        # if the loop terminates without any result return None
+        return None
 
 def list_brokers(cache, session):
     amazonMqBrokerDetails = []
@@ -51,13 +146,13 @@ def broker_kms_cmk_check(cache: dict, session, awsAccountId: str, awsRegion: str
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for broker in list_brokers(cache, session):
         # B64 encode all of the details for the Asset
-        brokerId = str(broker["BrokerId"])
-        brokerName = str(broker["BrokerName"])
+        brokerId = broker["BrokerId"]
+        brokerName = broker["BrokerName"]
         response = amzmq.describe_broker(BrokerId=brokerName)
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        brokerArn = str(response["BrokerArn"])
-        if response["EncryptionOptions"]["UseAwsOwnedKey"] == True:
+        brokerArn = response["BrokerArn"]
+        if response["EncryptionOptions"]["UseAwsOwnedKey"] is True:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": brokerArn + "/amazonmq-broker-kms-cmk-check",
@@ -191,18 +286,18 @@ def broker_audit_logging_check(cache: dict, session, awsAccountId: str, awsRegio
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for broker in list_brokers(cache, session):
         # B64 encode all of the details for the Asset
-        brokerId = str(broker["BrokerId"])
-        brokerName = str(broker["BrokerName"])
+        brokerId = broker["BrokerId"]
+        brokerName = broker["BrokerName"]
         response = amzmq.describe_broker(BrokerId=brokerName)
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        brokerArn = str(response["BrokerArn"])
-        brokerName = str(broker["BrokerName"])
+        brokerArn = response["BrokerArn"]
+        brokerName = broker["BrokerName"]
         try:
             auditLogCheck = response["Logs"]["Audit"]
         except KeyError:
             auditLogCheck = False
-        if auditLogCheck == False:
+        if auditLogCheck is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": brokerArn + "/amazonmq-broker-audit-logging-check",
@@ -337,13 +432,13 @@ def broker_general_logging_check(cache: dict, session, awsAccountId: str, awsReg
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for broker in list_brokers(cache, session):
         # B64 encode all of the details for the Asset
-        brokerId = str(broker["BrokerId"])
-        brokerName = str(broker["BrokerName"])
+        brokerId = broker["BrokerId"]
+        brokerName = broker["BrokerName"]
         response = amzmq.describe_broker(BrokerId=brokerName)
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        brokerArn = str(response["BrokerArn"])
-        brokerName = str(broker["BrokerName"])
+        brokerArn = response["BrokerArn"]
+        brokerName = broker["BrokerName"]
         genLogCheck = str(response["Logs"]["General"])
         if genLogCheck == "False":
             finding = {
@@ -482,14 +577,14 @@ def broker_public_access_check(cache: dict, session, awsAccountId: str, awsRegio
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for broker in list_brokers(cache, session):
         # B64 encode all of the details for the Asset
-        brokerId = str(broker["BrokerId"])
-        brokerName = str(broker["BrokerName"])
+        brokerId = broker["BrokerId"]
+        brokerName = broker["BrokerName"]
         response = amzmq.describe_broker(BrokerId=brokerName)
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        brokerArn = str(response["BrokerArn"])
-        brokerName = str(broker["BrokerName"])
-        if response["PubliclyAccessible"] == True:
+        brokerArn = response["BrokerArn"]
+        brokerName = broker["BrokerName"]
+        if response["PubliclyAccessible"] is True:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": brokerArn + "/amazonmq-public-accessible-check",
@@ -716,14 +811,13 @@ def broker_minor_version_auto_upgrade_check(cache: dict, session, awsAccountId: 
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for broker in list_brokers(cache, session):
         # B64 encode all of the details for the Asset
-        brokerId = str(broker["BrokerId"])
-        brokerName = str(broker["BrokerName"])
+        brokerId = broker["BrokerId"]
+        brokerName = broker["BrokerName"]
         response = amzmq.describe_broker(BrokerId=brokerName)
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        brokerArn = str(response["BrokerArn"])
-        brokerName = str(broker["BrokerName"])
-        if response["AutoMinorVersionUpgrade"] == False:
+        brokerArn = response["BrokerArn"]
+        if response["AutoMinorVersionUpgrade"] is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": brokerArn + "/amazonmq-auto-minor-version-upgrade-check",
@@ -764,8 +858,8 @@ def broker_minor_version_auto_upgrade_check(cache: dict, session, awsAccountId: 
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "Other": {"BrokerName": brokerName, "BrokerId": brokerId,}
-                        },
+                            "Other": {"BrokerName": brokerName, "BrokerId": brokerId}
+                        }
                     }
                 ],
                 "Compliance": {
@@ -851,3 +945,193 @@ def broker_minor_version_auto_upgrade_check(cache: dict, session, awsAccountId: 
                 "RecordState": "ARCHIVED"
             }
             yield finding
+
+@registry.register_check("mq")
+def public_amazon_mq_broker_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AmazonMQ.6] Publicly accessible Amazon MQ message brokers should be monitored for being indexed by Shodan"""
+    shodanApiKey = get_shodan_api_key(cache)
+    amzmq = session.client("mq")
+    # ISO Time
+    iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for broker in list_brokers(cache, session):
+        if shodanApiKey is None:
+            continue
+        # B64 encode all of the details for the Asset
+        brokerId = broker["BrokerId"]
+        brokerName = broker["BrokerName"]
+        response = amzmq.describe_broker(BrokerId=brokerName)
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        brokerArn = response["BrokerArn"]
+        if response["PubliclyAccessible"] is True:
+            try:
+                consoleHostname = response["BrokerInstances"][0]["ConsoleURL"].split("https://")[1].split(":")[0]
+            except KeyError:
+                continue
+            try:
+                mqBrokerIpv4 = google_dns_resolver(consoleHostname)
+            except KeyError:
+                continue
+            r = requests.get(url=f"{SHODAN_HOSTS_URL}{mqBrokerIpv4}?key={shodanApiKey}").json()
+            if str(r) == "{'error': 'No information available for that IP.'}":
+                # this is a passing check
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{brokerArn}/{mqBrokerIpv4}/amazon-mq-broker-shodan-index-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": brokerArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Effects/Data Exposure"],
+                    "CreatedAt": iso8601time,
+                    "UpdatedAt": iso8601time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Title": "[AmazonMQ.6] Publicly accessible Amazon MQ message brokers should be monitored for being indexed by Shodan",
+                    "Description": f"Amazon MQ message broker {brokerName} has not been indexed by Shodan.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
+                            "Url": SHODAN_HOSTS_URL
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Application Integration",
+                        "AssetService": "Amazon MQ",
+                        "AssetComponent": "Broker"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "AwsMqMessageBroker",
+                            "Id": brokerArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "Other": {"BrokerName": brokerName, "BrokerId": brokerId}
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 ID.RA-2",
+                            "NIST CSF V1.1 DE.AE-2",
+                            "NIST SP 800-53 Rev. 4 AU-6",
+                            "NIST SP 800-53 Rev. 4 CA-7",
+                            "NIST SP 800-53 Rev. 4 IR-4",
+                            "NIST SP 800-53 Rev. 4 PM-15",
+                            "NIST SP 800-53 Rev. 4 PM-16",
+                            "NIST SP 800-53 Rev. 4 SI-4",
+                            "NIST SP 800-53 Rev. 4 SI-5",
+                            "AIPCA TSC CC3.2",
+                            "AIPCA TSC CC7.2",
+                            "ISO 27001:2013 A.6.1.4",
+                            "ISO 27001:2013 A.12.4.1",
+                            "ISO 27001:2013 A.16.1.1",
+                            "ISO 27001:2013 A.16.1.4",
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
+            else:
+                assetPayload = {
+                    "Broker": response,
+                    "Shodan": r
+                }
+                assetJson = json.dumps(assetPayload,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{brokerArn}/{mqBrokerIpv4}/amazon-mq-broker-shodan-index-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": brokerArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Effects/Data Exposure"],
+                    "CreatedAt": iso8601time,
+                    "UpdatedAt": iso8601time,
+                    "Severity": {"Label": "MEDIUM"},
+                    "Title": "[AmazonMQ.6] Publicly accessible Amazon MQ message brokers should be monitored for being indexed by Shodan",
+                    "Description": f"AmazonMQ Broker {brokerName} has been indexed on IP address {mqBrokerIpv4}. Shodan is an 'internet search engine' which continuously crawls and scans across the entire internet to capture host, geolocation, TLS, and running service information. Shodan is a popular tool used by blue teams, security researchers and adversaries alike. Having your asset indexed on Shodan, depending on its configuration, may increase its risk of unauthorized access and further compromise. Review your configuration and refer to the Shodan URL in the remediation section to take action to reduce your exposure and harden your host.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
+                            "Url": f"{SHODAN_HOSTS_URL}{mqBrokerIpv4}"
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Application Integration",
+                        "AssetService": "Amazon MQ",
+                        "AssetComponent": "Broker"
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Application Integration",
+                        "AssetService": "Amazon MQ",
+                        "AssetComponent": "Broker"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "AwsMqMessageBroker",
+                            "Id": brokerArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "Other": {"BrokerName": brokerName, "BrokerId": brokerId}
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 ID.RA-2",
+                            "NIST CSF V1.1 DE.AE-2",
+                            "NIST SP 800-53 Rev. 4 AU-6",
+                            "NIST SP 800-53 Rev. 4 CA-7",
+                            "NIST SP 800-53 Rev. 4 IR-4",
+                            "NIST SP 800-53 Rev. 4 PM-15",
+                            "NIST SP 800-53 Rev. 4 PM-16",
+                            "NIST SP 800-53 Rev. 4 SI-4",
+                            "NIST SP 800-53 Rev. 4 SI-5",
+                            "AIPCA TSC CC3.2",
+                            "AIPCA TSC CC7.2",
+                            "ISO 27001:2013 A.6.1.4",
+                            "ISO 27001:2013 A.12.4.1",
+                            "ISO 27001:2013 A.16.1.1",
+                            "ISO 27001:2013 A.16.1.4",
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
+
+## END ??
