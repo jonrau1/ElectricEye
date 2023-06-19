@@ -26,12 +26,13 @@ import json
 registry = CheckRegister()
 
 def describe_load_balancers(cache, session):
-    elbv2 = session.client("elbv2")
-    # loop through ELBv2 load balancers
     response = cache.get("describe_load_balancers")
     if response:
         return response
-    cache["describe_load_balancers"] = elbv2.describe_load_balancers()
+    
+    elbv2 = session.client("elbv2")
+
+    cache["describe_load_balancers"] = elbv2.describe_load_balancers()["LoadBalancers"]
     return cache["describe_load_balancers"]
 
 @registry.register_check("elasticloadbalancingv2")
@@ -40,17 +41,17 @@ def elbv2_alb_logging_check(cache: dict, session, awsAccountId: str, awsRegion: 
     elbv2 = session.client("elbv2")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_load_balancers(cache, session)["LoadBalancers"]:
+    for lb in describe_load_balancers(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(lb,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        elbv2Arn = str(lb["LoadBalancerArn"])
-        elbv2Name = str(lb["LoadBalancerName"])
-        elbv2DnsName = str(lb["DNSName"])
-        elbv2LbType = str(lb["Type"])
-        elbv2Scheme = str(lb["Scheme"])
-        elbv2VpcId = str(lb["VpcId"])
-        elbv2IpAddressType = str(lb["IpAddressType"])
+        elbv2Arn = lb["LoadBalancerArn"]
+        elbv2Name = lb["LoadBalancerName"]
+        elbv2DnsName = lb["DNSName"]
+        elbv2LbType = lb["Type"]
+        elbv2Scheme = lb["Scheme"]
+        elbv2VpcId = lb["VpcId"]
+        elbv2IpAddressType = lb["IpAddressType"]
         if elbv2LbType == "application":
             response = elbv2.describe_load_balancer_attributes(LoadBalancerArn=elbv2Arn)
             elbv2Attributes = response["Attributes"]
@@ -278,21 +279,21 @@ def elbv2_deletion_protection_check(cache: dict, session, awsAccountId: str, aws
     elbv2 = session.client("elbv2")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_load_balancers(cache, session)["LoadBalancers"]:
+    for lb in describe_load_balancers(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(lb,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        elbv2Arn = str(lb["LoadBalancerArn"])
-        elbv2Name = str(lb["LoadBalancerName"])
-        elbv2DnsName = str(lb["DNSName"])
-        elbv2LbType = str(lb["Type"])
+        elbv2Arn = lb["LoadBalancerArn"]
+        elbv2Name = lb["LoadBalancerName"]
+        elbv2DnsName = lb["DNSName"]
+        elbv2LbType = lb["Type"]
         if elbv2LbType == "application":
             eeAssetType = "Application Load Balancer"
         else:
             eeAssetType = "Network Load Balancer"
-        elbv2Scheme = str(lb["Scheme"])
-        elbv2VpcId = str(lb["VpcId"])
-        elbv2IpAddressType = str(lb["IpAddressType"])
+        elbv2Scheme = lb["Scheme"]
+        elbv2VpcId = lb["VpcId"]
+        elbv2IpAddressType = lb["IpAddressType"]
         response = elbv2.describe_load_balancer_attributes(LoadBalancerArn=elbv2Arn)
         elbv2Attributes = response["Attributes"]
         for attributes in elbv2Attributes:
@@ -485,21 +486,21 @@ def elbv2_internet_facing_secure_listeners_check(cache: dict, session, awsAccoun
     elbv2 = session.client("elbv2")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_load_balancers(cache, session)["LoadBalancers"]:
+    for lb in describe_load_balancers(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(lb,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        elbv2Arn = str(lb["LoadBalancerArn"])
-        elbv2Name = str(lb["LoadBalancerName"])
-        elbv2DnsName = str(lb["DNSName"])
-        elbv2LbType = str(lb["Type"])
+        elbv2Arn = lb["LoadBalancerArn"]
+        elbv2Name = lb["LoadBalancerName"]
+        elbv2DnsName = lb["DNSName"]
+        elbv2LbType = lb["Type"]
         if elbv2LbType == "application":
             eeAssetType = "Application Load Balancer"
         else:
             eeAssetType = "Network Load Balancer"
-        elbv2Scheme = str(lb["Scheme"])
-        elbv2VpcId = str(lb["VpcId"])
-        elbv2IpAddressType = str(lb["IpAddressType"])
+        elbv2Scheme = lb["Scheme"]
+        elbv2VpcId = lb["VpcId"]
+        elbv2IpAddressType = lb["IpAddressType"]
         response = elbv2.describe_listeners(LoadBalancerArn=elbv2Arn)
         myElbv2Listeners = response["Listeners"]
         for listeners in myElbv2Listeners:
@@ -665,21 +666,21 @@ def elbv2_tls12_listener_policy_check(cache: dict, session, awsAccountId: str, a
         "ELBSecurityPolicy-TLS13-1-2-2021-06" 
     ]
 
-    for lb in describe_load_balancers(cache, session)["LoadBalancers"]:
+    for lb in describe_load_balancers(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(lb,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        elbv2Arn = str(lb["LoadBalancerArn"])
-        elbv2Name = str(lb["LoadBalancerName"])
-        elbv2DnsName = str(lb["DNSName"])
-        elbv2LbType = str(lb["Type"])
+        elbv2Arn = lb["LoadBalancerArn"]
+        elbv2Name = lb["LoadBalancerName"]
+        elbv2DnsName = lb["DNSName"]
+        elbv2LbType = lb["Type"]
         if elbv2LbType == "application":
             eeAssetType = "Application Load Balancer"
         else:
             eeAssetType = "Network Load Balancer"
-        elbv2Scheme = str(lb["Scheme"])
-        elbv2VpcId = str(lb["VpcId"])
-        elbv2IpAddressType = str(lb["IpAddressType"])
+        elbv2Scheme = lb["Scheme"]
+        elbv2VpcId = lb["VpcId"]
+        elbv2IpAddressType = lb["IpAddressType"]
         response = elbv2.describe_listeners(LoadBalancerArn=elbv2Arn)
         myElbv2Listeners = response["Listeners"]
         for listeners in myElbv2Listeners:
@@ -848,17 +849,17 @@ def elbv2_drop_invalid_header_check(cache: dict, session, awsAccountId: str, aws
     elbv2 = session.client("elbv2")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_load_balancers(cache, session)["LoadBalancers"]:
+    for lb in describe_load_balancers(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(lb,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        elbv2Arn = str(lb["LoadBalancerArn"])
-        elbv2Name = str(lb["LoadBalancerName"])
-        elbv2DnsName = str(lb["DNSName"])
-        elbv2LbType = str(lb["Type"])
-        elbv2Scheme = str(lb["Scheme"])
-        elbv2VpcId = str(lb["VpcId"])
-        elbv2IpAddressType = str(lb["IpAddressType"])
+        elbv2Arn = lb["LoadBalancerArn"]
+        elbv2Name = lb["LoadBalancerName"]
+        elbv2DnsName = lb["DNSName"]
+        elbv2LbType = lb["Type"]
+        elbv2Scheme = lb["Scheme"]
+        elbv2VpcId = lb["VpcId"]
+        elbv2IpAddressType = lb["IpAddressType"]
         response = elbv2.describe_load_balancer_attributes(LoadBalancerArn=elbv2Arn)
         elbv2Attributes = response["Attributes"]
         for attributes in elbv2Attributes:
@@ -1017,17 +1018,17 @@ def elbv2_nlb_tls_logging_check(cache: dict, session, awsAccountId: str, awsRegi
     elbv2 = session.client("elbv2")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_load_balancers(cache, session)["LoadBalancers"]:
+    for lb in describe_load_balancers(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(lb,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        elbv2Arn = str(lb["LoadBalancerArn"])
-        elbv2Name = str(lb["LoadBalancerName"])
-        elbv2DnsName = str(lb["DNSName"])
-        elbv2LbType = str(lb["Type"])
-        elbv2Scheme = str(lb["Scheme"])
-        elbv2VpcId = str(lb["VpcId"])
-        elbv2IpAddressType = str(lb["IpAddressType"])
+        elbv2Arn = lb["LoadBalancerArn"]
+        elbv2Name = lb["LoadBalancerName"]
+        elbv2DnsName = lb["DNSName"]
+        elbv2LbType = lb["Type"]
+        elbv2Scheme = lb["Scheme"]
+        elbv2VpcId = lb["VpcId"]
+        elbv2IpAddressType = lb["IpAddressType"]
         if elbv2LbType == "network":
             response = elbv2.describe_listeners(LoadBalancerArn=elbv2Arn)
             for listeners in response["Listeners"]:
@@ -1261,17 +1262,17 @@ def elbv2_alb_http_desync_protection_check(cache: dict, session, awsAccountId: s
     elbv2 = session.client("elbv2")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_load_balancers(cache, session)["LoadBalancers"]:
+    for lb in describe_load_balancers(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(lb,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        elbv2Arn = str(lb["LoadBalancerArn"])
-        elbv2Name = str(lb["LoadBalancerName"])
-        elbv2DnsName = str(lb["DNSName"])
-        elbv2LbType = str(lb["Type"])
-        elbv2Scheme = str(lb["Scheme"])
-        elbv2VpcId = str(lb["VpcId"])
-        elbv2IpAddressType = str(lb["IpAddressType"])
+        elbv2Arn = lb["LoadBalancerArn"]
+        elbv2Name = lb["LoadBalancerName"]
+        elbv2DnsName = lb["DNSName"]
+        elbv2LbType = lb["Type"]
+        elbv2Scheme = lb["Scheme"]
+        elbv2VpcId = lb["VpcId"]
+        elbv2IpAddressType = lb["IpAddressType"]
         if elbv2LbType == "application":
             response = elbv2.describe_load_balancer_attributes(LoadBalancerArn=elbv2Arn)
             elbv2Attributes = response["Attributes"]
@@ -1659,17 +1660,17 @@ def elbv2_alb_logging_check(cache: dict, session, awsAccountId: str, awsRegion: 
     wafv2 = session.client("wafv2")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_load_balancers(cache, session)["LoadBalancers"]:
+    for lb in describe_load_balancers(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(lb,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        elbv2Arn = str(lb["LoadBalancerArn"])
-        elbv2Name = str(lb["LoadBalancerName"])
-        elbv2DnsName = str(lb["DNSName"])
-        elbv2LbType = str(lb["Type"])
-        elbv2Scheme = str(lb["Scheme"])
-        elbv2VpcId = str(lb["VpcId"])
-        elbv2IpAddressType = str(lb["IpAddressType"])
+        elbv2Arn = lb["LoadBalancerArn"]
+        elbv2Name = lb["LoadBalancerName"]
+        elbv2DnsName = lb["DNSName"]
+        elbv2LbType = lb["Type"]
+        elbv2Scheme = lb["Scheme"]
+        elbv2VpcId = lb["VpcId"]
+        elbv2IpAddressType = lb["IpAddressType"]
         # only ALBs can be covered by WAF
         if elbv2LbType == "application":
             # attempt to retrieve a WAFv2 WebACL for the resource - errors or other values are not given for a lack of coverage

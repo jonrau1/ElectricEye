@@ -26,12 +26,13 @@ import json
 registry = CheckRegister()
 
 def describe_clbs(cache, session):
-    elb = session.client("elb")
-    # loop through ELB load balancers
     response = cache.get("describe_load_balancers")
     if response:
         return response
-    cache["describe_load_balancers"] = elb.describe_load_balancers()
+    
+    elb = session.client("elb")
+
+    cache["describe_load_balancers"] = elb.describe_load_balancers()["LoadBalancerDescriptions"]
     return cache["describe_load_balancers"]
 
 @registry.register_check("elasticloadbalancing")
@@ -39,22 +40,21 @@ def internet_facing_clb_https_listener_check(cache: dict, session, awsAccountId:
     """[ELB.1] Classic load balancers that are internet-facing should use secure listeners"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_clbs(cache, session)["LoadBalancerDescriptions"]:
+    for lb in describe_clbs(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(lb,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        clbName = str(lb["LoadBalancerName"])
+        clbName = lb["LoadBalancerName"]
         clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
-        dnsName = str(lb["DNSName"])
+        dnsName = lb["DNSName"]
         lbSgs = lb["SecurityGroups"]
         lbSubnets = lb["Subnets"]
         lbAzs = lb["AvailabilityZones"]
         lbVpc = lb["VPCId"]
-        clbScheme = str(lb["Scheme"])
+        clbScheme = lb["Scheme"]
         if clbScheme == "internet-facing":
             for listeners in lb["ListenerDescriptions"]:
-                listenerProtocol = str(listeners["Listener"]["Protocol"])
-                if listenerProtocol != "HTTPS" or "SSL":
+                if listeners["Listener"]["Protocol"] != "HTTPS" or "SSL":
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": clbArn + "/classic-loadbalancer-secure-listener-check",
@@ -208,18 +208,18 @@ def clb_https_listener_tls12_policy_check(cache: dict, session, awsAccountId: st
     """[ELB.2] Classic load balancers should use TLS 1.2 listener policies"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_clbs(cache, session)["LoadBalancerDescriptions"]:
+    for lb in describe_clbs(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(lb,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        clbName = str(lb["LoadBalancerName"])
+        clbName = lb["LoadBalancerName"]
         clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
-        dnsName = str(lb["DNSName"])
+        dnsName = lb["DNSName"]
         lbSgs = lb["SecurityGroups"]
         lbSubnets = lb["Subnets"]
         lbAzs = lb["AvailabilityZones"]
         lbVpc = lb["VPCId"]
-        clbScheme = str(lb["Scheme"])
+        clbScheme = lb["Scheme"]
         for listeners in lb["ListenerDescriptions"]:
             listenerPolicies = listeners["PolicyNames"]
             if not listenerPolicies:
@@ -377,18 +377,18 @@ def clb_cross_zone_balancing_check(cache: dict, session, awsAccountId: str, awsR
     elb = session.client("elb")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_clbs(cache, session)["LoadBalancerDescriptions"]:
+    for lb in describe_clbs(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(lb,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        clbName = str(lb["LoadBalancerName"])
+        clbName = lb["LoadBalancerName"]
         clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
-        dnsName = str(lb["DNSName"])
+        dnsName = lb["DNSName"]
         lbSgs = lb["SecurityGroups"]
         lbSubnets = lb["Subnets"]
         lbAzs = lb["AvailabilityZones"]
         lbVpc = lb["VPCId"]
-        clbScheme = str(lb["Scheme"])
+        clbScheme = lb["Scheme"]
         # Get Attrs
         response = elb.describe_load_balancer_attributes(LoadBalancerName=clbName)
         crossZoneCheck = str(
@@ -567,18 +567,18 @@ def clb_connection_draining_check(cache: dict, session, awsAccountId: str, awsRe
     elb = session.client("elb")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_clbs(cache, session)["LoadBalancerDescriptions"]:
+    for lb in describe_clbs(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(lb,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        clbName = str(lb["LoadBalancerName"])
+        clbName = lb["LoadBalancerName"]
         clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
-        dnsName = str(lb["DNSName"])
+        dnsName = lb["DNSName"]
         lbSgs = lb["SecurityGroups"]
         lbSubnets = lb["Subnets"]
         lbAzs = lb["AvailabilityZones"]
         lbVpc = lb["VPCId"]
-        clbScheme = str(lb["Scheme"])
+        clbScheme = lb["Scheme"]
         # Get Attrs
         response = elb.describe_load_balancer_attributes(LoadBalancerName=clbName)
         connectionDrainCheck = str(
@@ -757,18 +757,18 @@ def clb_access_logging_check(cache: dict, session, awsAccountId: str, awsRegion:
     elb = session.client("elb")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_clbs(cache, session)["LoadBalancerDescriptions"]:
+    for lb in describe_clbs(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(lb,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        clbName = str(lb["LoadBalancerName"])
+        clbName = lb["LoadBalancerName"]
         clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
-        dnsName = str(lb["DNSName"])
+        dnsName = lb["DNSName"]
         lbSgs = lb["SecurityGroups"]
         lbSubnets = lb["Subnets"]
         lbAzs = lb["AvailabilityZones"]
         lbVpc = lb["VPCId"]
-        clbScheme = str(lb["Scheme"])
+        clbScheme = lb["Scheme"]
         # Get Attrs
         response = elb.describe_load_balancer_attributes(LoadBalancerName=clbName)
         accessLogCheck = str(response["LoadBalancerAttributes"]["AccessLog"]["Enabled"])

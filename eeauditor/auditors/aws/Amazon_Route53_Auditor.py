@@ -26,18 +26,18 @@ import json
 registry = CheckRegister()
 
 def get_hosted_zones(cache, session):
-    route53 = session.client("route53")
-    zones = []
     response = cache.get("get_hosted_zones")
     if response:
         return response
-    paginator = route53.get_paginator('list_hosted_zones')
-    if paginator:
-        for page in paginator.paginate():
-            for hz in page["HostedZones"]:
-                zones.append(hz)
-        cache["get_hosted_zones"] = zones
-        return cache["get_hosted_zones"]
+    
+    route53 = session.client("route53")
+    zones = []
+
+    for page in route53.get_paginator("list_hosted_zones").paginate():
+        for hz in page["HostedZones"]:
+            zones.append(hz)
+    cache["get_hosted_zones"] = zones
+    return cache["get_hosted_zones"]
     
 @registry.register_check("route53")
 def route53_hosted_zone_query_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -52,7 +52,7 @@ def route53_hosted_zone_query_logging_check(cache: dict, session, awsAccountId: 
         hzId = zone["Id"]
         hzName = zone["Name"]
         hzArn = f"arn:aws:route53:::hostedzone/{hzName}"
-        hzType = str(zone["Config"]["PrivateZone"])
+        hzType = zone["Config"]["PrivateZone"]
         # check specific metadata
         r = route53.list_query_logging_configs(HostedZoneId=hzId)["QueryLoggingConfigs"]
         # empty lists return mean there is not a configuration
@@ -204,7 +204,7 @@ def route53_hosted_zone_traffic_policy_check(cache: dict, session, awsAccountId:
         hzId = zone["Id"]
         hzName = zone["Name"]
         hzArn = f"arn:aws:route53:::hostedzone/{hzName}"
-        hzType = str(zone["Config"]["PrivateZone"])
+        hzType = zone["Config"]["PrivateZone"]
         # check specific metadata
         r = route53.list_traffic_policy_instances_by_hosted_zone(HostedZoneId=hzId)["TrafficPolicyInstances"]
         # empty lists return mean there is not a configuration

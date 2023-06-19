@@ -30,9 +30,9 @@ def create_sechub_insights():
                 "ProductFields": [
                     {"Key": "ProductName", "Value": "ElectricEye", "Comparison": "EQUALS"},
                 ],
-                "RecordState": [{"Value": "ACTIVE", "Comparison": "EQUALS"},],
+                "RecordState": [{"Value": "ACTIVE", "Comparison": "EQUALS"}]
             },
-            GroupByAttribute="ResourceType",
+            GroupByAttribute="ResourceType"
         )
         print(activeInsight)
     except Exception as e:
@@ -45,9 +45,9 @@ def create_sechub_insights():
                 "ProductFields": [
                     {"Key": "ProductName", "Value": "ElectricEye", "Comparison": "EQUALS"},
                 ],
-                "RecordState": [{"Value": "ARCHIVED", "Comparison": "EQUALS"},],
+                "RecordState": [{"Value": "ARCHIVED", "Comparison": "EQUALS"}]
             },
-            GroupByAttribute="ResourceType",
+            GroupByAttribute="ResourceType"
         )
         print(remediatedInsight)
     except Exception as e:
@@ -61,9 +61,9 @@ def create_sechub_insights():
                     {"Key": "ProductName", "Value": "ElectricEye", "Comparison": "EQUALS"},
                 ],
                 "ThreatIntelIndicatorSource": [{"Value": "Shodan.io", "Comparison": "EQUALS"}],
-                "RecordState": [{"Value": "ACTIVE", "Comparison": "EQUALS"},],
+                "RecordState": [{"Value": "ACTIVE", "Comparison": "EQUALS"}]
             },
-            GroupByAttribute="ResourceType",
+            GroupByAttribute="ResourceType"
         )
         print(shodanInsight)
     except Exception as e:
@@ -77,9 +77,9 @@ def create_sechub_insights():
                     {"Key": "ProductName", "Value": "ElectricEye", "Comparison": "EQUALS"},
                 ],
                 "Title": [{"Value": "[AttackSurface", "Comparison": "CONTAINS"}],
-                "RecordState": [{"Value": "ACTIVE", "Comparison": "EQUALS"},],
+                "RecordState": [{"Value": "ACTIVE", "Comparison": "EQUALS"}]
             },
-            GroupByAttribute="ResourceType",
+            GroupByAttribute="ResourceType"
         )
         print(easmInsight)
     except Exception as e:
