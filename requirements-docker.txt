@@ -1,4 +1,4 @@
-awscli==1.27.149
+awscli==1.27.155
 boto3==1.26.149
 click==8.1.3
 detect-secrets==1.4.0
