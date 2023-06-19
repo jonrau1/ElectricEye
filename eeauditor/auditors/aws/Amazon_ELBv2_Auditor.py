@@ -18,7 +18,14 @@
 #specific language governing permissions and limitations
 #under the License.
 
+import tomli
+import os
+import sys
+import boto3
+import requests
+import ipaddress
 import datetime
+from botocore.exceptions import ClientError
 from check_register import CheckRegister
 import base64
 import json
@@ -34,6 +41,94 @@ def describe_load_balancers(cache, session):
 
     cache["describe_load_balancers"] = elbv2.describe_load_balancers()["LoadBalancers"]
     return cache["describe_load_balancers"]
+
+SHODAN_HOSTS_URL = "https://api.shodan.io/shodan/host/"
+
+def get_shodan_api_key(cache):
+
+    response = cache.get("get_shodan_api_key")
+    if response:
+        return response
+
+    validCredLocations = ["AWS_SSM", "AWS_SECRETS_MANAGER", "CONFIG_FILE"]
+
+    # Get the absolute path of the current directory
+    currentDir = os.path.abspath(os.path.dirname(__file__))
+    # Go two directories back to /eeauditor/
+    twoBack = os.path.abspath(os.path.join(currentDir, "../../"))
+
+    # TOML is located in /eeauditor/ directory
+    tomlFile = f"{twoBack}/external_providers.toml"
+    with open(tomlFile, "rb") as f:
+        data = tomli.load(f)
+
+    # Parse from [global] to determine credential location of PostgreSQL Password
+    credLocation = data["global"]["credentials_location"]
+    shodanCredValue = data["global"]["shodan_api_key_value"]
+    if credLocation not in validCredLocations:
+        print(f"Invalid option for [global.credLocation]. Must be one of {str(validCredLocations)}.")
+        sys.exit(2)
+    if not shodanCredValue:
+        apiKey = None
+    else:
+
+        # Boto3 Clients
+        ssm = boto3.client("ssm")
+        asm = boto3.client("secretsmanager")
+
+        # Retrieve API Key
+        if credLocation == "CONFIG_FILE":
+            apiKey = shodanCredValue
+
+        # Retrieve the credential from SSM Parameter Store
+        elif credLocation == "AWS_SSM":
+            
+            try:
+                apiKey = ssm.get_parameter(
+                    Name=shodanCredValue,
+                    WithDecryption=True
+                )["Parameter"]["Value"]
+            except ClientError as e:
+                print(f"Error retrieving API Key from SSM, skipping all Shodan checks, error: {e}")
+                apiKey = None
+
+        # Retrieve the credential from AWS Secrets Manager
+        elif credLocation == "AWS_SECRETS_MANAGER":
+            try:
+                apiKey = asm.get_secret_value(
+                    SecretId=shodanCredValue,
+                )["SecretString"]
+            except ClientError as e:
+                print(f"Error retrieving API Key from ASM, skipping all Shodan checks, error: {e}")
+                apiKey = None
+        
+    cache["get_shodan_api_key"] = apiKey
+    return cache["get_shodan_api_key"]
+
+def google_dns_resolver(target):
+    """
+    Accepts a Public DNS name and attempts to use Google's DNS A record resolver to determine an IP address
+    """
+    url = f"https://dns.google/resolve?name={target}&type=A"
+    
+    r = requests.get(url=url)
+    if r.status_code != 200:
+        return None
+    else:
+        for result in json.loads(r.text)["Answer"]:
+            try:
+                if not (
+                    ipaddress.IPv4Address(result["data"]).is_private
+                    or ipaddress.IPv4Address(result["data"]).is_loopback
+                    or ipaddress.IPv4Address(result["data"]).is_link_local
+                ):
+                    return result["data"]
+                else:
+                    continue
+            except ipaddress.AddressValueError:
+                continue
+        # if the loop terminates without any result return None
+        return None
 
 @registry.register_check("elasticloadbalancingv2")
 def elbv2_alb_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -1655,7 +1750,7 @@ def elbv2_alb_sg_risk_check(cache: dict, session, awsAccountId: str, awsRegion: 
             continue
 
 @registry.register_check("elasticloadbalancingv2")
-def elbv2_alb_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def elbv2_alb_wafv2_coverage_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELBv2.9] Application Load Balancers should be protected by AWS Web Application Firewall"""
     wafv2 = session.client("wafv2")
     # ISO Time
@@ -1675,169 +1770,30 @@ def elbv2_alb_logging_check(cache: dict, session, awsAccountId: str, awsRegion: 
         if elbv2LbType == "application":
             # attempt to retrieve a WAFv2 WebACL for the resource - errors or other values are not given for a lack of coverage
             # so we end up having to create our own way to determine
-            getacl = wafv2.get_web_acl_for_resource(ResourceArn=elbv2Arn)
             try:
-                coverage = getacl["WebACL"]["ARN"]
+                wafv2.get_web_acl_for_resource(ResourceArn=elbv2Arn)["WebACL"]["ARN"]
+                coverage = True
             except KeyError:
                 coverage = False
-            # this is a failing check
-            if coverage == False:
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": f"{elbv2Arn}/alb-waf-coverage-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": elbv2Arn,
-                    "AwsAccountId": awsAccountId,
-                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "HIGH"},
-                    "Confidence": 99,
-                    "Title": "[ELBv2.9] Application Load Balancers should be protected by AWS Web Application Firewall",
-                    "Description": f"Application load balancer {elbv2Name} is not protected by an AWS WAF Web ACL. AWS WAF is a web application firewall that lets you monitor the HTTP and HTTPS requests that are forwarded to your protected web application resources. AWS WAF also lets you control access to your content. Based on conditions that you specify, such as the IP addresses that requests originate from or the values of query strings, your protected resource responds to requests either with the requested content, with an HTTP 403 status code (Forbidden), or with a custom response. Refer to the remediation instructions to remediate this behavior.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For more information on ELBv2 WAF Coverage refer to the What are AWS WAF, AWS Shield, and AWS Firewall Manager? section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide.",
-                            "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html"
-                        }
-                    },
-                    "ProductFields": {
-                        "ProductName": "ElectricEye",
-                        "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
-                        "AssetClass": "Networking",
-                        "AssetService": "AWS Elastic Load Balancer V2",
-                        "AssetComponent": "Application Load Balancer"
-                    },
-                    "Resources": [
-                        {
-                            "Type": "AwsElbv2LoadBalancer",
-                            "Id": elbv2Arn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {
-                                "AwsElbv2LoadBalancer": {
-                                    "DNSName": elbv2DnsName,
-                                    "IpAddressType": elbv2IpAddressType,
-                                    "Scheme": elbv2Scheme,
-                                    "Type": elbv2LbType,
-                                    "VpcId": elbv2VpcId
-                                }
-                            }
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "FAILED",
-                        "RelatedRequirements": [
-                            "NIST CSF V1.1 DE.AE-2",
-                            "NIST SP 800-53 Rev. 4 AU-6",
-                            "NIST SP 800-53 Rev. 4 CA-7",
-                            "NIST SP 800-53 Rev. 4 IR-4",
-                            "NIST SP 800-53 Rev. 4 SI-4",
-                            "AICPA TSC CC7.2",
-                            "ISO 27001:2013 A.12.4.1",
-                            "ISO 27001:2013 A.16.1.1",
-                            "ISO 27001:2013 A.16.1.4",
-                            "MITRE ATT&CK T1595",
-                            "MITRE ATT&CK T1590",
-                            "MITRE ATT&CK T1190"
-                        ]
-                    },
-                    "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE"
-                }
-                yield finding
-            # this is a passing check
-            else:
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": f"{elbv2Arn}/alb-waf-coverage-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": elbv2Arn,
-                    "AwsAccountId": awsAccountId,
-                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "INFORMATIONAL"},
-                    "Confidence": 99,
-                    "Title": "[ELBv2.9] Application Load Balancers should be protected by AWS Web Application Firewall",
-                    "Description": f"Application load balancer {elbv2Name} is protected by an AWS WAF Web ACL.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For more information on ELBv2 WAF Coverage refer to the What are AWS WAF, AWS Shield, and AWS Firewall Manager? section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide.",
-                            "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html"
-                        }
-                    },
-                    "ProductFields": {
-                        "ProductName": "ElectricEye",
-                        "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
-                        "AssetClass": "Networking",
-                        "AssetService": "AWS Elastic Load Balancer V2",
-                        "AssetComponent": "Application Load Balancer"
-                    },
-                    "Resources": [
-                        {
-                            "Type": "AwsElbv2LoadBalancer",
-                            "Id": elbv2Arn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {
-                                "AwsElbv2LoadBalancer": {
-                                    "DNSName": elbv2DnsName,
-                                    "IpAddressType": elbv2IpAddressType,
-                                    "Scheme": elbv2Scheme,
-                                    "Type": elbv2LbType,
-                                    "VpcId": elbv2VpcId
-                                }
-                            }
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "PASSED",
-                        "RelatedRequirements": [
-                            "NIST CSF V1.1 DE.AE-2",
-                            "NIST SP 800-53 Rev. 4 AU-6",
-                            "NIST SP 800-53 Rev. 4 CA-7",
-                            "NIST SP 800-53 Rev. 4 IR-4",
-                            "NIST SP 800-53 Rev. 4 SI-4",
-                            "AICPA TSC CC7.2",
-                            "ISO 27001:2013 A.12.4.1",
-                            "ISO 27001:2013 A.16.1.1",
-                            "ISO 27001:2013 A.16.1.4",
-                            "MITRE ATT&CK T1595",
-                            "MITRE ATT&CK T1590",
-                            "MITRE ATT&CK T1190"
-                        ]
-                    },
-                    "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED"
-                }
-                yield finding
         else:
-            # this is a passing check too
+            coverage = True
+
+        # this is a failing check
+        if coverage is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{elbv2Arn}/alb-waf-coverage-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": elbv2Arn,
+                "GeneratorId": f"{elbv2Arn}/alb-waf-coverage-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "INFORMATIONAL"},
+                "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
                 "Title": "[ELBv2.9] Application Load Balancers should be protected by AWS Web Application Firewall",
-                "Description": f"Elastic load balancer {elbv2Name} is not an Application load balancer and cannot be protected by an AWS WAF Web ACL.",
+                "Description": f"Application load balancer {elbv2Name} is not protected by an AWS WAF Web ACL. AWS WAF is a web application firewall that lets you monitor the HTTP and HTTPS requests that are forwarded to your protected web application resources. AWS WAF also lets you control access to your content. Based on conditions that you specify, such as the IP addresses that requests originate from or the values of query strings, your protected resource responds to requests either with the requested content, with an HTTP 403 status code (Forbidden), or with a custom response. Refer to the remediation instructions to remediate this behavior.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on ELBv2 WAF Coverage refer to the What are AWS WAF, AWS Shield, and AWS Firewall Manager? section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide.",
@@ -1853,7 +1809,78 @@ def elbv2_alb_logging_check(cache: dict, session, awsAccountId: str, awsRegion: 
                     "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "AWS Elastic Load Balancer V2",
-                    "AssetComponent": "Network Load Balancer"
+                    "AssetComponent": "Application Load Balancer"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsElbv2LoadBalancer",
+                        "Id": elbv2Arn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsElbv2LoadBalancer": {
+                                "DNSName": elbv2DnsName,
+                                "IpAddressType": elbv2IpAddressType,
+                                "Scheme": elbv2Scheme,
+                                "Type": elbv2LbType,
+                                "VpcId": elbv2VpcId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.AE-2",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4",
+                        "MITRE ATT&CK T1595",
+                        "MITRE ATT&CK T1590",
+                        "MITRE ATT&CK T1190"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        # this is a passing check
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{elbv2Arn}/alb-waf-coverage-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{elbv2Arn}/alb-waf-coverage-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[ELBv2.9] Application Load Balancers should be protected by AWS Web Application Firewall",
+                "Description": f"Application load balancer {elbv2Name} is either protected by an AWS WAF Web ACL or it is not an Application Load Balancer and thus cannot be protected. If you do want protection for your Network Load Balancers, you must place an ALB or API Gateway in front.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on ELBv2 WAF Coverage refer to the What are AWS WAF, AWS Shield, and AWS Firewall Manager? section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide.",
+                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Elastic Load Balancer V2",
+                    "AssetComponent": "Application Load Balancer"
                 },
                 "Resources": [
                     {
@@ -1893,3 +1920,195 @@ def elbv2_alb_logging_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "RecordState": "ARCHIVED"
             }
             yield finding
+
+@registry.register_check("elasticloadbalancingv2")
+def public_alb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ELBv2.10] Internet-facing Application Load Balancers should be monitored for being indexed by Shodan"""
+    shodanApiKey = get_shodan_api_key(cache)
+    # ISO Time
+    iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for lb in describe_load_balancers(cache, session)["LoadBalancers"]:
+        if shodanApiKey == None:
+            continue
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(lb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        elbv2Arn = lb["LoadBalancerArn"]
+        elbv2Name = lb["LoadBalancerName"]
+        elbv2DnsName = lb["DNSName"]
+        elbv2LbType = lb["Type"]
+        elbv2Scheme = lb["Scheme"]
+        elbv2VpcId = lb["VpcId"]
+        elbv2IpAddressType = lb["IpAddressType"]
+        if (elbv2Scheme == "internet-facing" and elbv2LbType == "application"):
+            # Use Google DNS to resolve
+            elbv2Ip = google_dns_resolver(elbv2DnsName)
+            if elbv2Ip is None:
+                continue
+            # check if IP indexed by Shodan
+            r = requests.get(url=f"{SHODAN_HOSTS_URL}{elbv2Ip}?key={shodanApiKey}").json()
+            if str(r) == "{'error': 'No information available for that IP.'}":
+                # this is a passing check
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{elbv2Arn}/{elbv2DnsName}/alb-shodan-index-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": elbv2Arn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Effects/Data Exposure"],
+                    "CreatedAt": iso8601time,
+                    "UpdatedAt": iso8601time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Title": "[ELBv2.10] Internet-facing Application Load Balancers should be monitored for being indexed by Shodan",
+                    "Description": f"Application load balancer {elbv2Name} has not been indexed by Shodan.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
+                            "Url": SHODAN_HOSTS_URL
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "AWS Elastic Load Balancer V2",
+                        "AssetComponent": "Application Load Balancer"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "AwsElbv2LoadBalancer",
+                            "Id": elbv2Arn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsElbv2LoadBalancer": {
+                                    "DNSName": elbv2DnsName,
+                                    "IpAddressType": elbv2IpAddressType,
+                                    "Scheme": elbv2Scheme,
+                                    "Type": elbv2LbType,
+                                    "VpcId": elbv2VpcId
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 ID.RA-2",
+                            "NIST CSF V1.1 DE.AE-2",
+                            "NIST SP 800-53 Rev. 4 AU-6",
+                            "NIST SP 800-53 Rev. 4 CA-7",
+                            "NIST SP 800-53 Rev. 4 IR-4",
+                            "NIST SP 800-53 Rev. 4 PM-15",
+                            "NIST SP 800-53 Rev. 4 PM-16",
+                            "NIST SP 800-53 Rev. 4 SI-4",
+                            "NIST SP 800-53 Rev. 4 SI-5",
+                            "AIPCA TSC CC3.2",
+                            "AIPCA TSC CC7.2",
+                            "ISO 27001:2013 A.6.1.4",
+                            "ISO 27001:2013 A.12.4.1",
+                            "ISO 27001:2013 A.16.1.1",
+                            "ISO 27001:2013 A.16.1.4",
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
+            else:
+                assetPayload = {
+                    "LoadBalancer": lb,
+                    "Shodan": r
+                }
+                assetJson = json.dumps(assetPayload,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{elbv2Arn}/{elbv2DnsName}/alb-shodan-index-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": elbv2Arn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Effects/Data Exposure"],
+                    "CreatedAt": iso8601time,
+                    "UpdatedAt": iso8601time,
+                    "Severity": {"Label": "MEDIUM"},
+                    "Title": "[ELBv2.10] Internet-facing Application Load Balancers should be monitored for being indexed by Shodan",
+                    "Description": f"Application load balancer {elbv2Name} has been indexed by Shodan on IP address {elbv2Ip} - resolved from ALB DNS {elbv2DnsName}. Shodan is an 'internet search engine' which continuously crawls and scans across the entire internet to capture host, geolocation, TLS, and running service information. Shodan is a popular tool used by blue teams, security researchers and adversaries alike. Having your asset indexed on Shodan, depending on its configuration, may increase its risk of unauthorized access and further compromise. Review your configuration and refer to the Shodan URL in the remediation section to take action to reduce your exposure and harden your host.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
+                            "Url": f"{SHODAN_HOSTS_URL}{elbv2Ip}"
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "AWS Elastic Load Balancer V2",
+                        "AssetComponent": "Application Load Balancer"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "AwsElbv2LoadBalancer",
+                            "Id": elbv2Arn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsElbv2LoadBalancer": {
+                                    "DNSName": elbv2DnsName,
+                                    "IpAddressType": elbv2IpAddressType,
+                                    "Scheme": elbv2Scheme,
+                                    "Type": elbv2LbType,
+                                    "VpcId": elbv2VpcId
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 ID.RA-2",
+                            "NIST CSF V1.1 DE.AE-2",
+                            "NIST SP 800-53 Rev. 4 AU-6",
+                            "NIST SP 800-53 Rev. 4 CA-7",
+                            "NIST SP 800-53 Rev. 4 IR-4",
+                            "NIST SP 800-53 Rev. 4 PM-15",
+                            "NIST SP 800-53 Rev. 4 PM-16",
+                            "NIST SP 800-53 Rev. 4 SI-4",
+                            "NIST SP 800-53 Rev. 4 SI-5",
+                            "AIPCA TSC CC3.2",
+                            "AIPCA TSC CC7.2",
+                            "ISO 27001:2013 A.6.1.4",
+                            "ISO 27001:2013 A.12.4.1",
+                            "ISO 27001:2013 A.16.1.1",
+                            "ISO 27001:2013 A.16.1.4",
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
+        else:
+            continue
+
+## END ??

@@ -18,13 +18,19 @@
 #specific language governing permissions and limitations
 #under the License.
 
+import tomli
+import os
+import sys
 from botocore.config import Config
 from check_register import CheckRegister
+from botocore.exceptions import ClientError
 import requests
 import datetime
 from dateutil.parser import parse
 import base64
 import json
+
+SHODAN_HOSTS_URL = "https://api.shodan.io/shodan/host/"
 
 # Adding backoff and retries for SSM - this API gets throttled a lot
 config = Config(
@@ -145,6 +151,68 @@ def find_exploitable_vulnerabilities_for_instance(session, instanceId):
         exploitable = True
 
     return exploitable, exploitableCves
+
+def get_shodan_api_key(cache):
+    import boto3
+
+    response = cache.get("get_shodan_api_key")
+    if response:
+        return response
+
+    validCredLocations = ["AWS_SSM", "AWS_SECRETS_MANAGER", "CONFIG_FILE"]
+
+    # Get the absolute path of the current directory
+    currentDir = os.path.abspath(os.path.dirname(__file__))
+    # Go two directories back to /eeauditor/
+    twoBack = os.path.abspath(os.path.join(currentDir, "../../"))
+
+    # TOML is located in /eeauditor/ directory
+    tomlFile = f"{twoBack}/external_providers.toml"
+    with open(tomlFile, "rb") as f:
+        data = tomli.load(f)
+
+    # Parse from [global] to determine credential location of PostgreSQL Password
+    credLocation = data["global"]["credentials_location"]
+    shodanCredValue = data["global"]["shodan_api_key_value"]
+    if credLocation not in validCredLocations:
+        print(f"Invalid option for [global.credLocation]. Must be one of {str(validCredLocations)}.")
+        sys.exit(2)
+    if not shodanCredValue:
+        apiKey = None
+    else:
+
+        # Boto3 Clients
+        ssm = boto3.client("ssm")
+        asm = boto3.client("secretsmanager")
+
+        # Retrieve API Key
+        if credLocation == "CONFIG_FILE":
+            apiKey = shodanCredValue
+
+        # Retrieve the credential from SSM Parameter Store
+        elif credLocation == "AWS_SSM":
+            
+            try:
+                apiKey = ssm.get_parameter(
+                    Name=shodanCredValue,
+                    WithDecryption=True
+                )["Parameter"]["Value"]
+            except ClientError as e:
+                print(f"Error retrieving API Key from SSM, skipping all Shodan checks, error: {e}")
+                apiKey = None
+
+        # Retrieve the credential from AWS Secrets Manager
+        elif credLocation == "AWS_SECRETS_MANAGER":
+            try:
+                apiKey = asm.get_secret_value(
+                    SecretId=shodanCredValue,
+                )["SecretString"]
+            except ClientError as e:
+                print(f"Error retrieving API Key from ASM, skipping all Shodan checks, error: {e}")
+                apiKey = None
+        
+    cache["get_shodan_api_key"] = apiKey
+    return cache["get_shodan_api_key"]
 
 @registry.register_check("ec2")
 def ec2_imdsv2_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -2981,6 +3049,369 @@ def aws_elastic_ip_assigned_check(cache: dict, session, awsAccountId: str, awsRe
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("ec2")
+def public_ec2_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2.16] Amazon EC2 instances with public IP addresses should be monitored for being indexed by Shodan"""
+    shodanApiKey = get_shodan_api_key(cache)
+    # ISO Time
+    iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for i in describe_instances(cache, session):
+        if shodanApiKey is None:
+            continue
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(i,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        instanceId = i["InstanceId"]
+        instanceArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
+        instanceType = i["InstanceType"]
+        instanceImage = i["ImageId"]
+        subnetId = i["SubnetId"]
+        vpcId = i["VpcId"]
+        try:
+            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
+        except KeyError:
+            instanceLaunchedAt = i["LaunchTime"]
+        try:
+            ec2PublicIp = str(i["PublicIpAddress"])
+        except KeyError:
+            continue
+        # check if IP indexed by Shodan
+        r = requests.get(url=f"{SHODAN_HOSTS_URL}{ec2PublicIp}?key={shodanApiKey}").json()
+        if str(r) == "{'error': 'No information available for that IP.'}":
+            # this is a passing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{instanceArn}/{ec2PublicIp}/ec2-shodan-index-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{instanceArn}/{ec2PublicIp}/ec2-shodan-index-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Effects/Data Exposure"],
+                "CreatedAt": iso8601time,
+                "UpdatedAt": iso8601time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Title": "[EC2.16] Amazon EC2 instances with public IP addresses should be monitored for being indexed by Shodan",
+                "Description": f"Amazon EC2 instance {instanceId} has not been indexed by Shodan.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
+                        "Url": SHODAN_HOSTS_URL
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2Instance",
+                        "Id": instanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2Instance": {
+                                "Type": instanceType,
+                                "ImageId": instanceImage,
+                                "VpcId": vpcId,
+                                "SubnetId": subnetId,
+                                "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat(),
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.RA-2",
+                        "NIST CSF V1.1 DE.AE-2",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 PM-15",
+                        "NIST SP 800-53 Rev. 4 PM-16",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "NIST SP 800-53 Rev. 4 SI-5",
+                        "AIPCA TSC CC3.2",
+                        "AIPCA TSC CC7.2",
+                        "ISO 27001:2013 A.6.1.4",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4",
+                        "MITRE ATT&CK T1040",
+                        "MITRE ATT&CK T1046",
+                        "MITRE ATT&CK T1580",
+                        "MITRE ATT&CK T1590",
+                        "MITRE ATT&CK T1592",
+                        "MITRE ATT&CK T1595"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+        else:
+            assetPayload = {
+                "Instance": i,
+                "Shodan": r
+            }
+            assetJson = json.dumps(assetPayload,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{instanceArn}/{ec2PublicIp}/ec2-shodan-index-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{instanceArn}/{ec2PublicIp}/ec2-shodan-index-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Effects/Data Exposure"],
+                "CreatedAt": iso8601time,
+                "UpdatedAt": iso8601time,
+                "Severity": {"Label": "MEDIUM"},
+                "Title": "[EC2.16] Amazon EC2 instances with public IP addresses should be monitored for being indexed by Shodan",
+                "Description": f"Amazon EC2 instance {instanceId} has been indexed by Shodan on IP {ec2PublicIp}. Shodan is an 'internet search engine' which continuously crawls and scans across the entire internet to capture host, geolocation, TLS, and running service information. Shodan is a popular tool used by blue teams, security researchers and adversaries alike. Having your asset indexed on Shodan, depending on its configuration, may increase its risk of unauthorized access and further compromise. Review your configuration and refer to the Shodan URL in the remediation section to take action to reduce your exposure and harden your host.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
+                        "Url": f"{SHODAN_HOSTS_URL}{ec2PublicIp}"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2Instance",
+                        "Id": instanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2Instance": {
+                                "Type": instanceType,
+                                "ImageId": instanceImage,
+                                "VpcId": vpcId,
+                                "SubnetId": subnetId,
+                                "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat(),
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.RA-2",
+                        "NIST CSF V1.1 DE.AE-2",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 PM-15",
+                        "NIST SP 800-53 Rev. 4 PM-16",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "NIST SP 800-53 Rev. 4 SI-5",
+                        "AIPCA TSC CC3.2",
+                        "AIPCA TSC CC7.2",
+                        "ISO 27001:2013 A.6.1.4",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4",
+                        "MITRE ATT&CK T1040",
+                        "MITRE ATT&CK T1046",
+                        "MITRE ATT&CK T1580",
+                        "MITRE ATT&CK T1590",
+                        "MITRE ATT&CK T1592",
+                        "MITRE ATT&CK T1595"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+
+@registry.register_check("ec2")
+def aws_elastic_ip_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2.17] Amazon Elastic IP addresses with public IP addresses should be monitored for being indexed by Shodan"""
+    shodanApiKey = get_shodan_api_key(cache)
+    # ISO Time
+    iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for eip in describe_elastic_ips(cache, session):
+        if shodanApiKey is None:
+            continue
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(eip,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        allocationId = eip["AllocationId"]
+        publicIp = eip["PublicIp"]
+        eipArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:elastic-ip/{allocationId}"  
+        # check if IP indexed by Shodan
+        r = requests.get(url=f"{SHODAN_HOSTS_URL}{publicIp}?key={shodanApiKey}").json()
+        if str(r) == "{'error': 'No information available for that IP.'}":
+            # this is a passing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{eipArn}/{publicIp}/eip-shodan-index-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{eipArn}/{publicIp}/eip-shodan-index-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Effects/Data Exposure"],
+                "CreatedAt": iso8601time,
+                "UpdatedAt": iso8601time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Title": "[EC2.17] gbes with public IP addresses should be monitored for being indexed by Shodan",
+                "Description": f"Amazon Elastic IP address {allocationId} has not been indexed by Shodan.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
+                        "Url": SHODAN_HOSTS_URL
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Elastic IP Address"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2Eip",
+                        "Id": eipArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2Eip": {
+                                "PublicIp": publicIp,
+                                "AllocationId": allocationId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.RA-2",
+                        "NIST CSF V1.1 DE.AE-2",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 PM-15",
+                        "NIST SP 800-53 Rev. 4 PM-16",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "NIST SP 800-53 Rev. 4 SI-5",
+                        "AIPCA TSC CC3.2",
+                        "AIPCA TSC CC7.2",
+                        "ISO 27001:2013 A.6.1.4",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4",
+                        "MITRE ATT&CK T1040",
+                        "MITRE ATT&CK T1046",
+                        "MITRE ATT&CK T1580",
+                        "MITRE ATT&CK T1590",
+                        "MITRE ATT&CK T1592",
+                        "MITRE ATT&CK T1595"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+        else:
+            assetPayload = {
+                "Instance": i,
+                "Shodan": r
+            }
+            assetJson = json.dumps(assetPayload,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{eipArn}/{publicIp}/eip-shodan-index-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{eipArn}/{publicIp}/eip-shodan-index-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Effects/Data Exposure"],
+                "CreatedAt": iso8601time,
+                "UpdatedAt": iso8601time,
+                "Severity": {"Label": "MEDIUM"},
+                "Title": "[EC2.17] Amazon Elastic IP addresses with public IP addresses should be monitored for being indexed by Shodan",
+                "Description": f"Amazon Elastic IP address {allocationId} has been indexed by Shodan on IP {publicIp}. Shodan is an 'internet search engine' which continuously crawls and scans across the entire internet to capture host, geolocation, TLS, and running service information. Shodan is a popular tool used by blue teams, security researchers and adversaries alike. Having your asset indexed on Shodan, depending on its configuration, may increase its risk of unauthorized access and further compromise. Review your configuration and refer to the Shodan URL in the remediation section to take action to reduce your exposure and harden your host.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
+                        "Url": f"{SHODAN_HOSTS_URL}{publicIp}"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Elastic IP Address"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2Eip",
+                        "Id": eipArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2Eip": {
+                                "PublicIp": publicIp,
+                                "AllocationId": allocationId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.RA-2",
+                        "NIST CSF V1.1 DE.AE-2",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 PM-15",
+                        "NIST SP 800-53 Rev. 4 PM-16",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "NIST SP 800-53 Rev. 4 SI-5",
+                        "AIPCA TSC CC3.2",
+                        "AIPCA TSC CC7.2",
+                        "ISO 27001:2013 A.6.1.4",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4",
+                        "MITRE ATT&CK T1040",
+                        "MITRE ATT&CK T1046",
+                        "MITRE ATT&CK T1580",
+                        "MITRE ATT&CK T1590",
+                        "MITRE ATT&CK T1592",
+                        "MITRE ATT&CK T1595"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
             }
             yield finding
 

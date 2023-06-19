@@ -780,7 +780,7 @@ def shield_advanced_eip_protection_check(cache: dict, session, awsAccountId: str
                     "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon EC2",
-                    "AssetComponent": "Elastic IP"
+                    "AssetComponent": "Elastic IP Address"
                 },
                 "Resources": [
                     {
@@ -871,7 +871,7 @@ def shield_advanced_eip_protection_check(cache: dict, session, awsAccountId: str
                     "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon EC2",
-                    "AssetComponent": "Elastic IP"
+                    "AssetComponent": "Elastic IP Address"
                 },
                 "Resources": [
                     {

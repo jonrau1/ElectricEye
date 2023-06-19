@@ -2411,247 +2411,134 @@ def cloudfront_s3_origin_oai_check(cache: dict, session, awsAccountId: str, awsR
             for orig in distro["DistributionConfig"]["Origins"]["Items"]:
                 originId = orig["Id"]
                 try:
-                    if str(orig["S3OriginConfig"]["OriginAccessIdentity"]) == "":
-                        # this is a failing check
-                        finding = {
-                            "SchemaVersion": "2018-10-08",
-                            "Id": f"{distributionArn}/{originId}/cloudfront-s3-origin-origin-access-identity-check",
-                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                            "GeneratorId": distributionArn,
-                            "AwsAccountId": awsAccountId,
-                            "Types": [
-                                "Software and Configuration Checks/AWS Security Best Practices",
-                                "Effects/Data Exposure",
-                                "Sensitive Data Identifications",
-                            ],
-                            "FirstObservedAt": iso8601Time,
-                            "CreatedAt": iso8601Time,
-                            "UpdatedAt": iso8601Time,
-                            "Severity": {"Label": "MEDIUM"},
-                            "Confidence": 99,
-                            "Title": "[CloudFront.14] Cloudfront Distributions with S3 Origins should have origin access identity enabled",
-                            "Description": f"CloudFront Origin {originId} for Distribution {distributionId} does not have an origin access identity enabled. CloudFront OAI prevents users from accessing S3 bucket content directly. When users access an S3 bucket directly, they effectively bypass the CloudFront distribution and any permissions that are applied to the underlying S3 bucket content. For more information see the remediation section.",
-                            "Remediation": {
-                                "Recommendation": {
-                                    "Text": "For detailed remediation instructions refer to the Creating a CloudFront OAI and adding it to your distribution section of the Amazon CloudFront Developer Guide",
-                                    "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html#private-content-creating-oai",
-                                }
-                            },
-                            "ProductFields": {
-                                "ProductName": "ElectricEye",
-                                "Provider": "AWS",
-                                "ProviderType": "CSP",
-                                "ProviderAccountId": awsAccountId,
-                                "AssetRegion": awsRegion,
-                                "AssetDetails": assetB64,
-                                "AssetClass": "Networking",
-                                "AssetService": "Amazon CloudFront",
-                                "AssetComponent": "Distribution"
-                            },
-                            "Resources": [
-                                {
-                                    "Type": "AwsCloudFrontDistribution",
-                                    "Id": distributionArn,
-                                    "Partition": awsPartition,
-                                    "Region": awsRegion,
-                                    "Details": {
-                                        "AwsCloudFrontDistribution": {
-                                            "DomainName": domainName,
-                                            "Status": distStatus,
-                                            "Origins": {
-                                                "Items": [
-                                                    {
-                                                        "Id": originId
-                                                    }
-                                                ]
-                                            }
-                                        }
-                                    }
-                                }
-                            ],
-                            "Compliance": {
-                                "Status": "FAILED",
-                                "RelatedRequirements": [
-                                    "NIST CSF V1.1 PR.AC-3",
-                                    "NIST CSF V1.1 PR.AC-4",
-                                    "NIST CSF V1.1 PR.DS-5",
-                                    "NIST SP 800-53 Rev. 4 AC-1",
-                                    "NIST SP 800-53 Rev. 4 AC-2",
-                                    "NIST SP 800-53 Rev. 4 AC-3",
-                                    "NIST SP 800-53 Rev. 4 AC-4",
-                                    "NIST SP 800-53 Rev. 4 AC-5",
-                                    "NIST SP 800-53 Rev. 4 AC-6",
-                                    "NIST SP 800-53 Rev. 4 AC-14",
-                                    "NIST SP 800-53 Rev. 4 AC-16",
-                                    "NIST SP 800-53 Rev. 4 AC-17",
-                                    "NIST SP 800-53 Rev. 4 AC-19",
-                                    "NIST SP 800-53 Rev. 4 AC-20",
-                                    "NIST SP 800-53 Rev. 4 AC-24",
-                                    "NIST SP 800-53 Rev. 4 PE-19",
-                                    "NIST SP 800-53 Rev. 4 PS-3",
-                                    "NIST SP 800-53 Rev. 4 PS-6",
-                                    "NIST SP 800-53 Rev. 4 SC-7",
-                                    "NIST SP 800-53 Rev. 4 SC-8",
-                                    "NIST SP 800-53 Rev. 4 SC-13",
-                                    "NIST SP 800-53 Rev. 4 SC-15",
-                                    "NIST SP 800-53 Rev. 4 SC-31",
-                                    "NIST SP 800-53 Rev. 4 SI-4",
-                                    "AICPA TSC CC6.3",
-                                    "AICPA TSC CC6.6",
-                                    "AICPA TSC CC7.2",
-                                    "ISO 27001:2013 A.6.1.2",
-                                    "ISO 27001:2013 A.6.2.1",
-                                    "ISO 27001:2013 A.6.2.2",
-                                    "ISO 27001:2013 A.7.1.1",
-                                    "ISO 27001:2013 A.7.1.2",
-                                    "ISO 27001:2013 A.7.3.1",
-                                    "ISO 27001:2013 A.8.2.2",
-                                    "ISO 27001:2013 A.8.2.3",
-                                    "ISO 27001:2013 A.9.1.1",
-                                    "ISO 27001:2013 A.9.1.2",
-                                    "ISO 27001:2013 A.9.2.3",
-                                    "ISO 27001:2013 A.9.4.1",
-                                    "ISO 27001:2013 A.9.4.4",
-                                    "ISO 27001:2013 A.9.4.5",
-                                    "ISO 27001:2013 A.10.1.1",
-                                    "ISO 27001:2013 A.11.1.4",
-                                    "ISO 27001:2013 A.11.1.5",
-                                    "ISO 27001:2013 A.11.2.1",
-                                    "ISO 27001:2013 A.11.2.6",
-                                    "ISO 27001:2013 A.13.1.1",
-                                    "ISO 27001:2013 A.13.1.3",
-                                    "ISO 27001:2013 A.13.2.1",
-                                    "ISO 27001:2013 A.13.2.3",
-                                    "ISO 27001:2013 A.13.2.4",
-                                    "ISO 27001:2013 A.14.1.2",
-                                    "ISO 27001:2013 A.14.1.3"
-                                ]
-                            },
-                            "Workflow": {"Status": "NEW"},
-                            "RecordState": "ACTIVE"
-                        }
-                        yield finding
+                    if not orig["S3OriginConfig"]["OriginAccessIdentity"]:
+                        s3OaiEnabled = False
                     else:
-                        # this is a passing check
-                        finding = {
-                            "SchemaVersion": "2018-10-08",
-                            "Id": f"{distributionArn}/{originId}/cloudfront-s3-origin-origin-access-identity-check",
-                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                            "GeneratorId": distributionArn,
-                            "AwsAccountId": awsAccountId,
-                            "Types": [
-                                "Software and Configuration Checks/AWS Security Best Practices",
-                                "Effects/Data Exposure",
-                                "Sensitive Data Identifications",
-                            ],
-                            "FirstObservedAt": iso8601Time,
-                            "CreatedAt": iso8601Time,
-                            "UpdatedAt": iso8601Time,
-                            "Severity": {"Label": "INFORMATIONAL"},
-                            "Confidence": 99,
-                            "Title": "[CloudFront.14] Cloudfront Distributions with S3 Origins should have origin access identity enabled",
-                            "Description": f"CloudFront Origin {originId} for Distribution {distributionId} has an origin access identity enabled.",
-                            "Remediation": {
-                                "Recommendation": {
-                                    "Text": "For detailed remediation instructions refer to the Creating a CloudFront OAI and adding it to your distribution section of the Amazon CloudFront Developer Guide",
-                                    "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html#private-content-creating-oai",
-                                }
-                            },
-                            "ProductFields": {
-                                "ProductName": "ElectricEye",
-                                "Provider": "AWS",
-                                "ProviderType": "CSP",
-                                "ProviderAccountId": awsAccountId,
-                                "AssetRegion": awsRegion,
-                                "AssetDetails": assetB64,
-                                "AssetClass": "Networking",
-                                "AssetService": "Amazon CloudFront",
-                                "AssetComponent": "Distribution"
-                            },
-                            "Resources": [
-                                {
-                                    "Type": "AwsCloudFrontDistribution",
-                                    "Id": distributionArn,
-                                    "Partition": awsPartition,
-                                    "Region": awsRegion,
-                                    "Details": {
-                                        "AwsCloudFrontDistribution": {
-                                            "DomainName": domainName,
-                                            "Status": distStatus,
-                                            "Origins": {
-                                                "Items": [
-                                                    {
-                                                        "Id": originId
-                                                    }
-                                                ]
-                                            }
+                        s3OaiEnabled = True
+                except KeyError:
+                    s3OaiEnabled = True
+                
+                # this is a failing check
+                if s3OaiEnabled is False:
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": f"{distributionArn}/{originId}/cloudfront-s3-origin-origin-access-identity-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": distributionArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices",
+                            "Effects/Data Exposure",
+                            "Sensitive Data Identifications",
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "MEDIUM"},
+                        "Confidence": 99,
+                        "Title": "[CloudFront.14] Cloudfront Distributions with S3 Origins should have origin access identity enabled",
+                        "Description": f"CloudFront Origin {originId} for Distribution {distributionId} does not have an origin access identity enabled. CloudFront OAI prevents users from accessing S3 bucket content directly. When users access an S3 bucket directly, they effectively bypass the CloudFront distribution and any permissions that are applied to the underlying S3 bucket content. For more information see the remediation section.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For detailed remediation instructions refer to the Creating a CloudFront OAI and adding it to your distribution section of the Amazon CloudFront Developer Guide",
+                                "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html#private-content-creating-oai",
+                            }
+                        },
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Networking",
+                            "AssetService": "Amazon CloudFront",
+                            "AssetComponent": "Distribution"
+                        },
+                        "Resources": [
+                            {
+                                "Type": "AwsCloudFrontDistribution",
+                                "Id": distributionArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsCloudFrontDistribution": {
+                                        "DomainName": domainName,
+                                        "Status": distStatus,
+                                        "Origins": {
+                                            "Items": [
+                                                {
+                                                    "Id": originId
+                                                }
+                                            ]
                                         }
                                     }
                                 }
-                            ],
-                            "Compliance": {
-                                "Status": "PASSED",
-                                "RelatedRequirements": [
-                                    "NIST CSF V1.1 PR.AC-3",
-                                    "NIST CSF V1.1 PR.AC-4",
-                                    "NIST CSF V1.1 PR.DS-5",
-                                    "NIST SP 800-53 Rev. 4 AC-1",
-                                    "NIST SP 800-53 Rev. 4 AC-2",
-                                    "NIST SP 800-53 Rev. 4 AC-3",
-                                    "NIST SP 800-53 Rev. 4 AC-4",
-                                    "NIST SP 800-53 Rev. 4 AC-5",
-                                    "NIST SP 800-53 Rev. 4 AC-6",
-                                    "NIST SP 800-53 Rev. 4 AC-14",
-                                    "NIST SP 800-53 Rev. 4 AC-16",
-                                    "NIST SP 800-53 Rev. 4 AC-17",
-                                    "NIST SP 800-53 Rev. 4 AC-19",
-                                    "NIST SP 800-53 Rev. 4 AC-20",
-                                    "NIST SP 800-53 Rev. 4 AC-24",
-                                    "NIST SP 800-53 Rev. 4 PE-19",
-                                    "NIST SP 800-53 Rev. 4 PS-3",
-                                    "NIST SP 800-53 Rev. 4 PS-6",
-                                    "NIST SP 800-53 Rev. 4 SC-7",
-                                    "NIST SP 800-53 Rev. 4 SC-8",
-                                    "NIST SP 800-53 Rev. 4 SC-13",
-                                    "NIST SP 800-53 Rev. 4 SC-15",
-                                    "NIST SP 800-53 Rev. 4 SC-31",
-                                    "NIST SP 800-53 Rev. 4 SI-4",
-                                    "AICPA TSC CC6.3",
-                                    "AICPA TSC CC6.6",
-                                    "AICPA TSC CC7.2",
-                                    "ISO 27001:2013 A.6.1.2",
-                                    "ISO 27001:2013 A.6.2.1",
-                                    "ISO 27001:2013 A.6.2.2",
-                                    "ISO 27001:2013 A.7.1.1",
-                                    "ISO 27001:2013 A.7.1.2",
-                                    "ISO 27001:2013 A.7.3.1",
-                                    "ISO 27001:2013 A.8.2.2",
-                                    "ISO 27001:2013 A.8.2.3",
-                                    "ISO 27001:2013 A.9.1.1",
-                                    "ISO 27001:2013 A.9.1.2",
-                                    "ISO 27001:2013 A.9.2.3",
-                                    "ISO 27001:2013 A.9.4.1",
-                                    "ISO 27001:2013 A.9.4.4",
-                                    "ISO 27001:2013 A.9.4.5",
-                                    "ISO 27001:2013 A.10.1.1",
-                                    "ISO 27001:2013 A.11.1.4",
-                                    "ISO 27001:2013 A.11.1.5",
-                                    "ISO 27001:2013 A.11.2.1",
-                                    "ISO 27001:2013 A.11.2.6",
-                                    "ISO 27001:2013 A.13.1.1",
-                                    "ISO 27001:2013 A.13.1.3",
-                                    "ISO 27001:2013 A.13.2.1",
-                                    "ISO 27001:2013 A.13.2.3",
-                                    "ISO 27001:2013 A.13.2.4",
-                                    "ISO 27001:2013 A.14.1.2",
-                                    "ISO 27001:2013 A.14.1.3"
-                                ]
-                            },
-                            "Workflow": {"Status": "RESOLVED"},
-                            "RecordState": "ARCHIVED"
-                        }
-                        yield finding
-                except KeyError:
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF V1.1 PR.AC-3",
+                                "NIST CSF V1.1 PR.AC-4",
+                                "NIST CSF V1.1 PR.DS-5",
+                                "NIST SP 800-53 Rev. 4 AC-1",
+                                "NIST SP 800-53 Rev. 4 AC-2",
+                                "NIST SP 800-53 Rev. 4 AC-3",
+                                "NIST SP 800-53 Rev. 4 AC-4",
+                                "NIST SP 800-53 Rev. 4 AC-5",
+                                "NIST SP 800-53 Rev. 4 AC-6",
+                                "NIST SP 800-53 Rev. 4 AC-14",
+                                "NIST SP 800-53 Rev. 4 AC-16",
+                                "NIST SP 800-53 Rev. 4 AC-17",
+                                "NIST SP 800-53 Rev. 4 AC-19",
+                                "NIST SP 800-53 Rev. 4 AC-20",
+                                "NIST SP 800-53 Rev. 4 AC-24",
+                                "NIST SP 800-53 Rev. 4 PE-19",
+                                "NIST SP 800-53 Rev. 4 PS-3",
+                                "NIST SP 800-53 Rev. 4 PS-6",
+                                "NIST SP 800-53 Rev. 4 SC-7",
+                                "NIST SP 800-53 Rev. 4 SC-8",
+                                "NIST SP 800-53 Rev. 4 SC-13",
+                                "NIST SP 800-53 Rev. 4 SC-15",
+                                "NIST SP 800-53 Rev. 4 SC-31",
+                                "NIST SP 800-53 Rev. 4 SI-4",
+                                "AICPA TSC CC6.3",
+                                "AICPA TSC CC6.6",
+                                "AICPA TSC CC7.2",
+                                "ISO 27001:2013 A.6.1.2",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.7.1.1",
+                                "ISO 27001:2013 A.7.1.2",
+                                "ISO 27001:2013 A.7.3.1",
+                                "ISO 27001:2013 A.8.2.2",
+                                "ISO 27001:2013 A.8.2.3",
+                                "ISO 27001:2013 A.9.1.1",
+                                "ISO 27001:2013 A.9.1.2",
+                                "ISO 27001:2013 A.9.2.3",
+                                "ISO 27001:2013 A.9.4.1",
+                                "ISO 27001:2013 A.9.4.4",
+                                "ISO 27001:2013 A.9.4.5",
+                                "ISO 27001:2013 A.10.1.1",
+                                "ISO 27001:2013 A.11.1.4",
+                                "ISO 27001:2013 A.11.1.5",
+                                "ISO 27001:2013 A.11.2.1",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.1.3",
+                                "ISO 27001:2013 A.13.2.1",
+                                "ISO 27001:2013 A.13.2.3",
+                                "ISO 27001:2013 A.13.2.4",
+                                "ISO 27001:2013 A.14.1.2",
+                                "ISO 27001:2013 A.14.1.3"
+                            ]
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE"
+                    }
+                    yield finding
+                else:
                     # this is a passing check
                     finding = {
                         "SchemaVersion": "2018-10-08",
@@ -2670,7 +2557,7 @@ def cloudfront_s3_origin_oai_check(cache: dict, session, awsAccountId: str, awsR
                         "Severity": {"Label": "INFORMATIONAL"},
                         "Confidence": 99,
                         "Title": "[CloudFront.14] Cloudfront Distributions with S3 Origins should have origin access identity enabled",
-                        "Description": f"CloudFront Origin {originId} for Distribution {distributionId} is not an S3 Origin and is thus not in scope for this check.",
+                        "Description": f"CloudFront Origin {originId} for Distribution {distributionId} has an origin access identity enabled or is not associated with an Amazon S3 bucket.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "For detailed remediation instructions refer to the Creating a CloudFront OAI and adding it to your distribution section of the Amazon CloudFront Developer Guide",
@@ -2771,3 +2658,7 @@ def cloudfront_s3_origin_oai_check(cache: dict, session, awsAccountId: str, awsR
                         "RecordState": "ARCHIVED"
                     }
                     yield finding
+
+
+
+## END ??
