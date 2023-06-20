@@ -107,7 +107,7 @@
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Containers/64/Arch_Amazon-Elastic-Kubernetes-Service_64.svg">
 - AssetService: Amazon Elastic MapReduce
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Analytics/64/Arch_Amazon-EMR_64.svg">
-- AssetService: Amazon Global Accelerator
+- AssetService: AWS Global Accelerator
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Networking-Content-Delivery/64/Arch_AWS-Global-Accelerator_64.svg">
 - AssetService: Amazon GuardDuty
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Security-Identity-Compliance/64/Arch_Amazon-GuardDuty_64.svg">

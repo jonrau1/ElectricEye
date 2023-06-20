@@ -1364,29 +1364,34 @@ def iam_created_managed_policy_least_priv_check(cache: dict, session, awsAccount
             if type(policyDocument) == str:
                 policyDocument = json.loads(policyDocument)
 
-            leastPrivilegeRating = "passing"
-            for statement in policyDocument["Statement"]:
-                if statement["Effect"] == "Allow":
-                    if statement.get("Condition") == None: 
-                        # action structure could be a string or a list
-                        if type(statement["Action"]) == list: 
-                            if len(["True" for x in statement["Action"] if ":*" in x or "*" == x]) > 0:
-                                if type(statement["Resource"]) == str and statement["Resource"] == "*":
-                                    leastPrivilegeRating = "failedHigh"
-                                    # Means that an initial failure will not be overwritten by a lower finding later
-                                    next
-                                elif type(statement["Resource"]) == list: 
-                                    leastPrivilegeRating = "failedLow"
+            try:
+                leastPrivilegeRating = "passing"
+                for statement in policyDocument["Statement"]:
+                    if statement["Effect"] == "Allow":
+                        if statement.get("Condition") == None: 
+                            # action structure could be a string or a list
+                            if type(statement["Action"]) == list: 
+                                if len(["True" for x in statement["Action"] if ":*" in x or "*" == x]) > 0:
+                                    if type(statement["Resource"]) == str and statement["Resource"] == "*":
+                                        leastPrivilegeRating = "failedHigh"
+                                        # Means that an initial failure will not be overwritten by a lower finding later
+                                        next
+                                    elif type(statement["Resource"]) == list: 
+                                        leastPrivilegeRating = "failedLow"
 
-                        # Single action in a statement
-                        elif type(statement["Action"]) == str:
-                            if ":*" in statement["Action"] or statement["Action"] == "*":
-                                if type(statement["Resource"]) == str and statement["Resource"] == "*":
-                                    leastPrivilegeRating = "failedHigh"
-                                    # Means that an initial failure will not be overwritten by a lower finding later
-                                    next
-                                elif type(statement["Resource"]) == list: 
-                                    leastPrivilegeRating = "failedLow"
+                            # Single action in a statement
+                            elif type(statement["Action"]) == str:
+                                if ":*" in statement["Action"] or statement["Action"] == "*":
+                                    if type(statement["Resource"]) == str and statement["Resource"] == "*":
+                                        leastPrivilegeRating = "failedHigh"
+                                        # Means that an initial failure will not be overwritten by a lower finding later
+                                        next
+                                    elif type(statement["Resource"]) == list: 
+                                        leastPrivilegeRating = "failedLow"
+            except KeyError:
+                continue
+
+
             if leastPrivilegeRating == "passing":
                 finding = {
                     "SchemaVersion": "2018-10-08",
