@@ -175,6 +175,7 @@
                 "globalaccelerator:ListAccelerators",
                 "globalaccelerator:ListListeners",
                 "globalaccelerator:ListEndpointGroups",
+                "globalaccelerator:DescribeAcceleratorAttributes",
                 "xray:GetEncryptionConfig",
                 "cloud9:DescribeEnvironments",
                 "cloud9:ListEnvironments",

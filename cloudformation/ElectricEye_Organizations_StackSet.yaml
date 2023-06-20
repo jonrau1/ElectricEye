@@ -181,6 +181,7 @@ Resources:
                 - sqs:ListQueues
                 - sqs:GetQueueAttributes
                 - globalaccelerator:List*
+                - globalaccelerator:DescribeAcceleratorAttributes
                 - xray:GetEncryptionConfig
                 - cloud9:DescribeEnvironments
                 - cloud9:ListEnvironments

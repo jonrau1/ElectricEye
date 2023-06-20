@@ -39,6 +39,25 @@ registry = CheckRegister()
 # Instantiate a NMAP scanner for TCP scans to define ports
 nmap = nmap3.NmapScanTechniques()
 
+def global_region_generator(awsPartition):
+    # Global Service Region override
+    if awsPartition == "aws":
+        globalRegion = "aws-global"
+    elif awsPartition == "aws-us-gov":
+        globalRegion = "aws-us-gov-global"
+    elif awsPartition == "aws-cn":
+        globalRegion = "aws-cn-global"
+    elif awsPartition == "aws-iso":
+        globalRegion = "aws-iso-global"
+    elif awsPartition == "aws-isob":
+        globalRegion = "aws-iso-b-global"
+    elif awsPartition == "aws-isoe":
+        globalRegion = "aws-iso-e-global"
+    else:
+        globalRegion = "aws-global"
+
+    return globalRegion
+
 def describe_instances(cache, session):
     response = cache.get("describe_instances")
     if response:
@@ -64,6 +83,17 @@ def describe_instances(cache, session):
         ):
         for r in page["Reservations"]:
             for i in r["Instances"]:
+                # Skip Spot Instances, based on the fleet ID or status
+                try:
+                    if i["InstanceLifecycle"] == "spot":
+                        continue
+                except KeyError:
+                    pass
+                try:
+                    i["SpotInstanceRequestId"]
+                    continue
+                except KeyError:
+                    pass
                 # Use a list comprehension to attempt to get SSM info for the instance
                 managedInstanceInfo = [mnginst for mnginst in managedInstances if mnginst["InstanceId"] == i["InstanceId"]]
                 i["ManagedInstanceInformation"] = managedInstanceInfo
@@ -71,25 +101,35 @@ def describe_instances(cache, session):
 
         cache["describe_instances"] = instanceList
         return cache["describe_instances"]
+    
+def describe_elastic_ips(cache, session):
+    response = cache.get("describe_elastic_ips")
+    if response:
+        return response
+    
+    ec2 = session.client("ec2")
+
+    cache["describe_elastic_ips"] = ec2.describe_addresses()["Addresses"]
+    return cache["describe_elastic_ips"]
 
 def describe_load_balancers(cache, session):
-    elbv2 = session.client("elbv2")
-
-    # loop through ELBv2 load balancers
     response = cache.get("describe_load_balancers")
     if response:
         return response
-    cache["describe_load_balancers"] = elbv2.describe_load_balancers()
+    
+    elbv2 = session.client("elbv2")
+
+    cache["describe_load_balancers"] = elbv2.describe_load_balancers()["LoadBalancers"]
     return cache["describe_load_balancers"]
 
 def describe_clbs(cache, session):
-    elb = session.client("elb")
-
-    # loop through ELB load balancers
     response = cache.get("describe_load_balancers")
     if response:
         return response
-    cache["describe_load_balancers"] = elb.describe_load_balancers()
+    
+    elb = session.client("elb")
+
+    cache["describe_load_balancers"] = elb.describe_load_balancers()["LoadBalancerDescriptions"]
     return cache["describe_load_balancers"]
 
 def cloudfront_paginate(cache, session):
@@ -367,7 +407,7 @@ def elbv2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId:
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # Loop ELBs and select the public ALBs
-    for lb in describe_load_balancers(cache, session)["LoadBalancers"]:
+    for lb in describe_load_balancers(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(lb,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -579,7 +619,7 @@ def elb_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
     """[AttackSurface.ELB.{checkIdNumber}] Classic Load Balancers should not be publicly reachable on {serviceName}"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_clbs(cache, session)["LoadBalancerDescriptions"]:
+    for lb in describe_clbs(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(lb,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -797,14 +837,13 @@ def eip_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # Gather all EIPs
-    ec2 = session.client("ec2")
-    for x in ec2.describe_addresses()["Addresses"]:
+    for eip in describe_elastic_ips(cache, session):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(x,default=str).encode("utf-8")
+        assetJson = json.dumps(eip,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        publicIp = x["PublicIp"]
-        allocationId = x["AllocationId"]
-        eipArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:eip-allocation/{allocationId}"
+        allocationId = eip["AllocationId"]
+        publicIp = eip["PublicIp"]
+        eipArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:elastic-ip/{allocationId}" 
         privateIpAddress = x["PrivateIpAddress"]
         # Logic time
         scanner = scan_host(publicIp, allocationId, "Elastic IP")
@@ -869,7 +908,7 @@ def eip_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
                                 "AssetDetails": assetB64,
                                 "AssetClass": "Networking",
                                 "AssetService": "Amazon EC2",
-                                "AssetComponent": "Elastic IP"
+                                "AssetComponent": "Elastic IP Address"
                             },
                             "Resources": [
                                 {
@@ -880,8 +919,7 @@ def eip_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
                                     "Details": {
                                         "AwsEc2Eip": {
                                             "PublicIp": publicIp,
-                                            "AllocationId": allocationId,
-                                            "PrivateIpAddress": privateIpAddress
+                                            "AllocationId": allocationId
                                         }
                                     }
                                 }
@@ -946,7 +984,7 @@ def eip_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
                                 "AssetDetails": assetB64,
                                 "AssetClass": "Networking",
                                 "AssetService": "Amazon EC2",
-                                "AssetComponent": "Elastic IP"
+                                "AssetComponent": "Elastic IP Address"
                             },
                             "Resources": [
                                 {
@@ -957,8 +995,7 @@ def eip_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
                                     "Details": {
                                         "AwsEc2Eip": {
                                             "PublicIp": publicIp,
-                                            "AllocationId": allocationId,
-                                            "PrivateIpAddress": privateIpAddress
+                                            "AllocationId": allocationId
                                         }
                                     }
                                 }
@@ -1068,7 +1105,7 @@ def cloudfront_attack_surface_open_tcp_port_check(cache: dict, session, awsAccou
                                 "Provider": "AWS",
                                 "ProviderType": "CSP",
                                 "ProviderAccountId": awsAccountId,
-                                "AssetRegion": awsRegion,
+                                "AssetRegion": global_region_generator(awsPartition),
                                 "AssetDetails": assetB64,
                                 "AssetClass": "Networking",
                                 "AssetService": "Amazon CloudFront",
@@ -1145,7 +1182,7 @@ def cloudfront_attack_surface_open_tcp_port_check(cache: dict, session, awsAccou
                                 "Provider": "AWS",
                                 "ProviderType": "CSP",
                                 "ProviderAccountId": awsAccountId,
-                                "AssetRegion": awsRegion,
+                                "AssetRegion": global_region_generator(awsPartition),
                                 "AssetDetails": assetB64,
                                 "AssetClass": "Networking",
                                 "AssetService": "Amazon CloudFront",

@@ -186,7 +186,6 @@ def aws_gax_unhealthy_endpoint_group_check(cache: dict, session, awsAccountId: s
         endpointGroupId = endpointGroupArn.split("/")[5]
         endpointGroupRegion = epg["EndpointGroupRegion"]
         endpointHealthCheckProtocol = epg["HealthCheckProtocol"]
-        endpointHealthCheckPath = epg["HealthCheckPath"]
         # Use a list comprehension to check for unhealthy endpoints in the Endpoint Group
         unhealthyEndpoints = [endpoint for endpoint in epg["EndpointDescriptions"] if endpoint["HealthState"] == "UNHEALTHY"]
         if unhealthyEndpoints:
@@ -231,8 +230,7 @@ def aws_gax_unhealthy_endpoint_group_check(cache: dict, session, awsAccountId: s
                             "Other": {
                                 "EndpointGroupId": endpointGroupId,
                                 "EndpointGroupRegion": endpointGroupRegion,
-                                "HealthCheckProtocol": endpointHealthCheckProtocol,
-                                "HealthCheckPath": endpointHealthCheckPath
+                                "HealthCheckProtocol": endpointHealthCheckProtocol
                             }
                         }
                     }
@@ -303,8 +301,7 @@ def aws_gax_unhealthy_endpoint_group_check(cache: dict, session, awsAccountId: s
                             "Other": {
                                 "EndpointGroupId": endpointGroupId,
                                 "EndpointGroupRegion": endpointGroupRegion,
-                                "HealthCheckProtocol": endpointHealthCheckProtocol,
-                                "HealthCheckPath": endpointHealthCheckPath
+                                "HealthCheckProtocol": endpointHealthCheckProtocol
                             }
                         }
                     }
