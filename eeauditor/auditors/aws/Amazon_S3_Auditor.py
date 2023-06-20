@@ -209,18 +209,20 @@ def aws_s3_bucket_lifecycle_check(cache: dict, session, awsAccountId: str, awsRe
     """[S3.2] Amazon S3 buckets should implement lifecycle policies for data archival and recovery operations"""
     s3 = session.client("s3")
     # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for buckets in list_buckets(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(buckets,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         bucketName = buckets["Name"]
         s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
-        iso8601Time = (
-            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        )
         try:
             s3.get_bucket_lifecycle_configuration(Bucket=bucketName)
-            # this is a passing check
+            lifecycleConfig = True
+        except ClientError:
+            lifecycleConfig = False
+        
+        if lifecycleConfig is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": s3Arn + "/s3-bucket-lifecyle-configuration-check",
@@ -283,94 +285,91 @@ def aws_s3_bucket_lifecycle_check(cache: dict, session, awsAccountId: str, awsRe
                 "RecordState": "ARCHIVED"
             }
             yield finding
-        except Exception as e:
-            if (
-                str(e)
-                == "An error occurred (NoSuchLifecycleConfiguration) when calling the GetBucketLifecycleConfiguration operation: The lifecycle configuration does not exist"
-            ):
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": s3Arn + "/s3-bucket-lifecyle-configuration-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": s3Arn,
-                    "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "LOW"},
-                    "Confidence": 99,
-                    "Title": "[S3.2] Amazon S3 buckets should implement lifecycle policies for data archival and recovery operations",
-                    "Description": f"Amazon S3 bucket {bucketName} does not have a lifecycle policy configured. S3 Lifecycle Policies can help lower data management tasks, lower storage costs, and get rid of corrupted or incomplete objects within your buckets. You can configure S3 to move objects to lower cost storage such as Infrequent Access or you can send objects to long-term storage in Amazon Glacier. If you have regulatory or industry compliance requirements to store certain types of data or logs, lifecycle policies is an automatable and auditable way to accomplish that. Likewise, if you have requirements to delete data after a certain amount of time a lifecycle policy can also accomodate that requirement. Refer to the remediation instructions if this configuration is not intended.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For more information on Lifecycle policies and how to configure it refer to the How Do I Create a Lifecycle Policy for an S3 Bucket? section of the Amazon Simple Storage Service Developer Guide",
-                            "Url": "https://docs.aws.amazon.com/AmazonS3/latest/user-guide/create-lifecycle.html",
-                        }
-                    },
-                    "ProductFields": {
-                        "ProductName": "ElectricEye",
-                        "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": global_region_generator(awsPartition),
-                        "AssetDetails": assetB64,
-                        "AssetClass": "Storage",
-                        "AssetService": "Amazon S3",
-                        "AssetComponent": "Bucket"
-                    },
-                    "Resources": [
-                        {
-                            "Type": "AwsS3Bucket",
-                            "Id": s3Arn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "FAILED",
-                        "RelatedRequirements": [
-                            "NIST CSF V1.1 PR.DS-3",
-                            "NIST SP 800-53 Rev. 4 CM-8",
-                            "NIST SP 800-53 Rev. 4 MP-6",
-                            "NIST SP 800-53 Rev. 4 PE-16",
-                            "AICPA TSC CC6.1",
-                            "AICPA TSC CC6.5",
-                            "ISO 27001:2013 A.8.2.3",
-                            "ISO 27001:2013 A.8.3.1",
-                            "ISO 27001:2013 A.8.3.2",
-                            "ISO 27001:2013 A.8.3.3",
-                            "ISO 27001:2013 A.11.2.5",
-                            "ISO 27001:2013 A.11.2.7"
-                        ]
-                    },
-                    "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
-                }
-                yield finding
-            else:
-                print(e)
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": s3Arn + "/s3-bucket-lifecyle-configuration-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": s3Arn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[S3.2] Amazon S3 buckets should implement lifecycle policies for data archival and recovery operations",
+                "Description": f"Amazon S3 bucket {bucketName} does not have a lifecycle policy configured. S3 Lifecycle Policies can help lower data management tasks, lower storage costs, and get rid of corrupted or incomplete objects within your buckets. You can configure S3 to move objects to lower cost storage such as Infrequent Access or you can send objects to long-term storage in Amazon Glacier. If you have regulatory or industry compliance requirements to store certain types of data or logs, lifecycle policies is an automatable and auditable way to accomplish that. Likewise, if you have requirements to delete data after a certain amount of time a lifecycle policy can also accomodate that requirement. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Lifecycle policies and how to configure it refer to the How Do I Create a Lifecycle Policy for an S3 Bucket? section of the Amazon Simple Storage Service Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonS3/latest/user-guide/create-lifecycle.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": global_region_generator(awsPartition),
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon S3",
+                    "AssetComponent": "Bucket"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsS3Bucket",
+                        "Id": s3Arn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 MP-6",
+                        "NIST SP 800-53 Rev. 4 PE-16",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.5",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.8.3.1",
+                        "ISO 27001:2013 A.8.3.2",
+                        "ISO 27001:2013 A.8.3.3",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.7"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding
 
 @registry.register_check("s3")
 def aws_s3_bucket_versioning_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[S3.3] Amazon S3 buckets should have versioning enabled"""
     s3 = session.client("s3")
     # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for buckets in list_buckets(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(buckets,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         bucketName = buckets["Name"]
         s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
-        iso8601Time = (
-            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        )
         try:
-            response = s3.get_bucket_versioning(Bucket=bucketName)
-            versioningCheck = str(response["Status"])
-            print(versioningCheck)
+            ver = s3.get_bucket_versioning(Bucket=bucketName)
+            if "Status" in ver:
+                if ver["Status"] == "Enabled":
+                    bucketVersioned = True
+        except ClientError or KeyError:
+            bucketVersioned = False
+        
+        if bucketVersioned is not True:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": s3Arn + "/s3-bucket-versioning-check",
@@ -447,7 +446,7 @@ def aws_s3_bucket_versioning_check(cache: dict, session, awsAccountId: str, awsR
                 "RecordState": "ARCHIVED"
             }
             yield finding
-        except KeyError:
+        else:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": s3Arn + "/s3-bucket-versioning-check",

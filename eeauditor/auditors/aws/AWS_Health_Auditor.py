@@ -324,7 +324,7 @@ def aws_health_open_risk_events_check(cache: dict, session, awsAccountId: str, a
         yield finding
 
 @registry.register_check("health")
-def open_health_security_events_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def aws_health_open_security_events_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Health.3] Open Security Events from AWS Health should be investigated"""
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()

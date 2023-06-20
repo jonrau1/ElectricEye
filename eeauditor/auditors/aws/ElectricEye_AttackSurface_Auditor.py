@@ -844,7 +844,6 @@ def eip_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
         allocationId = eip["AllocationId"]
         publicIp = eip["PublicIp"]
         eipArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:elastic-ip/{allocationId}" 
-        privateIpAddress = x["PrivateIpAddress"]
         # Logic time
         scanner = scan_host(publicIp, allocationId, "Elastic IP")
         # NoneType returned on KeyError due to Nmap errors
