@@ -1555,9 +1555,7 @@ def elbv2_alb_sg_risk_check(cache: dict, session, awsAccountId: str, awsRegion: 
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # Evaluations
-    response = describe_load_balancers(cache, session)
-    myElbv2LoadBalancers = response["LoadBalancers"]
-    for loadbalancers in myElbv2LoadBalancers:
+    for loadbalancers in describe_load_balancers(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(loadbalancers,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)

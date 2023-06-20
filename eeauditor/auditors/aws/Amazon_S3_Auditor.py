@@ -1456,7 +1456,7 @@ def aws_s3_bucket_deny_http_access_check(cache: dict, session, awsAccountId: str
         # Attempt to find a blocking policy for HTTP - default the status to not passing
         blockHttpObjectAccess = False
         try:
-            bucketPolicy = s3.get_bucket_policy(Bucket=bucketName)["Policy"]
+            bucketPolicy = json.loads(s3.get_bucket_policy(Bucket=bucketName)["Policy"])
             for statement in bucketPolicy["Statement"]:
                 if s3Arn and f"{s3Arn}/*" in statement["Resource"]:
                     if statement["Effect"] == "Deny" and statement["Action"] == "s3:*":
