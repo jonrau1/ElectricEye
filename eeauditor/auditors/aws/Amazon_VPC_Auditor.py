@@ -1245,7 +1245,7 @@ def aws_eni_attached_in_use_check(cache: dict, session, awsAccountId: str, awsRe
         eniId = eni["NetworkInterfaceId"]
         eniArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:network-interface/{eniId}"
         # This is a failing check
-        if eni["Status"] == "available" or "detaching":
+        if "Attachment" not in eni:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{eniArn}/aws-eni-attached-in-use-check",

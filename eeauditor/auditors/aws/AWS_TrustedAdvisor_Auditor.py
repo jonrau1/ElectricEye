@@ -32,6 +32,9 @@ def describe_trusted_advisor_checks(cache, session):
         return response
     
     support = session.client("support", region_name="us-east-1")
+
+    # This list reflects all of the Check Names (titles?) that are being reviewed by ElectricEye
+    # it will speed up the cache function and reduce needless calls to the Support API
     checksInScope = [
         "CloudFront Custom SSL Certificates in the IAM Certificate Store",
         "CloudFront SSL Certificate on the Origin Server",
@@ -40,7 +43,7 @@ def describe_trusted_advisor_checks(cache, session):
     
     try:
         taChecks = []
-        for check in support.describe_trusted_advisor_checks(language='en')["checks"]:
+        for check in support.describe_trusted_advisor_checks(language="en")["checks"]:
             if check["name"] not in checksInScope:
                 continue
             check["result"] = support.describe_trusted_advisor_check_result(checkId=check["id"])["result"]
