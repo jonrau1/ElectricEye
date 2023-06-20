@@ -161,12 +161,20 @@ def list_gax_accelerators(cache, session):
         return response
     
     gax = session.client("globalaccelerator", region_name="us-west-2")
+    accelerators = []
 
-    cache["list_gax_accelerators"] = gax.list_accelerators()["Accelerators"]
+    for accel in gax.list_accelerators()["Accelerators"]:
+        acceleratorAttributes = gax.describe_accelerator_attributes(
+            AcceleratorArn=accel["AcceleratorArn"]
+        )["AcceleratorAttributes"]
+        accel["AcceleratorAttributes"] = acceleratorAttributes
+        accelerators.append(accel)
+
+    cache["list_gax_accelerators"] = accelerators
     return cache["list_gax_accelerators"]
 
 @registry.register_check("globalaccelerator")
-def aws_global_accelerator_unhealthy_endpoint_group_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def aws_gax_unhealthy_endpoint_group_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[GlobalAccelerator.1] AWS Global Accelerator endpoint groups should not have unhealthy endpoints"""
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -210,7 +218,7 @@ def aws_global_accelerator_unhealthy_endpoint_group_check(cache: dict, session, 
                     "AssetRegion": global_region_generator(awsPartition),
                     "AssetDetails": assetB64,
                     "AssetClass": "Networking",
-                    "AssetService": "Amazon Global Accelerator",
+                    "AssetService": "AWS Global Accelerator",
                     "AssetComponent": "Endpoint Group"
                 },
                 "Resources": [
@@ -282,7 +290,7 @@ def aws_global_accelerator_unhealthy_endpoint_group_check(cache: dict, session, 
                     "AssetRegion": global_region_generator(awsPartition),
                     "AssetDetails": assetB64,
                     "AssetClass": "Networking",
-                    "AssetService": "Amazon Global Accelerator",
+                    "AssetService": "AWS Global Accelerator",
                     "AssetComponent": "Endpoint Group"
                 },
                 "Resources": [
@@ -327,55 +335,38 @@ def aws_global_accelerator_unhealthy_endpoint_group_check(cache: dict, session, 
             yield finding
 
 @registry.register_check("globalaccelerator")
-def flow_logs_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[GlobalAccelerator.2] Accelerator should have flow logs enabled"""
-    if awsPartition == "aws":
-        globalaccelerator = session.client("globalaccelerator", region_name="us-west-2")
-    else:
-        globalaccelerator = session.client("globalaccelerator")
-
-    paginator = globalaccelerator.get_paginator("list_accelerators")
-    response_iterator = paginator.paginate()
-    accelerators = accumulate_paged_results(
-        page_iterator=response_iterator, key="Accelerators"
-    )
+def aws_gax_accelerators_flow_logs_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[GlobalAccelerator.2] AWS Global Accelerator accelerators should have flow logs enabled"""
+    # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for accelerator in accelerators["Accelerators"]:
+    for accel in list_gax_accelerators(cache, session):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(accelerator,default=str).encode("utf-8")
+        assetJson = json.dumps(accel,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        acceleratorArn = accelerator["AcceleratorArn"]
-        acceleratorAttributes = globalaccelerator.describe_accelerator_attributes(
-            AcceleratorArn=acceleratorArn
-        )
-        acceleratorName = accelerator["Name"]
-        generatorUuid = str(uuid.uuid4())
-        loggingEnabled = acceleratorAttributes["AcceleratorAttributes"][
-            "FlowLogsEnabled"
-        ]
-        if loggingEnabled:
+        acceleratorArn = accel["AcceleratorArn"]
+        acceleratorName = accel["Name"]
+        acceleratorIpAddressType = accel["IpAddressType"]
+        acceleratorDnsName = accel["DnsName"]
+        # this is a failing check
+        if accel["AcceleratorAttributes"]["FlowLogsEnabled"] is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": acceleratorArn + "/access-logging-enabled-check",
+                "Id": f"{acceleratorArn}/aws-gax-accelerator-flow-logs-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": generatorUuid,
+                "GeneratorId": f"{acceleratorArn}/aws-gax-accelerator-flow-logs-check",
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "INFORMATIONAL"},
+                "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[GlobalAccelerator.2] Accelerator should have flow logs enabled",
-                "Description": "Accelerator "
-                + acceleratorName
-                + " has flow logs enabled.",
+                "Title": "[GlobalAccelerator.2] AWS Global Accelerator accelerators should have flow logs enabled",
+                "Description": f"AWS Global Accelerator accelerator {acceleratorName} does not have flow logs enabled. Flow logs enable you to capture information about the IP address traffic going to and from network interfaces in your accelerator in AWS Global Accelerator. Flow log data is published to Amazon S3, where you can retrieve and view your data after you've created a flow log. A flow log record represents a network flow in your flow log. Each record captures the network flow for a specific 5-tuple, for a specific capture window. A 5-tuple is a set of five different values that specify the source, destination, and protocol for an IP flow. The capture window is a duration of time during which the flow logs service aggregates data before publishing flow log records. The capture window is up to 1 minute. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on accelerator flow logs refer to the Flow logs in AWS Global Accelerator section of the AWS Global Accelerator Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/monitoring-global-accelerator.flow-logs.html",
+                        "Url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/monitoring-global-accelerator.flow-logs.html"
                     }
                 },
                 "ProductFields": {
@@ -383,10 +374,10 @@ def flow_logs_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: 
                     "Provider": "AWS",
                     "ProviderType": "CSP",
                     "ProviderAccountId": awsAccountId,
-                    "AssetRegion": "aws-global",
+                    "AssetRegion": global_region_generator(awsPartition),
                     "AssetDetails": assetB64,
                     "AssetClass": "Networking",
-                    "AssetService": "Amazon Global Accelerator",
+                    "AssetService": "AWS Global Accelerator",
                     "AssetComponent": "Accelerator"
                 },
                 "Resources": [
@@ -395,267 +386,342 @@ def flow_logs_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "Id": acceleratorArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                    }
-                ],
-                "Compliance": {
-                    "Status": "PASSED",
-                    "RelatedRequirements": [
-                        "NIST CSF V1.1 DE.AE-3",
-                        "NIST SP 800-53 Rev. 4 AU-6",
-                        "NIST SP 800-53 Rev. 4 CA-7",
-                        "NIST SP 800-53 Rev. 4 IR-4",
-                        "NIST SP 800-53 Rev. 4 IR-5",
-                        "NIST SP 800-53 Rev. 4 IR-8",
-                        "NIST SP 800-53 Rev. 4 SI-4",
-                        "AICPA TSC CC7.2",
-                        "ISO 27001:2013 A.12.4.1",
-                        "ISO 27001:2013 A.16.1.7",
-                    ],
-                },
-                "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
-            }
-            yield finding
-        else:
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": acceleratorArn + "/access-logging-enabled-check",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": generatorUuid,
-                "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "MEDIUM"},
-                "Confidence": 99,
-                "Title": "[GlobalAccelerator.2] Accelerator should have flow logs enabled",
-                "Description": "Accelerator "
-                + acceleratorName
-                + " does not have flow logs enabled.",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "For more information on accelerator flow logs refer to the Flow logs in AWS Global Accelerator section of the AWS Global Accelerator Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/monitoring-global-accelerator.flow-logs.html",
-                    }
-                },
-                "ProductFields": {
-                    "ProductName": "ElectricEye",
-                    "Provider": "AWS",
-                    "ProviderType": "CSP",
-                    "ProviderAccountId": awsAccountId,
-                    "AssetRegion": "aws-global",
-                    "AssetDetails": assetB64,
-                    "AssetClass": "Networking",
-                    "AssetService": "Amazon Global Accelerator",
-                    "AssetComponent": "Accelerator"
-                },
-                "Resources": [
-                    {
-                        "Type": "AwsGlobalAcceleratorAccelerator",
-                        "Id": acceleratorArn,
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "Name": acceleratorName,
+                                "IpAddressType": acceleratorIpAddressType,
+                                "DnsName": acceleratorDnsName
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
                         "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
                         "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
                         "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
                         "NIST SP 800-53 Rev. 4 IR-4",
                         "NIST SP 800-53 Rev. 4 IR-5",
                         "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
                         "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
                         "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
                         "ISO 27001:2013 A.12.4.1",
-                        "ISO 27001:2013 A.16.1.7",
-                    ],
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE" 
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{acceleratorArn}/aws-gax-accelerator-flow-logs-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{acceleratorArn}/aws-gax-accelerator-flow-logs-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[GlobalAccelerator.2] AWS Global Accelerator accelerators should have flow logs enabled",
+                "Description": f"AWS Global Accelerator accelerator {acceleratorName} does have flow logs enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on accelerator flow logs refer to the Flow logs in AWS Global Accelerator section of the AWS Global Accelerator Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/monitoring-global-accelerator.flow-logs.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": global_region_generator(awsPartition),
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Global Accelerator",
+                    "AssetComponent": "Accelerator"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsGlobalAcceleratorAccelerator",
+                        "Id": acceleratorArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "Name": acceleratorName,
+                                "IpAddressType": acceleratorIpAddressType,
+                                "DnsName": acceleratorDnsName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
             }
             yield finding
 
 @registry.register_check("globalaccelerator")
 def global_accelerator_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Shodan.GlobalAccelerator.1] Accelerators should be monitored for being indexed by Shodan"""
+    """[GlobalAccelerator.3] AWS Global Accelerator accelerators should be monitored for being indexed by Shodan"""
     shodanApiKey = get_shodan_api_key(cache)
     # ISO Time
-    iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    gax = session.client("globalaccelerator", region_name="us-west-2")
-    for page in gax.get_paginator("list_accelerators").paginate():
-        if shodanApiKey == None:
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for accel in list_gax_accelerators(cache, session):
+        if shodanApiKey is None:
             continue
-        for ga in page["Accelerators"]:
-            # B64 encode all of the details for the Asset
-            assetJson = json.dumps(ga,default=str).encode("utf-8")
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(accel,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        acceleratorArn = accel["AcceleratorArn"]
+        acceleratorName = accel["Name"]
+        acceleratorIpAddressType = accel["IpAddressType"]
+        acceleratorDnsName = accel["DnsName"]
+        gaxDomainIp = google_dns_resolver(acceleratorDnsName)
+        if gaxDomainIp is None:
+            continue
+        # check if IP indexed by Shodan
+        r = requests.get(url=f"{SHODAN_HOSTS_URL}{gaxDomainIp}?key={shodanApiKey}").json()
+        if str(r) == "{'error': 'No information available for that IP.'}":
+            # this is a passing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{acceleratorArn}/{acceleratorDnsName}/global-accelerator-shodan-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": acceleratorArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Effects/Data Exposure"],
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Title": "[GlobalAccelerator.3] AWS Global Accelerator accelerators should be monitored for being indexed by Shodan",
+                "Description": f"AWS Global Accelerator accelerator {acceleratorName} has not been indexed by Shodan.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
+                        "Url": SHODAN_HOSTS_URL
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": global_region_generator(awsPartition),
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Global Accelerator",
+                    "AssetComponent": "Accelerator"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsGlobalAcceleratorAccelerator",
+                        "Id": acceleratorArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "Name": acceleratorName,
+                                "IpAddressType": acceleratorIpAddressType,
+                                "DnsName": acceleratorDnsName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.RA-2",
+                        "NIST CSF V1.1 DE.AE-2",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 PM-15",
+                        "NIST SP 800-53 Rev. 4 PM-16",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "NIST SP 800-53 Rev. 4 SI-5",
+                        "AIPCA TSC CC3.2",
+                        "AIPCA TSC CC7.2",
+                        "ISO 27001:2013 A.6.1.4",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4",
+                        "MITRE ATT&CK T1040",
+                        "MITRE ATT&CK T1046",
+                        "MITRE ATT&CK T1580",
+                        "MITRE ATT&CK T1590",
+                        "MITRE ATT&CK T1592",
+                        "MITRE ATT&CK T1595"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+        else:
+            assetPayload = {
+                "Accelerator": accel,
+                "Shodan": r
+            }
+            assetJson = json.dumps(assetPayload,default=str).encode("utf-8")
             assetB64 = base64.b64encode(assetJson)
-            gaxArn = str(ga["AcceleratorArn"])
-            gaxName = str(ga["Name"])
-            gaxDns = str(ga["DnsName"])
-            gaxDomainIp = google_dns_resolver(gaxDns)
-            if gaxDomainIp is None:
-                continue
-            # check if IP indexed by Shodan
-            r = requests.get(url=f"{SHODAN_HOSTS_URL}{gaxDomainIp}?key={shodanApiKey}").json()
-            if str(r) == "{'error': 'No information available for that IP.'}":
-                # this is a passing check
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": f"{gaxArn}/{gaxDns}/global-accelerator-shodan-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": gaxArn,
-                    "AwsAccountId": awsAccountId,
-                    "Types": ["Effects/Data Exposure"],
-                    "CreatedAt": iso8601time,
-                    "UpdatedAt": iso8601time,
-                    "Severity": {"Label": "INFORMATIONAL"},
-                    "Title": "[Shodan.GlobalAccelerator.1] Accelerators should be monitored for being indexed by Shodan",
-                    "Description": f"Accelerator {gaxName} has not been indexed by Shodan.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
-                            "Url": SHODAN_HOSTS_URL
-                        }
-                    },
-                    "ProductFields": {
-                        "ProductName": "ElectricEye",
-                        "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
-                        "AssetClass": "Networking",
-                        "AssetService": "Amazon Global Accelerator",
-                        "AssetComponent": "Accelerator"
-                    },
-                    "Resources": [
-                        {
-                            "Type": "AwsGlobalAcceleratorAccelerator",
-                            "Id": gaxArn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {
-                                "Other": {
-                                    "Name": gaxName,
-                                    "DnsName": gaxDns
-                                }
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{acceleratorArn}/{acceleratorDnsName}/global-accelerator-shodan-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": acceleratorArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Effects/Data Exposure"],
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Title": "[GlobalAccelerator.3] AWS Global Accelerator accelerators should be monitored for being indexed by Shodan",
+                "Description": f"AWS Global Accelerator accelerator {acceleratorName} has been indexed by Shodan on IP address {gaxDomainIp} - resolved from DNS name {acceleratorDnsName}. Shodan is an 'internet search engine' which continuously crawls and scans across the entire internet to capture host, geolocation, TLS, and running service information. Shodan is a popular tool used by blue teams, security researchers and adversaries alike. Having your asset indexed on Shodan, depending on its configuration, may increase its risk of unauthorized access and further compromise. Review your configuration and refer to the Shodan URL in the remediation section to take action to reduce your exposure and harden your host.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
+                        "Url": f"{SHODAN_HOSTS_URL}{gaxDomainIp}"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": global_region_generator(awsPartition),
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Global Accelerator",
+                    "AssetComponent": "Accelerator"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsGlobalAcceleratorAccelerator",
+                        "Id": acceleratorArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "Name": acceleratorName,
+                                "IpAddressType": acceleratorIpAddressType,
+                                "DnsName": acceleratorDnsName
                             }
                         }
-                    ],
-                    "Compliance": {
-                        "Status": "PASSED",
-                        "RelatedRequirements": [
-                            "NIST CSF V1.1 ID.RA-2",
-                            "NIST CSF V1.1 DE.AE-2",
-                            "NIST SP 800-53 Rev. 4 AU-6",
-                            "NIST SP 800-53 Rev. 4 CA-7",
-                            "NIST SP 800-53 Rev. 4 IR-4",
-                            "NIST SP 800-53 Rev. 4 PM-15",
-                            "NIST SP 800-53 Rev. 4 PM-16",
-                            "NIST SP 800-53 Rev. 4 SI-4",
-                            "NIST SP 800-53 Rev. 4 SI-5",
-                            "AIPCA TSC CC3.2",
-                            "AIPCA TSC CC7.2",
-                            "ISO 27001:2013 A.6.1.4",
-                            "ISO 27001:2013 A.12.4.1",
-                            "ISO 27001:2013 A.16.1.1",
-                            "ISO 27001:2013 A.16.1.4",
-                            "MITRE ATT&CK T1040",
-                            "MITRE ATT&CK T1046",
-                            "MITRE ATT&CK T1580",
-                            "MITRE ATT&CK T1590",
-                            "MITRE ATT&CK T1592",
-                            "MITRE ATT&CK T1595"
-                        ]
-                    },
-                    "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED"
-                }
-                yield finding
-            else:
-                assetPayload = {
-                    "Accelerator": ga,
-                    "Shodan": r
-                }
-                assetJson = json.dumps(assetPayload,default=str).encode("utf-8")
-                assetB64 = base64.b64encode(assetJson)
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": f"{gaxArn}/{gaxDns}/global-accelerator-shodan-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": gaxArn,
-                    "AwsAccountId": awsAccountId,
-                    "Types": ["Effects/Data Exposure"],
-                    "CreatedAt": iso8601time,
-                    "UpdatedAt": iso8601time,
-                    "Severity": {"Label": "MEDIUM"},
-                    "Title": "[Shodan.GlobalAccelerator.1] Accelerators should be monitored for being indexed by Shodan",
-                    "Description": f"Accelerator {gaxName} has been indexed by Shodan on IP address {gaxDomainIp} - resolved from DNS name {gaxDns}. Shodan is an 'internet search engine' which continuously crawls and scans across the entire internet to capture host, geolocation, TLS, and running service information. Shodan is a popular tool used by blue teams, security researchers and adversaries alike. Having your asset indexed on Shodan, depending on its configuration, may increase its risk of unauthorized access and further compromise. Review your configuration and refer to the Shodan URL in the remediation section to take action to reduce your exposure and harden your host.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
-                            "Url": f"{SHODAN_HOSTS_URL}{gaxDomainIp}"
-                        }
-                    },
-                    "ProductFields": {
-                        "ProductName": "ElectricEye",
-                        "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
-                        "AssetClass": "Networking",
-                        "AssetService": "Amazon Global Accelerator",
-                        "AssetComponent": "Accelerator"
-                    },
-                    "Resources": [
-                        {
-                            "Type": "AwsGlobalAcceleratorAccelerator",
-                            "Id": gaxArn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {
-                                "Other": {
-                                    "Name": gaxName,
-                                    "DnsName": gaxDns
-                                }
-                            }
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "FAILED",
-                        "RelatedRequirements": [
-                            "NIST CSF V1.1 ID.RA-2",
-                            "NIST CSF V1.1 DE.AE-2",
-                            "NIST SP 800-53 Rev. 4 AU-6",
-                            "NIST SP 800-53 Rev. 4 CA-7",
-                            "NIST SP 800-53 Rev. 4 IR-4",
-                            "NIST SP 800-53 Rev. 4 PM-15",
-                            "NIST SP 800-53 Rev. 4 PM-16",
-                            "NIST SP 800-53 Rev. 4 SI-4",
-                            "NIST SP 800-53 Rev. 4 SI-5",
-                            "AIPCA TSC CC3.2",
-                            "AIPCA TSC CC7.2",
-                            "ISO 27001:2013 A.6.1.4",
-                            "ISO 27001:2013 A.12.4.1",
-                            "ISO 27001:2013 A.16.1.1",
-                            "ISO 27001:2013 A.16.1.4",
-                            "MITRE ATT&CK T1040",
-                            "MITRE ATT&CK T1046",
-                            "MITRE ATT&CK T1580",
-                            "MITRE ATT&CK T1590",
-                            "MITRE ATT&CK T1592",
-                            "MITRE ATT&CK T1595"
-                        ]
-                    },
-                    "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE"
-                }
-                yield finding
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.RA-2",
+                        "NIST CSF V1.1 DE.AE-2",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 PM-15",
+                        "NIST SP 800-53 Rev. 4 PM-16",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "NIST SP 800-53 Rev. 4 SI-5",
+                        "AIPCA TSC CC3.2",
+                        "AIPCA TSC CC7.2",
+                        "ISO 27001:2013 A.6.1.4",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4",
+                        "MITRE ATT&CK T1040",
+                        "MITRE ATT&CK T1046",
+                        "MITRE ATT&CK T1580",
+                        "MITRE ATT&CK T1590",
+                        "MITRE ATT&CK T1592",
+                        "MITRE ATT&CK T1595"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
 
 ## END ??

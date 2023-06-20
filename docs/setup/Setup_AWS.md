@@ -601,10 +601,12 @@ These are the following services and checks perform by each Auditor, there are c
 | AWS_DMS_Auditor | DMS Replication Instance | Are DMS instances publicly accessible |
 | AWS_DMS_Auditor | DMS Replication Instance | Is DMS multi-az configured |
 | AWS_DMS_Auditor | DMS Replication Instance | Are minor version updates configured |
+| AWS_DMS_Auditor | DMS Replication Instance | Are public accessible DMS instances indexed by Shodan |
 | AWS_FIS_Auditor | FIS Experiment Template | Do experiment templates enable logging |
 | AWS_FIS_Auditor | FIS Experiment Template | Do experiment templates define a stop condition |
 | AWS_Global_Accelerator_Auditor | Global Accelerator Endpoint | Is the endpoint healthy |
 | AWS_Global_Accelerator_Auditor | Global Accelerator Accelerator | Are flow logs enabled for accelerator |
+| AWS_Global_Accelerator_Auditor | Global Accelerator Accelerator | Are Global Accelerator Accelerators indexed by Shodan |
 | AWS_Health_Auditor | AWS Health Event | Are there active Security Events |
 | AWS_Health_Auditor | AWS Health Event | Are there active Abuse Events |
 | AWS_Health_Auditor | AWS Health Event | Are there active Risk Events |
@@ -854,14 +856,5 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_Secrets_Auditor | CloudFormation Stack | Do CloudFormation Stacks have secrets in parameters |
 | Amazon_Secrets_Auditor | ECS Task Definition | Do ECS Task Definitions have secrets in env vars |
 | Amazon_Secrets_Auditor | EC2 Instance | Do EC2 instances have secrets in User Data |
-
-
-
-
-
-| Amazon_Shodan_Auditor | DMS Replication Instance | Are public accessible DMS instances indexed |
-
-
-| Amazon_Shodan_Auditor | Global Accelerator Accelerator | Are Global Accelerator Accelerators indexed |
 
 Continue to check this section for information on active, retired, and renamed checks or using the `--list-checks` command in the CLI!

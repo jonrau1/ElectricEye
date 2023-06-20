@@ -57,7 +57,7 @@ def list_buckets(cache, session):
 
 @registry.register_check("s3")
 def aws_s3_bucket_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[S3.1] AWS S3 Buckets should be encrypted"""
+    """[S3.1] Amazon S3 buckets should be encrypted"""
     s3 = session.client("s3")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -89,15 +89,15 @@ def aws_s3_bucket_encryption_check(cache: dict, session, awsAccountId: str, awsR
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
-                    "Title": "[S3.1] AWS S3 Buckets should be encrypted",
-                    "Description": "AWS S3 bucket "
+                    "Title": "[S3.1] Amazon S3 buckets should be encrypted",
+                    "Description": f"Amazon S3 bucket "
                     + bucketName
                     + " is encrypted using "
                     + sseType
                     + ".",
                     "Remediation": {
                         "Recommendation": {
-                            "Text": "For more information on Bucket Encryption and how to configure it refer to the Amazon S3 Default Encryption for S3 Buckets section of the Amazon Simple Storage Service Developer Guide",
+                            "Text": "For more information on Bucket Encryption and how to configure it refer to the Amazon S3 Default Encryption for S3 buckets section of the Amazon Simple Storage Service Developer Guide",
                             "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html"
                         }
                     },
@@ -156,13 +156,13 @@ def aws_s3_bucket_encryption_check(cache: dict, session, awsAccountId: str, awsR
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "HIGH"},
                     "Confidence": 99,
-                    "Title": "[S3.1] AWS S3 Buckets should be encrypted",
-                    "Description": "AWS S3 bucket "
+                    "Title": "[S3.1] Amazon S3 buckets should be encrypted",
+                    "Description": f"Amazon S3 bucket "
                     + bucketName
                     + " is not encrypted. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
-                            "Text": "For more information on Bucket Encryption and how to configure it refer to the Amazon S3 Default Encryption for S3 Buckets section of the Amazon Simple Storage Service Developer Guide",
+                            "Text": "For more information on Bucket Encryption and how to configure it refer to the Amazon S3 Default Encryption for S3 buckets section of the Amazon Simple Storage Service Developer Guide",
                             "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html"
                         }
                     },
@@ -206,7 +206,7 @@ def aws_s3_bucket_encryption_check(cache: dict, session, awsAccountId: str, awsR
 
 @registry.register_check("s3")
 def aws_s3_bucket_lifecycle_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[S3.2] AWS S3 Buckets should implement lifecycle policies for data archival and recovery operations"""
+    """[S3.2] Amazon S3 buckets should implement lifecycle policies for data archival and recovery operations"""
     s3 = session.client("s3")
     # ISO Time
     for buckets in list_buckets(cache, session):
@@ -235,10 +235,8 @@ def aws_s3_bucket_lifecycle_check(cache: dict, session, awsAccountId: str, awsRe
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[S3.2] AWS S3 Buckets should implement lifecycle policies for data archival and recovery operations",
-                "Description": "AWS S3 bucket "
-                + bucketName
-                + " has a lifecycle policy configured.",
+                "Title": "[S3.2] Amazon S3 buckets should implement lifecycle policies for data archival and recovery operations",
+                "Description": f"Amazon S3 bucket {bucketName} has a lifecycle policy configured.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Lifecycle policies and how to configure it refer to the How Do I Create a Lifecycle Policy for an S3 Bucket? section of the Amazon Simple Storage Service Developer Guide",
@@ -282,7 +280,7 @@ def aws_s3_bucket_lifecycle_check(cache: dict, session, awsAccountId: str, awsRe
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
         except Exception as e:
@@ -304,8 +302,8 @@ def aws_s3_bucket_lifecycle_check(cache: dict, session, awsAccountId: str, awsRe
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
-                    "Title": "[S3.2] AWS S3 Buckets should implement lifecycle policies for data archival and recovery operations",
-                    "Description": f"AWS S3 bucket {bucketName} does not have a lifecycle policy configured. S3 Lifecycle Policies can help lower data management tasks, lower storage costs, and get rid of corrupted or incomplete objects within your buckets. You can configure S3 to move objects to lower cost storage such as Infrequent Access or you can send objects to long-term storage in Amazon Glacier. If you have regulatory or industry compliance requirements to store certain types of data or logs, lifecycle policies is an automatable and auditable way to accomplish that. Likewise, if you have requirements to delete data after a certain amount of time a lifecycle policy can also accomodate that requirement. Refer to the remediation instructions if this configuration is not intended.",
+                    "Title": "[S3.2] Amazon S3 buckets should implement lifecycle policies for data archival and recovery operations",
+                    "Description": f"Amazon S3 bucket {bucketName} does not have a lifecycle policy configured. S3 Lifecycle Policies can help lower data management tasks, lower storage costs, and get rid of corrupted or incomplete objects within your buckets. You can configure S3 to move objects to lower cost storage such as Infrequent Access or you can send objects to long-term storage in Amazon Glacier. If you have regulatory or industry compliance requirements to store certain types of data or logs, lifecycle policies is an automatable and auditable way to accomplish that. Likewise, if you have requirements to delete data after a certain amount of time a lifecycle policy can also accomodate that requirement. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For more information on Lifecycle policies and how to configure it refer to the How Do I Create a Lifecycle Policy for an S3 Bucket? section of the Amazon Simple Storage Service Developer Guide",
@@ -357,7 +355,7 @@ def aws_s3_bucket_lifecycle_check(cache: dict, session, awsAccountId: str, awsRe
 
 @registry.register_check("s3")
 def aws_s3_bucket_versioning_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[S3.3] AWS S3 Buckets should have versioning enabled"""
+    """[S3.3] Amazon S3 buckets should have versioning enabled"""
     s3 = session.client("s3")
     # ISO Time
     for buckets in list_buckets(cache, session):
@@ -387,8 +385,8 @@ def aws_s3_bucket_versioning_check(cache: dict, session, awsAccountId: str, awsR
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[S3.3] AWS S3 Buckets should have versioning enabled",
-                "Description": "AWS S3 bucket "
+                "Title": "[S3.3] Amazon S3 buckets should have versioning enabled",
+                "Description": f"Amazon S3 bucket "
                 + bucketName
                 + " has versioning enabled. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
@@ -446,7 +444,7 @@ def aws_s3_bucket_versioning_check(cache: dict, session, awsAccountId: str, awsR
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
         except KeyError:
@@ -464,8 +462,8 @@ def aws_s3_bucket_versioning_check(cache: dict, session, awsAccountId: str, awsR
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[S3.3] AWS S3 Buckets should have versioning enabled",
-                "Description": "AWS S3 bucket "
+                "Title": "[S3.3] Amazon S3 buckets should have versioning enabled",
+                "Description": f"Amazon S3 bucket "
                 + bucketName
                 + " does not have versioning enabled. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
@@ -529,7 +527,7 @@ def aws_s3_bucket_versioning_check(cache: dict, session, awsAccountId: str, awsR
 
 @registry.register_check("s3")
 def aws_s3_bucket_policy_allows_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[S3.4] AWS S3 Bucket Policies should not allow public access to the bucket"""
+    """[S3.4] Amazon S3 Bucket Policies should not allow public access to the bucket"""
     s3 = session.client("s3")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -563,8 +561,8 @@ def aws_s3_bucket_policy_allows_public_access_check(cache: dict, session, awsAcc
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "CRITICAL"},
                 "Confidence": 99,
-                "Title": "[S3.4] AWS S3 Bucket Policies should not allow public access to the bucket",
-                "Description": f"AWS S3 bucket {bucketName} has a bucket policy attached that allows public access. When a Bucket Policy is assessed as being public it means that unauthenticated and anonymous users can access the objects within the bucket and download them. While there are some business use cases such as serving up static assets or public datasets, you should still use Amazon CloudFront (or another Content Delivery Network solution) and other safeguards to prevent abuse. Several large data breaches have been from the result of having a public bucket, this is a high priority finding to investigate! Refer to the remediation instructions if this configuration is not intended.",
+                "Title": "[S3.4] Amazon S3 Bucket Policies should not allow public access to the bucket",
+                "Description": f"Amazon S3 bucket {bucketName} has a bucket policy attached that allows public access. When a Bucket Policy is assessed as being public it means that unauthenticated and anonymous users can access the objects within the bucket and download them. While there are some business use cases such as serving up static assets or public datasets, you should still use Amazon CloudFront (or another Content Delivery Network solution) and other safeguards to prevent abuse. Several large data breaches have been from the result of having a public bucket, this is a high priority finding to investigate! Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Bucket Policies and how to configure it refer to the Bucket Policy Examples section of the Amazon Simple Storage Service Developer Guide",
@@ -669,8 +667,8 @@ def aws_s3_bucket_policy_allows_public_access_check(cache: dict, session, awsAcc
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[S3.4] AWS S3 Bucket Policies should not allow public access to the bucket",
-                "Description": "AWS S3 bucket "
+                "Title": "[S3.4] Amazon S3 Bucket Policies should not allow public access to the bucket",
+                "Description": f"Amazon S3 bucket "
                 + bucketName
                 + " has a bucket policy attached and it does not allow public access.",
                 "Remediation": {
@@ -764,7 +762,7 @@ def aws_s3_bucket_policy_allows_public_access_check(cache: dict, session, awsAcc
 
 @registry.register_check("s3")
 def aws_s3_bucket_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[S3.5] AWS S3 Buckets should have a bucket policy configured"""
+    """[S3.5] Amazon S3 buckets should have a bucket policy configured"""
     s3 = session.client("s3")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -796,8 +794,8 @@ def aws_s3_bucket_policy_check(cache: dict, session, awsAccountId: str, awsRegio
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[S3.5] AWS S3 Buckets should have a bucket policy configured",
-                "Description": f"AWS S3 bucket {bucketName} does not have a bucket policy configured. A bucket policy is a resource-based policy that you can use to grant access permissions to your Amazon S3 bucket and the objects in it. Only the bucket owner can associate a policy with a bucket. The permissions attached to the bucket apply to all of the objects in the bucket that are owned by the bucket owner. These permissions do not apply to objects that are owned by other AWS accounts. S3 Object Ownership is an Amazon S3 bucket-level setting that you can use to control ownership of objects uploaded to your bucket and to disable or enable ACLs. By default, Object Ownership is set to the Bucket owner enforced setting and all ACLs are disabled. The bucket owner owns all the objects in the bucket and manages access to data exclusively using policies. Refer to the remediation instructions if this configuration is not intended.",
+                "Title": "[S3.5] Amazon S3 buckets should have a bucket policy configured",
+                "Description": f"Amazon S3 bucket {bucketName} does not have a bucket policy configured. A bucket policy is a resource-based policy that you can use to grant access permissions to your Amazon S3 bucket and the objects in it. Only the bucket owner can associate a policy with a bucket. The permissions attached to the bucket apply to all of the objects in the bucket that are owned by the bucket owner. These permissions do not apply to objects that are owned by other AWS accounts. S3 Object Ownership is an Amazon S3 bucket-level setting that you can use to control ownership of objects uploaded to your bucket and to disable or enable ACLs. By default, Object Ownership is set to the Bucket owner enforced setting and all ACLs are disabled. The bucket owner owns all the objects in the bucket and manages access to data exclusively using policies. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Bucket Policies and how to configure it refer to the Using bucket policies section of the Amazon Simple Storage Service Developer Guide",
@@ -901,8 +899,8 @@ def aws_s3_bucket_policy_check(cache: dict, session, awsAccountId: str, awsRegio
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[S3.5] AWS S3 Buckets should have a bucket policy configured",
-                "Description": f"AWS S3 bucket {bucketName} does have a bucket policy configured.",
+                "Title": "[S3.5] Amazon S3 buckets should have a bucket policy configured",
+                "Description": f"Amazon S3 bucket {bucketName} does have a bucket policy configured.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Bucket Policies and how to configure it refer to the Using bucket policies section of the Amazon Simple Storage Service Developer Guide",
@@ -994,7 +992,7 @@ def aws_s3_bucket_policy_check(cache: dict, session, awsAccountId: str, awsRegio
 
 @registry.register_check("s3")
 def aws_s3_bucket_access_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[S3.6] AWS S3 Buckets should have server access logging enabled"""
+    """[S3.6] Amazon S3 buckets that serve content should have server access logging enabled"""
     s3 = session.client("s3")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -1028,8 +1026,8 @@ def aws_s3_bucket_access_logging_check(cache: dict, session, awsAccountId: str, 
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[S3.6] AWS S3 Buckets should have server access logging enabled",
-                "Description": f"AWS S3 bucket {bucketName} does have server access logging enabled.",
+                "Title": "[S3.6] Amazon S3 buckets should have server access logging enabled",
+                "Description": f"Amazon S3 bucket {bucketName} does have server access logging enabled.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Bucket Policies and how to configure it refer to the Amazon S3 Server Access Logging section of the Amazon Simple Storage Service Developer Guide",
@@ -1103,7 +1101,7 @@ def aws_s3_bucket_access_logging_check(cache: dict, session, awsAccountId: str, 
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
         else:
@@ -1121,8 +1119,8 @@ def aws_s3_bucket_access_logging_check(cache: dict, session, awsAccountId: str, 
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[S3.6] AWS S3 Buckets should have server access logging enabled",
-                "Description": f"AWS S3 bucket {bucketName} does not have server access logging enabled. Server access logging provides detailed records for the requests that are made to a bucket. Server access logs are useful for many applications. For example, access log information can be useful in security and access audits. It can also help you learn about your customer base and understand your Amazon S3 bill. Outside of managing static web applications from S3, consider using richer and more modern types of logs and other components such as pairing with Amazon CloudFront with Real-time logging. Refer to the remediation instructions if this configuration is not intended.",
+                "Title": "[S3.6] Amazon S3 buckets should have server access logging enabled",
+                "Description": f"Amazon S3 bucket {bucketName} does not have server access logging enabled. Server access logging provides detailed records for the requests that are made to a bucket. Server access logs are useful for many applications. For example, access log information can be useful in security and access audits. It can also help you learn about your customer base and understand your Amazon S3 bill. Outside of managing static web applications from S3, consider using richer and more modern types of logs and other components such as pairing with Amazon CloudFront with Real-time logging. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Bucket Policies and how to configure it refer to the Amazon S3 Server Access Logging section of the Amazon Simple Storage Service Developer Guide",
@@ -1445,7 +1443,7 @@ def s3_account_level_block(cache: dict, session, awsAccountId: str, awsRegion: s
 
 @registry.register_check("s3")
 def aws_s3_bucket_deny_http_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[S3.8] AWS S3 Buckets should define a policy block insecure (HTTP) access to all objects"""
+    """[S3.8] Amazon S3 buckets should define a policy block insecure (HTTP) access to all objects"""
     s3 = session.client("s3")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -1484,8 +1482,8 @@ def aws_s3_bucket_deny_http_access_check(cache: dict, session, awsAccountId: str
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[S3.8] AWS S3 Buckets should define a policy block insecure (HTTP) access to all objects",
-                "Description": f"AWS S3 bucket {bucketName} does not define a policy to block insecure (HTTP) access to all objects. Amazon S3 offers encryption in transit and encryption at rest. Encryption in transit refers to HTTPS and encryption at rest refers to client-side or server-side encryption. Amazon S3 allows both HTTP and HTTPS requests. By default, requests are made through the AWS Management Console, AWS Command Line Interface (AWS CLI), or HTTPS. To prevent any insecure requests, confirm that your bucket policies explicitly deny access to objects without HTTPs by using. Refer to the remediation instructions if this configuration is not intended.",
+                "Title": "[S3.8] Amazon S3 buckets should define a policy block insecure (HTTP) access to all objects",
+                "Description": f"Amazon S3 bucket {bucketName} does not define a policy to block insecure (HTTP) access to all objects. Amazon S3 offers encryption in transit and encryption at rest. Encryption in transit refers to HTTPS and encryption at rest refers to client-side or server-side encryption. Amazon S3 allows both HTTP and HTTPS requests. By default, requests are made through the AWS Management Console, AWS Command Line Interface (AWS CLI), or HTTPS. To prevent any insecure requests, confirm that your bucket policies explicitly deny access to objects without HTTPs by using. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on creating a compliant policy to block insecure (HTTP) access to all Objects refer to the What S3 bucket policy should I use to comply with the AWS Config rule s3-bucket-ssl-requests-only? Knowledge Center post in AWS re:Post",
@@ -1545,8 +1543,8 @@ def aws_s3_bucket_deny_http_access_check(cache: dict, session, awsAccountId: str
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[S3.8] AWS S3 Buckets should define a policy block insecure (HTTP) access to all objects",
-                "Description": f"AWS S3 bucket {bucketName} does define a policy to block insecure (HTTP) access to all objects.",
+                "Title": "[S3.8] Amazon S3 buckets should define a policy block insecure (HTTP) access to all objects",
+                "Description": f"Amazon S3 bucket {bucketName} does define a policy to block insecure (HTTP) access to all objects.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on creating a compliant policy to block insecure (HTTP) access to all Objects refer to the What S3 bucket policy should I use to comply with the AWS Config rule s3-bucket-ssl-requests-only? Knowledge Center post in AWS re:Post",
