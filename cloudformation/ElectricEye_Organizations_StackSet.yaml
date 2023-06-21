@@ -27,6 +27,8 @@ Resources:
                 - acm:ListCertificates
                 - access-analyzer:ListAnalyzers
                 - amplify:ListApps
+                - airflow:GetEnvironment
+                - airflow:ListEnvironments
                 - apigateway:GET
                 - appmesh:DescribeMesh
                 - appmesh:DescribeVirtualNode
@@ -77,11 +79,14 @@ Resources:
                 - dax:DescribeClusters
                 - dax:DescribeParameters
                 - detective:ListGraphs
+                - dms:DescribeReplicationInstances
                 - ds:DescribeDirectories
                 - ds:ListLogSubscriptions
                 - dynamodb:DescribeContinuousBackups
                 - dynamodb:DescribeTable
                 - dynamodb:ListTables
+                - ec2:Describe*
+                - ec2:Get*
                 - ecr:Describ*
                 - ecr:GetLifecyclePolicy
                 - ecr:GetRegistryPolicy
@@ -169,6 +174,7 @@ Resources:
                 - mq:List*
                 - qldb:ListJournalS3Exports
                 - qldb:ListLedgers
+                - ram:GetResourceShares
                 - rds:DescribeDB*
                 - rds:DescribeEvent*
                 - redshift:DescribeCluster*
@@ -196,6 +202,11 @@ Resources:
                 - shield:ListAttacks
                 - sns:GetTopicAttributes
                 - sns:ListSub*
+                - ssm:ListDocuments
+                - ssm:ListAssociations
+                - ssm:DescribeDocumentPermission
+                - ssm:DescribeInstance*
+                - ssm:GetP*
                 - sns:ListTopics
                 - sqs:GetQueueAttributes
                 - sqs:ListQueues
