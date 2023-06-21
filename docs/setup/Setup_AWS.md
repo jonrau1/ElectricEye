@@ -225,7 +225,7 @@ The ASM Module uses NMAP at its core and will be expanded to include ZAP and Sho
 
 ## AWS Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **609 Checks** across **83 Auditors** that support the secure configuration of **119 services/components**
+These are the following services and checks perform by each Auditor, there are currently **612 Checks** across **84 Auditors** that support the secure configuration of **120 services/components**
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service**: AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
@@ -275,6 +275,9 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_CloudFront_Auditor | CloudFront Distribution | Are CloudFront distros indexed by Shodan |
 | Amazon_CloudSearch_Auditor | CloudSearch Domain | Do Domains enforce HTTPS-only |
 | Amazon_CloudSearch_Auditor | CloudSearch Domain | Do Domains use TLS 1.2 |
+| Amazon_CloudWatch_Auditor | Cloudwatch Logs group | Do Cloudwatch Logs groups use KMS CMKs for encryption |
+| Amazon_CloudWatch_Auditor | Cloudwatch Logs group | Do Cloudwatch Logs groups define retention periods |
+| Amazon_CloudWatch_Auditor | Cloudwatch Logs group | Do Cloudwatch Logs groups associate with data protection policies |
 | Amazon_CognitoIdP_Auditor | Cognito Identity Pool | Does the Password policy comply with AWS CIS Foundations Benchmark |
 | Amazon_CognitoIdP_Auditor | Cognito Identity Pool | Cognito Temporary Password Age |
 | Amazon_CognitoIdP_Auditor | Cognito Identity Pool | Does the Identity pool enforce MFA |

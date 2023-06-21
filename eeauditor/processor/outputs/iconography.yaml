@@ -79,6 +79,8 @@
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Networking-Content-Delivery/64/Arch_Amazon-CloudFront_64.svg">
 - AssetService: Amazon CloudSearch
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Analytics/64/Arch_Amazon-CloudSearch_64.svg">
+- AssetService: Amazon CloudWatch
+  ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Management-Governance/64/Arch_Amazon-CloudWatch_64.svg">
 - AssetService: Amazon Cognito
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Security-Identity-Compliance/64/Arch_Amazon-Cognito_64.svg">
 - AssetService: Amazon Detective
