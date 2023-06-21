@@ -300,7 +300,7 @@ def kms_key_exposed_check(cache: dict, session, awsAccountId: str, awsRegion: st
                     "AssetDetails": assetB64,
                     "AssetClass": "Security Services",
                     "AssetService": "Amazon Key Management Service",
-                    "AssetComponent": "Key Alias"
+                    "AssetComponent": "Key"
                 },
                 "Resources": [
                     {
@@ -406,7 +406,7 @@ def kms_key_exposed_check(cache: dict, session, awsAccountId: str, awsRegion: st
                     "AssetDetails": assetB64,
                     "AssetClass": "Security Services",
                     "AssetService": "Amazon Key Management Service",
-                    "AssetComponent": "Key Alias"
+                    "AssetComponent": "Key"
                 },
                 "Resources": [
                     {

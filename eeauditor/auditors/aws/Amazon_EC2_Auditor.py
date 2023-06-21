@@ -216,7 +216,7 @@ def get_shodan_api_key(cache):
 
 @registry.register_check("ec2")
 def ec2_imdsv2_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EC2.1] EC2 Instances should be configured to use instance metadata service V2 (IMDSv2)"""
+    """[EC2.1] Amazon EC2 Instances should be configured to use instance metadata service V2 (IMDSv2)"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for i in describe_instances(cache, session):
@@ -251,10 +251,8 @@ def ec2_imdsv2_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "MEDIUM"},
                     "Confidence": 99,
-                    "Title": "[EC2.1] EC2 Instances should be configured to use instance metadata service V2 (IMDSv2)",
-                    "Description": "EC2 Instance "
-                    + instanceId
-                    + " is not configured to use instance metadata service V2 (IMDSv2). IMDSv2 adds new “belt and suspenders” protections for four types of vulnerabilities that could be used to try to access the IMDS. These new protections go well beyond other types of mitigations, while working seamlessly with existing mitigations such as restricting IAM roles and using local firewall rules to restrict access to the IMDS. Refer to the remediation instructions if this configuration is not intended",
+                    "Title": "[EC2.1] Amazon EC2 Instances should be configured to use instance metadata service V2 (IMDSv2)",
+                    "Description": f"Amazon EC2 Instance {instanceId} is not configured to use instance metadata service V2 (IMDSv2). IMDSv2 adds new “belt and suspenders” protections for four types of vulnerabilities that could be used to try to access the IMDS. These new protections go well beyond other types of mitigations, while working seamlessly with existing mitigations such as restricting IAM roles and using local firewall rules to restrict access to the IMDS. Refer to the remediation instructions if this configuration is not intended",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "To learn how to configure IMDSv2 refer to the Transitioning to Using Instance Metadata Service Version 2 section of the Amazon EC2 User Guide",
@@ -367,10 +365,8 @@ def ec2_imdsv2_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
-                    "Title": "[EC2.1] EC2 Instances should be configured to use instance metadata service V2 (IMDSv2)",
-                    "Description": "EC2 Instance "
-                    + instanceId
-                    + " is using instance metadata service V2 (IMDSv2). IMDSv2 adds new “belt and suspenders” protections for four types of vulnerabilities that could be used to try to access the IMDS. These new protections go well beyond other types of mitigations, while working seamlessly with existing mitigations such as restricting IAM roles and using local firewall rules to restrict access to the IMDS. Refer to the remediation instructions if this configuration is not intended",
+                    "Title": "[EC2.1] Amazon EC2 Instances should be configured to use instance metadata service V2 (IMDSv2)",
+                    "Description": f"Amazon EC2 Instance {instanceId} is using instance metadata service V2 (IMDSv2). IMDSv2 adds new “belt and suspenders” protections for four types of vulnerabilities that could be used to try to access the IMDS. These new protections go well beyond other types of mitigations, while working seamlessly with existing mitigations such as restricting IAM roles and using local firewall rules to restrict access to the IMDS. Refer to the remediation instructions if this configuration is not intended",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "To learn how to configure IMDSv2 refer to the Transitioning to Using Instance Metadata Service Version 2 section of the Amazon EC2 User Guide",
@@ -472,7 +468,7 @@ def ec2_imdsv2_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
 
 @registry.register_check("ec2")
 def ec2_secure_enclave_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EC2.2] EC2 Instances running critical or high-security workloads should be configured to use Secure Enclaves"""
+    """[EC2.2] Amazon EC2 Instances running critical or high-security workloads should be configured to use Secure Enclaves"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for i in describe_instances(cache, session):
@@ -507,8 +503,8 @@ def ec2_secure_enclave_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[EC2.2] EC2 Instances running critical or high-security workloads should be configured to use Secure Enclaves",
-                "Description": "EC2 Instance "
+                "Title": "[EC2.2] Amazon EC2 Instances running critical or high-security workloads should be configured to use Secure Enclaves",
+                "Description": "Amazon EC2 Instance "
                 + instanceId
                 + " is not configured to use a Secure Enclave. AWS Nitro Enclaves is an Amazon EC2 feature that allows you to create isolated execution environments, called enclaves, from Amazon EC2 instances. Enclaves are separate, hardened, and highly constrained virtual machines. They provide only secure local socket connectivity with their parent instance. Refer to the remediation instructions if this configuration is not intended",
                 "Remediation": {
@@ -587,8 +583,8 @@ def ec2_secure_enclave_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[EC2.2] EC2 Instances running critical or high-security workloads should be configured to use Secure Enclaves",
-                "Description": "EC2 Instance "
+                "Title": "[EC2.2] Amazon EC2 Instances running critical or high-security workloads should be configured to use Secure Enclaves",
+                "Description": "Amazon EC2 Instance "
                 + instanceId
                 + " is configured to use a Secure Enclave.",
                 "Remediation": {
@@ -653,7 +649,7 @@ def ec2_secure_enclave_check(cache: dict, session, awsAccountId: str, awsRegion:
 
 @registry.register_check("ec2")
 def ec2_public_facing_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EC2.3] EC2 Instances should not be publicly discoverable on the internet"""
+    """[EC2.3] Amazon EC2 Instances should not be publicly discoverable on the internet"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for i in describe_instances(cache, session):
@@ -676,85 +672,9 @@ def ec2_public_facing_check(cache: dict, session, awsAccountId: str, awsRegion: 
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": instanceArn + "/ec2-public-facing-check",
+                "Id": f"{instanceArn}/ec2-public-facing-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": instanceArn,
-                "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices",
-                    "Effects/Data Exposure"
-                ],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "INFORMATIONAL"},
-                "Confidence": 99,
-                "Title": "[EC2.3] EC2 Instances should not be publicly discoverable on the internet",
-                "Description": "EC2 Instance "
-                + instanceId
-                + " is internet-facing (due to having a Public DNS), instances should be behind AWS Elastic Load Balancers, CloudFront Distributions, or a 3rd-party CDN/Load Balancer to avoid any vulnerabilities on the middleware or the operating system from being exploited directly. Additionally, load balancing can increase high availability and resilience of applications hosted on EC2. Refer to the remediation instructions if this configuration is not intended.",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "EC2 Instances should be rebuilt in Private Subnets within your VPC and placed behind Load Balancers. To learn how to attach Instances to a public-facing load balancer refer to the How do I attach backend instances with private IP addresses to my internet-facing load balancer in ELB? post within the AWS Premium Support Knowledge Center",
-                        "Url": "https://aws.amazon.com/premiumsupport/knowledge-center/public-load-balancer-private-ec2/"
-                    }
-                },
-                "ProductFields": {
-                    "ProductName": "ElectricEye",
-                    "Provider": "AWS",
-                    "ProviderType": "CSP",
-                    "ProviderAccountId": awsAccountId,
-                    "AssetRegion": awsRegion,
-                    "AssetDetails": assetB64,
-                    "AssetClass": "Compute",
-                    "AssetService": "Amazon EC2",
-                    "AssetComponent": "Instance"
-                },
-                "Resources": [
-                    {
-                        "Type": "AwsEc2Instance",
-                        "Id": instanceArn,
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                        "Details": {
-                            "AwsEc2Instance": {
-                                "Type": instanceType,
-                                "ImageId": instanceImage,
-                                "VpcId": vpcId,
-                                "SubnetId": subnetId,
-                                "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat()
-                            }
-                        },
-                    }
-                ],
-                "Compliance": {
-                    "Status": "FAILED",
-                    "RelatedRequirements": [
-                        "NIST CSF V1.1 PR.AC-3",
-                        "NIST SP 800-53 Rev. 4 AC-1",
-                        "NIST SP 800-53 Rev. 4 AC-17",
-                        "NIST SP 800-53 Rev. 4 AC-19",
-                        "NIST SP 800-53 Rev. 4 AC-20",
-                        "NIST SP 800-53 Rev. 4 SC-15",
-                        "AICPA TSC CC6.6",
-                        "ISO 27001:2013 A.6.2.1",
-                        "ISO 27001:2013 A.6.2.2",
-                        "ISO 27001:2013 A.11.2.6",
-                        "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1"
-                    ]
-                },
-                "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE"
-            }
-            yield finding
-        else:
-            # this is a passing check
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": instanceArn + "/ec2-public-facing-check",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": instanceArn,
+                "GeneratorId": f"{instanceArn}/ec2-public-facing-check",
                 "AwsAccountId": awsAccountId,
                 "Types": [
                     "Software and Configuration Checks/AWS Security Best Practices",
@@ -765,13 +685,13 @@ def ec2_public_facing_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[EC2.3] EC2 Instances should not be publicly discoverable on the internet",
-                "Description": "EC2 Instance "
+                "Title": "[EC2.3] Amazon EC2 Instances should not be publicly discoverable on the internet",
+                "Description": "Amazon EC2 Instance "
                 + instanceId
                 + " is not internet-facing (due to not having a Public DNS).",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "EC2 Instances should be rebuilt in Private Subnets within your VPC and placed behind Load Balancers. To learn how to attach Instances to a public-facing load balancer refer to the How do I attach backend instances with private IP addresses to my internet-facing load balancer in ELB? post within the AWS Premium Support Knowledge Center",
+                        "Text": "Amazon EC2 Instances should be rebuilt in Private Subnets within your VPC and placed behind Load Balancers. To learn how to attach Instances to a public-facing load balancer refer to the How do I attach backend instances with private IP addresses to my internet-facing load balancer in ELB? post within the AWS Premium Support Knowledge Center",
                         "Url": "https://aws.amazon.com/premiumsupport/knowledge-center/public-load-balancer-private-ec2/"
                     }
                 },
@@ -824,10 +744,86 @@ def ec2_public_facing_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "RecordState": "ARCHIVED"
             }
             yield finding
-
+        else:
+            # this is a passing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{instanceArn}/ec2-public-facing-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{instanceArn}/ec2-public-facing-check",
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[EC2.3] Amazon EC2 Instances should not be publicly discoverable on the internet",
+                "Description": "Amazon EC2 Instance "
+                + instanceId
+                + " is internet-facing (due to having a Public DNS), instances should be behind AWS Elastic Load Balancers, CloudFront Distributions, or a 3rd-party CDN/Load Balancer to avoid any vulnerabilities on the middleware or the operating system from being exploited directly. Additionally, load balancing can increase high availability and resilience of applications hosted on EC2. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "Amazon EC2 Instances should be rebuilt in Private Subnets within your VPC and placed behind Load Balancers. To learn how to attach Instances to a public-facing load balancer refer to the How do I attach backend instances with private IP addresses to my internet-facing load balancer in ELB? post within the AWS Premium Support Knowledge Center",
+                        "Url": "https://aws.amazon.com/premiumsupport/knowledge-center/public-load-balancer-private-ec2/"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEc2Instance",
+                        "Id": instanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2Instance": {
+                                "Type": instanceType,
+                                "ImageId": instanceImage,
+                                "VpcId": vpcId,
+                                "SubnetId": subnetId,
+                                "LaunchedAt": parse(str(instanceLaunchedAt)).isoformat()
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+            
 @registry.register_check("ec2")
 def ec2_source_dest_verification_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EC2.4] EC2 Instances should use Source-Destination checks unless absolutely not required"""
+    """[EC2.4] Amazon EC2 Instances should use Source-Destination checks unless absolutely not required"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for i in describe_instances(cache, session):
@@ -861,8 +857,8 @@ def ec2_source_dest_verification_check(cache: dict, session, awsAccountId: str, 
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[EC2.4] EC2 Instances should use Source-Destination checks unless absolutely not required",
-                "Description": f"EC2 Instance{instanceId} does have have the Source-Destination Check enabled. Typically, this is done for self-managed Network Address Translation (NAT), Forward Proxies (such as Squid, for URL Filtering/DNS Protection) or self-managed Firewalls (ModSecurity). These settings should be verified, and underlying technology must be patched to avoid exploits or availability loss. Refer to the remediation instructions if this configuration is not intended.",
+                "Title": "[EC2.4] Amazon EC2 Instances should use Source-Destination checks unless absolutely not required",
+                "Description": f"Amazon EC2 Instance {instanceId} does have have the Source-Destination Check enabled. Typically, this is done for self-managed Network Address Translation (NAT), Forward Proxies (such as Squid, for URL Filtering/DNS Protection) or self-managed Firewalls (ModSecurity). These settings should be verified, and underlying technology must be patched to avoid exploits or availability loss. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "To learn more about Source/destination checking refer to the Elastic network interfaces section of the Amazon Elastic Compute Cloud User Guide",
@@ -934,8 +930,8 @@ def ec2_source_dest_verification_check(cache: dict, session, awsAccountId: str, 
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[EC2.4] EC2 Instances should use Source-Destination checks unless absolutely not required",
-                "Description": f"EC2 Instance {instanceId} has the Source-Destination Check enabled.",
+                "Title": "[EC2.4] Amazon EC2 Instances should use Source-Destination checks unless absolutely not required",
+                "Description": f"Amazon EC2 Instance {instanceId} has the Source-Destination Check enabled.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "To learn more about Source/destination checking refer to the Elastic network interfaces section of the Amazon Elastic Compute Cloud User Guide",
@@ -1177,7 +1173,7 @@ def ec2_ami_age_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
                     "Severity": {"Label": "MEDIUM"},
                     "Confidence": 99,
                     "Title": "[EC2.5] Amazon EC2 Instances should use AMIs that are less than three months old",
-                    "Description": f"EC2 Instance {instanceId} is using an AMI that is {AmiAge.days} days old",
+                    "Description": f"Amazon EC2 Instance {instanceId} is using an AMI that is {AmiAge.days} days old",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "To learn more about AMI usage, refer to the AMI section of the Amazon Elastic Compute Cloud User Guide",
@@ -1249,7 +1245,7 @@ def ec2_ami_age_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
                     "Title": "[EC2.5] Amazon EC2 Instances should use AMIs that are less than three months old",
-                    "Description": f"EC2 Instance {instanceId} is using an AMI that is {AmiAge.days} days old",
+                    "Description": f"Amazon EC2 Instance {instanceId} is using an AMI that is {AmiAge.days} days old",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "To learn more about AMI usage, refer to the AMI section of the Amazon Elastic Compute Cloud User Guide",
@@ -1349,7 +1345,7 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
                     "Severity": {"Label": "HIGH"},
                     "Confidence": 99,
                     "Title": "[EC2.6] Amazon EC2 Instances should use AMIs that are currently registered",
-                    "Description": f"EC2 Instance {instanceId} is using an AMI that has a status of: {amiState}",
+                    "Description": f"Amazon EC2 Instance {instanceId} is using an AMI that has a status of: {amiState}",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "To learn more about AMI usage, refer to the AMI section of the Amazon Elastic Compute Cloud User Guide",
@@ -1421,7 +1417,7 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
                     "Title": "[EC2.6] Amazon EC2 Instances should use AMIs that are currently registered",
-                    "Description": f"EC2 Instance {instanceId} is using an AMI that has a status of: {amiState}",
+                    "Description": f"Amazon EC2 Instance {instanceId} is using an AMI that has a status of: {amiState}",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "To learn more about AMI usage, refer to the AMI section of the Amazon Elastic Compute Cloud User Guide",
@@ -1494,7 +1490,7 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
                     "Title": "[EC2.6] Amazon EC2 Instances should use AMIs that are currently registered",
-                    "Description": f"EC2 Instance {instanceId} is using an AMI that has a status of: {amiState}",
+                    "Description": f"Amazon EC2 Instance {instanceId} is using an AMI that has a status of: {amiState}",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "To learn more about AMI usage, refer to the AMI section of the Amazon Elastic Compute Cloud User Guide",
@@ -1567,7 +1563,7 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
                 "Title": "[EC2.6] Amazon EC2 Instances should use AMIs that are currently registered",
-                "Description": f"EC2 Instance {instanceId} is using an AMI that has a status of: deregistered",
+                "Description": f"Amazon EC2 Instance {instanceId} is using an AMI that has a status of: deregistered",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "To learn more about AMI usage, refer to the AMI section of the Amazon Elastic Compute Cloud User Guide",
@@ -1904,7 +1900,7 @@ def ec2_instance_ssm_managed_check(cache: dict, session, awsAccountId: str, awsR
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
                 "Title": "[EC2.9] Amazon EC2 instances should be managed by AWS Systems Manager",
-                "Description": f"EC2 Instance {instanceId} is not managed by AWS Systems Manager. Systems Manager (SSM) enables automated activities such as patching, configuration management, software inventory management and more. Not having instances managed by SSM can degrade the effectiveness of important security processes. This status can be due to the Instance being stopped or hibernated for too long and being removed from SSM tracking, lacking an instance profile that provides permissions to the SSM APIs, or having an SSM Agent that is deprecated. Refer to the remediation instructions if this configuration is not intended.",
+                "Description": f"Amazon EC2 Instance {instanceId} is not managed by AWS Systems Manager. Systems Manager (SSM) enables automated activities such as patching, configuration management, software inventory management and more. Not having instances managed by SSM can degrade the effectiveness of important security processes. This status can be due to the Instance being stopped or hibernated for too long and being removed from SSM tracking, lacking an instance profile that provides permissions to the SSM APIs, or having an SSM Agent that is deprecated. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "To learn how to configure Systems Manager and associated instances refer to the Setting Up AWS Systems Manager section of the AWS Systems Manager User Guide",
@@ -1970,7 +1966,7 @@ def ec2_instance_ssm_managed_check(cache: dict, session, awsAccountId: str, awsR
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[EC2.9] Amazon EC2 instances should be managed by AWS Systems Manager",
-                "Description": f"EC2 Instance {instanceId} is managed by AWS Systems Manager.",
+                "Description": f"Amazon EC2 Instance {instanceId} is managed by AWS Systems Manager.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "To learn how to configure Systems Manager and associated instances refer to the Setting Up AWS Systems Manager section of the AWS Systems Manager User Guide",
@@ -2067,7 +2063,7 @@ def ec2_instance_linux_latest_ssm_agent_check(cache: dict, session, awsAccountId
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
                 "Title": "[EC2.10] Amazon EC2 Linux instances managed by Systems Manager should have the latest SSM Agent installed",
-                "Description": f"EC2 Instance {instanceId} is a Linux-based platform which does not have the latest SSM Agent installed, or it is not covered by AWS SSM at all. Not having the latest SSM Agent can lead to issues with patching, configuration management, inventory management, and/or vulnerability management activities. Refer to the remediation instructions if this configuration is not intended.",
+                "Description": f"Amazon EC2 Instance {instanceId} is a Linux-based platform which does not have the latest SSM Agent installed, or it is not covered by AWS SSM at all. Not having the latest SSM Agent can lead to issues with patching, configuration management, inventory management, and/or vulnerability management activities. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on automating updates to the SSM Agent refer to the Automate Updates to SSM Agent section of the AWS Systems Manager User Guide",
@@ -2133,7 +2129,7 @@ def ec2_instance_linux_latest_ssm_agent_check(cache: dict, session, awsAccountId
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[EC2.10] Amazon EC2 Linux instances managed by Systems Manager should have the latest SSM Agent installed",
-                "Description": f"EC2 Instance {instanceId} is either a Linux-based platform and has the latest SSM Agent installed or is not a Linux-based platform.",
+                "Description": f"Amazon EC2 Instance {instanceId} is either a Linux-based platform and has the latest SSM Agent installed or is not a Linux-based platform.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on automating updates to the SSM Agent refer to the Automate Updates to SSM Agent section of the AWS Systems Manager User Guide",
@@ -2225,7 +2221,7 @@ def ec2_instance_ssm_association_successful_check(cache: dict, session, awsAccou
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
                 "Title": "[EC2.11] Amazon EC2 instances managed by Systems Manager should have a successful Association status",
-                "Description": f"EC2 Instance {instanceId} has failed its last Systems Manager State Manager Association or is not onboarded AWS SSM at all. Associations are State Manager automation constructs which encapsulate execution of SSM Documents such as Patching, software configuration, and SSM Agent updates onto an instance. A failed Association can represent the failure of a critical process and should be reviewed. Refer to the remediation instructions for more information on working with State Manager Associations.",
+                "Description": f"Amazon EC2 Instance {instanceId} has failed its last Systems Manager State Manager Association or is not onboarded AWS SSM at all. Associations are State Manager automation constructs which encapsulate execution of SSM Documents such as Patching, software configuration, and SSM Agent updates onto an instance. A failed Association can represent the failure of a critical process and should be reviewed. Refer to the remediation instructions for more information on working with State Manager Associations.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on Systems Manager Associations refer to the Working with Associations in Systems Manager section of the AWS Systems Manager User Guide",
@@ -2291,7 +2287,7 @@ def ec2_instance_ssm_association_successful_check(cache: dict, session, awsAccou
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[EC2.11] Amazon EC2 instances managed by Systems Manager should have a successful Association status",
-                "Description": f"EC2 Instance {instanceId} has passed its last Systems Manager State Manager Association.",
+                "Description": f"Amazon EC2 Instance {instanceId} has passed its last Systems Manager State Manager Association.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on Systems Manager Associations refer to the Working with Associations in Systems Manager section of the AWS Systems Manager User Guide",
@@ -2381,7 +2377,7 @@ def ec2_instance_patch_manager_check(cache: dict, session, awsAccountId: str, aw
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[EC2.12] Amazon EC2 instances should be actively managed by and reporting patch information to AWS Systems Manager Patch Manager",
-                "Description": f"EC2 Instance {instanceId} does not have any patch information recorded and is likely not managed by Patch Manager. Patch Manager automates the installation and application of security, performance, and major version upgrades and KBs onto your instances, reducing exposure to vulnerabilities and other weaknesses. Without automatic patching at scale, vulnerabilities can quickly manifest within a given cloud environment leading to potential avenues of attack for adversaries and other unauthorized actors. Refer to the remediation instructions if this configuration is not intended.",
+                "Description": f"Amazon EC2 Instance {instanceId} does not have any patch information recorded and is likely not managed by Patch Manager. Patch Manager automates the installation and application of security, performance, and major version upgrades and KBs onto your instances, reducing exposure to vulnerabilities and other weaknesses. Without automatic patching at scale, vulnerabilities can quickly manifest within a given cloud environment leading to potential avenues of attack for adversaries and other unauthorized actors. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on Patch Manager refer to the AWS Systems Manager Patch Manager section of the AWS Systems Manager User Guide",
@@ -2462,7 +2458,7 @@ def ec2_instance_patch_manager_check(cache: dict, session, awsAccountId: str, aw
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[EC2.12] Amazon EC2 instances should be actively managed by and reporting patch information to AWS Systems Manager Patch Manager",
-                "Description": f"EC2 Instance {instanceId} has patches applied by AWS Systems Manager Patch Manager. You should still review Patch Compliance information to ensure that all required patches were successfully applied.",
+                "Description": f"Amazon EC2 Instance {instanceId} has patches applied by AWS Systems Manager Patch Manager. You should still review Patch Compliance information to ensure that all required patches were successfully applied.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on Patch Manager refer to the AWS Systems Manager Patch Manager section of the AWS Systems Manager User Guide",
@@ -2584,7 +2580,7 @@ def ec2_instance_scanned_by_inspector_check(cache: dict, session, awsAccountId: 
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[EC2.13] Amazon EC2 instances should should be scanned for vulnerabilities by Amazon Inspector V2",
-                "Description": f"EC2 Instance {instanceId} is not being scanned for vulnerabilities by Amazon Inspector V2. Amazon Inspector scans operating system packages and programming language packages installed on your Amazon EC2 instances for vulnerabilities. Amazon Inspector also scans your EC2 instances for network reachability issues. To perform an EC2 scan Amazon Inspector extracts software package metadata from your EC2 instances. Then, Amazon Inspector compares this metadata against rules collected from security advisories to produce findings. Amazon Inspector uses AWS Systems Manager (SSM) and the SSM Agent to collect information about the software application inventory of your EC2 instances. This data is then scanned by Amazon Inspector for software vulnerabilities. Amazon Inspector can only scan for software vulnerabilities in operating systems supported by Systems Manager. Additionally, using EC2 Deep Inspection Amazon Inspector can detect package vulnerabilities for application programming language packages in your Linux-based Amazon EC2 instances. Amazon Inspector scans default paths for programming language package libraries. Refer to the remediation instructions if this configuration is not intended.",
+                "Description": f"Amazon EC2 Instance {instanceId} is not being scanned for vulnerabilities by Amazon Inspector V2. Amazon Inspector scans operating system packages and programming language packages installed on your Amazon EC2 instances for vulnerabilities. Amazon Inspector also scans your EC2 instances for network reachability issues. To perform an EC2 scan Amazon Inspector extracts software package metadata from your EC2 instances. Then, Amazon Inspector compares this metadata against rules collected from security advisories to produce findings. Amazon Inspector uses AWS Systems Manager (SSM) and the SSM Agent to collect information about the software application inventory of your EC2 instances. This data is then scanned by Amazon Inspector for software vulnerabilities. Amazon Inspector can only scan for software vulnerabilities in operating systems supported by Systems Manager. Additionally, using EC2 Deep Inspection Amazon Inspector can detect package vulnerabilities for application programming language packages in your Linux-based Amazon EC2 instances. Amazon Inspector scans default paths for programming language package libraries. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on how Inspector V2 works for EC2 instance vulnerability management and how to configure it refer to the Scanning Amazon EC2 instances with Amazon Inspector section of the AWS Systems Manager User Guide",
@@ -2659,7 +2655,7 @@ def ec2_instance_scanned_by_inspector_check(cache: dict, session, awsAccountId: 
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[EC2.13] Amazon EC2 instances should should be scanned for vulnerabilities by Amazon Inspector V2",
-                "Description": f"EC2 Instance {instanceId} is being scanned for vulnerabilities by Amazon Inspector V2.",
+                "Description": f"Amazon EC2 Instance {instanceId} is being scanned for vulnerabilities by Amazon Inspector V2.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on how Inspector V2 works for EC2 instance vulnerability management and how to configure it refer to the Scanning Amazon EC2 instances with Amazon Inspector section of the AWS Systems Manager User Guide",
@@ -2759,7 +2755,7 @@ def ec2_instance_exploitable_vulnerability_check(cache: dict, session, awsAccoun
                 "Severity": {"Label": "CRITICAL"},
                 "Confidence": 99,
                 "Title": "[EC2.14] Amazon EC2 instances with known exploitable vulnerabilities should be immediately remediated",
-                "Description": f"EC2 Instance {instanceId} has at least one active and exploitable vulnerability and should be immediately remediated. The following CVEs are exploitable: {cveSentence}. Amazon Inspector scans operating system packages and programming language packages installed on your Amazon EC2 instances for vulnerabilities. Amazon Inspector also scans your EC2 instances for network reachability issues. To perform an EC2 scan Amazon Inspector extracts software package metadata from your EC2 instances. Then, Amazon Inspector compares this metadata against rules collected from security advisories to produce findings. Amazon Inspector uses AWS Systems Manager (SSM) and the SSM Agent to collect information about the software application inventory of your EC2 instances. This data is then scanned by Amazon Inspector for software vulnerabilities. Amazon Inspector can only scan for software vulnerabilities in operating systems supported by Systems Manager. Additionally, using EC2 Deep Inspection Amazon Inspector can detect package vulnerabilities for application programming language packages in your Linux-based Amazon EC2 instances. Amazon Inspector scans default paths for programming language package libraries. ElectricEye uses the Amazon Inspector Vulnerability Intelligence Database and the CISA KEV catalog to determine if a CVE is exploitable. Exploitable vulnerabilities that are public have a higher chance of being actively targeted by adversaries and can cause irreperable harm to your organization. These vulnerabilities should be remediated or otherwise countered as soon as possible. Refer to the remediation instructions if this configuration is not intended.",
+                "Description": f"Amazon EC2 Instance {instanceId} has at least one active and exploitable vulnerability and should be immediately remediated. The following CVEs are exploitable: {cveSentence}. Amazon Inspector scans operating system packages and programming language packages installed on your Amazon EC2 instances for vulnerabilities. Amazon Inspector also scans your EC2 instances for network reachability issues. To perform an EC2 scan Amazon Inspector extracts software package metadata from your EC2 instances. Then, Amazon Inspector compares this metadata against rules collected from security advisories to produce findings. Amazon Inspector uses AWS Systems Manager (SSM) and the SSM Agent to collect information about the software application inventory of your EC2 instances. This data is then scanned by Amazon Inspector for software vulnerabilities. Amazon Inspector can only scan for software vulnerabilities in operating systems supported by Systems Manager. Additionally, using EC2 Deep Inspection Amazon Inspector can detect package vulnerabilities for application programming language packages in your Linux-based Amazon EC2 instances. Amazon Inspector scans default paths for programming language package libraries. ElectricEye uses the Amazon Inspector Vulnerability Intelligence Database and the CISA KEV catalog to determine if a CVE is exploitable. Exploitable vulnerabilities that are public have a higher chance of being actively targeted by adversaries and can cause irreperable harm to your organization. These vulnerabilities should be remediated or otherwise countered as soon as possible. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on how Inspector V2 works for EC2 instance vulnerability management and how to configure it refer to the Scanning Amazon EC2 instances with Amazon Inspector section of the AWS Systems Manager User Guide",
@@ -2838,7 +2834,7 @@ def ec2_instance_exploitable_vulnerability_check(cache: dict, session, awsAccoun
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[EC2.14] Amazon EC2 instances with known exploitable vulnerabilities should be immediately remediated",
-                "Description": f"EC2 Instance {instanceId} does not have any exploitable vulnerabilities. This can be because Amazon Inspector V2 is not enabled, is not enabled to scan EC2 instances, or because this particular instance is not being scanned due to exigent circumstances or just because someone on your vulnerability management team messed up. They done goofed, yo! Anyway...if your instance does have vulnerabilities without public exploits does not mean your should not triage and treat them for remediation or other mitigating controls. Use multiple additional sources of intelligence such as ExploitDB, deceptive technologies, Packet Storm, as well as EPSS to help drive your remediation prioritization efforts.",
+                "Description": f"Amazon EC2 Instance {instanceId} does not have any exploitable vulnerabilities. This can be because Amazon Inspector V2 is not enabled, is not enabled to scan EC2 instances, or because this particular instance is not being scanned due to exigent circumstances or just because someone on your vulnerability management team messed up. They done goofed, yo! Anyway...if your instance does have vulnerabilities without public exploits does not mean your should not triage and treat them for remediation or other mitigating controls. Use multiple additional sources of intelligence such as ExploitDB, deceptive technologies, Packet Storm, as well as EPSS to help drive your remediation prioritization efforts.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on how Inspector V2 works for EC2 instance vulnerability management and how to configure it refer to the Scanning Amazon EC2 instances with Amazon Inspector section of the AWS Systems Manager User Guide",
@@ -3336,7 +3332,7 @@ def aws_elastic_ip_shodan_check(cache: dict, session, awsAccountId: str, awsRegi
             yield finding
         else:
             assetPayload = {
-                "Instance": i,
+                "Instance": eip,
                 "Shodan": r
             }
             assetJson = json.dumps(assetPayload,default=str).encode("utf-8")

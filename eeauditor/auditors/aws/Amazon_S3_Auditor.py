@@ -366,10 +366,14 @@ def aws_s3_bucket_versioning_check(cache: dict, session, awsAccountId: str, awsR
             if "Status" in ver:
                 if ver["Status"] == "Enabled":
                     bucketVersioned = True
+                else:
+                    bucketVersioned = False
+            else:
+                bucketVersioned = False
         except ClientError or KeyError:
             bucketVersioned = False
         
-        if bucketVersioned is not True:
+        if bucketVersioned is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": s3Arn + "/s3-bucket-versioning-check",
