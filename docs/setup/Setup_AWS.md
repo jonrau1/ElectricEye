@@ -225,7 +225,7 @@ The ASM Module uses NMAP at its core and will be expanded to include ZAP and Sho
 
 ## AWS Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **612 Checks** across **84 Auditors** that support the secure configuration of **120 services/components**
+These are the following services and checks perform by each Auditor, there are currently **627 Checks** across **84 Auditors** that support the secure configuration of **120 services/components**
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service**: AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
@@ -586,6 +586,21 @@ These are the following services and checks perform by each Auditor, there are c
 | AWS_CloudTrail_Auditor | CloudTrail trail | Is the log bucket publicly accessible |
 | AWS_CloudTrail_Auditor | CloudTrail trail | Does the log bucket enable server access logging |
 | AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail log S3 Read & Write Data Events |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor unauthenticated API calls |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor console logins without MFA |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor IAM Root user usage |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor IAM policy changes |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor CloudTrail config changes |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor console authentication failures |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor disabled/delete AWS KMS CMKs |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor S3 bucket policy changes |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor AWS Config changes |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor EC2 Sec Group changes |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor VPC NACL changes |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor Network Gateway changes |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor route table changes |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor Amazon VPC changes |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor AWS Organizations changes |
 | AWS_CodeArtifact_Auditor | CodeArtifact Repo | Does the CodeArtifact Repo have a least privilege resource policy attached |
 | AWS_CodeArtifact_Auditor | CodeArtifact Domain | Does the CodeArtifact Domain have a least privilege resource policy attached |
 | AWS_CodeBuild_Auditor | CodeBuild project | Is artifact encryption enabled |
@@ -666,10 +681,10 @@ These are the following services and checks perform by each Auditor, there are c
 | AWS_RAM_Auditor | RAM Resource Share | Does the resource allow external principals |
 | AWS_Secrets_Manager_Auditor | Secrets Manager secret | Is the secret over 90 days old |
 | AWS_Secrets_Manager_Auditor | Secrets Manager secret | Is secret auto-rotation enabled |
-| AWS_Security_Hub_Auditor | Security Hub (Account) | Are there active high or critical findings in Security Hub |
-| AWS_Security_Services_Auditor | GuardDuty (Account) | Is GuardDuty enabled |
-| AWS_Security_Services_Auditor | Detective (Account) | Is Detective enabled |
-| AWS_Security_Services_Auditor | Macie2 | Is Macie enabled |
+| AWS_Security_Hub_Auditor | Security Hub hub | Is SecurityHub enabled |
+| AWS_Security_Services_Auditor | GuardDuty detector | Is GuardDuty enabled |
+| AWS_Security_Services_Auditor | Detective graph | Is Detective enabled |
+| AWS_Security_Services_Auditor | Macie2 session | Is Macie enabled |
 | ~~AWS_Security_Services_Auditor~~ | ~~AWS WAFv2 (Regional)~~ | ~~Are Regional Web ACLs configured~~ </br> **THIS FINDING HAS BEEN RETIRED** |
 | ~~AWS_Security_Services_Auditor~~ | ~~AWS WAFv2 (Global)~~ | ~~Are Global Web ACLs (for CloudFront) configured~~ </br> **THIS FINDING HAS BEEN RETIRED** |
 | AWS_Systems_Manager_Auditor | SSM Document | Are self owned SSM Documents publicly shared |

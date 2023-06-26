@@ -130,7 +130,9 @@ Resources:
                 - glue:ListCrawlers
                 - globalaccelerator:DescribeAcceleratorAttributes
                 - globalaccelerator:List*
-                - guardduty:ListDetectors
+                - guardduty:ListD*
+                - guardduty:ListIPSets
+                - guardduty:GetD*
                 - health:DescribeEvents
                 - iam:GetAccessKeyLastUsed
                 - iam:GetAccount*
@@ -197,8 +199,8 @@ Resources:
                 - sagemaker:Describe*
                 - sagemaker:List*
                 - secretsmanager:ListSecrets
-                - securityhub:BatchImportFindings
-                - securityhub:GetFindings
+                - securityhub:BatchIm*
+                - securityhub:DescribeHub
                 - shield:Describ*
                 - shield:ListAttacks
                 - sns:GetTopicAttributes
