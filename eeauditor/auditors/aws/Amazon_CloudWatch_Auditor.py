@@ -42,7 +42,7 @@ def get_cloudwatch_log_groups(cache, session):
     cache["get_cloudwatch_log_groups"] = logGroups
     return cache["get_cloudwatch_log_groups"]
 
-@registry.register_check("kms")
+@registry.register_check("logs")
 def aws_cloudwatch_logs_group_kms_cmk_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudWatch.1] Amazon CloudWatch Logs groups should be encrypted by an AWS Key Management Service (KMS) Customer-Managed Key (CMK)"""
     # ISO Time
@@ -178,7 +178,7 @@ def aws_cloudwatch_logs_group_kms_cmk_encryption_check(cache: dict, session, aws
             }
             yield finding
 
-@registry.register_check("kms")
+@registry.register_check("logs")
 def aws_cloudwatch_logs_group_retention_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudWatch.2] Amazon CloudWatch Logs groups should define a retention period"""
     # ISO Time
@@ -326,7 +326,7 @@ def aws_cloudwatch_logs_group_retention_check(cache: dict, session, awsAccountId
             }
             yield finding
 
-@registry.register_check("kms")
+@registry.register_check("logs")
 def aws_cloudwatch_logs_group_data_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudWatch.3] Amazon CloudWatch Logs groups should be associated with a data protection policy to minimize potential sensitive information captured in logs"""
     # ISO Time
