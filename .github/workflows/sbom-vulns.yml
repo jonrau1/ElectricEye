@@ -34,7 +34,7 @@ jobs:
 
       # Scan the CDX SBOM with Grype
       - name: Grype Scan SBOM
-        uses: anchore/scan-action@v3.3.5
+        uses: anchore/scan-action@v3.3.6
         id: scan
         with:
           output-format: sarif
