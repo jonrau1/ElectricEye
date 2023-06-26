@@ -1540,12 +1540,10 @@ def cloudtrail_cloudwatch_metric_alarm_unauth_api_calls_check(cache: dict, sessi
                 # if there is content, we have match, now to check the alarm
                 if matchedPatterns:
                     filterAlarmPassing = True
-                    metricName = matchedPatterns[0]["metricTransformations"][0]["metricName"]
-                    metricNamespace = matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     # check if the metric & namespace combo have an alarm
                     alarmCheck = cloudwatch.describe_alarms_for_metric(
-                        MetricName=metricName,
-                        Namespace=metricNamespace
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     )["MetricAlarms"]
                     if not alarmCheck:
                         filterAlarmPassing = False
@@ -1776,12 +1774,10 @@ def cloudtrail_cloudwatch_metric_alarm_console_login_no_mfa_check(cache: dict, s
                 # if there is content, we have match, now to check the alarm
                 if matchedPatterns:
                     filterAlarmPassing = True
-                    metricName = matchedPatterns[0]["metricTransformations"][0]["metricName"]
-                    metricNamespace = matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     # check if the metric & namespace combo have an alarm
                     alarmCheck = cloudwatch.describe_alarms_for_metric(
-                        MetricName=metricName,
-                        Namespace=metricNamespace
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     )["MetricAlarms"]
                     if not alarmCheck:
                         filterAlarmPassing = False
@@ -2012,12 +2008,10 @@ def cloudtrail_cloudwatch_metric_alarm_root_user_usage_check(cache: dict, sessio
                 # if there is content, we have match, now to check the alarm
                 if matchedPatterns:
                     filterAlarmPassing = True
-                    metricName = matchedPatterns[0]["metricTransformations"][0]["metricName"]
-                    metricNamespace = matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     # check if the metric & namespace combo have an alarm
                     alarmCheck = cloudwatch.describe_alarms_for_metric(
-                        MetricName=metricName,
-                        Namespace=metricNamespace
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     )["MetricAlarms"]
                     if not alarmCheck:
                         filterAlarmPassing = False
@@ -2248,12 +2242,10 @@ def cloudtrail_cloudwatch_metric_alarm_iam_policy_changes_check(cache: dict, ses
                 # if there is content, we have match, now to check the alarm
                 if matchedPatterns:
                     filterAlarmPassing = True
-                    metricName = matchedPatterns[0]["metricTransformations"][0]["metricName"]
-                    metricNamespace = matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     # check if the metric & namespace combo have an alarm
                     alarmCheck = cloudwatch.describe_alarms_for_metric(
-                        MetricName=metricName,
-                        Namespace=metricNamespace
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     )["MetricAlarms"]
                     if not alarmCheck:
                         filterAlarmPassing = False
@@ -2484,12 +2476,10 @@ def cloudtrail_cloudwatch_metric_alarm_cloudtrail_config_changes_check(cache: di
                 # if there is content, we have match, now to check the alarm
                 if matchedPatterns:
                     filterAlarmPassing = True
-                    metricName = matchedPatterns[0]["metricTransformations"][0]["metricName"]
-                    metricNamespace = matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     # check if the metric & namespace combo have an alarm
                     alarmCheck = cloudwatch.describe_alarms_for_metric(
-                        MetricName=metricName,
-                        Namespace=metricNamespace
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     )["MetricAlarms"]
                     if not alarmCheck:
                         filterAlarmPassing = False
@@ -2720,12 +2710,10 @@ def cloudtrail_cloudwatch_metric_alarm_console_authentication_failures_check(cac
                 # if there is content, we have match, now to check the alarm
                 if matchedPatterns:
                     filterAlarmPassing = True
-                    metricName = matchedPatterns[0]["metricTransformations"][0]["metricName"]
-                    metricNamespace = matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     # check if the metric & namespace combo have an alarm
                     alarmCheck = cloudwatch.describe_alarms_for_metric(
-                        MetricName=metricName,
-                        Namespace=metricNamespace
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     )["MetricAlarms"]
                     if not alarmCheck:
                         filterAlarmPassing = False
@@ -2913,6 +2901,2112 @@ def cloudtrail_cloudwatch_metric_alarm_console_authentication_failures_check(cac
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 4.6"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("cloudtrail")
+def cloudtrail_cloudwatch_metric_alarm_disable_or_delete_aws_kms_cmks_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudTrail.15] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor disabling or scheduled deletion of customer created AWS KMS CMKs"""
+    # CloudWatch Logs & CloudWatch Client
+    logs = session.client("logs")
+    cloudwatch = session.client("cloudwatch")
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for trail in get_all_shadow_trails(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(trail,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        trailArn = trail["TrailARN"]
+        trailName = trail["Name"]
+        # Set the "passing state" of the check, this can be overriden in multiple ways
+        filterAlarmPassing = True
+        # This is a compound check as we need to ensure CloudWatch Logs exist for the Trail, are located in the Account being assessed,
+        # and then that the metrics exist and have an alarm assigned for them
+        if "CloudWatchLogsLogGroupArn" in trail:
+            logGroupArn = trail["CloudWatchLogsLogGroupArn"]
+            logGroupAccount = logGroupArn.split(":")[4]
+            logGroupName = logGroupArn.split(":")[6]
+            if awsAccountId != logGroupAccount:
+                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
+                continue
+            else:
+                # Pull out the filters for the Log Group
+                metricFilters = logs.describe_metric_filters(
+                    logGroupName=logGroupName,
+                )["metricFilters"]
+                # Check if any filter matches the pattern being assessed
+                filterPattern = '{ ($.eventSource = kms.amazonaws.com) && (($.eventName=DisableKey) || ($.eventName=ScheduleKeyDeletion)) }'
+                matchedPatterns = [filters for filters in metricFilters if filterPattern == filters["filterPattern"]]
+                # if there is content, we have match, now to check the alarm
+                if matchedPatterns:
+                    filterAlarmPassing = True
+                    # check if the metric & namespace combo have an alarm
+                    alarmCheck = cloudwatch.describe_alarms_for_metric(
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                    )["MetricAlarms"]
+                    if not alarmCheck:
+                        filterAlarmPassing = False
+                else:
+                    filterAlarmPassing = False
+        else:
+            filterAlarmPassing = False
+
+        # this is a failing check
+        if filterAlarmPassing is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-disable-or-deleton-aws-kms-cmks-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-disable-or-deleton-aws-kms-cmks-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.15] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor disabling or scheduled deletion of customer created AWS KMS CMKs",
+                "Description": f"AWS CloudTrail trail {trailName} does not have a metric and alarm configured to monitor disabling or scheduled deletion of customer created AWS KMS CMKs or it does not have a CloudWatch Logs group associated. Real-time monitoring of API calls can be achieved by directing CloudTrail Logs to CloudWatch Logs and establishing corresponding metric filters and alarms. It is recommended that a metric filter and alarm be established for customer created CMKs which have changed state to disabled or scheduled deletion. Data encrypted with disabled or deleted keys will no longer be accessible. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "Refer to the Remediation section of the AWS CIS Foundations Benchmark corresponding to the metric filter to learn how to build it programmatically. To generally learn how to create Metrics and Alarms refer to the Using Amazon CloudWatch alarms section of the Amazon CloudWatch User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.7"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-disable-or-deleton-aws-kms-cmks-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-disable-or-deleton-aws-kms-cmks-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.15] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor disabling or scheduled deletion of customer created AWS KMS CMKs",
+                "Description": f"AWS CloudTrail trail {trailName} does have a metric and alarm configured to monitor disabling or scheduled deletion of customer created AWS KMS CMKs.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "Refer to the Remediation section of the AWS CIS Foundations Benchmark corresponding to the metric filter to learn how to build it programmatically. To generally learn how to create Metrics and Alarms refer to the Using Amazon CloudWatch alarms section of the Amazon CloudWatch User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.7"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("cloudtrail")
+def cloudtrail_cloudwatch_metric_alarm_s3_bucket_policy_change_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudTrail.16] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor Amazon S3 bucket policy changes"""
+    # CloudWatch Logs & CloudWatch Client
+    logs = session.client("logs")
+    cloudwatch = session.client("cloudwatch")
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for trail in get_all_shadow_trails(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(trail,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        trailArn = trail["TrailARN"]
+        trailName = trail["Name"]
+        # Set the "passing state" of the check, this can be overriden in multiple ways
+        filterAlarmPassing = True
+        # This is a compound check as we need to ensure CloudWatch Logs exist for the Trail, are located in the Account being assessed,
+        # and then that the metrics exist and have an alarm assigned for them
+        if "CloudWatchLogsLogGroupArn" in trail:
+            logGroupArn = trail["CloudWatchLogsLogGroupArn"]
+            logGroupAccount = logGroupArn.split(":")[4]
+            logGroupName = logGroupArn.split(":")[6]
+            if awsAccountId != logGroupAccount:
+                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
+                continue
+            else:
+                # Pull out the filters for the Log Group
+                metricFilters = logs.describe_metric_filters(
+                    logGroupName=logGroupName,
+                )["metricFilters"]
+                # Check if any filter matches the pattern being assessed
+                filterPattern = '{ ($.eventSource = s3.amazonaws.com) && (($.eventName = PutBucketAcl) || ($.eventName = PutBucketPolicy) || ($.eventName = PutBucketCors) || ($.eventName = PutBucketLifecycle) || ($.eventName = PutBucketReplication) || ($.eventName = DeleteBucketPolicy) || ($.eventName = DeleteBucketCors) || ($.eventName = DeleteBucketLifecycle) || ($.eventName = DeleteBucketReplication)) }'
+                matchedPatterns = [filters for filters in metricFilters if filterPattern == filters["filterPattern"]]
+                # if there is content, we have match, now to check the alarm
+                if matchedPatterns:
+                    filterAlarmPassing = True
+                    # check if the metric & namespace combo have an alarm
+                    alarmCheck = cloudwatch.describe_alarms_for_metric(
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                    )["MetricAlarms"]
+                    if not alarmCheck:
+                        filterAlarmPassing = False
+                else:
+                    filterAlarmPassing = False
+        else:
+            filterAlarmPassing = False
+
+        # this is a failing check
+        if filterAlarmPassing is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-s3-bucket-policy-changes-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-s3-bucket-policy-changes-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.16] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor Amazon S3 bucket policy changes",
+                "Description": f"AWS CloudTrail trail {trailName} does not have a metric and alarm configured to monitor Amazon S3 bucket policy changes or it does not have a CloudWatch Logs group associated. Real-time monitoring of API calls can be achieved by directing CloudTrail Logs to CloudWatch Logs and establishing corresponding metric filters and alarms. It is recommended that a metric filter and alarm be established for changes to S3 bucket policies. Monitoring changes to S3 bucket policies may reduce time to detect and correct permissive policies on sensitive S3 buckets. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "Refer to the Remediation section of the AWS CIS Foundations Benchmark corresponding to the metric filter to learn how to build it programmatically. To generally learn how to create Metrics and Alarms refer to the Using Amazon CloudWatch alarms section of the Amazon CloudWatch User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.8"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-s3-bucket-policy-changes-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-s3-bucket-policy-changes-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.16] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor Amazon S3 bucket policy changes",
+                "Description": f"AWS CloudTrail trail {trailName} does have a metric and alarm configured to monitor Amazon S3 bucket policy changes.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "Refer to the Remediation section of the AWS CIS Foundations Benchmark corresponding to the metric filter to learn how to build it programmatically. To generally learn how to create Metrics and Alarms refer to the Using Amazon CloudWatch alarms section of the Amazon CloudWatch User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.8"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("cloudtrail")
+def cloudtrail_cloudwatch_metric_alarm_aws_config_configuration_changes_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudTrail.17] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor AWS Config configuration changes"""
+    # CloudWatch Logs & CloudWatch Client
+    logs = session.client("logs")
+    cloudwatch = session.client("cloudwatch")
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for trail in get_all_shadow_trails(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(trail,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        trailArn = trail["TrailARN"]
+        trailName = trail["Name"]
+        # Set the "passing state" of the check, this can be overriden in multiple ways
+        filterAlarmPassing = True
+        # This is a compound check as we need to ensure CloudWatch Logs exist for the Trail, are located in the Account being assessed,
+        # and then that the metrics exist and have an alarm assigned for them
+        if "CloudWatchLogsLogGroupArn" in trail:
+            logGroupArn = trail["CloudWatchLogsLogGroupArn"]
+            logGroupAccount = logGroupArn.split(":")[4]
+            logGroupName = logGroupArn.split(":")[6]
+            if awsAccountId != logGroupAccount:
+                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
+                continue
+            else:
+                # Pull out the filters for the Log Group
+                metricFilters = logs.describe_metric_filters(
+                    logGroupName=logGroupName,
+                )["metricFilters"]
+                # Check if any filter matches the pattern being assessed
+                filterPattern = '{ ($.eventSource = config.amazonaws.com) && (($.eventName=StopConfigurationRecorder) || ($.eventName=DeleteDeliveryChannel) || ($.eventName=PutDeliveryChannel) || ($.eventName=PutConfigurationRecorder)) }'
+                matchedPatterns = [filters for filters in metricFilters if filterPattern == filters["filterPattern"]]
+                # if there is content, we have match, now to check the alarm
+                if matchedPatterns:
+                    filterAlarmPassing = True
+                    # check if the metric & namespace combo have an alarm
+                    alarmCheck = cloudwatch.describe_alarms_for_metric(
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                    )["MetricAlarms"]
+                    if not alarmCheck:
+                        filterAlarmPassing = False
+                else:
+                    filterAlarmPassing = False
+        else:
+            filterAlarmPassing = False
+
+        # this is a failing check
+        if filterAlarmPassing is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-aws-config-configuration-changes-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-aws-config-configuration-changes-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.17] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor AWS Config configuration changes",
+                "Description": f"AWS CloudTrail trail {trailName} does not have a metric and alarm configured to monitor AWS Config configuration changes or it does not have a CloudWatch Logs group associated. Real-time monitoring of API calls can be achieved by directing CloudTrail Logs to CloudWatch Logs and establishing corresponding metric filters and alarms. It is recommended that a metric filter and alarm be established for detecting changes to CloudTrail's configurations. Monitoring changes to AWS Config configuration will help ensure sustained visibility of configuration items within the AWS account. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "Refer to the Remediation section of the AWS CIS Foundations Benchmark corresponding to the metric filter to learn how to build it programmatically. To generally learn how to create Metrics and Alarms refer to the Using Amazon CloudWatch alarms section of the Amazon CloudWatch User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.9"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-aws-config-configuration-changes-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-aws-config-configuration-changes-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.17] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor AWS Config configuration changes",
+                "Description": f"AWS CloudTrail trail {trailName} does have a metric and alarm configured to monitor AWS Config configuration changes.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "Refer to the Remediation section of the AWS CIS Foundations Benchmark corresponding to the metric filter to learn how to build it programmatically. To generally learn how to create Metrics and Alarms refer to the Using Amazon CloudWatch alarms section of the Amazon CloudWatch User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.9"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("cloudtrail")
+def cloudtrail_cloudwatch_metric_alarm_security_group_changes_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudTrail.18] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor AWS EC2 security group changes"""
+    # CloudWatch Logs & CloudWatch Client
+    logs = session.client("logs")
+    cloudwatch = session.client("cloudwatch")
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for trail in get_all_shadow_trails(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(trail,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        trailArn = trail["TrailARN"]
+        trailName = trail["Name"]
+        # Set the "passing state" of the check, this can be overriden in multiple ways
+        filterAlarmPassing = True
+        # This is a compound check as we need to ensure CloudWatch Logs exist for the Trail, are located in the Account being assessed,
+        # and then that the metrics exist and have an alarm assigned for them
+        if "CloudWatchLogsLogGroupArn" in trail:
+            logGroupArn = trail["CloudWatchLogsLogGroupArn"]
+            logGroupAccount = logGroupArn.split(":")[4]
+            logGroupName = logGroupArn.split(":")[6]
+            if awsAccountId != logGroupAccount:
+                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
+                continue
+            else:
+                # Pull out the filters for the Log Group
+                metricFilters = logs.describe_metric_filters(
+                    logGroupName=logGroupName,
+                )["metricFilters"]
+                # Check if any filter matches the pattern being assessed
+                filterPattern = '{ ($.eventName = AuthorizeSecurityGroupIngress) || ($.eventName = AuthorizeSecurityGroupEgress) || ($.eventName = RevokeSecurityGroupIngress) || ($.eventName = RevokeSecurityGroupEgress) || ($.eventName = CreateSecurityGroup) || ($.eventName = DeleteSecurityGroup) }'
+                matchedPatterns = [filters for filters in metricFilters if filterPattern == filters["filterPattern"]]
+                # if there is content, we have match, now to check the alarm
+                if matchedPatterns:
+                    filterAlarmPassing = True
+                    # check if the metric & namespace combo have an alarm
+                    alarmCheck = cloudwatch.describe_alarms_for_metric(
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                    )["MetricAlarms"]
+                    if not alarmCheck:
+                        filterAlarmPassing = False
+                else:
+                    filterAlarmPassing = False
+        else:
+            filterAlarmPassing = False
+
+        # this is a failing check
+        if filterAlarmPassing is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-security-groups-changes-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-security-groups-changes-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.18] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor AWS EC2 security group changes",
+                "Description": f"AWS CloudTrail trail {trailName} does not have a metric and alarm configured to monitor AWS EC2 security group changes or it does not have a CloudWatch Logs group associated. Real-time monitoring of API calls can be achieved by directing CloudTrail Logs to CloudWatch Logs and establishing corresponding metric filters and alarms. Security Groups are a stateful packet filter that controls ingress and egress traffic within a VPC. It is recommended that a metric filter and alarm be established for detecting changes to Security Groups. Monitoring changes to security group will help ensure that resources and services are not unintentionally exposed. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "Refer to the Remediation section of the AWS CIS Foundations Benchmark corresponding to the metric filter to learn how to build it programmatically. To generally learn how to create Metrics and Alarms refer to the Using Amazon CloudWatch alarms section of the Amazon CloudWatch User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.10"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-security-groups-changes-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-security-groups-changes-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.18] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor AWS EC2 security group changes",
+                "Description": f"AWS CloudTrail trail {trailName} does have a metric and alarm configured to monitor AWS EC2 security group changes.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "Refer to the Remediation section of the AWS CIS Foundations Benchmark corresponding to the metric filter to learn how to build it programmatically. To generally learn how to create Metrics and Alarms refer to the Using Amazon CloudWatch alarms section of the Amazon CloudWatch User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.10"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("cloudtrail")
+def cloudtrail_cloudwatch_metric_alarm_nacl_changes_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudTrail.19] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor Amazon VPC Network Access Control Lists (NACL) changes"""
+    # CloudWatch Logs & CloudWatch Client
+    logs = session.client("logs")
+    cloudwatch = session.client("cloudwatch")
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for trail in get_all_shadow_trails(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(trail,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        trailArn = trail["TrailARN"]
+        trailName = trail["Name"]
+        # Set the "passing state" of the check, this can be overriden in multiple ways
+        filterAlarmPassing = True
+        # This is a compound check as we need to ensure CloudWatch Logs exist for the Trail, are located in the Account being assessed,
+        # and then that the metrics exist and have an alarm assigned for them
+        if "CloudWatchLogsLogGroupArn" in trail:
+            logGroupArn = trail["CloudWatchLogsLogGroupArn"]
+            logGroupAccount = logGroupArn.split(":")[4]
+            logGroupName = logGroupArn.split(":")[6]
+            if awsAccountId != logGroupAccount:
+                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
+                continue
+            else:
+                # Pull out the filters for the Log Group
+                metricFilters = logs.describe_metric_filters(
+                    logGroupName=logGroupName,
+                )["metricFilters"]
+                # Check if any filter matches the pattern being assessed
+                filterPattern = '{ ($.eventName = CreateNetworkAcl) || ($.eventName = CreateNetworkAclEntry) || ($.eventName = DeleteNetworkAcl) || ($.eventName = DeleteNetworkAclEntry) || ($.eventName = ReplaceNetworkAclEntry) || ($.eventName = ReplaceNetworkAclAssociation) }'
+                matchedPatterns = [filters for filters in metricFilters if filterPattern == filters["filterPattern"]]
+                # if there is content, we have match, now to check the alarm
+                if matchedPatterns:
+                    filterAlarmPassing = True
+                    # check if the metric & namespace combo have an alarm
+                    alarmCheck = cloudwatch.describe_alarms_for_metric(
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                    )["MetricAlarms"]
+                    if not alarmCheck:
+                        filterAlarmPassing = False
+                else:
+                    filterAlarmPassing = False
+        else:
+            filterAlarmPassing = False
+
+        # this is a failing check
+        if filterAlarmPassing is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-nacl-changes-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-nacl-changes-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.19] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor Amazon VPC Network Access Control Lists (NACL) changes",
+                "Description": f"AWS CloudTrail trail {trailName} does not have a metric and alarm configured to monitor Amazon VPC Network Access Control Lists (NACL) changes or it does not have a CloudWatch Logs group associated. Real-time monitoring of API calls can be achieved by directing CloudTrail Logs to CloudWatch Logs and establishing corresponding metric filters and alarms. NACLs are used as a stateless packet filter to control ingress and egress traffic for subnets within a VPC. It is recommended that a metric filter and alarm be established for changes made to NACLs. Monitoring changes to NACLs will help ensure that AWS resources and services are not unintentionally exposed. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "Refer to the Remediation section of the AWS CIS Foundations Benchmark corresponding to the metric filter to learn how to build it programmatically. To generally learn how to create Metrics and Alarms refer to the Using Amazon CloudWatch alarms section of the Amazon CloudWatch User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.11"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-nacl-changes-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-nacl-changes-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.19] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor Amazon VPC Network Access Control Lists (NACL) changes",
+                "Description": f"AWS CloudTrail trail {trailName} does have a metric and alarm configured to monitor Amazon VPC Network Access Control Lists (NACL) changes.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "Refer to the Remediation section of the AWS CIS Foundations Benchmark corresponding to the metric filter to learn how to build it programmatically. To generally learn how to create Metrics and Alarms refer to the Using Amazon CloudWatch alarms section of the Amazon CloudWatch User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.11"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("cloudtrail")
+def cloudtrail_cloudwatch_metric_alarm_network_gateway_changes_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudTrail.20] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor network gateway changes"""
+    # CloudWatch Logs & CloudWatch Client
+    logs = session.client("logs")
+    cloudwatch = session.client("cloudwatch")
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for trail in get_all_shadow_trails(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(trail,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        trailArn = trail["TrailARN"]
+        trailName = trail["Name"]
+        # Set the "passing state" of the check, this can be overriden in multiple ways
+        filterAlarmPassing = True
+        # This is a compound check as we need to ensure CloudWatch Logs exist for the Trail, are located in the Account being assessed,
+        # and then that the metrics exist and have an alarm assigned for them
+        if "CloudWatchLogsLogGroupArn" in trail:
+            logGroupArn = trail["CloudWatchLogsLogGroupArn"]
+            logGroupAccount = logGroupArn.split(":")[4]
+            logGroupName = logGroupArn.split(":")[6]
+            if awsAccountId != logGroupAccount:
+                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
+                continue
+            else:
+                # Pull out the filters for the Log Group
+                metricFilters = logs.describe_metric_filters(
+                    logGroupName=logGroupName,
+                )["metricFilters"]
+                # Check if any filter matches the pattern being assessed
+                filterPattern = '{ ($.eventName = CreateCustomerGateway) || ($.eventName = DeleteCustomerGateway) || ($.eventName = AttachInternetGateway) || ($.eventName = CreateInternetGateway) || ($.eventName = DeleteInternetGateway) || ($.eventName = DetachInternetGateway) }'
+                matchedPatterns = [filters for filters in metricFilters if filterPattern == filters["filterPattern"]]
+                # if there is content, we have match, now to check the alarm
+                if matchedPatterns:
+                    filterAlarmPassing = True
+                    # check if the metric & namespace combo have an alarm
+                    alarmCheck = cloudwatch.describe_alarms_for_metric(
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                    )["MetricAlarms"]
+                    if not alarmCheck:
+                        filterAlarmPassing = False
+                else:
+                    filterAlarmPassing = False
+        else:
+            filterAlarmPassing = False
+
+        # this is a failing check
+        if filterAlarmPassing is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-network-gateway-changes-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-network-gateway-changes-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.20] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor network gateway changes",
+                "Description": f"AWS CloudTrail trail {trailName} does not have a metric and alarm configured to monitor network gateway changes or it does not have a CloudWatch Logs group associated. Real-time monitoring of API calls can be achieved by directing CloudTrail Logs to CloudWatch Logs and establishing corresponding metric filters and alarms. Network gateways are required to send/receive traffic to a destination outside of a VPC. It is recommended that a metric filter and alarm be established for changes to network gateways. Monitoring changes to network gateways will help ensure that all ingress/egress traffic traverses the VPC border via a controlled path. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "Refer to the Remediation section of the AWS CIS Foundations Benchmark corresponding to the metric filter to learn how to build it programmatically. To generally learn how to create Metrics and Alarms refer to the Using Amazon CloudWatch alarms section of the Amazon CloudWatch User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.12"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-network-gateway-changes-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-network-gateway-changes-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.20] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor network gateway changes",
+                "Description": f"AWS CloudTrail trail {trailName} does have a metric and alarm configured to monitor network gateway changes.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "Refer to the Remediation section of the AWS CIS Foundations Benchmark corresponding to the metric filter to learn how to build it programmatically. To generally learn how to create Metrics and Alarms refer to the Using Amazon CloudWatch alarms section of the Amazon CloudWatch User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.12"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("cloudtrail")
+def cloudtrail_cloudwatch_metric_alarm_vpc_route_table_changes_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudTrail.21] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor Amazon VPC route table changes"""
+    # CloudWatch Logs & CloudWatch Client
+    logs = session.client("logs")
+    cloudwatch = session.client("cloudwatch")
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for trail in get_all_shadow_trails(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(trail,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        trailArn = trail["TrailARN"]
+        trailName = trail["Name"]
+        # Set the "passing state" of the check, this can be overriden in multiple ways
+        filterAlarmPassing = True
+        # This is a compound check as we need to ensure CloudWatch Logs exist for the Trail, are located in the Account being assessed,
+        # and then that the metrics exist and have an alarm assigned for them
+        if "CloudWatchLogsLogGroupArn" in trail:
+            logGroupArn = trail["CloudWatchLogsLogGroupArn"]
+            logGroupAccount = logGroupArn.split(":")[4]
+            logGroupName = logGroupArn.split(":")[6]
+            if awsAccountId != logGroupAccount:
+                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
+                continue
+            else:
+                # Pull out the filters for the Log Group
+                metricFilters = logs.describe_metric_filters(
+                    logGroupName=logGroupName,
+                )["metricFilters"]
+                # Check if any filter matches the pattern being assessed
+                filterPattern = '{ ($.eventName = CreateRoute) || ($.eventName = CreateRouteTable) || ($.eventName = ReplaceRoute) || ($.eventName = ReplaceRouteTableAssociation) || ($.eventName = DeleteRouteTable) || ($.eventName = DeleteRoute) || ($.eventName = DisassociateRouteTable) }'
+                matchedPatterns = [filters for filters in metricFilters if filterPattern == filters["filterPattern"]]
+                # if there is content, we have match, now to check the alarm
+                if matchedPatterns:
+                    filterAlarmPassing = True
+                    # check if the metric & namespace combo have an alarm
+                    alarmCheck = cloudwatch.describe_alarms_for_metric(
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                    )["MetricAlarms"]
+                    if not alarmCheck:
+                        filterAlarmPassing = False
+                else:
+                    filterAlarmPassing = False
+        else:
+            filterAlarmPassing = False
+
+        # this is a failing check
+        if filterAlarmPassing is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-route-table-changes-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-route-table-changes-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.21] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor Amazon VPC route table changes",
+                "Description": f"AWS CloudTrail trail {trailName} does not have a metric and alarm configured to monitor Amazon VPC route table changes or it does not have a CloudWatch Logs group associated. Real-time monitoring of API calls can be achieved by directing CloudTrail Logs to CloudWatch Logs and establishing corresponding metric filters and alarms. Routing tables are used to route network traffic between subnets and to network gateways. It is recommended that a metric filter and alarm be established for changes to route tables. Monitoring changes to route tables will help ensure that all VPC traffic flows through an expected path. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "Refer to the Remediation section of the AWS CIS Foundations Benchmark corresponding to the metric filter to learn how to build it programmatically. To generally learn how to create Metrics and Alarms refer to the Using Amazon CloudWatch alarms section of the Amazon CloudWatch User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.13"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-route-table-changes-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-route-table-changes-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.21] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor Amazon VPC route table changes",
+                "Description": f"AWS CloudTrail trail {trailName} does have a metric and alarm configured to monitor Amazon VPC route table changes.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "Refer to the Remediation section of the AWS CIS Foundations Benchmark corresponding to the metric filter to learn how to build it programmatically. To generally learn how to create Metrics and Alarms refer to the Using Amazon CloudWatch alarms section of the Amazon CloudWatch User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.13"
+                    ]
+                },
+                "Workflow": {"Status": "PASSED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("cloudtrail")
+def cloudtrail_cloudwatch_metric_alarm_vpc_changes_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudTrail.22] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor Amazon VPC changes"""
+    # CloudWatch Logs & CloudWatch Client
+    logs = session.client("logs")
+    cloudwatch = session.client("cloudwatch")
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for trail in get_all_shadow_trails(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(trail,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        trailArn = trail["TrailARN"]
+        trailName = trail["Name"]
+        # Set the "passing state" of the check, this can be overriden in multiple ways
+        filterAlarmPassing = True
+        # This is a compound check as we need to ensure CloudWatch Logs exist for the Trail, are located in the Account being assessed,
+        # and then that the metrics exist and have an alarm assigned for them
+        if "CloudWatchLogsLogGroupArn" in trail:
+            logGroupArn = trail["CloudWatchLogsLogGroupArn"]
+            logGroupAccount = logGroupArn.split(":")[4]
+            logGroupName = logGroupArn.split(":")[6]
+            if awsAccountId != logGroupAccount:
+                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
+                continue
+            else:
+                # Pull out the filters for the Log Group
+                metricFilters = logs.describe_metric_filters(
+                    logGroupName=logGroupName,
+                )["metricFilters"]
+                # Check if any filter matches the pattern being assessed
+                filterPattern = '{ ($.eventName = CreateVpc) || ($.eventName = DeleteVpc) || ($.eventName = ModifyVpcAttribute) || ($.eventName = AcceptVpcPeeringConnection) || ($.eventName = CreateVpcPeeringConnection) || ($.eventName = DeleteVpcPeeringConnection) || ($.eventName = RejectVpcPeeringConnection) || ($.eventName = AttachClassicLinkVpc) || ($.eventName = DetachClassicLinkVpc) || ($.eventName = DisableVpcClassicLink) || ($.eventName = EnableVpcClassicLink) }'
+                matchedPatterns = [filters for filters in metricFilters if filterPattern == filters["filterPattern"]]
+                # if there is content, we have match, now to check the alarm
+                if matchedPatterns:
+                    filterAlarmPassing = True
+                    # check if the metric & namespace combo have an alarm
+                    alarmCheck = cloudwatch.describe_alarms_for_metric(
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                    )["MetricAlarms"]
+                    if not alarmCheck:
+                        filterAlarmPassing = False
+                else:
+                    filterAlarmPassing = False
+        else:
+            filterAlarmPassing = False
+
+        # this is a failing check
+        if filterAlarmPassing is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-vpc-changes-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-vpc-changes-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.22] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor Amazon VPC changes",
+                "Description": f"AWS CloudTrail trail {trailName} does not have a metric and alarm configured to monitor Amazon VPC changes or it does not have a CloudWatch Logs group associated. Real-time monitoring of API calls can be achieved by directing CloudTrail Logs to CloudWatch Logs and establishing corresponding metric filters and alarms. It is possible to have more than 1 VPC within an account, in addition it is also possible to create a peer connection between 2 VPCs enabling network traffic to route between VPCs. It is recommended that a metric filter and alarm be established for changes made to VPCs. Monitoring changes to VPC will help ensure VPC traffic flow is not getting impacted. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "Refer to the Remediation section of the AWS CIS Foundations Benchmark corresponding to the metric filter to learn how to build it programmatically. To generally learn how to create Metrics and Alarms refer to the Using Amazon CloudWatch alarms section of the Amazon CloudWatch User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.14"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-vpc-changes-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-vpc-changes-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.22] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor Amazon VPC changes",
+                "Description": f"AWS CloudTrail trail {trailName} does have a metric and alarm configured to monitor Amazon VPC changes.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "Refer to the Remediation section of the AWS CIS Foundations Benchmark corresponding to the metric filter to learn how to build it programmatically. To generally learn how to create Metrics and Alarms refer to the Using Amazon CloudWatch alarms section of the Amazon CloudWatch User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.14"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("cloudtrail")
+def cloudtrail_cloudwatch_metric_alarm_aws_organizations_changes_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudTrail.23] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor AWS Organizations changes"""
+    # CloudWatch Logs & CloudWatch Client
+    logs = session.client("logs")
+    cloudwatch = session.client("cloudwatch")
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for trail in get_all_shadow_trails(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(trail,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        trailArn = trail["TrailARN"]
+        trailName = trail["Name"]
+        # Set the "passing state" of the check, this can be overriden in multiple ways
+        filterAlarmPassing = True
+        # This is a compound check as we need to ensure CloudWatch Logs exist for the Trail, are located in the Account being assessed,
+        # and then that the metrics exist and have an alarm assigned for them
+        if "CloudWatchLogsLogGroupArn" in trail:
+            logGroupArn = trail["CloudWatchLogsLogGroupArn"]
+            logGroupAccount = logGroupArn.split(":")[4]
+            logGroupName = logGroupArn.split(":")[6]
+            if awsAccountId != logGroupAccount:
+                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
+                continue
+            else:
+                # Pull out the filters for the Log Group
+                metricFilters = logs.describe_metric_filters(
+                    logGroupName=logGroupName,
+                )["metricFilters"]
+                # Check if any filter matches the pattern being assessed
+                filterPattern = '{ ($.eventSource = organizations.amazonaws.com) && (($.eventName = "AcceptHandshake") || ($.eventName = "AttachPolicy") || ($.eventName = "CreateAccount") || ($.eventName = "CreateOrganizationalUnit") || ($.eventName = "CreatePolicy") || ($.eventName = "DeclineHandshake") || ($.eventName = "DeleteOrganization") || ($.eventName = "DeleteOrganizationalUnit") || ($.eventName = "DeletePolicy") || ($.eventName = "DetachPolicy") || ($.eventName = "DisablePolicyType") || ($.eventName = "EnablePolicyType") || ($.eventName = "InviteAccountToOrganization") || ($.eventName = "LeaveOrganization") || ($.eventName = "MoveAccount") || ($.eventName = "RemoveAccountFromOrganization") || ($.eventName = "UpdatePolicy") || ($.eventName = "UpdateOrganizationalUnit")) }'
+                matchedPatterns = [filters for filters in metricFilters if filterPattern == filters["filterPattern"]]
+                # if there is content, we have match, now to check the alarm
+                if matchedPatterns:
+                    filterAlarmPassing = True
+                    # check if the metric & namespace combo have an alarm
+                    alarmCheck = cloudwatch.describe_alarms_for_metric(
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
+                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                    )["MetricAlarms"]
+                    if not alarmCheck:
+                        filterAlarmPassing = False
+                else:
+                    filterAlarmPassing = False
+        else:
+            filterAlarmPassing = False
+
+        # this is a failing check
+        if filterAlarmPassing is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-aws-organizations-changes-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-aws-organizations-changes-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.23] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor AWS Organizations changes",
+                "Description": f"AWS CloudTrail trail {trailName} does not have a metric and alarm configured to monitor AWS Organizations changes or it does not have a CloudWatch Logs group associated. Real-time monitoring of API calls can be achieved by directing CloudTrail Logs to CloudWatch Logs and establishing corresponding metric filters and alarms. It is recommended that a metric filter and alarm be established for AWS Organizations changes made in the master AWS Account. Monitoring AWS Organizations changes can help you prevent any unwanted, accidental or intentional modifications that may lead to unauthorized access or other security breaches. This monitoring technique helps you to ensure that any unexpected changes performed within your AWS Organizations can be investigated and any unwanted changes can be rolled back. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "Refer to the Remediation section of the AWS CIS Foundations Benchmark corresponding to the metric filter to learn how to build it programmatically. To generally learn how to create Metrics and Alarms refer to the Using Amazon CloudWatch alarms section of the Amazon CloudWatch User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.15"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-aws-organizations-changes-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{trailArn}/cloudtrail-cloudwatch-metric-alarm-aws-organizations-changes-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[CloudTrail.23] AWS CloudTrail trails should have CloudWatch metrics and alarms configured to monitor AWS Organizations changes",
+                "Description": f"AWS CloudTrail trail {trailName} does have a metric and alarm configured to monitor AWS Organizations changes.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "Refer to the Remediation section of the AWS CIS Foundations Benchmark corresponding to the metric filter to learn how to build it programmatically. To generally learn how to create Metrics and Alarms refer to the Using Amazon CloudWatch alarms section of the Amazon CloudWatch User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudTrail",
+                    "AssetComponent": "Trail"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudTrailTrail",
+                        "Id": trailArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.15"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
