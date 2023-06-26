@@ -1543,7 +1543,7 @@ def cloudtrail_cloudwatch_metric_alarm_unauth_api_calls_check(cache: dict, sessi
                     # check if the metric & namespace combo have an alarm
                     alarmCheck = cloudwatch.describe_alarms_for_metric(
                         MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
-                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                        MetricNamespace=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     )["MetricAlarms"]
                     if not alarmCheck:
                         filterAlarmPassing = False
@@ -1777,7 +1777,7 @@ def cloudtrail_cloudwatch_metric_alarm_console_login_no_mfa_check(cache: dict, s
                     # check if the metric & namespace combo have an alarm
                     alarmCheck = cloudwatch.describe_alarms_for_metric(
                         MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
-                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                        MetricNamespace=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     )["MetricAlarms"]
                     if not alarmCheck:
                         filterAlarmPassing = False
@@ -2011,7 +2011,7 @@ def cloudtrail_cloudwatch_metric_alarm_root_user_usage_check(cache: dict, sessio
                     # check if the metric & namespace combo have an alarm
                     alarmCheck = cloudwatch.describe_alarms_for_metric(
                         MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
-                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                        MetricNamespace=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     )["MetricAlarms"]
                     if not alarmCheck:
                         filterAlarmPassing = False
@@ -2245,7 +2245,7 @@ def cloudtrail_cloudwatch_metric_alarm_iam_policy_changes_check(cache: dict, ses
                     # check if the metric & namespace combo have an alarm
                     alarmCheck = cloudwatch.describe_alarms_for_metric(
                         MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
-                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                        MetricNamespace=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     )["MetricAlarms"]
                     if not alarmCheck:
                         filterAlarmPassing = False
@@ -2479,7 +2479,7 @@ def cloudtrail_cloudwatch_metric_alarm_cloudtrail_config_changes_check(cache: di
                     # check if the metric & namespace combo have an alarm
                     alarmCheck = cloudwatch.describe_alarms_for_metric(
                         MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
-                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                        MetricNamespace=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     )["MetricAlarms"]
                     if not alarmCheck:
                         filterAlarmPassing = False
@@ -2713,7 +2713,7 @@ def cloudtrail_cloudwatch_metric_alarm_console_authentication_failures_check(cac
                     # check if the metric & namespace combo have an alarm
                     alarmCheck = cloudwatch.describe_alarms_for_metric(
                         MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
-                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                        MetricNamespace=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     )["MetricAlarms"]
                     if not alarmCheck:
                         filterAlarmPassing = False
@@ -2947,7 +2947,7 @@ def cloudtrail_cloudwatch_metric_alarm_disable_or_delete_aws_kms_cmks_check(cach
                     # check if the metric & namespace combo have an alarm
                     alarmCheck = cloudwatch.describe_alarms_for_metric(
                         MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
-                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                        MetricNamespace=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     )["MetricAlarms"]
                     if not alarmCheck:
                         filterAlarmPassing = False
@@ -3181,7 +3181,7 @@ def cloudtrail_cloudwatch_metric_alarm_s3_bucket_policy_change_check(cache: dict
                     # check if the metric & namespace combo have an alarm
                     alarmCheck = cloudwatch.describe_alarms_for_metric(
                         MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
-                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                        MetricNamespace=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     )["MetricAlarms"]
                     if not alarmCheck:
                         filterAlarmPassing = False
@@ -3415,7 +3415,7 @@ def cloudtrail_cloudwatch_metric_alarm_aws_config_configuration_changes_check(ca
                     # check if the metric & namespace combo have an alarm
                     alarmCheck = cloudwatch.describe_alarms_for_metric(
                         MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
-                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                        MetricNamespace=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     )["MetricAlarms"]
                     if not alarmCheck:
                         filterAlarmPassing = False
@@ -3649,7 +3649,7 @@ def cloudtrail_cloudwatch_metric_alarm_security_group_changes_check(cache: dict,
                     # check if the metric & namespace combo have an alarm
                     alarmCheck = cloudwatch.describe_alarms_for_metric(
                         MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
-                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                        MetricNamespace=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     )["MetricAlarms"]
                     if not alarmCheck:
                         filterAlarmPassing = False
@@ -3883,7 +3883,7 @@ def cloudtrail_cloudwatch_metric_alarm_nacl_changes_check(cache: dict, session, 
                     # check if the metric & namespace combo have an alarm
                     alarmCheck = cloudwatch.describe_alarms_for_metric(
                         MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
-                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                        MetricNamespace=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     )["MetricAlarms"]
                     if not alarmCheck:
                         filterAlarmPassing = False
@@ -4117,7 +4117,7 @@ def cloudtrail_cloudwatch_metric_alarm_network_gateway_changes_check(cache: dict
                     # check if the metric & namespace combo have an alarm
                     alarmCheck = cloudwatch.describe_alarms_for_metric(
                         MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
-                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                        MetricNamespace=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     )["MetricAlarms"]
                     if not alarmCheck:
                         filterAlarmPassing = False
@@ -4351,7 +4351,7 @@ def cloudtrail_cloudwatch_metric_alarm_vpc_route_table_changes_check(cache: dict
                     # check if the metric & namespace combo have an alarm
                     alarmCheck = cloudwatch.describe_alarms_for_metric(
                         MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
-                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                        MetricNamespace=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     )["MetricAlarms"]
                     if not alarmCheck:
                         filterAlarmPassing = False
@@ -4585,7 +4585,7 @@ def cloudtrail_cloudwatch_metric_alarm_vpc_changes_check(cache: dict, session, a
                     # check if the metric & namespace combo have an alarm
                     alarmCheck = cloudwatch.describe_alarms_for_metric(
                         MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
-                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                        MetricNamespace=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     )["MetricAlarms"]
                     if not alarmCheck:
                         filterAlarmPassing = False
@@ -4819,7 +4819,7 @@ def cloudtrail_cloudwatch_metric_alarm_aws_organizations_changes_check(cache: di
                     # check if the metric & namespace combo have an alarm
                     alarmCheck = cloudwatch.describe_alarms_for_metric(
                         MetricName=matchedPatterns[0]["metricTransformations"][0]["metricName"],
-                        MetricName=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
+                        MetricNamespace=matchedPatterns[0]["metricTransformations"][0]["metricNamespace"]
                     )["MetricAlarms"]
                     if not alarmCheck:
                         filterAlarmPassing = False
