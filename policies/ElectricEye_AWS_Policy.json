@@ -39,6 +39,7 @@
                 "cloudtrail:LookupEvents",
                 "cloudwatch:DescribeAlarms",
                 "cloudwatch:GetMetricData",
+                "cloudwatch:DescribeAlarmsForMetric",
                 "codeartifact:GetDomainPermissionsPolicy",
                 "codeartifact:GetRepositoryPermissionsPolicy",
                 "codeartifact:ListDomains",
