@@ -113,8 +113,8 @@ def check_vpc_endpoint_policy_support(cache, session):
     return cache["check_vpc_endpoint_policy_support"]
 
 @registry.register_check("ec2")
-def aws_vpc_default_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[VPC.1] Consider deleting the Default VPC if unused"""
+def aws_vpc_is_default_vpc_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[VPC.1] Amazon Virtual Private Clouds (VPCs) that are the Default VPC and are unused should be deleted"""
     for vpcs in describe_vpcs(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(vpcs,default=str).encode("utf-8")
@@ -125,9 +125,9 @@ def aws_vpc_default_check(cache: dict, session, awsAccountId: str, awsRegion: st
         if vpcs["IsDefault"] is True:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": vpcArn + "/vpc-is-default-check",
+                "Id": f"{vpcArn}/aws-vpc-is-default-vpc-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": vpcArn,
+                "GeneratorId": f"{vpcArn}/aws-vpc-is-default-vpc-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
@@ -135,10 +135,8 @@ def aws_vpc_default_check(cache: dict, session, awsAccountId: str, awsRegion: st
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[VPC.1] Consider deleting the Default VPC if unused",
-                "Description": "VPC "
-                + vpcId
-                + " has been identified as the Default VPC, consider deleting this VPC if it is not necessary for daily operations. The Default VPC in AWS Regions not typically used can serve as a persistence area for malicious actors, additionally, many services will automatically use this VPC which can lead to a degraded security posture. Refer to the remediation instructions if this configuration is not intended.",
+                "Title": "[VPC.1] Amazon Virtual Private Clouds (VPCs) that are the Default VPC and are unused should be deleted",
+                "Description": f"Amazon VPC {vpcId} has been identified as the Default VPC, consider deleting this VPC if it is not necessary for daily operations. The Default VPC in AWS Regions not typically used can serve as a persistence area for malicious actors, additionally, many services will automatically use this VPC which can lead to a degraded security posture. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on the default VPC refer to the Deleting Your Default Subnets and Default VPC section of the Amazon Virtual Private Cloud User Guide",
@@ -189,9 +187,9 @@ def aws_vpc_default_check(cache: dict, session, awsAccountId: str, awsRegion: st
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": vpcArn + "/vpc-is-default-check",
+                "Id": f"{vpcArn}/aws-vpc-is-default-vpc-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": vpcArn,
+                "GeneratorId": f"{vpcArn}/aws-vpc-is-default-vpc-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
@@ -199,8 +197,8 @@ def aws_vpc_default_check(cache: dict, session, awsAccountId: str, awsRegion: st
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[VPC.1] Consider deleting the Default VPC if unused",
-                "Description": "VPC " + vpcId + " is not the Default VPC",
+                "Title": "[VPC.1] Amazon Virtual Private Clouds (VPCs) that are the Default VPC and are unused should be deleted",
+                "Description": f"Amazon VPC {vpcId} is not the Default VPC.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on the default VPC refer to the Deleting Your Default Subnets and Default VPC section of the Amazon Virtual Private Cloud User Guide",
@@ -253,22 +251,21 @@ def aws_vpc_default_check(cache: dict, session, awsAccountId: str, awsRegion: st
 def aws_vpc_flow_logs_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[VPC.2] Amazon Virtual Private Cloud (VPC) flow logs should be enabled for all Amazon Virtual Private Cloud (VPC)s"""
     ec2 = session.client("ec2")
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for vpcs in describe_vpcs(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(vpcs,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         vpcId = vpcs["VpcId"]
         vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
-        response = ec2.describe_flow_logs(
-            DryRun=False, Filters=[{"Name": "resource-id", "Values": [vpcId]}]
-        )
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        if not response["FlowLogs"]:
+        # this is a failing check
+        if not ec2.describe_flow_logs(Filters=[{"Name": "resource-id", "Values": [vpcId]}])["FlowLogs"]:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": vpcArn + "/vpc-flow-log-check",
+                "Id": f"{vpcArn}/vpc-flow-log-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": vpcArn,
+                "GeneratorId": f"{vpcArn}/vpc-flow-log-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
@@ -277,9 +274,7 @@ def aws_vpc_flow_logs_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[VPC.2] Amazon Virtual Private Cloud (VPC) flow logs should be enabled for all Amazon Virtual Private Cloud (VPC)s",
-                "Description": "VPC "
-                + vpcId
-                + " does not have flow logging enabled. Refer to the remediation instructions if this configuration is not intended.",
+                "Description": f"Amazon Virtual Private Cloud (VPC) {vpcId} does not have flow logging enabled. VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. Flow log data can be published to the following locations: Amazon CloudWatch Logs, Amazon S3, or Amazon Kinesis Data Firehose. After you create a flow log, you can retrieve and view the flow log records in the log group, bucket, or delivery stream that you configured. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on flow logs refer to the VPC Flow Logs section of the Amazon Virtual Private Cloud User Guide",
@@ -303,7 +298,7 @@ def aws_vpc_flow_logs_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "Id": vpcArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"VpcId": vpcId}},
+                        "Details": {"Other": {"VpcId": vpcId}}
                     }
                 ],
                 "Compliance": {
@@ -355,15 +350,15 @@ def aws_vpc_flow_logs_check(cache: dict, session, awsAccountId: str, awsRegion: 
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": vpcArn + "/vpc-flow-log-check",
+                "Id": f"{vpcArn}/vpc-flow-log-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": vpcArn,
+                "GeneratorId": f"{vpcArn}/vpc-flow-log-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
@@ -372,7 +367,7 @@ def aws_vpc_flow_logs_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[VPC.2] Amazon Virtual Private Cloud (VPC) flow logs should be enabled for all Amazon Virtual Private Cloud (VPC)s",
-                "Description": "VPC " + vpcId + " has flow logging enabled.",
+                "Description": f"Amazon Virtual Private Cloud (VPC) {vpcId} does have flow logging enabled.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on flow logs refer to the VPC Flow Logs section of the Amazon Virtual Private Cloud User Guide",
@@ -396,7 +391,7 @@ def aws_vpc_flow_logs_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "Id": vpcArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"VpcId": vpcId}},
+                        "Details": {"Other": {"VpcId": vpcId}}
                     }
                 ],
                 "Compliance": {
@@ -448,7 +443,7 @@ def aws_vpc_flow_logs_check(cache: dict, session, awsAccountId: str, awsRegion: 
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
 
@@ -469,13 +464,13 @@ def aws_subnet_public_ip_check(cache: dict, session, awsAccountId: str, awsRegio
             assetB64 = base64.b64encode(assetJson)
             snetArn = snet["SubnetArn"]
             snetId = snet["SubnetId"]
-            if snet["MapPublicIpOnLaunch"] == True:
+            if snet["MapPublicIpOnLaunch"] is True:
                 # This is a failing check
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": snetArn + "/subnet-map-public-ip-check",
+                    "Id": f"{snetArn}/subnet-map-public-ip-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": snetArn,
+                    "GeneratorId": f"{snetArn}/subnet-map-public-ip-check",
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
@@ -484,9 +479,7 @@ def aws_subnet_public_ip_check(cache: dict, session, awsAccountId: str, awsRegio
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
                     "Title": "[VPC.3] Amazon Virtual Private Cloud (VPC) subnets should not automatically map Public IP addresses on launch",
-                    "Description": "Subnet "
-                    + snetId
-                    + " maps Public IPs on Launch, consider disabling this to avoid unncessarily exposing workloads to the internet. Refer to the remediation instructions if this configuration is not intended.",
+                    "Description": f"Amazon Virtual Private Cloud (VPC) subnet {snetId} maps Public IPs on Launch, consider disabling this to avoid unncessarily exposing workloads to the internet. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For information on IP addressing refer to the IP Addressing in your VPC section of the Amazon Virtual Private Cloud User Guide",
@@ -530,7 +523,7 @@ def aws_subnet_public_ip_check(cache: dict, session, awsAccountId: str, awsRegio
                             "ISO 27001:2013 A.13.1.3",
                             "ISO 27001:2013 A.13.2.1",
                             "ISO 27001:2013 A.14.1.2",
-                            "ISO 27001:2013 A.14.1.3",
+                            "ISO 27001:2013 A.14.1.3"
                         ]
                     },
                     "Workflow": {"Status": "NEW"},
@@ -540,9 +533,9 @@ def aws_subnet_public_ip_check(cache: dict, session, awsAccountId: str, awsRegio
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": snetArn + "/subnet-map-public-ip-check",
+                    "Id": f"{snetArn}/subnet-map-public-ip-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": snetArn,
+                    "GeneratorId": f"{snetArn}/subnet-map-public-ip-check",
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
@@ -551,9 +544,7 @@ def aws_subnet_public_ip_check(cache: dict, session, awsAccountId: str, awsRegio
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
                     "Title": "[VPC.3] Amazon Virtual Private Cloud (VPC) subnets should not automatically map Public IP addresses on launch",
-                    "Description": "Subnet "
-                    + snetId
-                    + " does not map Public IPs on Launch.",
+                    "Description": f"Amazon Virtual Private Cloud (VPC) subnet {snetId} does not map Public IPs on launch.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For information on IP addressing refer to the IP Addressing in your VPC section of the Amazon Virtual Private Cloud User Guide",
@@ -623,9 +614,9 @@ def aws_subnet_no_ip_space_check(cache: dict, session, awsAccountId: str, awsReg
                 # This is a failing check
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": snetArn + "/subnet-map-no-more-ips-check",
+                    "Id": f"{snetArn}/subnet-no-remaining-ip-space-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": snetArn,
+                    "GeneratorId": f"{snetArn}/subnet-no-remaining-ip-space-check",
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
@@ -634,9 +625,7 @@ def aws_subnet_no_ip_space_check(cache: dict, session, awsAccountId: str, awsReg
                     "Severity": {"Label": "MEDIUM"},
                     "Confidence": 99,
                     "Title": "[VPC.4] Amazon Virtual Private Cloud (VPC) subnets should be monitored for available IP address space",
-                    "Description": "Subnet "
-                    + snetId
-                    + " does not have any available IP address space, consider terminating unncessary workloads or expanding CIDR capacity to avoid availability losses. Refer to the remediation instructions if this configuration is not intended.",
+                    "Description": f"Amazon Virtual Private Cloud (VPC) subnet {snetId} does not have any available IP address space, consider terminating unncessary workloads, adding a Secondary CIDR to the parent VPC, or expanding CIDR capacity to avoid availability losses. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For information on IP addressing refer to the IP Addressing in your VPC section of the Amazon Virtual Private Cloud User Guide",
@@ -701,9 +690,9 @@ def aws_subnet_no_ip_space_check(cache: dict, session, awsAccountId: str, awsReg
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": snetArn + "/subnet-map-no-more-ips-check",
+                    "Id": f"{snetArn}/subnet-no-remaining-ip-space-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": snetArn,
+                    "GeneratorId": f"{snetArn}/subnet-no-remaining-ip-space-check",
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
@@ -712,9 +701,7 @@ def aws_subnet_no_ip_space_check(cache: dict, session, awsAccountId: str, awsReg
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
                     "Title": "[VPC.4] Amazon Virtual Private Cloud (VPC) subnets should be monitored for available IP address space",
-                    "Description": "Subnet "
-                    + snetId
-                    + " has available IP address space, well, at least 2 lol...",
+                    "Description": f"Amazon Virtual Private Cloud (VPC) subnet {snetId} does have available IP address space.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For information on IP addressing refer to the IP Addressing in your VPC section of the Amazon Virtual Private Cloud User Guide",
@@ -1402,7 +1389,7 @@ def aws_network_acl_allow_unrestricted_ssh_access_check(cache: dict, session, aw
                 and (fromPort == protocolPort)
                 and (toPort == protocolPort)
             ):
-                allounrestrictedAccesswsSsh = True
+                unrestrictedAccess = True
                 break
         # this is a failing finding
         if unrestrictedAccess is True:
