@@ -3,7 +3,7 @@
         "ToPort": 20,
         "FromPort": 21,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.2] Security groups should not allow unrestricted File Transfer Protocol (FTP) access",
+        "CheckTitle": "[SecurityGroup.2] AWS EC2 security groups should not allow unrestricted File Transfer Protocol (FTP) access",
         "CheckId": "security-group-ftp-open-check",
         "CheckDescriptor": "File Transfer Protocol (FTP)"
     },
@@ -11,7 +11,7 @@
         "ToPort": 23,
         "FromPort": 23,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.3] Security groups should not allow unrestricted TelNet access",
+        "CheckTitle": "[SecurityGroup.3] AWS EC2 security groups should not allow unrestricted TelNet access",
         "CheckId": "security-group-telnet-open-check",
         "CheckDescriptor": "TelNet"
     },
@@ -19,7 +19,7 @@
         "ToPort": 135,
         "FromPort": 135,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.4] Security groups should not allow unrestricted Windows RPC DCOM access",
+        "CheckTitle": "[SecurityGroup.4] AWS EC2 security groups should not allow unrestricted Windows RPC DCOM access",
         "CheckId": "security-group-rpc-dcom-open-check",
         "CheckDescriptor": "Windows RPC DCOM"
     },
@@ -27,7 +27,7 @@
         "ToPort": 445,
         "FromPort": 445,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.5] Security groups should not allow unrestricted Server Message Blocks (SMB) access",
+        "CheckTitle": "[SecurityGroup.5] AWS EC2 security groups should not allow unrestricted Server Message Blocks (SMB) access",
         "CheckId": "security-group-smb-open-check",
         "CheckDescriptor": "Server Message Blocks (SMB)"
     },
@@ -35,7 +35,7 @@
         "ToPort": 1433,
         "FromPort": 1433,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.6] Security groups should not allow unrestricted Microsoft SQL Server (MSSQL) access",
+        "CheckTitle": "[SecurityGroup.6] AWS EC2 security groups should not allow unrestricted Microsoft SQL Server (MSSQL) access",
         "CheckId": "security-group-mssql-open-check",
         "CheckDescriptor": "Microsoft SQL Server (MSSQL)"
     },
@@ -43,7 +43,7 @@
         "ToPort": 1521,
         "FromPort": 1521,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.7] Security groups should not allow unrestricted Oracle database (TCP 1521) access",
+        "CheckTitle": "[SecurityGroup.7] AWS EC2 security groups should not allow unrestricted Oracle database (TCP 1521) access",
         "CheckId": "security-group-oracledb-open-check",
         "CheckDescriptor": "Oracle database (TCP 1521)"
     },
@@ -51,7 +51,7 @@
         "ToPort": 3306,
         "FromPort": 3306,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.8] Security groups should not allow unrestricted MySQL or MariaDB database (TCP 3306) access",
+        "CheckTitle": "[SecurityGroup.8] AWS EC2 security groups should not allow unrestricted MySQL or MariaDB database (TCP 3306) access",
         "CheckId": "security-group-mysql-mariadb-open-check",
         "CheckDescriptor": "MySQL or MariaDB database (TCP 3306)"
     },
@@ -59,7 +59,7 @@
         "ToPort": 3389,
         "FromPort": 3389,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.9] Security groups should not allow unrestricted Remote Desktop Protocol (RDP) access",
+        "CheckTitle": "[SecurityGroup.9] AWS EC2 security groups should not allow unrestricted Remote Desktop Protocol (RDP) access",
         "CheckId": "security-group-rdp-open-check",
         "CheckDescriptor": "Remote Desktop Protocol (RDP)"
     },
@@ -67,7 +67,7 @@
         "ToPort": 5432,
         "FromPort": 5432,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.10] Security groups should not allow unrestricted PostgreSQL datbase (TCP 5432) access",
+        "CheckTitle": "[SecurityGroup.10] AWS EC2 security groups should not allow unrestricted PostgreSQL datbase (TCP 5432) access",
         "CheckId": "security-group-postgresql-open-check",
         "CheckDescriptor": "PostgreSQL datbase (TCP 5432)"
     },
@@ -75,7 +75,7 @@
         "ToPort": 5601,
         "FromPort": 5601,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.11] Security groups should not allow unrestricted access to Kibana (TCP 5601)",
+        "CheckTitle": "[SecurityGroup.11] AWS EC2 security groups should not allow unrestricted access to Kibana (TCP 5601)",
         "CheckId": "security-group-kibana-open-check",
         "CheckDescriptor": "Kibana (TCP 5601)"
     },
@@ -83,7 +83,7 @@
         "ToPort": 6379,
         "FromPort": 6379,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.12] Security groups should not allow unrestricted Redis (TCP 6379) access",
+        "CheckTitle": "[SecurityGroup.12] AWS EC2 security groups should not allow unrestricted Redis (TCP 6379) access",
         "CheckId": "security-group-redis-open-check",
         "CheckDescriptor": "Redis (TCP 6379)"
     },
@@ -91,7 +91,7 @@
         "ToPort": 8089,
         "FromPort": 8089,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.13] Security groups should not allow unrestricted Splunkd (TCP 8089) access",
+        "CheckTitle": "[SecurityGroup.13] AWS EC2 security groups should not allow unrestricted Splunkd (TCP 8089) access",
         "CheckId": "security-group-splunkd-open-check",
         "CheckDescriptor": "Splunkd (TCP 8089)"
     },
@@ -99,7 +99,7 @@
         "ToPort": 9200,
         "FromPort": 9200,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.14] Security groups should not allow unrestricted Elasticsearch (TCP 9200) access",
+        "CheckTitle": "[SecurityGroup.14] AWS EC2 security groups should not allow unrestricted Elasticsearch (TCP 9200) access",
         "CheckId": "security-group-elasticsearch-9200-open-check",
         "CheckDescriptor": "Elasticsearch (TCP 9200)"
     },
@@ -107,7 +107,7 @@
         "ToPort": 9300,
         "FromPort": 9300,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.15] Security groups should not allow unrestricted Elasticsearch (TCP 9300) access",
+        "CheckTitle": "[SecurityGroup.15] AWS EC2 security groups should not allow unrestricted Elasticsearch (TCP 9300) access",
         "CheckId": "security-group-elasticsearch-9300-open-check",
         "CheckDescriptor": "Elasticsearch (TCP 9300)"
     },
@@ -115,7 +115,7 @@
         "ToPort": 11211,
         "FromPort": 11211,
         "Protocol": "udp",
-        "CheckTitle": "[SecurityGroup.16] Security groups should not allow unrestricted Memcached (UDP 11211) access",
+        "CheckTitle": "[SecurityGroup.16] AWS EC2 security groups should not allow unrestricted Memcached (UDP 11211) access",
         "CheckId": "security-group-memcached-open-check",
         "CheckDescriptor": "Memcached (UDP 11211)"
     },
@@ -123,7 +123,7 @@
         "ToPort": 5439,
         "FromPort": 5439,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.17] Security groups should not allow unrestricted Redshift (TCP 5439) access",
+        "CheckTitle": "[SecurityGroup.17] AWS EC2 security groups should not allow unrestricted Redshift (TCP 5439) access",
         "CheckId": "security-group-redshift-open-check",
         "CheckDescriptor": "Redshift (TCP 5439)"
     },
@@ -131,7 +131,7 @@
         "ToPort": 27017,
         "FromPort": 27017,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.18] Security groups should not allow unrestricted MongoDB/DocumentDB (TCP 27017) access",
+        "CheckTitle": "[SecurityGroup.18] AWS EC2 security groups should not allow unrestricted MongoDB/DocumentDB (TCP 27017) access",
         "CheckId": "security-group-documentdb-open-check",
         "CheckDescriptor": "DocumentDB / MongoDB (TCP 27017)"
     },
@@ -139,7 +139,7 @@
         "ToPort": 9142,
         "FromPort": 9142,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.19] Security groups should not allow unrestricted AWS Keyspaces/Cassandra (TCP 9142) access",
+        "CheckTitle": "[SecurityGroup.19] AWS EC2 security groups should not allow unrestricted AWS Keyspaces/Cassandra (TCP 9142) access",
         "CheckId": "security-group-cassandra-open-check",
         "CheckDescriptor": "Apache Cassandra / AWS Keyspaces (TCP 9142)"
     },
@@ -147,7 +147,7 @@
         "ToPort": 9092,
         "FromPort": 9092,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.20] Security groups should not allow unrestricted Kafka streams (TCP 9092) access",
+        "CheckTitle": "[SecurityGroup.20] AWS EC2 security groups should not allow unrestricted Kafka streams (TCP 9092) access",
         "CheckId": "security-group-kafka-open-check",
         "CheckDescriptor": "Kafka streams (TCP 9092)"
     },
@@ -155,7 +155,7 @@
         "ToPort": 2049,
         "FromPort": 2049,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.21] Security groups should not allow unrestricted Amazon EFS/NFS (TCP 2049) access",
+        "CheckTitle": "[SecurityGroup.21] AWS EC2 security groups should not allow unrestricted Amazon EFS/NFS (TCP 2049) access",
         "CheckId": "security-group-nfs-open-check",
         "CheckDescriptor": "Amazon EFS / NFS (TCP 2049)"
     },
@@ -163,7 +163,7 @@
         "ToPort": 873,
         "FromPort": 873,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.22] Security groups should not allow unrestricted Rsync (TCP 873) access",
+        "CheckTitle": "[SecurityGroup.22] AWS EC2 security groups should not allow unrestricted Rsync (TCP 873) access",
         "CheckId": "security-group-rsync-open-check",
         "CheckDescriptor": "Rsync (TCP 873)"
     },
@@ -171,7 +171,7 @@
         "ToPort": 69,
         "FromPort": 69,
         "Protocol": "udp",
-        "CheckTitle": "[SecurityGroup.23] Security groups should not allow unrestricted TFTP (UDP 69) access",
+        "CheckTitle": "[SecurityGroup.23] AWS EC2 security groups should not allow unrestricted TFTP (UDP 69) access",
         "CheckId": "security-group-tftp-open-check",
         "CheckDescriptor": "TFTP (UDP 69)"
     },
@@ -179,7 +179,7 @@
         "ToPort": 2375,
         "FromPort": 2375,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.24] Security groups should not allow unrestricted Docker API (TCP 2375) access",
+        "CheckTitle": "[SecurityGroup.24] AWS EC2 security groups should not allow unrestricted Docker API (TCP 2375) access",
         "CheckId": "security-group-docker-open-check",
         "CheckDescriptor": "Docker API (TCP 2375)"
     },
@@ -187,7 +187,7 @@
         "ToPort": 10250,
         "FromPort": 10250,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.25] Security groups should not allow unrestricted Kubernetes API (TCP 10250) access",
+        "CheckTitle": "[SecurityGroup.25] AWS EC2 security groups should not allow unrestricted Kubernetes API (TCP 10250) access",
         "CheckId": "security-group-k8sapi-open-check",
         "CheckDescriptor": "Kubernetes (TCP 10250)"
     },
@@ -195,7 +195,7 @@
         "ToPort": 137,
         "FromPort": 139,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.26] Security groups should not allow unrestricted Windows NetBIOS (TCP 137-139) access",
+        "CheckTitle": "[SecurityGroup.26] AWS EC2 security groups should not allow unrestricted Windows NetBIOS (TCP 137-139) access",
         "CheckId": "security-group-winnetbios-open-check",
         "CheckDescriptor": "Windows NetBIOS (TCP 137-139)"
     },
@@ -203,7 +203,7 @@
         "ToPort": 25,
         "FromPort": 25,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.27] Security groups should not allow unrestricted SMTP (TCP 25) access",
+        "CheckTitle": "[SecurityGroup.27] AWS EC2 security groups should not allow unrestricted SMTP (TCP 25) access",
         "CheckId": "security-group-smtp-open-check",
         "CheckDescriptor": "Secure Mail Transfer Protocol (SMTP)"
     },
@@ -211,7 +211,7 @@
         "ToPort": 1194,
         "FromPort": 1194,
         "Protocol": "udp",
-        "CheckTitle": "[SecurityGroup.28] Security groups should not allow unrestricted OpenVPN (UDP 1194) access",
+        "CheckTitle": "[SecurityGroup.28] AWS EC2 security groups should not allow unrestricted OpenVPN (UDP 1194) access",
         "CheckId": "security-group-openvpn-open-check",
         "CheckDescriptor": "OpenVPN (UDP 1194)"
     },
@@ -219,7 +219,7 @@
         "ToPort": 5672,
         "FromPort": 5672,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.29] Security groups should not allow unrestricted access to AmazonMQ/RabbitMQ (TCP 5672)",
+        "CheckTitle": "[SecurityGroup.29] AWS EC2 security groups should not allow unrestricted access to AmazonMQ/RabbitMQ (TCP 5672)",
         "CheckId": "security-group-rabbitmq-open-check",
         "CheckDescriptor": "AmazonMQ / RabbitMQ / AMQP (TCP 5672)"
     },
@@ -227,7 +227,7 @@
         "ToPort": 4040,
         "FromPort": 4040,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.30] Security groups should not allow unrestricted access to Spark Web UI (TCP 4040)",
+        "CheckTitle": "[SecurityGroup.30] AWS EC2 security groups should not allow unrestricted access to Spark Web UI (TCP 4040)",
         "CheckId": "security-group-sparkui-open-check",
         "CheckDescriptor": "Spark Web UI (TCP 4040)"
     },
@@ -235,7 +235,7 @@
         "ToPort": 110,
         "FromPort": 110,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.31] Security groups should not allow unrestricted POP3 access",
+        "CheckTitle": "[SecurityGroup.31] AWS EC2 security groups should not allow unrestricted POP3 access",
         "CheckId": "security-group-pop3-open-check",
         "CheckDescriptor": "Post Office Protocol 3 (POP3)"
     },
@@ -243,7 +243,7 @@
         "ToPort": 8182,
         "FromPort": 8182,
         "Protocol": "tcp",
-        "CheckTitle": "[SecurityGroup.32] Security groups should not allow unrestricted VMWare ESXi access",
+        "CheckTitle": "[SecurityGroup.32] AWS EC2 security groups should not allow unrestricted VMWare ESXi access",
         "CheckId": "security-group-vmware-esxi-open-check",
         "CheckDescriptor": "VMWare ESXi"
     }

@@ -116,7 +116,7 @@ The following mapping is used, where the entry for "ElectricEye CAM `AssetClass`
 | Internet of Things | **NOT_MAPPED** | Not currently used |
 | Machine Learning | Machine Learning | Mapped 1:1 |
 | Management & Governance | Management & Governance | Management, IT Operations, and GRC tools (such as AWS Audit Manager) which map here - this also includes security ***configurations*** and other "account-wide" or "project-wide" settings, plugins, and properties |
-| Media Services | **NOT_MAPPED** | Not currently used |
+| Media Services | Media Services | Mapped 1:1 |
 | Migration & Transfer | Migration & Transfer | Mapped 1:1 |
 | Networking & Content Delivery | Networking | "Content Delivery" is removed from this `AssetClass` but CDNs such as Amazon CloudFront and Google Cloud Armor will map to `Networking` as will API-related services such as AWS AppSync or Google Apigee |
 | Quantum Technologies | **NOT_MAPPED** | Not currently used |
@@ -151,6 +151,7 @@ AWS Directory Service
 AWS EC2 Image Builder
 AWS Elastic Load Balancer
 AWS Elastic Load Balancer V2
+AWS Fault Injection Simulator
 AWS Glue
 AWS Health
 AWS IAM
@@ -162,8 +163,10 @@ AWS MemoryDB for Redis
 AWS Resource Access Manager
 AWS Secrets Manager
 AWS Security Hub
+AWS Site-to-Site VPN
 AWS Systems Manager
 AWS Trusted Advisor
+AWS VPC Lattice
 AWS WAFv2 Global
 AWS WAFv2 Regional
 AWS WorkSpaces
@@ -189,6 +192,7 @@ Amazon Elastic File System
 Amazon Elastic Kubernetes Service
 Amazon Elastic MapReduce
 Amazon Elastic MapReduce Serverless
+Amazon Elastic Transcoder
 Amazon Global Accelerator
 Amazon GuardDuty
 Amazon Inspector V2
@@ -355,6 +359,11 @@ Web Access Control List
 Workgroup
 Workspace
 Database Instance
+Service
+Service Network
+Target Group
+Listener
+Experiment Template
 Instance
 Application
 Artifact

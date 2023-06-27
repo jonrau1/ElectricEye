@@ -18,27 +18,109 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import datetime
 from check_register import CheckRegister
+import datetime
 from botocore.exceptions import ClientError
 import base64
 import json
 
 registry = CheckRegister()
 
+def global_region_generator(awsPartition):
+    # Global Service Region override
+    if awsPartition == "aws":
+        globalRegion = "aws-global"
+    elif awsPartition == "aws-us-gov":
+        globalRegion = "aws-us-gov-global"
+    elif awsPartition == "aws-cn":
+        globalRegion = "aws-cn-global"
+    elif awsPartition == "aws-iso":
+        globalRegion = "aws-iso-global"
+    elif awsPartition == "aws-isob":
+        globalRegion = "aws-iso-b-global"
+    elif awsPartition == "aws-isoe":
+        globalRegion = "aws-iso-e-global"
+    else:
+        globalRegion = "aws-global"
+
+    return globalRegion
+
+def get_hosted_zones(cache, session):
+    response = cache.get("get_hosted_zones")
+    if response:
+        return response
+    
+    route53 = session.client("route53")
+    zones = []
+
+    for page in route53.get_paginator("list_hosted_zones").paginate():
+        for hz in page["HostedZones"]:
+            zones.append(hz)
+    cache["get_hosted_zones"] = zones
+    return cache["get_hosted_zones"]
+
+def describe_clbs(cache, session):
+    response = cache.get("describe_load_balancers")
+    if response:
+        return response
+    
+    elb = session.client("elb")
+
+    cache["describe_load_balancers"] = elb.describe_load_balancers()["LoadBalancerDescriptions"]
+    return cache["describe_load_balancers"]
+
+def describe_app_load_balancers(cache, session):
+    response = cache.get("describe_load_balancers")
+    if response:
+        return response
+    
+    elbv2 = session.client("elbv2")
+    appLoadBalancers = [lb for lb in elbv2.describe_load_balancers()["LoadBalancers"] if lb["Type"] == "application"]
+
+    cache["describe_load_balancers"] = appLoadBalancers
+    return cache["describe_load_balancers"]
+
+def describe_elastic_ips(cache, session):
+    response = cache.get("describe_elastic_ips")
+    if response:
+        return response
+    
+    ec2 = session.client("ec2")
+
+    cache["describe_elastic_ips"] = ec2.describe_addresses()["Addresses"]
+    return cache["describe_elastic_ips"]
+
+def paginate_distributions(cache, session):
+    cloudfront = session.client("cloudfront")
+
+    itemList = []
+    response = cache.get("items")
+    if response:
+        return response
+    paginator = cloudfront.get_paginator("list_distributions")
+    if paginator:
+        for page in paginator.paginate():
+            try:
+                for items in page["DistributionList"]["Items"]:
+                    itemList.append(items)
+            except KeyError:
+                return {}
+        cache["items"] = itemList
+        return cache["items"]
+
 @registry.register_check("shield")
 def shield_advanced_route_53_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ShieldAdvanced.1] Route 53 Hosted Zones should be protected by Shield Advanced"""
-    route53 = session.client("route53")
     shield = session.client("shield", region_name="us-east-1")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    response = route53.list_hosted_zones()
-    for hostedzone in response["HostedZones"]:
+    for hostedzone in get_hosted_zones(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(hostedzone,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        rawHzId = str(hostedzone["Id"])
+        rawHzId = hostedzone["Id"]
+        hzName = hostedzone["Name"]
+        hzType = hostedzone["Config"]["PrivateZone"]
         hostedZoneId = rawHzId.replace("/hostedzone/", "")
         hostedZoneArn = f"arn:{awsPartition}:route53:::hostedzone/{hostedZoneId}"
         protectionArn = f"arn:{awsPartition}:shield::{awsAccountId}:protection/{hostedZoneArn}"
@@ -62,7 +144,7 @@ def shield_advanced_route_53_protection_check(cache: dict, session, awsAccountId
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on adding Shield Advanced protection to resources refer to the AWS Shield Advanced protected resources section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-protected-resources.html",
+                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-protected-resources.html"
                     }
                 },
                 "ProductFields": {
@@ -82,7 +164,13 @@ def shield_advanced_route_53_protection_check(cache: dict, session, awsAccountId
                         "Id": hostedZoneArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"hostedZoneId": hostedZoneId}},
+                        "Details": {
+                            "Other": {
+                                "Id": rawHzId,
+                                "Name": hzName,
+                                "PrivateZone": hzType
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -148,7 +236,7 @@ def shield_advanced_route_53_protection_check(cache: dict, session, awsAccountId
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on adding Shield Advanced protection to resources refer to the AWS Shield Advanced protected resources section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-protected-resources.html",
+                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-protected-resources.html"
                     }
                 },
                 "ProductFields": {
@@ -168,7 +256,13 @@ def shield_advanced_route_53_protection_check(cache: dict, session, awsAccountId
                         "Id": hostedZoneArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"hostedZoneId": hostedZoneId}},
+                        "Details": {
+                            "Other": {
+                                "Id": rawHzId,
+                                "Name": hzName,
+                                "PrivateZone": hzType
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -221,15 +315,20 @@ def shield_advanced_route_53_protection_check(cache: dict, session, awsAccountId
 def shield_advanced_elb_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ShieldAdvanced.2] Classic Load Balancers should be protected by Shield Advanced"""
     shield = session.client("shield", region_name="us-east-1")
-    elbclassic = session.client("elb")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for classicbalancer in elbclassic.describe_load_balancers()["LoadBalancerDescriptions"]:
+    for lb in describe_clbs(cache, session):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(classicbalancer,default=str).encode("utf-8")
+        assetJson = json.dumps(lb,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        clbName = str(classicbalancer["LoadBalancerName"])
+        clbName = lb["LoadBalancerName"]
         clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
+        dnsName = lb["DNSName"]
+        lbSgs = lb["SecurityGroups"]
+        lbSubnets = lb["Subnets"]
+        lbAzs = lb["AvailabilityZones"]
+        lbVpc = lb["VPCId"]
+        clbScheme = lb["Scheme"]
         protectionArn = f"arn:{awsPartition}:shield::{awsAccountId}:protection/{clbArn}"
         try:
             # this is a passing check
@@ -251,7 +350,7 @@ def shield_advanced_elb_protection_check(cache: dict, session, awsAccountId: str
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on adding Shield Advanced protection to resources refer to the AWS Shield Advanced protected resources section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-protected-resources.html",
+                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-protected-resources.html"
                     }
                 },
                 "ProductFields": {
@@ -271,7 +370,17 @@ def shield_advanced_elb_protection_check(cache: dict, session, awsAccountId: str
                         "Id": clbArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"LoadBalancerName": clbName}},
+                        "Details": {
+                            "AwsElbLoadBalancer": {
+                                "DnsName": dnsName,
+                                "Scheme": clbScheme,
+                                "SecurityGroups": lbSgs,
+                                "Subnets": lbSubnets,
+                                "VpcId": lbVpc,
+                                "AvailabilityZones": lbAzs,
+                                "LoadBalancerName": clbName
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -336,8 +445,8 @@ def shield_advanced_elb_protection_check(cache: dict, session, awsAccountId: str
                 "Description": f"Classic Load Balancer {clbName} is not protected by Shield Advanced. AWS Shield Advanced is a managed service that helps you protect your application against external threats, like DDoS attacks, volumetric bots, and vulnerability exploitation attempts. For higher levels of protection against attacks, you can subscribe to AWS Shield Advanced. When you subscribe to Shield Advanced and add protection to your resources, Shield Advanced provides expanded DDoS attack protection for those resources. The protections that you receive from Shield Advanced can vary depending on your architecture and configuration choices. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For information on adding Shield Advanced protection to resources refer to the Adding AWS Shield Advanced Protection to AWS Resources section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
+                        "Text": "For information on adding Shield Advanced protection to resources refer to the AWS Shield Advanced protected resources section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-protected-resources.html"
                     }
                 },
                 "ProductFields": {
@@ -357,7 +466,17 @@ def shield_advanced_elb_protection_check(cache: dict, session, awsAccountId: str
                         "Id": clbArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"LoadBalancerName": clbName}},
+                        "Details": {
+                            "AwsElbLoadBalancer": {
+                                "DnsName": dnsName,
+                                "Scheme": clbScheme,
+                                "SecurityGroups": lbSgs,
+                                "Subnets": lbSubnets,
+                                "VpcId": lbVpc,
+                                "AvailabilityZones": lbAzs,
+                                "LoadBalancerName": clbName
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -402,7 +521,7 @@ def shield_advanced_elb_protection_check(cache: dict, session, awsAccountId: str
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
 
@@ -410,25 +529,20 @@ def shield_advanced_elb_protection_check(cache: dict, session, awsAccountId: str
 def shield_advanced_elb_v2_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ShieldAdvanced.3] Application Load Balancers should be protected by Shield Advanced"""
     shield = session.client("shield", region_name="us-east-1")
-    elbv2 = session.client("elbv2")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for loadbalancer in elbv2.describe_load_balancers()["LoadBalancers"]:
-        # Skip NLBs
-        elbv2LbType = str(loadbalancer["Type"])
-        if elbv2LbType == "network":
-            continue
-
+    for lb in describe_app_load_balancers(cache, session):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(loadbalancer,default=str).encode("utf-8")
+        assetJson = json.dumps(lb,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        elbv2Name = str(loadbalancer["LoadBalancerName"])
-        elbv2Arn = str(loadbalancer["LoadBalancerArn"])
+        elbv2Arn = lb["LoadBalancerArn"]
+        elbv2Name = lb["LoadBalancerName"]
+        elbv2DnsName = lb["DNSName"]
+        elbv2LbType = lb["Type"]
+        elbv2Scheme = lb["Scheme"]
+        elbv2VpcId = lb["VpcId"]
+        elbv2IpAddressType = lb["IpAddressType"]
         protectionArn = f"arn:{awsPartition}:shield::{awsAccountId}:protection/{elbv2Arn}"
-        elbv2DnsName = str(loadbalancer["DNSName"])
-        elbv2Scheme = str(loadbalancer["Scheme"])
-        elbv2VpcId = str(loadbalancer["VpcId"])
-        elbv2IpAddressType = str(loadbalancer["IpAddressType"])
         try:
             # this is a passing check
             shield.describe_protection(ResourceArn=elbv2Arn)
@@ -449,7 +563,7 @@ def shield_advanced_elb_v2_protection_check(cache: dict, session, awsAccountId: 
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on adding Shield Advanced protection to resources refer to the AWS Shield Advanced protected resources section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-protected-resources.html",
+                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-protected-resources.html"
                     }
                 },
                 "ProductFields": {
@@ -624,19 +738,19 @@ def shield_advanced_elb_v2_protection_check(cache: dict, session, awsAccountId: 
 def shield_advanced_eip_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ShieldAdvanced.4] Elastic IPs should be protected by Shield Advanced"""
     shield = session.client("shield", region_name="us-east-1")
-    ec2 = session.client("ec2")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for elasticip in ec2.describe_addresses()["Addresses"]:
+    for eip in describe_elastic_ips(cache, session):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(elasticip,default=str).encode("utf-8")
+        assetJson = json.dumps(eip,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        allocationId = str(elasticip["AllocationId"])
-        eipAllocationArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:eip-allocation/{allocationId}"
-        protectionArn = f"arn:{awsPartition}:shield::{awsAccountId}:protection/{eipAllocationArn}"
+        allocationId = eip["AllocationId"]
+        publicIp = eip["PublicIp"]
+        eipArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:elastic-ip/{allocationId}"  
+        protectionArn = f"arn:{awsPartition}:shield::{awsAccountId}:protection/{eipArn}"
         try:
             # this is a passing check
-            shield.describe_protection(ResourceArn=eipAllocationArn)
+            shield.describe_protection(ResourceArn=eipArn)
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{protectionArn}/elasticip-shield-adv-protection-check",
@@ -654,7 +768,7 @@ def shield_advanced_eip_protection_check(cache: dict, session, awsAccountId: str
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on adding Shield Advanced protection to resources refer to the AWS Shield Advanced protected resources section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-protected-resources.html",
+                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-protected-resources.html"
                     }
                 },
                 "ProductFields": {
@@ -666,15 +780,20 @@ def shield_advanced_eip_protection_check(cache: dict, session, awsAccountId: str
                     "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon EC2",
-                    "AssetComponent": "Elastic IP"
+                    "AssetComponent": "Elastic IP Address"
                 },
                 "Resources": [
                     {
                         "Type": "AwsEc2Eip",
-                        "Id": eipAllocationArn,
+                        "Id": eipArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"AllocationId": allocationId}},
+                        "Details": {
+                            "AwsEc2Eip": {
+                                "PublicIp": publicIp,
+                                "AllocationId": allocationId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -752,15 +871,20 @@ def shield_advanced_eip_protection_check(cache: dict, session, awsAccountId: str
                     "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon EC2",
-                    "AssetComponent": "Elastic IP"
+                    "AssetComponent": "Elastic IP Address"
                 },
                 "Resources": [
                     {
                         "Type": "AwsEc2Eip",
-                        "Id": eipAllocationArn,
+                        "Id": eipArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"AllocationId": allocationId}},
+                        "Details": {
+                            "AwsEc2Eip": {
+                                "PublicIp": publicIp,
+                                "AllocationId": allocationId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -813,22 +937,20 @@ def shield_advanced_eip_protection_check(cache: dict, session, awsAccountId: str
 def shield_advanced_cloudfront_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ShieldAdvanced.5] CloudFront distributions should be protected by Shield Advanced"""
     shield = session.client("shield", region_name="us-east-1")
-    cloudfront = session.client("cloudfront", region_name="us-east-1")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    response = cloudfront.list_distributions()
-    cfDistros = response["DistributionList"].get("Items", [])
-    for distro in cfDistros:
+    for dist in paginate_distributions(cache, session):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(distro,default=str).encode("utf-8")
+        assetJson = json.dumps(dist,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        distroId = str(distro["Id"])
-        distroArn = str(distro["ARN"])
-        protectionArn = f"arn:{awsPartition}:shield::{awsAccountId}:protection/{distroArn}"
-        distroDomainName = str(distro["DomainName"])
+        distributionId = dist["Id"]
+        distributionArn = dist["ARN"]
+        domainName = dist["DomainName"]
+        distStatus = dist["Status"]
+        protectionArn = f"arn:{awsPartition}:shield::{awsAccountId}:protection/{distributionArn}"
         try:
             # this is a passing check
-            shield.describe_protection(ResourceArn=distroArn)
+            shield.describe_protection(ResourceArn=distributionArn)
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{protectionArn}/cloudfront-shield-adv-protection-check",
@@ -842,11 +964,11 @@ def shield_advanced_cloudfront_protection_check(cache: dict, session, awsAccount
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[ShieldAdvanced.5] CloudFront distributions should be protected by Shield Advanced",
-                "Description": f"CloudFront distribution {distroId} is protected by Shield Advanced.",
+                "Description": f"CloudFront distribution {distributionId} is protected by Shield Advanced.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on adding Shield Advanced protection to resources refer to the AWS Shield Advanced protected resources section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-protected-resources.html",
+                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-protected-resources.html"
                     }
                 },
                 "ProductFields": {
@@ -863,12 +985,15 @@ def shield_advanced_cloudfront_protection_check(cache: dict, session, awsAccount
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
-                        "Id": distroArn,
+                        "Id": distributionArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "AwsCloudFrontDistribution": {"DomainName": distroDomainName}
-                        },
+                            "AwsCloudFrontDistribution": {
+                                "DomainName": domainName,
+                                "Status": distStatus
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -913,7 +1038,7 @@ def shield_advanced_cloudfront_protection_check(cache: dict, session, awsAccount
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
         except ClientError:
@@ -930,11 +1055,11 @@ def shield_advanced_cloudfront_protection_check(cache: dict, session, awsAccount
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[ShieldAdvanced.5] CloudFront distributions should be protected by Shield Advanced",
-                "Description": f"CloudFront distribution {distroId} is not protected by Shield Advanced. AWS Shield Advanced is a managed service that helps you protect your application against external threats, like DDoS attacks, volumetric bots, and vulnerability exploitation attempts. For higher levels of protection against attacks, you can subscribe to AWS Shield Advanced. When you subscribe to Shield Advanced and add protection to your resources, Shield Advanced provides expanded DDoS attack protection for those resources. The protections that you receive from Shield Advanced can vary depending on your architecture and configuration choices. Refer to the remediation instructions if this configuration is not intended.",
+                "Description": f"CloudFront distribution {distributionId} is not protected by Shield Advanced. AWS Shield Advanced is a managed service that helps you protect your application against external threats, like DDoS attacks, volumetric bots, and vulnerability exploitation attempts. For higher levels of protection against attacks, you can subscribe to AWS Shield Advanced. When you subscribe to Shield Advanced and add protection to your resources, Shield Advanced provides expanded DDoS attack protection for those resources. The protections that you receive from Shield Advanced can vary depending on your architecture and configuration choices. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on adding Shield Advanced protection to resources refer to the AWS Shield Advanced protected resources section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-protected-resources.html",
+                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-protected-resources.html"
                     }
                 },
                 "ProductFields": {
@@ -951,12 +1076,15 @@ def shield_advanced_cloudfront_protection_check(cache: dict, session, awsAccount
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
-                        "Id": distroArn,
+                        "Id": distributionArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "AwsCloudFrontDistribution": {"DomainName": distroDomainName}
-                        },
+                            "AwsCloudFrontDistribution": {
+                                "DomainName": domainName,
+                                "Status": distStatus
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -1001,7 +1129,7 @@ def shield_advanced_cloudfront_protection_check(cache: dict, session, awsAccount
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
 
@@ -1045,7 +1173,7 @@ def shield_advanced_drt_access_check(cache: dict, session, awsAccountId: str, aw
                 "Provider": "AWS",
                 "ProviderType": "CSP",
                 "ProviderAccountId": awsAccountId,
-                "AssetRegion": awsRegion,
+                "AssetRegion": global_region_generator(awsPartition),
                 "AssetDetails": assetB64,
                 "AssetClass": "Security Services",
                 "AssetService": "Amazon Shield Advanced",
@@ -1078,7 +1206,7 @@ def shield_advanced_drt_access_check(cache: dict, session, awsAccountId: str, aw
                     "NIST SP 800-53 Rev. 4 PS-3",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.7.1.1",
-                    "ISO 27001:2013 A.9.2.1",
+                    "ISO 27001:2013 A.9.2.1"
                 ],
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -1111,7 +1239,7 @@ def shield_advanced_drt_access_check(cache: dict, session, awsAccountId: str, aw
                 "Provider": "AWS",
                 "ProviderType": "CSP",
                 "ProviderAccountId": awsAccountId,
-                "AssetRegion": awsRegion,
+                "AssetRegion": global_region_generator(awsPartition),
                 "AssetDetails": None,
                 "AssetClass": "Security Services",
                 "AssetService": "Amazon Shield Advanced",
@@ -1144,8 +1272,8 @@ def shield_advanced_drt_access_check(cache: dict, session, awsAccountId: str, aw
                     "NIST SP 800-53 Rev. 4 PS-3",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.7.1.1",
-                    "ISO 27001:2013 A.9.2.1",
-                ],
+                    "ISO 27001:2013 A.9.2.1"
+                ]
             },
             "Workflow": {"Status": "NEW"},
             "RecordState": "ACTIVE",
@@ -1155,7 +1283,7 @@ def shield_advanced_drt_access_check(cache: dict, session, awsAccountId: str, aw
 @registry.register_check("shield")
 def shield_advanced_subscription_autorenew_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ShieldAdvanced.7] Shield Advanced subscription should be set to auto-renew"""
-    subscriptionArn = f"arn:{awsPartition}:shield::{awsAccountId}:protection"
+    subscriptionArn = f"arn:{awsPartition}:shield::{awsAccountId}:subscription"
 
     shield = session.client("shield")
     # ISO time
@@ -1165,11 +1293,12 @@ def shield_advanced_subscription_autorenew_check(cache: dict, session, awsAccoun
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        renewCheck = str(response["Subscription"]["AutoRenew"])
+        response["Subscription"]["AutoRenew"]
+        renewel = True
     except ClientError:
-        renewCheck = "DISABLED"
+        renewel = False
 
-    if renewCheck == "DISABLED":
+    if renewel is False:
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": f"{subscriptionArn}/shield-adv-subscription-auto-renew-check",
@@ -1195,7 +1324,7 @@ def shield_advanced_subscription_autorenew_check(cache: dict, session, awsAccoun
                 "Provider": "AWS",
                 "ProviderType": "CSP",
                 "ProviderAccountId": awsAccountId,
-                "AssetRegion": awsRegion,
+                "AssetRegion": global_region_generator(awsPartition),
                 "AssetDetails": None,
                 "AssetClass": "Security Services",
                 "AssetService": "Amazon Shield Advanced",
@@ -1265,7 +1394,7 @@ def shield_advanced_subscription_autorenew_check(cache: dict, session, awsAccoun
                 "Provider": "AWS",
                 "ProviderType": "CSP",
                 "ProviderAccountId": awsAccountId,
-                "AssetRegion": awsRegion,
+                "AssetRegion": global_region_generator(awsPartition),
                 "AssetDetails": assetB64,
                 "AssetClass": "Security Services",
                 "AssetService": "Amazon Shield Advanced",
@@ -1523,26 +1652,27 @@ def shield_advanced_global_accelerator_protection_check(cache: dict, session, aw
 def shield_advanced_subscription_latest_attacks(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ShieldAdvanced.9] AWS Shield resources under attack in the last two weeks should be investigated"""
     shield = session.client("shield", region_name="us-east-1")
+    attackArn = f"arn:{awsPartition}:shield::{awsAccountId}:attack"
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    response = shield.list_attacks(
+    attacks = shield.list_attacks(
         StartTime = {
             'FromInclusive': datetime.datetime.utcnow() - datetime.timedelta(days=14)
         },
         EndTime = {
             'ToExclusive': datetime.datetime.utcnow()
         }
-    )
+    )["AttackSummaries"]
     # B64 encode all of the details for the Asset
-    assetJson = json.dumps(response,default=str).encode("utf-8")
+    assetJson = json.dumps(attacks,default=str).encode("utf-8")
     assetB64 = base64.b64encode(assetJson)
     # this is a passing check
-    if not response['AttackSummaries']:
+    if not attacks:
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": awsAccountId + "/shield-adv-subscription-latest-attacks",
+            "Id": f"{attackArn}/shield-adv-subscription-latest-attacks",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": awsAccountId,
+            "GeneratorId": f"{attackArn}/shield-adv-subscription-latest-attacks",
             "AwsAccountId": awsAccountId,
             "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
             "FirstObservedAt": iso8601Time,
@@ -1563,7 +1693,7 @@ def shield_advanced_subscription_latest_attacks(cache: dict, session, awsAccount
                 "Provider": "AWS",
                 "ProviderType": "CSP",
                 "ProviderAccountId": awsAccountId,
-                "AssetRegion": awsRegion,
+                "AssetRegion": global_region_generator(awsPartition),
                 "AssetDetails": assetB64,
                 "AssetClass": "Security Services",
                 "AssetService": "Amazon Shield Advanced",
@@ -1572,7 +1702,7 @@ def shield_advanced_subscription_latest_attacks(cache: dict, session, awsAccount
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_Shield_Advanced_Attacks",
+                    "Id": attackArn,
                     "Partition": awsPartition,
                     "Region": awsRegion,
                 }
@@ -1608,9 +1738,9 @@ def shield_advanced_subscription_latest_attacks(cache: dict, session, awsAccount
     else:
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": awsAccountId + "/shield-adv-subscription-latest-attacks",
+            "Id": f"{attackArn}/shield-adv-subscription-latest-attacks",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": awsAccountId,
+            "GeneratorId": f"{attackArn}/shield-adv-subscription-latest-attacks",
             "AwsAccountId": awsAccountId,
             "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
             "FirstObservedAt": iso8601Time,
@@ -1631,7 +1761,7 @@ def shield_advanced_subscription_latest_attacks(cache: dict, session, awsAccount
                 "Provider": "AWS",
                 "ProviderType": "CSP",
                 "ProviderAccountId": awsAccountId,
-                "AssetRegion": awsRegion,
+                "AssetRegion": global_region_generator(awsPartition),
                 "AssetDetails": assetB64,
                 "AssetClass": "Security Services",
                 "AssetService": "Amazon Shield Advanced",
@@ -1640,7 +1770,7 @@ def shield_advanced_subscription_latest_attacks(cache: dict, session, awsAccount
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Id": attackArn,
                     "Partition": awsPartition,
                     "Region": awsRegion,
                 }

@@ -24,6 +24,25 @@ import botocore
 
 registry = CheckRegister()
 
+def global_region_generator(awsPartition):
+    # Global Service Region override
+    if awsPartition == "aws":
+        globalRegion = "aws-global"
+    elif awsPartition == "aws-us-gov":
+        globalRegion = "aws-us-gov-global"
+    elif awsPartition == "aws-cn":
+        globalRegion = "aws-cn-global"
+    elif awsPartition == "aws-iso":
+        globalRegion = "aws-iso-global"
+    elif awsPartition == "aws-isob":
+        globalRegion = "aws-iso-b-global"
+    elif awsPartition == "aws-isoe":
+        globalRegion = "aws-iso-e-global"
+    else:
+        globalRegion = "aws-global"
+
+    return globalRegion
+
 def get_account_alternate_contacts(cache, session):
     response = cache.get("get_account_alternate_contacts")
     if response:
@@ -50,22 +69,6 @@ def aws_accounts_billing_dedicated_contact_check(cache: dict, session, awsAccoun
     """[Account.1] AWS Accounts should have a dedicated contact for Billing identified"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-
-    # Global Service Region override
-    if awsPartition == "aws":
-        globalRegion = "aws-global"
-    elif awsPartition == "aws-us-gov":
-        globalRegion = "aws-us-gov-global"
-    elif awsPartition == "aws-cn":
-        globalRegion = "aws-cn-global"
-    elif awsPartition == "aws-iso":
-        globalRegion = "aws-iso-global"
-    elif awsPartition == "aws-isob":
-        globalRegion = "aws-iso-b-global"
-    elif awsPartition == "aws-isoe":
-        globalRegion = "aws-iso-e-global"
-    else:
-        globalRegion = "aws-global"
 
     contacts = get_account_alternate_contacts(cache, session)
     if "BILLING" in contacts:
@@ -99,7 +102,7 @@ def aws_accounts_billing_dedicated_contact_check(cache: dict, session, awsAccoun
                 "Provider": "AWS",
                 "ProviderType": "CSP",
                 "ProviderAccountId": awsAccountId,
-                "AssetRegion": globalRegion,
+                "AssetRegion": global_region_generator(awsPartition),
                 "AssetDetails": None,
                 "AssetClass": "Management & Governance",
                 "AssetService": "AWS Account",
@@ -108,7 +111,7 @@ def aws_accounts_billing_dedicated_contact_check(cache: dict, session, awsAccoun
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_Account_Billing_Alternate_Contact",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -130,7 +133,8 @@ def aws_accounts_billing_dedicated_contact_check(cache: dict, session, awsAccoun
                     "AICPA TSC CC7.3",
                     "ISO 27001:2013 A.16.1.2",
                     "ISO 27001:2013 A.16.1.3",
-                    "ISO 27001:2013 A.16.1.4"
+                    "ISO 27001:2013 A.16.1.4",
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.1"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -163,7 +167,7 @@ def aws_accounts_billing_dedicated_contact_check(cache: dict, session, awsAccoun
                 "Provider": "AWS",
                 "ProviderType": "CSP",
                 "ProviderAccountId": awsAccountId,
-                "AssetRegion": globalRegion,
+                "AssetRegion": global_region_generator(awsPartition),
                 "AssetDetails": None,
                 "AssetClass": "Management & Governance",
                 "AssetService": "AWS Account",
@@ -172,7 +176,7 @@ def aws_accounts_billing_dedicated_contact_check(cache: dict, session, awsAccoun
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_Account_Billing_Alternate_Contact",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -194,7 +198,8 @@ def aws_accounts_billing_dedicated_contact_check(cache: dict, session, awsAccoun
                     "AICPA TSC CC7.3",
                     "ISO 27001:2013 A.16.1.2",
                     "ISO 27001:2013 A.16.1.3",
-                    "ISO 27001:2013 A.16.1.4"
+                    "ISO 27001:2013 A.16.1.4",
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.1"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -207,22 +212,6 @@ def aws_accounts_operations_dedicated_contact_check(cache: dict, session, awsAcc
     """[Account.2] AWS Accounts should have a dedicated contact for Operations identified"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-
-    # Global Service Region override
-    if awsPartition == "aws":
-        globalRegion = "aws-global"
-    elif awsPartition == "aws-us-gov":
-        globalRegion = "aws-us-gov-global"
-    elif awsPartition == "aws-cn":
-        globalRegion = "aws-cn-global"
-    elif awsPartition == "aws-iso":
-        globalRegion = "aws-iso-global"
-    elif awsPartition == "aws-isob":
-        globalRegion = "aws-iso-b-global"
-    elif awsPartition == "aws-isoe":
-        globalRegion = "aws-iso-e-global"
-    else:
-        globalRegion = "aws-global"
 
     contacts = get_account_alternate_contacts(cache, session)
     if "OPERATIONS" in contacts:
@@ -256,7 +245,7 @@ def aws_accounts_operations_dedicated_contact_check(cache: dict, session, awsAcc
                 "Provider": "AWS",
                 "ProviderType": "CSP",
                 "ProviderAccountId": awsAccountId,
-                "AssetRegion": globalRegion,
+                "AssetRegion": global_region_generator(awsPartition),
                 "AssetDetails": None,
                 "AssetClass": "Management & Governance",
                 "AssetService": "AWS Account",
@@ -265,7 +254,7 @@ def aws_accounts_operations_dedicated_contact_check(cache: dict, session, awsAcc
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_Account_Billing_Alternate_Contact",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -287,7 +276,8 @@ def aws_accounts_operations_dedicated_contact_check(cache: dict, session, awsAcc
                     "AICPA TSC CC7.3",
                     "ISO 27001:2013 A.16.1.2",
                     "ISO 27001:2013 A.16.1.3",
-                    "ISO 27001:2013 A.16.1.4"
+                    "ISO 27001:2013 A.16.1.4",
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.1"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -320,7 +310,7 @@ def aws_accounts_operations_dedicated_contact_check(cache: dict, session, awsAcc
                 "Provider": "AWS",
                 "ProviderType": "CSP",
                 "ProviderAccountId": awsAccountId,
-                "AssetRegion": globalRegion,
+                "AssetRegion": global_region_generator(awsPartition),
                 "AssetDetails": None,
                 "AssetClass": "Management & Governance",
                 "AssetService": "AWS Account",
@@ -329,7 +319,7 @@ def aws_accounts_operations_dedicated_contact_check(cache: dict, session, awsAcc
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_Account_Billing_Alternate_Contact",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -351,7 +341,8 @@ def aws_accounts_operations_dedicated_contact_check(cache: dict, session, awsAcc
                     "AICPA TSC CC7.3",
                     "ISO 27001:2013 A.16.1.2",
                     "ISO 27001:2013 A.16.1.3",
-                    "ISO 27001:2013 A.16.1.4"
+                    "ISO 27001:2013 A.16.1.4",
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.1"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -364,22 +355,6 @@ def aws_accounts_security_dedicated_contact_check(cache: dict, session, awsAccou
     """[Account.3] AWS Accounts should have a dedicated contact for Security identified"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-
-    # Global Service Region override
-    if awsPartition == "aws":
-        globalRegion = "aws-global"
-    elif awsPartition == "aws-us-gov":
-        globalRegion = "aws-us-gov-global"
-    elif awsPartition == "aws-cn":
-        globalRegion = "aws-cn-global"
-    elif awsPartition == "aws-iso":
-        globalRegion = "aws-iso-global"
-    elif awsPartition == "aws-isob":
-        globalRegion = "aws-iso-b-global"
-    elif awsPartition == "aws-isoe":
-        globalRegion = "aws-iso-e-global"
-    else:
-        globalRegion = "aws-global"
 
     contacts = get_account_alternate_contacts(cache, session)
     if "SECURITY" in contacts:
@@ -413,7 +388,7 @@ def aws_accounts_security_dedicated_contact_check(cache: dict, session, awsAccou
                 "Provider": "AWS",
                 "ProviderType": "CSP",
                 "ProviderAccountId": awsAccountId,
-                "AssetRegion": globalRegion,
+                "AssetRegion": global_region_generator(awsPartition),
                 "AssetDetails": None,
                 "AssetClass": "Management & Governance",
                 "AssetService": "AWS Account",
@@ -422,7 +397,7 @@ def aws_accounts_security_dedicated_contact_check(cache: dict, session, awsAccou
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_Account_Billing_Alternate_Contact",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -444,7 +419,9 @@ def aws_accounts_security_dedicated_contact_check(cache: dict, session, awsAccou
                     "AICPA TSC CC7.3",
                     "ISO 27001:2013 A.16.1.2",
                     "ISO 27001:2013 A.16.1.3",
-                    "ISO 27001:2013 A.16.1.4"
+                    "ISO 27001:2013 A.16.1.4",
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.1",
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.2"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -477,7 +454,7 @@ def aws_accounts_security_dedicated_contact_check(cache: dict, session, awsAccou
                 "Provider": "AWS",
                 "ProviderType": "CSP",
                 "ProviderAccountId": awsAccountId,
-                "AssetRegion": globalRegion,
+                "AssetRegion": global_region_generator(awsPartition),
                 "AssetDetails": None,
                 "AssetClass": "Management & Governance",
                 "AssetService": "AWS Account",
@@ -486,7 +463,7 @@ def aws_accounts_security_dedicated_contact_check(cache: dict, session, awsAccou
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_Account_Billing_Alternate_Contact",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -508,7 +485,9 @@ def aws_accounts_security_dedicated_contact_check(cache: dict, session, awsAccou
                     "AICPA TSC CC7.3",
                     "ISO 27001:2013 A.16.1.2",
                     "ISO 27001:2013 A.16.1.3",
-                    "ISO 27001:2013 A.16.1.4"
+                    "ISO 27001:2013 A.16.1.4",
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.1",
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.2"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},

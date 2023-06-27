@@ -225,7 +225,7 @@ The ASM Module uses NMAP at its core and will be expanded to include ZAP and Sho
 
 ## AWS Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **569 Checks** across **80 Auditors** that support the secure configuration of **106 services/components**
+These are the following services and checks perform by each Auditor, there are currently **633 Checks** across **85 Auditors** that support the secure configuration of **120 services/components**
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service**: AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
@@ -272,8 +272,12 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros have default root objects |
 | Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros enforce Default Viewer HTTPS-only connections |
 | Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros enforce S3 Origin Object Access Identity |
+| Amazon_CloudFront_Auditor | CloudFront Distribution | Are CloudFront distros indexed by Shodan |
 | Amazon_CloudSearch_Auditor | CloudSearch Domain | Do Domains enforce HTTPS-only |
 | Amazon_CloudSearch_Auditor | CloudSearch Domain | Do Domains use TLS 1.2 |
+| Amazon_CloudWatch_Auditor | Cloudwatch Logs group | Do Cloudwatch Logs groups use KMS CMKs for encryption |
+| Amazon_CloudWatch_Auditor | Cloudwatch Logs group | Do Cloudwatch Logs groups define retention periods |
+| Amazon_CloudWatch_Auditor | Cloudwatch Logs group | Do Cloudwatch Logs groups associate with data protection policies |
 | Amazon_CognitoIdP_Auditor | Cognito Identity Pool | Does the Password policy comply with AWS CIS Foundations Benchmark |
 | Amazon_CognitoIdP_Auditor | Cognito Identity Pool | Cognito Temporary Password Age |
 | Amazon_CognitoIdP_Auditor | Cognito Identity Pool | Does the Identity pool enforce MFA |
@@ -300,6 +304,8 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_EBS_Auditor | EBS Snapshot | Is the Snapshot public |
 | Amazon_EBS_Auditor | Account | Is account level encryption by default enabled |
 | Amazon_EBS_Auditor | EBS Volume | Does the Volume have a snapshot |
+| Amazon_EBS_Auditor | Amazon Machine Image (AMI) | Are owned AMIs public |
+| Amazon_EBS_Auditor | Amazon Machine Image (AMI) | Are owned AMIs encrypted |
 | Amazon_EC2_Auditor | EC2 Instance | Is IMDSv2 enabled |
 | Amazon_EC2_Auditor | EC2 Instance | Is Secure Enclave used |
 | Amazon_EC2_Auditor | EC2 Instance | Is the instance internet-facing |
@@ -314,6 +320,9 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_EC2_Auditor | EC2 Instance | Is the Patch status up to date |
 | Amazon_EC2_Auditor | EC2 Instance | Is the instance scanned by Amazon Inspector V2 |
 | Amazon_EC2_Auditor | EC2 Instance | Are there any explotiable vulnerabilities |
+| Amazon_EC2_Auditor | Elastic IP Address | Are there any unassigned EIPs |
+| Amazon_EC2_Auditor | EC2 Instance | Have EC2 instances with Public IPs been indexed by Shodan |
+| Amazon_EC2_Auditor | Elastic IP Address | Have EIPs with Public IPs been indexed by Shodan |
 | Amazon_EC2_Image_Builder_Auditor | Image Builder | Are pipeline tests enabled |
 | Amazon_EC2_Image_Builder_Auditor | Image Builder | Is EBS encrypted |
 | Amazon_EC2_Security_Group_Auditor | Security Group | Are all ports (-1) open to the internet |
@@ -348,6 +357,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_EC2_Security_Group_Auditor | Security Group | Is Spark WebUI (tcp4040) open to the internet |
 | Amazon_EC2_Security_Group_Auditor | Security Group | Is POP3 (tcp110) open to the internet |
 | Amazon_EC2_Security_Group_Auditor | Security Group | Is VMWare ESXi (tcp8182) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Does the default security group contain any rules |
 | Amazon_ECR_Auditor | ECR Registry (Account) | Is there a registry access policy |
 | Amazon_ECR_Auditor | ECR Registry (Account) | Is image replication configured |
 | Amazon_ECR_Auditor | ECR Repository | Is the Repository vuln scanning with Basic or Enhanced (Inspector V2) scanning |
@@ -383,11 +393,15 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_ElasticsearchService_Auditor | OpenSearch domain | Are there available version updates |
 | Amazon_ElasticsearchService_Auditor | OpenSearch domain | Is ES in a VPC |
 | Amazon_ElasticsearchService_Auditor | OpenSearch domain | Is ES Publicly Accessible |
+| Amazon_ElasticsearchService_Auditor | OpenSearch domain | Are ES/OS Domains indexed by Shodan |
+| Amazon_ElasticTranscoder_Auditor | Elastic Transcoder pipeline | Do pipelines enable notifications |
+| Amazon_ElasticTranscoder_Auditor | Elastic Transcoder pipeline | Do pipelines have active alerts |
 | Amazon_ELB_Auditor | ELB (Classic Load Balancer) | Do internet facing ELBs have a secure listener |
 | Amazon_ELB_Auditor | ELB (Classic Load Balancer) | Do secure listeners enforce TLS 1.2 |
 | Amazon_ELB_Auditor | ELB (Classic Load Balancer) | Is cross zone load balancing enabled |
 | Amazon_ELB_Auditor | ELB (Classic Load Balancer) | Is connection draining enabled |
 | Amazon_ELB_Auditor | ELB (Classic Load Balancer) | Is access logging enabled |
+| Amazon_ELB_Auditor | ELB (Classic Load Balancer) | Are internet-facing CLBs indexed by Shodan |
 | Amazon_ELBv2_Auditor | ELBv2 (ALB) | Is access logging enabled for ALBs |
 | Amazon_ELBv2_Auditor | ELBv2 (ALB/NLB) | Is deletion protection enabled |
 | Amazon_ELBv2_Auditor | ELBv2 (ALB/NLB) | Do internet facing ELBs have a secure listener |
@@ -397,6 +411,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_ELBv2_Auditor | ELBv2 (ALB) | Do ALBs have HTTP Desync protection enabled |
 | Amazon_ELBv2_Auditor | ELBv2 (ALB) | Do ALBs SGs allow access to non-Listener ports |
 | Amazon_ELBv2_Auditor | ELBv2 (ALB) | Ares ALBs protected by WAF |
+| Amazon_ELBv2_Auditor | ELBv2 (ALB) | Are internet-facing ALBs indexed by Shodan |
 | Amazon_EMR_Auditor | EMR Cluster | Do clusters have a sec configuration attached |
 | Amazon_EMR_Auditor | EMR Cluster | Do cluster sec configs enforce encryption in transit |
 | Amazon_EMR_Auditor | EMR Cluster | Do cluster sec configs enforce encryption at rest for EMRFS |
@@ -407,6 +422,14 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_EMR_Auditor | AWS Account | Is EMR public SG block configured for the Account in the region |
 | Amazon_EMR_Serverless_Auditor | EMR Serverless Application | Is Application in a VPC |
 | Amazon_EMR_Serverless_Auditor | EMR Serverless Application | Does Application use custom container runtime |
+| Amazon_EMR_Serverless_Auditor | EMR Serverless Application | Does Application configure auto-stopping jobs |
+| Amazon_GuardDuty_Auditor | GuardDuty detector | Is GuardDuty enabled |
+| Amazon_GuardDuty_Auditor | GuardDuty detector | Is GuardDuty S3 Protection enabled |
+| Amazon_GuardDuty_Auditor | GuardDuty detector | Is GuardDuty EKS Audit Log Monitoring enabled |
+| Amazon_GuardDuty_Auditor | GuardDuty detector | Is GuardDuty EKS Runtime Monitoring enabled |
+| Amazon_GuardDuty_Auditor | GuardDuty detector | Is GuardDuty RDS Protection enabled |
+| Amazon_GuardDuty_Auditor | GuardDuty detector | Is GuardDuty EC2/EBS Malware Protection enabled |
+| Amazon_GuardDuty_Auditor | GuardDuty detector | Is GuardDuty AWS Lambda Protection enabled |
 | Amazon_InspectorV2_Audtior | Inspector scanning configuration | Is Inspector V2 scanning enabled at all |
 | Amazon_InspectorV2_Audtior | Inspector scanning configuration | Is Inspector V2 scanning enabled for EC2 |
 | Amazon_InspectorV2_Audtior | Inspector scanning configuration | Is Inspector V2 scanning enabled for ECR |
@@ -424,6 +447,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_MQ_Auditor | Amazon MQ message broker | Message brokers should have general logging enabled |
 | Amazon_MQ_Auditor | Amazon MQ message broker | Message broker should not be publicly accessible |
 | Amazon_MQ_Auditor | Amazon MQ message broker | Message brokers should be configured to auto upgrade to the latest minor version |
+| Amazon_MQ_Auditor | Amazon MQ message broker | Are public accessible message brokers indexed by Shodan |
 | Amazon_MSK_Auditor | MSK Cluster | Is inter-cluster encryption used |
 | Amazon_MSK_Auditor | MSK Cluster | Is client-broker communications TLS-only |
 | Amazon_MSK_Auditor | MSK Cluster | Is enhanced monitoring used |
@@ -465,6 +489,8 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_RDS_Auditor | Event Subscription (Account) | Does an Event Subscription to monitor paramter groups exist |
 | Amazon_RDS_Auditor | RDS DB Instance | Do PostgreSQL instances use a version susceptible to Lightspin "log_fwd" attack |
 | Amazon_RDS_Auditor | RDS DB Instance | Do Aurora PostgreSQL instances use a version susceptible to Lightspin "log_fwd" attack |
+| Amazon_RDS_Auditor | RDS DB Instance | Do instances automatically upgrade minor versions |
+| Amazon_RDS_Auditor | RDS Instance | Are public accessible RDS instances indexed by Shodan |
 | Amazon_Redshift_Auditor | Redshift cluster | Is the cluster publicly accessible |
 | Amazon_Redshift_Auditor | Redshift cluster | Is the cluster encrypted at rest |
 | Amazon_Redshift_Auditor | Redshift cluster | Is enhanced VPC routing enabled |
@@ -493,6 +519,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_S3_Auditor | S3 Bucket | Does the bucket have a policy |
 | Amazon_S3_Auditor | S3 Bucket | Is server access logging enabled |
 | Amazon_S3_Auditor | Account | Is account level public access block configured |
+| Amazon_S3_Auditor | S3 Bucket | Does the bucket policy block insecure (HTTP) access to all objects |
 | Amazon_SageMaker_Auditor | SageMaker Notebook | Is notebook encryption enabled |
 | Amazon_SageMaker_Auditor | SageMaker Notebook | Is notebook direct internet access enabled |
 | Amazon_SageMaker_Auditor | SageMaker Notebook | Is the notebook in a vpc |
@@ -519,13 +546,18 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_VPC_Auditor | VPC | Is flow logging enabled |
 | Amazon_VPC_Auditor | Subnet | Do subnets map public IPs |
 | Amazon_VPC_Auditor | Subnet | Do subnets have available IP space |
+| Amazon_VPC_Auditor | Verified Access instances | Do Verified Access instances have any form of logging enabled |
+| Amazon_VPC_Auditor | Verified Access instances | Do Verified Access instances have a trust provider associated |
+| Amazon_VPC_Auditor | Verified Access instances | Do Verified Access instances have a WAFv2 Web ACL associated |
+| Amazon_VPC_Auditor | Elastic Network Interface (ENI) | Are ENIs attached and in-use |
+| Amazon_VPC_Auditor | Network ACL | Do NACLs allow unrestricted SSH ingress |
+| Amazon_VPC_Auditor | Network ACL | Do NACLs allow unrestricted RDP ingress |
+| Amazon_VPC_Auditor | PrivateLink VPC Endpoint | Do endpoint policies (for endpoints that support it) allow unrestricted access |
 | Amazon_WorkSpaces_Auditor | Workspace | Is user volume encrypted |
 | Amazon_WorkSpaces_Auditor | Workspace | Is root volume encrypted |
 | Amazon_WorkSpaces_Auditor | Workspace | Is running mode set to auto-off |
 | Amazon_WorkSpaces_Auditor | DS Directory | Does directory allow default internet access |
 | Amazon_Xray_Auditor | XRay Encryption Config | Is KMS CMK encryption used |
-| AMI_Auditor | Amazon Machine Image (AMI) | Are owned AMIs public |
-| AMI_Auditor | Amazon Machine Image (AMI) | Are owned AMIs encrypted |
 | AWS_Accounts_Auditor | AWS Account alternate contacts | Is a Billing alternative contact identified |
 | AWS_Accounts_Auditor | AWS Account alternate contacts | Is a Operations alternative contact identified |
 | AWS_Accounts_Auditor | AWS Account alternate contacts | Is a Security alternative contact identified |
@@ -553,11 +585,29 @@ These are the following services and checks perform by each Auditor, there are c
 | AWS_CloudHSM_Auditor | CloudHSM Cluster | Is the CloudHSM Cluster in a degraded state |
 | AWS_CloudHSM_Auditor | CloudHSM HSM Module | Is the CloudHSM hardware security module in a degraded state |
 | AWS_CloudHSM_Auditor | CloudHSM Backups | Is there at least one backup in a READY state |
-| AWS_CloudTrail_Auditor | CloudTrail | Is the trail multi-region |
-| AWS_CloudTrail_Auditor | CloudTrail | Does the trail send logs to CWL |
-| AWS_CloudTrail_Auditor | CloudTrail | Is the trail encrypted by KMS |
-| AWS_CloudTrail_Auditor | CloudTrail | Are global/management events logged |
-| AWS_CloudTrail_Auditor | CloudTrail | Is log file validation enabled |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Is the trail multi-region |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail send logs to CWL |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Are the trail logs encrypted by a KMS CMK |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Are global/management events logged |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Is log file validation enabled |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Is the log bucket publicly accessible |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the log bucket enable server access logging |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail log S3 Read & Write Data Events |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor unauthenticated API calls |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor console logins without MFA |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor IAM Root user usage |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor IAM policy changes |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor CloudTrail config changes |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor console authentication failures |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor disabled/delete AWS KMS CMKs |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor S3 bucket policy changes |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor AWS Config changes |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor EC2 Sec Group changes |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor VPC NACL changes |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor Network Gateway changes |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor route table changes |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor Amazon VPC changes |
+| AWS_CloudTrail_Auditor | CloudTrail trail | Does the trail have a log group with a metric and alarm configured to monitor AWS Organizations changes |
 | AWS_CodeArtifact_Auditor | CodeArtifact Repo | Does the CodeArtifact Repo have a least privilege resource policy attached |
 | AWS_CodeArtifact_Auditor | CodeArtifact Domain | Does the CodeArtifact Domain have a least privilege resource policy attached |
 | AWS_CodeBuild_Auditor | CodeBuild project | Is artifact encryption enabled |
@@ -576,8 +626,12 @@ These are the following services and checks perform by each Auditor, there are c
 | AWS_DMS_Auditor | DMS Replication Instance | Are DMS instances publicly accessible |
 | AWS_DMS_Auditor | DMS Replication Instance | Is DMS multi-az configured |
 | AWS_DMS_Auditor | DMS Replication Instance | Are minor version updates configured |
+| AWS_DMS_Auditor | DMS Replication Instance | Are public accessible DMS instances indexed by Shodan |
+| AWS_FIS_Auditor | FIS Experiment Template | Do experiment templates enable logging |
+| AWS_FIS_Auditor | FIS Experiment Template | Do experiment templates define a stop condition |
 | AWS_Global_Accelerator_Auditor | Global Accelerator Endpoint | Is the endpoint healthy |
 | AWS_Global_Accelerator_Auditor | Global Accelerator Accelerator | Are flow logs enabled for accelerator |
+| AWS_Global_Accelerator_Auditor | Global Accelerator Accelerator | Are Global Accelerator Accelerators indexed by Shodan |
 | AWS_Health_Auditor | AWS Health Event | Are there active Security Events |
 | AWS_Health_Auditor | AWS Health Event | Are there active Abuse Events |
 | AWS_Health_Auditor | AWS Health Event | Are there active Risk Events |
@@ -593,11 +647,17 @@ These are the following services and checks perform by each Auditor, there are c
 | AWS_IAM_Auditor | IAM User | Do users have in-line policies attached |
 | AWS_IAM_Auditor | IAM User | Do users have managed policies attached |
 | AWS_IAM_Auditor | Password policy (Account) | Does the IAM password policy meet or exceed AWS CIS Foundations Benchmark standards |
-| AWS_IAM_Auditor | Server certs (Account) | Are they any Server certificates stored by IAM |
+| AWS_IAM_Auditor | Server certifcates | Are they any Server certificates stored by IAM |
 | AWS_IAM_Auditor | IAM Policy | Do managed IAM policies adhere to least privilege principles |
 | AWS_IAM_Auditor | IAM User | Do User IAM inline policies adhere to least privilege principles |
 | AWS_IAM_Auditor | IAM Group | Do Group IAM inline policies adhere to least privilege principles |
 | AWS_IAM_Auditor | IAM Role | Do Role IAM inline policies adhere to least privilege principles |
+| AWS_IAM_Auditor | Root User | Does the root user have access keys |
+| AWS_IAM_Auditor | Root User | Does the root user use any MFA |
+| AWS_IAM_Auditor | Root User | Does the root user use hardware MFA |
+| AWS_IAM_Auditor | IAM Access Key | Access Keys that have been unused for 45 days should be disabled |
+| AWS_IAM_Auditor | Root User | Has the Root User been used in the last 90 days |
+| AWS_IAM_Auditor | IAM Access Analyzer | Is IAM Access Analyzer enabled |
 | AWS_IAMRA_Auditor | IAMRA Trust Anchor | Do Trust Anchors contain self-signed certificates |
 | AWS_IAMRA_Auditor | IAMRA Trust Anchor | Do Trust Anchors use a Certificate Revocation List (CRL) |
 | AWS_IAMRA_Auditor | IAMRA Profile | Do IAMRA Profiles specify a Session Policy |
@@ -628,22 +688,38 @@ These are the following services and checks perform by each Auditor, there are c
 | AWS_RAM_Auditor | RAM Resource Share | Does the resource allow external principals |
 | AWS_Secrets_Manager_Auditor | Secrets Manager secret | Is the secret over 90 days old |
 | AWS_Secrets_Manager_Auditor | Secrets Manager secret | Is secret auto-rotation enabled |
-| AWS_Security_Hub_Auditor | Security Hub (Account) | Are there active high or critical findings in Security Hub |
-| AWS_Security_Services_Auditor | IAM Access Analyzer (Account) | Is IAM Access Analyzer enabled |
-| AWS_Security_Services_Auditor | GuardDuty (Account) | Is GuardDuty enabled |
-| AWS_Security_Services_Auditor | Detective (Account) | Is Detective enabled |
-| AWS_Security_Services_Auditor | Macie2 | Is Macie enabled |
+| AWS_Security_Hub_Auditor | Security Hub hub | Is SecurityHub enabled |
+| AWS_Security_Services_Auditor | Detective graph | Is Detective enabled |
+| AWS_Security_Services_Auditor | Macie2 session | Is Macie enabled |
 | ~~AWS_Security_Services_Auditor~~ | ~~AWS WAFv2 (Regional)~~ | ~~Are Regional Web ACLs configured~~ </br> **THIS FINDING HAS BEEN RETIRED** |
 | ~~AWS_Security_Services_Auditor~~ | ~~AWS WAFv2 (Global)~~ | ~~Are Global Web ACLs (for CloudFront) configured~~ </br> **THIS FINDING HAS BEEN RETIRED** |
 | AWS_Systems_Manager_Auditor | SSM Document | Are self owned SSM Documents publicly shared |
 | AWS_Systems_Manager_Auditor | SSM Association | Does an SSM Association that targets all Instances conduct SSM Agent updates |
 | AWS_Systems_Manager_Auditor | SSM Association | Does an SSM Association that targets all Instances conduct patching |
 | AWS_Systems_Manager_Auditor | SSM Association | Does an SSM Association that targets all Instances conduct inventory gathering |
-| AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | Is the Trusted Advisor check for MFA on Root Account failing |
-| AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | Is the Trusted Advisor check for ELB Listener Security failing |
+| AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | ~~Is the Trusted Advisor check for MFA on Root Account failing~~ </br> **THIS FINDING HAS BEEN RETIRED** |
+| AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | ~~Is the Trusted Advisor check for ELB Listener Security failing~~ </br> **THIS FINDING HAS BEEN RETIRED** |
 | AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | Is the Trusted Advisor check for CloudFront SSL Certs in IAM Cert Store failing |
 | AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | Is the Trusted Advisor check for CloudFront SSL Cert on Origin Server failing |
 | AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | Is the Trusted Advisor check for Exposed Access Keys failing |
+| AWS_VPC_Lattice_Auditor | VPC Lattice service networks | VPC Lattice Service Networks should be associated with a VPC |
+| AWS_VPC_Lattice_Auditor | VPC Lattice service networks | VPC Lattice Service Networks should be associated with a VPC Lattice Service |
+| AWS_VPC_Lattice_Auditor | VPC Lattice service networks | VPC Lattice Service Networks should use IAM Auth |
+| AWS_VPC_Lattice_Auditor | VPC Lattice service networks | VPC Lattice Service Networks should enable logging |
+| AWS_VPC_Lattice_Auditor | VPC Lattice service networks | VPC Lattice Service Networks should define a minimal Auth Policy with Conditions |
+| AWS_VPC_Lattice_Auditor | VPC Lattice services | VPC Lattice Services should use IAM Auth |
+| AWS_VPC_Lattice_Auditor | VPC Lattice services | VPC Lattice Services should enable logging |
+| AWS_VPC_Lattice_Auditor | VPC Lattice services | VPC Lattice Services should define a minimal Auth Policy with Conditions |
+| AWS_VPC_Lattice_Auditor | VPC Lattice target groups | VPC Lattice Target Groups should enforce HTTPS connections |
+| AWS_VPC_Lattice_Auditor | VPC Lattice target groups | VPC Lattice Target Groups should define health checks for IP/Instance targets |
+| AWS_VPC_Lattice_Auditor | VPC Lattice target groups | VPC Lattice Target Groups should be associated with a VPC Lattice Service |
+| AWS_VPC_Lattice_Auditor | VPC Lattice listener | VPC Lattice Listeners should enforce HTTPS connections |
+| AWS_VPN_Auditor | Virtual Private Gateway (VGW) | VGWs should be attached to VPCs |
+| AWS_VPN_Auditor | Customer Gateway (CGW) | Consider using Certificate-based authentication with CGWs |
+| AWS_VPN_Auditor | Site-to-Site VPN | S2S VPNs should have two active tunnels |
+| AWS_VPN_Auditor | Site-to-Site VPN | S2S VPN tunnels should have logging enabled |
+| AWS_VPN_Auditor | Site-to-Site VPN | S2S VPN tunnels should have lifecycle control enabled |
+| AWS_VPN_Auditor | Site-to-Site VPN | S2S VPNs attached to TGWs should enable acceleration |
 | AWS_WAFv2_Auditor | AWS WAFv2 (Regional) | Do Regional WAFs use Cloudwatch Metrics |
 | AWS_WAFv2_Auditor | AWS WAFv2 (Regional) | Do Regional WAFs use Request Sampling |
 | AWS_WAFv2_Auditor | AWS WAFv2 (Regional) | Do Regional WAFs have Logging enabled |
@@ -804,14 +880,5 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_Secrets_Auditor | CloudFormation Stack | Do CloudFormation Stacks have secrets in parameters |
 | Amazon_Secrets_Auditor | ECS Task Definition | Do ECS Task Definitions have secrets in env vars |
 | Amazon_Secrets_Auditor | EC2 Instance | Do EC2 instances have secrets in User Data |
-| Amazon_Shodan_Auditor | EC2 Instance | Are EC2 instances w/ public IPs indexed |
-| Amazon_Shodan_Auditor | ELBv2 (ALB) | Are internet-facing ALBs indexed |
-| Amazon_Shodan_Auditor | RDS Instance | Are public accessible RDS instances indexed |
-| Amazon_Shodan_Auditor | OpenSearch domain | Are ES Domains outside a VPC indexed |
-| Amazon_Shodan_Auditor | ELB (CLB) | Are internet-facing CLBs indexed |
-| Amazon_Shodan_Auditor | DMS Replication Instance | Are public accessible DMS instances indexed |
-| Amazon_Shodan_Auditor | Amazon MQ message broker | Are public accessible message brokers indexed |
-| Amazon_Shodan_Auditor | CloudFront Distribution | Are CloudFront distros indexed |
-| Amazon_Shodan_Auditor | Global Accelerator Accelerator | Are Global Accelerator Accelerators indexed |
 
 Continue to check this section for information on active, retired, and renamed checks or using the `--list-checks` command in the CLI!

@@ -50,7 +50,8 @@ SUPPORTED_FRAMEWORKS = [
     "Critical Risk Profile V1.2",
     "ECB CROE",
     "Equifax SCF V1.0",
-    "FBI CJIS Security Policy V5.9"
+    "FBI CJIS Security Policy V5.9",
+    "CIS Amazon Web Services Foundations Benchmark V1.5"
 ]
 
 with open(f"{here}/mapped_compliance_controls.json") as jsonfile:
@@ -116,6 +117,8 @@ class JsonProvider(object):
                             newControls.append(crosswalk)
                 else:
                     continue
+
+            complianceRelatedRequirements.extend(newControls)
             
             processedFindings.append(
                 {
@@ -846,6 +849,15 @@ class JsonProvider(object):
             </br>The CJIS Security Policy applies to any organizations which handles or processes CJI, regardless of the industry or if they work within intelligence or law enforcement, while there is not a formal certification process the FBI can and will conduct Security Policy Compliance Audits against processes and subsystems which handle (or support the handling of) CJI. ElectricEye does not cover every single control, the United States Department of Justice provides mappings of several FBI CJIS Security Policy requirements to NIST Special Publication 800-53 Revision 5 which are in turn mapped against the CIS Critical Controls V8 control framework which is mapped to the NIST CSF V1.1 Subcategories that every single ElectricEye Check is mapped to.</br>
             
             </br>Every CJIS Requirement that was related to handling of evidence, training, awareness, and other physical security and endpoint management requirements were manually removed to reduce over-mapping. As these requirements are closer to law than to controls, it is up to an organization to ensure that ElectricEye is ran against their CJI systems and understand the requirement instead of simply relying on these mappings. ElectricEye can help you prepare for certain parts of the FBI CJIS Security Policy Compliance Audit but should not be taken as a qualified opinion. ElectricEye will not contextualize any compensating controls or exceptions that you define.
+            """
+
+        # CIS Amazon Web Services Foundations Benchmark V1.5
+        elif framework == "CIS Amazon Web Services Foundations Benchmark V1.5":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/CIS_AWS_Foundation_V1_5.JPG" class="framework__header__image">'
+            frameworkInfo = """
+            All CIS Benchmarks focus on technical configuration settings used to maintain and/or increase the security of the addressed technology, and they should be used in conjunction with other essential cyber hygiene tasks like: Monitoring the base operating system for vulnerabilities and quickly updating with the latest security patches or Monitoring applications and libraries for vulnerabilities and quickly updating with the latest security patches.</br>
+
+            </br>This benchmark provides prescriptive guidance for configuring security options for a subset of Amazon Web Services with an emphasis on foundational, testable, and architecture agnostic settings. This CIS Benchmark was created using a consensus review process comprised of a global community of subject matter experts. The process combines real world experience with data-based information to create technology specific guidance to assist users to secure their environments. Consensus participants provide perspective from a diverse set of backgrounds including consulting, software development, audit and compliance, security research, operations, government, and legal. 
             """
 
         else:

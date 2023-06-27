@@ -79,6 +79,8 @@
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Networking-Content-Delivery/64/Arch_Amazon-CloudFront_64.svg">
 - AssetService: Amazon CloudSearch
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Analytics/64/Arch_Amazon-CloudSearch_64.svg">
+- AssetService: Amazon CloudWatch
+  ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Management-Governance/64/Arch_Amazon-CloudWatch_64.svg">
 - AssetService: Amazon Cognito
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Security-Identity-Compliance/64/Arch_Amazon-Cognito_64.svg">
 - AssetService: Amazon Detective
@@ -107,7 +109,7 @@
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Containers/64/Arch_Amazon-Elastic-Kubernetes-Service_64.svg">
 - AssetService: Amazon Elastic MapReduce
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Analytics/64/Arch_Amazon-EMR_64.svg">
-- AssetService: Amazon Global Accelerator
+- AssetService: AWS Global Accelerator
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Networking-Content-Delivery/64/Arch_AWS-Global-Accelerator_64.svg">
 - AssetService: Amazon GuardDuty
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Security-Identity-Compliance/64/Arch_Amazon-GuardDuty_64.svg">
@@ -165,6 +167,18 @@
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Analytics/64/Arch_Amazon-EMR_64.svg">
 - AssetService: Amazon Inspector V2
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Security-Identity-Compliance/64/Arch_Amazon-Inspector_64.svg">
+- AssetService: AWS Site-to-Site VPN
+  ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Networking-Content-Delivery/64/Arch_AWS-Site-to-Site-VPN_64.svg">
+- AssetService: AWS Fault Injection Simulator
+  ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Management-Governance/64/Arch_AWS-Fault-Injection-Simulator_64.svg">
+- AssetService: AWS VPC Lattice
+  ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Networking-Content-Delivery/64/Arch_Amazon-VPC-Lattice_64.svg">
+- AssetService: Amazon Elastic Transcoder
+  ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Media-Services/64/Arch_Amazon-Elastic-Transcoder_64.svg">
+- AssetService: AWS PrivateLink
+  ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Networking-Content-Delivery/64/Arch_AWS-PrivateLink_64.svg">
+- AssetService: AWS Verified Access
+  ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Networking-Content-Delivery/64/Arch_AWS-Verified-Access_64.svg">
 #########################################
 # AWS - ASSET_SERVICE + COMPONENT ICONS #
 #########################################
