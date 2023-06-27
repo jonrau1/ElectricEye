@@ -253,7 +253,7 @@ class CloudConfig(object):
 
         # M365
         elif assessmentTarget == "M365":
-            # Process data["credentials"]["servicenow"] - values need to be assigned to self
+            # Process data["credentials"]["m365"] - values need to be assigned to self
             m365Values = data["credentials"]["m365"]
 
             m365ClientId = m365Values["m365_ent_app_client_id_value"]
@@ -313,6 +313,107 @@ class CloudConfig(object):
                     "m365_ent_app_tenant_id_value"
                 )
     
+        # Salesforce
+        elif assessmentTarget == "Salesforce":
+            # Process data["credentials"]["m365"] - values need to be assigned to self
+            salesforceValues = data["credentials"]["salesforce"]
+
+            salesforceAppClientId = salesforceValues["salesforce_connected_app_client_id_value"]
+            salesforceAppClientSecret = salesforceValues["salesforce_connected_app_client_secret_value"]
+            salesforceApiUsername = salesforceValues["salesforce_api_enabled_username_value"]
+            salesforceApiPassword = salesforceValues["salesforce_api_enabled_password_value"]
+            salesforceUserSecurityToken = salesforceValues["salesforce_api_enabled_security_token_value"]
+            salesforceInstanceLocation = salesforceValues["salesforce_instance_location"]
+            salesforceFailedLoginBreachingRate = salesforceValues["salesforce_failed_login_breaching_rate"]
+            salesforceApiVersion = salesforceValues["salesforce_api_version"]
+
+            if any(
+                # Check to make sure none of the variables pulled from TOML are emtpy
+                not var for var in [
+                    salesforceAppClientId, salesforceAppClientSecret, salesforceApiUsername, salesforceApiPassword, salesforceUserSecurityToken, salesforceInstanceLocation, salesforceFailedLoginBreachingRate, salesforceApiVersion
+                    ]
+                ):
+                print(f"One of your M365 TOML entries in [credentials.m365] is empty!")
+                exit(2)
+
+            # The failed login breaching rate and API Version will be in plaintext/env vars
+            environ["SALESFORCE_FAILED_LOGIN_BREACHING_RATE"] = salesforceFailedLoginBreachingRate
+            environ["SFDC_API_VERSION"] = salesforceApiVersion
+
+            # Retrieve the values for the Salesforce Client ID, Client Secret, Username, Password, Security Token and Location
+            # Local config file
+            if self.credentialsLocation == "CONFIG_FILE":
+                self.salesforceAppClientId = salesforceAppClientId
+                self.salesforceAppClientSecret = salesforceAppClientSecret
+                self.salesforceApiUsername = salesforceApiUsername
+                self.salesforceApiPassword = salesforceApiPassword
+                self.salesforceUserSecurityToken = salesforceUserSecurityToken
+                self.salesforceInstanceLocation = salesforceInstanceLocation
+            # SSM
+            elif self.credentialsLocation == "AWS_SSM":
+                # Client ID
+                self.salesforceAppClientId = self.get_credential_from_aws_ssm(
+                    m365ClientId,
+                    "salesforce_connected_app_client_id_value"
+                )
+                # Client Secret
+                self.salesforceAppClientSecret = self.get_credential_from_aws_ssm(
+                    m365SecretId,
+                    "salesforce_connected_app_client_secret_value"
+                )
+                # API Username
+                self.salesforceApiUsername = self.get_credential_from_aws_ssm(
+                    m365TenantId,
+                    "salesforce_api_enabled_username_value"
+                )
+                # API User Password
+                self.salesforceApiPassword = self.get_credential_from_aws_ssm(
+                    m365TenantId,
+                    "salesforce_api_enabled_password_value"
+                )
+                # API User Security Token
+                self.salesforceUserSecurityToken = self.get_credential_from_aws_ssm(
+                    m365TenantId,
+                    "salesforce_api_enabled_security_token_value"
+                )
+                # Instance Location
+                self.salesforceInstanceLocation = self.get_credential_from_aws_ssm(
+                    m365TenantId,
+                    "salesforce_instance_location"
+                )
+            # AWS Secrets Manager
+            elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
+                # Client ID
+                self.salesforceAppClientId = self.get_credential_from_aws_secrets_manager(
+                    m365ClientId,
+                    "salesforce_connected_app_client_id_value"
+                )
+                # Client Secret
+                self.salesforceAppClientSecret = self.get_credential_from_aws_secrets_manager(
+                    m365SecretId,
+                    "salesforce_connected_app_client_secret_value"
+                )
+                # API Username
+                self.salesforceApiUsername = self.get_credential_from_aws_secrets_manager(
+                    m365TenantId,
+                    "salesforce_api_enabled_username_value"
+                )
+                # API User Password
+                self.salesforceApiPassword = self.get_credential_from_aws_secrets_manager(
+                    m365TenantId,
+                    "salesforce_api_enabled_password_value"
+                )
+                # API User Security Token
+                self.salesforceUserSecurityToken = self.get_credential_from_aws_secrets_manager(
+                    m365TenantId,
+                    "salesforce_api_enabled_security_token_value"
+                )
+                # Instance Location
+                self.salesforceInstanceLocation = self.get_credential_from_aws_secrets_manager(
+                    m365TenantId,
+                    "salesforce_instance_location"
+                )
+
     def get_aws_regions(self):
         """
         Uses EC2 DescribeRegions API to get a list of opted-in AWS Regions

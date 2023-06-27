@@ -59,9 +59,15 @@ Use the following steps to create a basic Connected Application.
 
 ![Step6](../../screenshots/setup/salesforce/step6.JPG)
 
-If you will be running ElectricEye from behind a set IP such as a NAT Gateway, an Amazon EC2 Elastic IP, or any other fixed IP ranges consider adding IP allowlists to your Connected App. Double-check that all of your sensitive data is stored in a secure location with strong crytopgrahy that is only accessible to the identity that will run ElectricEye.
+**NOTE** If you will be running ElectricEye from behind a set IP such as a NAT Gateway, an Amazon EC2 Elastic IP, or any other fixed IP ranges consider adding IP allowlists to your Connected App. Double-check that all of your sensitive data is stored in a secure location with strong crytopgrahy that is only accessible to the identity that will run ElectricEye.
 
-In the next section you will need to refer to these values and/or secrets for the TOML configuration.
+7. To access MFA information for users in the `TwoFactorInfo` and `TwoFactorMethodsInfo` APIs, you must add **Manage Multi-Factor Authentication in API** and **Manage Multi-Factor Authentication in User Interface** in the **General User Permissions** section of the assigned Profile as shown below.
+
+![Step7](../../screenshots/setup/salesforce/step7.JPG)
+
+**NOTE** The easiest way to accomplish Step 7 is cloning a `Systems Administrator` or similar default-assigned profile for `Salesforce` licensees and enabling those permissions for your user. You will need another Administrator to change the profile of current Administrators, so you may be required to create or modify another User and swap between sessions to ensure you have the proper permissions.
+
+Once complete, proceed to the next section to learn how to configure the TOML configuration file for ElectricEye.
 
 ## Configuring TOML
 

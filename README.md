@@ -129,13 +129,13 @@ The following Cloud Service Providers are on the Roadmap
 
 - [For ServiceNow](./docs/setup/Setup_ServiceNow.md)
 - [For Microsoft M365](./docs/setup/Setup_M365.md)
+- [For Salesforce](./docs/setup/Setup_Salesforce.md)
 
 The following SaaS Providers are on the Roadmap
 
 - [For Workday ERP (*Coming Soon*)](./docs/setup/Setup_WorkDay.md)
 - [For GitHub (*Coming Soon*)](./docs/setup/Setup_GitHub.md)
 - [For Google Workspaces (*Coming Soon*)](./docs/setup/Setup_Google_Workspaces.md)
-- [For Salesforce (*Coming Soon*)](./docs//setup/Setup_Salesforce.md)
 
 ## ElectricEye on Docker
 
@@ -257,7 +257,7 @@ For more information on ElectricEye's CAM concept of operations and schema, refe
 In total there are:
 
 - **3** Supported Public CSPs: `AWS`, `GCP`, `OCI`
-- **2** Supported SaaS Provider: `ServiceNow`, `M365`
+- **3** Supported SaaS Provider: `ServiceNow`, `M365`, `Salesforce`
 - **1037** ElectricEye Checks
 - **156** Supported CSP & SaaS Asset Components across all Services
 - **117** ElectricEye Auditors
