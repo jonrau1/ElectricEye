@@ -333,7 +333,7 @@ class CloudConfig(object):
                     salesforceAppClientId, salesforceAppClientSecret, salesforceApiUsername, salesforceApiPassword, salesforceUserSecurityToken, salesforceInstanceLocation, salesforceFailedLoginBreachingRate, salesforceApiVersion
                     ]
                 ):
-                print(f"One of your M365 TOML entries in [credentials.m365] is empty!")
+                print(f"One of your Salesforce TOML entries in [credentials.salesforce] is empty!")
                 exit(2)
 
             # The failed login breaching rate and API Version will be in plaintext/env vars

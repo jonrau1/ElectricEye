@@ -18,8 +18,8 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 </p>
 
 <p align="center">
-  <a href="https://gallery.ecr.aws/t4o3u7t2/electriceye"><img width="150" height=40" alt="AWS ECR Gallery" src="https://user-images.githubusercontent.com/3985464/151531396-b6535a68-c907-44eb-95a1-a09508178616.png"></a>
-  <a href="https://hub.docker.com/r/electriceye/electriceye"><img width="150" height=40" alt="Docker Hub" src="https://www.unixtutorial.org/images/software/docker-hub.png"></a>
+  <a href="https://gallery.ecr.aws/t4o3u7t2/electriceye"><img width="150" height="40" padding="5" alt="AWS ECR Gallery" src="https://user-images.githubusercontent.com/3985464/151531396-b6535a68-c907-44eb-95a1-a09508178616.png"></a>
+  <a href="https://hub.docker.com/r/electriceye/electriceye"><img width="150" height="40" padding="5" alt="Docker Hub" src="https://www.unixtutorial.org/images/software/docker-hub.png"></a>
 </p>
 
 ***Up here in space***<br/>
@@ -49,13 +49,13 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 
 ## Quick Run Down :running: :running:
 
-- ElectricEye is a Python CLI tool that offers cross-Account, cross-Region, multi-Cloud & SaaS Asset Management, Security Posture Management, and Attack Surface Monitoring capabilities across [AWS, all Partitions supported!](https://aws.amazon.com/), [GCP](https://cloud.google.com/), [Oracle Cloud Infrastructure (OCI)](https://www.oracle.com/cloud/), [ServiceNow](https://www.servicenow.com/), and [Microsoft 365 Enterprise (*M365*)](https://www.microsoft.com/en-us/microsoft-365/compare-microsoft-365-enterprise-plans) *with more on the way*.
+- ElectricEye is a Python CLI tool that offers cross-Account, cross-Region, multi-Cloud & SaaS Asset Management, Security Posture Management, and Attack Surface Monitoring capabilities across [AWS, all Partitions supported!](https://aws.amazon.com/), [GCP](https://cloud.google.com/), [Oracle Cloud Infrastructure (OCI)](https://www.oracle.com/cloud/), [ServiceNow](https://www.servicenow.com/), [Microsoft 365 Enterprise (*M365*)](https://www.microsoft.com/en-us/microsoft-365/compare-microsoft-365-enterprise-plans), and [Salesforce (*SFDC*)](https://help.salesforce.com/s), *with more on the way*.
 
-- ElectricEye offers over *900* checks for security, reliability, monitoring, and exposure across more than 100 CSP & SaaS services, including atypical services not supported by AWS Config/Google Cloud Asset API or mainstream CSPM & CNAPP tools.
+- ElectricEye offers over *900* checks for security, reliability, monitoring, and exposure across more than 100 CSP & SaaS services, including atypical services not supported by CSP/SaaS-native asset management tools/views or mainstream CSPM & CNAPP tools.
 
-- Every single Check is mapped to over 20 controls frameworks covering general best practices, regulatory, industry-specific, and legal frameworks such as NIST CSF, AICPA TSCs (for SOC 2), the HIPAA Security Rule, NIST 800-171 Rev. 2, CMMC V2.0, European Central Bank's CROE Section 2, PCI-DSS V4.0, and more!
+- Every single Check is mapped to over 20 controls frameworks covering general best practices, regulatory, industry-specific, and legal frameworks such as NIST CSF, AICPA TSCs (for SOC 2), the HIPAA Security Rule, NIST 800-171 Rev. 2, CMMC V2.0, European Central Bank's CROE Section 2, PCI-DSS V4.0, CIS Foundations Benchmarks, and more!
 
-- Multi-faceted Attack Surface Monitoring uses tools such as VirusTotal, Nmap, Shodan.io, Detect-Secrets, and CISA's KEV to locate assets indexed on the internet, find exposed services, locate exploitable vulnerabilities, and malicious packages in artifact repositories.
+- Multi-faceted Attack Surface Monitoring uses tools such as VirusTotal, Nmap, Shodan.io, Detect-Secrets, and CISA's KEV to locate assets indexed on the internet, find exposed services, locate exploitable vulnerabilities, and malicious packages in artifact repositories, respectively.
 
 - Outputs to [AWS Security Hub](https://aws.amazon.com/security-hub/), [AWS DocumentDB](https://aws.amazon.com/documentdb/), JSON, CSV, HTML Reports, [MongoDB](https://www.mongodb.com/), [Amazon SQS](https://aws.amazon.com/sqs/), [PostgreSQL](https://www.postgresql.org/), [Slack](https://slack.com/) (via Slack App Bots), and [FireMon Cloud Defense](https://www.firemon.com/introducing-disruptops/).
 
@@ -74,7 +74,7 @@ $ python3 eeauditor/controller.py --help
 Usage: controller.py [OPTIONS]
 
 Options:
-  -t, --target-provider [AWS|Azure|OCI|GCP|Servicenow|M365]
+  -t, --target-provider [AWS|Azure|OCI|GCP|Servicenow|M365|Salesforce]
                                   CSP or SaaS Vendor Assessment Target, ensure
                                   that any -a or -c arg maps to your target
                                   provider e.g., -t AWS -a
@@ -258,9 +258,9 @@ In total there are:
 
 - **3** Supported Public CSPs: `AWS`, `GCP`, `OCI`
 - **3** Supported SaaS Provider: `ServiceNow`, `M365`, `Salesforce`
-- **1037** ElectricEye Checks
-- **156** Supported CSP & SaaS Asset Components across all Services
-- **117** ElectricEye Auditors
+- **1039** ElectricEye Checks
+- **157** Supported CSP & SaaS Asset Components across all Services
+- **118** ElectricEye Auditors
 
 The tables of supported Services and Checks have been migrated to the respective per-Provider setup documentation linked above in [Configuring ElectricEye](#configuring-electriceye).
 

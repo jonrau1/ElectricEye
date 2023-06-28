@@ -82,3 +82,12 @@ To configure the TOML file, you need to modify the values of the variables in th
 ## Use ElectricEye for Salesforce
 
 ## Salesforce Checks & Services
+
+These are the following services and checks perform by each Auditor, there are currently **2 Checks** across **1 Auditors** that support the secure configuration of **1 services/components**
+
+| Auditor File Name | Scanned Resource Name | Auditor Scan Description |
+|---|---|---|
+| Salesforce_Users_Auditor | Salesforce user | Users that are not active should be audited |
+| Salesforce_Users_Auditor | Salesforce user | Users should have an MFA device |
+
+Continue to check this section for information on active, retired, and renamed checks or using the `--list-checks` command in the CLI!
