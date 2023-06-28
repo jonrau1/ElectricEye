@@ -61,7 +61,7 @@ def get_servicenow_sys_properties(cache: dict):
 @registry.register_check("servicenow.inputvalidation")
 def servicenow_sspm_disallow_embedded_html_code_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.InputValidation.1] Instance should disable support for embedding HTML code created using the [code] tag
+    [Servicenow.InputValidation.1] Instance should disable support for embedding HTML code created using the [code] tag
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -114,7 +114,7 @@ def servicenow_sspm_disallow_embedded_html_code_check(cache: dict, awsAccountId:
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.1] Instance should disable support for embedding HTML code created using the [code] tag",
+            "Title": "[Servicenow.InputValidation.1] Instance should disable support for embedding HTML code created using the [code] tag",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not disable support for embedding HTML code created using the [code] tag. Use the 'glide.ui.security.allow_codetag' property to disable support for embedding HTML code created using the [code] tag. Input validation must occur in the application to defend against cross-site scripting attacks. These attacks enable foreign scripts to execute on a user session in the logged in browser's context. Attackers can use it to steal session information and sensitive data. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -190,7 +190,7 @@ def servicenow_sspm_disallow_embedded_html_code_check(cache: dict, awsAccountId:
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.1] Instance should disable support for embedding HTML code created using the [code] tag",
+            "Title": "[Servicenow.InputValidation.1] Instance should disable support for embedding HTML code created using the [code] tag",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does disable support for embedding HTML code created using the [code] tag.",
             "Remediation": {
                 "Recommendation": {
@@ -257,7 +257,7 @@ def servicenow_sspm_disallow_embedded_html_code_check(cache: dict, awsAccountId:
 @registry.register_check("servicenow.inputvalidation")
 def servicenow_sspm_disallow_js_tags_embedded_html_code_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.InputValidation.2] Instance should disable support for embedding HTML JavaScript code created using the [code] tag
+    [Servicenow.InputValidation.2] Instance should disable support for embedding HTML JavaScript code created using the [code] tag
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -310,7 +310,7 @@ def servicenow_sspm_disallow_js_tags_embedded_html_code_check(cache: dict, awsAc
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.2] Instance should disable support for embedding HTML JavaScript code created using the [code] tag",
+            "Title": "[Servicenow.InputValidation.2] Instance should disable support for embedding HTML JavaScript code created using the [code] tag",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not disable support for embedding HTML JavaScript code created using the [code] tag. Use the glide.ui.security.codetag.allow_script property to disable support for embedding HTML JavaScript code created using of the [code] tag. The Now Platform mitigates many injection and cross-site attacks by implementing escaping and encoding techniques. As a result, users can't write and submit HTML formatted inputs for journal fields. However, journal fields can render text enclosed within code tags as HTML. Input validation must occur in the application to defend against cross-site scripting attacks. These attacks enable foreign scripts to execute on the user session in the logged in browser's context. Attackers can use it to steal session information and sensitive data. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -386,7 +386,7 @@ def servicenow_sspm_disallow_js_tags_embedded_html_code_check(cache: dict, awsAc
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.1] Instance should disable support for embedding HTML code created using the [code] tag",
+            "Title": "[Servicenow.InputValidation.1] Instance should disable support for embedding HTML code created using the [code] tag",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does disable support for embedding HTML code created using the [code] tag.",
             "Remediation": {
                 "Recommendation": {
@@ -453,7 +453,7 @@ def servicenow_sspm_disallow_js_tags_embedded_html_code_check(cache: dict, awsAc
 @registry.register_check("servicenow.inputvalidation")
 def servicenow_sspm_check_unsanitized_html_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.InputValidation.3] Instance should enforce sanitization behavior of translated_html fields on a global level for field assignments
+    [Servicenow.InputValidation.3] Instance should enforce sanitization behavior of translated_html fields on a global level for field assignments
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -506,7 +506,7 @@ def servicenow_sspm_check_unsanitized_html_check(cache: dict, awsAccountId: str,
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.3] Instance should enforce sanitization behavior of translated_html fields on a global level for field assignments",
+            "Title": "[Servicenow.InputValidation.3] Instance should enforce sanitization behavior of translated_html fields on a global level for field assignments",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not enforce sanitization behavior of translated_html fields on a global level for field assignments. Use the 'com.glide.security.check_unsanitized_html' property to enforce sanitization behavior of translated_html fields on a global level for field assignments. Input validation must occur on the application to defend against cross-site scripting attacks. These attacks enable foreign scripts to execute on user sessions in the logged in browser's context. Attackers can use it to steal session information and sensitive data. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -582,7 +582,7 @@ def servicenow_sspm_check_unsanitized_html_check(cache: dict, awsAccountId: str,
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.3] Instance should enforce sanitization behavior of translated_html fields on a global level for field assignments",
+            "Title": "[Servicenow.InputValidation.3] Instance should enforce sanitization behavior of translated_html fields on a global level for field assignments",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does enforce sanitization behavior of translated_html fields on a global level for field assignments.",
             "Remediation": {
                 "Recommendation": {
@@ -649,7 +649,7 @@ def servicenow_sspm_check_unsanitized_html_check(cache: dict, awsAccountId: str,
 @registry.register_check("servicenow.inputvalidation")
 def servicenow_sspm_client_generated_scripts_sandbox_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.InputValidation.4] Instance should be configured to enable script sandboxing
+    [Servicenow.InputValidation.4] Instance should be configured to enable script sandboxing
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -702,7 +702,7 @@ def servicenow_sspm_client_generated_scripts_sandbox_check(cache: dict, awsAccou
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.4] Instance should be configured to enable script sandboxing",
+            "Title": "[Servicenow.InputValidation.4] Instance should be configured to enable script sandboxing",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to enable script sandboxing. Use the glide.script.use.sandbox property to enable script sandboxing. The Now Platform provides wide variety of features and functionality through JavaScript queries. However, without appropriate authorization and validation, there is a potential for an attacker to perform unauthorized operations against the platform. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -778,7 +778,7 @@ def servicenow_sspm_client_generated_scripts_sandbox_check(cache: dict, awsAccou
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.4] Instance should be configured to enable script sandboxing",
+            "Title": "[Servicenow.InputValidation.4] Instance should be configured to enable script sandboxing",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to enable script sandboxing.",
             "Remediation": {
                 "Recommendation": {
@@ -845,7 +845,7 @@ def servicenow_sspm_client_generated_scripts_sandbox_check(cache: dict, awsAccou
 @registry.register_check("servicenow.inputvalidation")
 def servicenow_sspm_enable_ajaxevaluate_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.InputValidation.5] Instance should disable AJAXEvaluate to restrict arbitrary client script execution
+    [Servicenow.InputValidation.5] Instance should disable AJAXEvaluate to restrict arbitrary client script execution
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -898,7 +898,7 @@ def servicenow_sspm_enable_ajaxevaluate_check(cache: dict, awsAccountId: str, aw
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.5] Instance should disable AJAXEvaluate to restrict arbitrary client script execution",
+            "Title": "[Servicenow.InputValidation.5] Instance should disable AJAXEvaluate to restrict arbitrary client script execution",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not disable AJAXEvaluate to restrict arbitrary client script execution. Use the glide.script.allow.ajaxevaluate property to restrict arbitrary client script execution using the system API on the server side. AJAXEvaluate can allow arbitrary JavaScript code to execute on the client browser by applying the server-side objects. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -974,7 +974,7 @@ def servicenow_sspm_enable_ajaxevaluate_check(cache: dict, awsAccountId: str, aw
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.5] Instance should disable AJAXEvaluate to restrict arbitrary client script execution",
+            "Title": "[Servicenow.InputValidation.5] Instance should disable AJAXEvaluate to restrict arbitrary client script execution",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does disable AJAXEvaluate to restrict arbitrary client script execution.",
             "Remediation": {
                 "Recommendation": {
@@ -1041,7 +1041,7 @@ def servicenow_sspm_enable_ajaxevaluate_check(cache: dict, awsAccountId: str, aw
 @registry.register_check("servicenow.inputvalidation")
 def servicenow_sspm_escape_excel_formula_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.InputValidation.6] Instance should be configured to prevent Excel or formula injection
+    [Servicenow.InputValidation.6] Instance should be configured to prevent Excel or formula injection
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -1094,7 +1094,7 @@ def servicenow_sspm_escape_excel_formula_check(cache: dict, awsAccountId: str, a
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.6] Instance should be configured to prevent Excel or formula injection",
+            "Title": "[Servicenow.InputValidation.6] Instance should be configured to prevent Excel or formula injection",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to prevent Excel or formula injection. Use the glide.export.escape_formulas property to prevent Excel Injection, also, known as formula injection. Excel injection occurs when websites embed untrusted entries inside Excel files. When you use a spreadsheet application such as Microsoft Excel, or LibreOffice Call, to open a file, any cells starting with +, -, =, or @ are interpreted as a formula. When you set the glide.export.escape_formulas property to true, string values starting with +, -, =, or @ are prepended with a single apostrophe when you export to CSV, XLS, or XLSX files. Malicious formulae pose a risk even when the embedding spreadsheet doesn't contain any sensitive information, as they can be used to compromise the viewer's computer. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -1170,7 +1170,7 @@ def servicenow_sspm_escape_excel_formula_check(cache: dict, awsAccountId: str, a
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.6] Instance should be configured to prevent Excel or formula injection",
+            "Title": "[Servicenow.InputValidation.6] Instance should be configured to prevent Excel or formula injection",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to prevent Excel or formula injection.",
             "Remediation": {
                 "Recommendation": {
@@ -1237,7 +1237,7 @@ def servicenow_sspm_escape_excel_formula_check(cache: dict, awsAccountId: str, a
 @registry.register_check("servicenow.inputvalidation")
 def servicenow_sspm_escape_html_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.InputValidation.7] Instance should be configured to escape HTML
+    [Servicenow.InputValidation.7] Instance should be configured to escape HTML
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -1290,7 +1290,7 @@ def servicenow_sspm_escape_html_check(cache: dict, awsAccountId: str, awsRegion:
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.7] Instance should be configured to escape HTML",
+            "Title": "[Servicenow.InputValidation.7] Instance should be configured to escape HTML",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to escape HTML. Use the glide.ui.escape_html_list_field property to force HTML escapes for HTML fields in a list view. HTML is one of the types that can be assigned to the dictionary fields. Assigning HTML fields to any field type provides the functionality to format content using HTML codes (for example, <p>, <a href>, <b>, <font>, <img>). A malicious user can inject HTML code within the form field to execute unwanted scripts on different client/user sessions. Input validation must occur on the application to defend against cross-site scripting attacks. These attacks enable foreign scripts to execute on user sessions in the logged in browser's context. Attackers can use it to steal session information and sensitive data. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -1366,7 +1366,7 @@ def servicenow_sspm_escape_html_check(cache: dict, awsAccountId: str, awsRegion:
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.7] Instance should be configured to escape HTML",
+            "Title": "[Servicenow.InputValidation.7] Instance should be configured to escape HTML",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to escape HTML.",
             "Remediation": {
                 "Recommendation": {
@@ -1433,7 +1433,7 @@ def servicenow_sspm_escape_html_check(cache: dict, awsAccountId: str, awsRegion:
 @registry.register_check("servicenow.inputvalidation")
 def servicenow_sspm_escape_javascript_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.InputValidation.8] Instance should be configured to escape JavaScript
+    [Servicenow.InputValidation.8] Instance should be configured to escape JavaScript
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -1486,7 +1486,7 @@ def servicenow_sspm_escape_javascript_check(cache: dict, awsAccountId: str, awsR
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.8] Instance should be configured to escape JavaScript",
+            "Title": "[Servicenow.InputValidation.8] Instance should be configured to escape JavaScript",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to escape JavaScript. Use the glide.html.escape_script property to force escape from JavaScript (<script></script>) tags in HTML fields during list views. HTML is one of the types that can be assigned to the dictionary fields. Assigning HTML fields to any field type provides functionality to the user to format the content using HTML codes (for example, <p>, <a href>, <b>, <font>, <img>). If you set glide.html.escape_script to false, the (<script></script>) tags may appear when you select that column in a list view while viewing a table or record listing. Input validation must occur in the application to defend against cross-site scripting attacks. These attacks enable foreign scripts to execute on user session in the logged in browser's context. Attackers can use it to steal session information and sensitive data. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -1562,7 +1562,7 @@ def servicenow_sspm_escape_javascript_check(cache: dict, awsAccountId: str, awsR
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.8] Instance should be configured to escape JavaScript",
+            "Title": "[Servicenow.InputValidation.8] Instance should be configured to escape JavaScript",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to escape JavaScript.",
             "Remediation": {
                 "Recommendation": {
@@ -1629,7 +1629,7 @@ def servicenow_sspm_escape_javascript_check(cache: dict, awsAccountId: str, awsR
 @registry.register_check("servicenow.inputvalidation")
 def servicenow_sspm_escape_jelly_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.InputValidation.9] Instance should be configured to escape Jelly
+    [Servicenow.InputValidation.9] Instance should be configured to escape Jelly
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -1682,7 +1682,7 @@ def servicenow_sspm_escape_jelly_check(cache: dict, awsAccountId: str, awsRegion
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.9] Instance should be configured to escape Jelly",
+            "Title": "[Servicenow.InputValidation.9] Instance should be configured to escape Jelly",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to escape Jelly. Use the glide.ui.escape_all_script property to force escape of all scripts injected into Jelly. It escapes all the JS and HTML strings included in <j:jelly> ... </j:jelly> before they are written to the output stream, preventing several XSS issues from occurring. Input validation has to occur on all the user input being entered on the application. By doing so, injection attacks against the platform can be defended and protected. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -1758,7 +1758,7 @@ def servicenow_sspm_escape_jelly_check(cache: dict, awsAccountId: str, awsRegion
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.9] Instance should be configured to escape Jelly",
+            "Title": "[Servicenow.InputValidation.9] Instance should be configured to escape Jelly",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to escape Jelly.",
             "Remediation": {
                 "Recommendation": {
@@ -1825,7 +1825,7 @@ def servicenow_sspm_escape_jelly_check(cache: dict, awsAccountId: str, awsRegion
 @registry.register_check("servicenow.inputvalidation")
 def servicenow_sspm_escape_xml_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.InputValidation.10] Instance should be configured to escape XML
+    [Servicenow.InputValidation.10] Instance should be configured to escape XML
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -1878,7 +1878,7 @@ def servicenow_sspm_escape_xml_check(cache: dict, awsAccountId: str, awsRegion: 
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.10] Instance should be configured to escape XML",
+            "Title": "[Servicenow.InputValidation.10] Instance should be configured to escape XML",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to escape XML. Use the glide.ui.escape_text property to force escape of XML values at the parser level before transmitting them to the client's browser. Cross-site scripting occurs when an attacker injects malicious JavaScript into an entry point. The platform/application fails to escape the malicious JavaScript before transmitting it to the victim's browser for execution. Input validation must occur on the application to defend against cross-site scripting attacks. These attacks enable foreign scripts to execute on user session in the logged in browser's context. Attackers can use it to steal session information and sensitive data. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -1954,7 +1954,7 @@ def servicenow_sspm_escape_xml_check(cache: dict, awsAccountId: str, awsRegion: 
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.10] Instance should be configured to escape XML",
+            "Title": "[Servicenow.InputValidation.10] Instance should be configured to escape XML",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to escape XML.",
             "Remediation": {
                 "Recommendation": {
@@ -2021,7 +2021,7 @@ def servicenow_sspm_escape_xml_check(cache: dict, awsAccountId: str, awsRegion: 
 @registry.register_check("servicenow.inputvalidation")
 def servicenow_sspm_html_sanitizer_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.InputValidation.11] Instance should be configured to sanitize HTML input
+    [Servicenow.InputValidation.11] Instance should be configured to sanitize HTML input
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -2074,7 +2074,7 @@ def servicenow_sspm_html_sanitizer_check(cache: dict, awsAccountId: str, awsRegi
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.11] Instance should be configured to sanitize HTML input",
+            "Title": "[Servicenow.InputValidation.11] Instance should be configured to sanitize HTML input",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to sanitize HTML input. Use the glide.html.sanitize_all_fields property to enable the HTMLSanitizer script include, which sanitizes HTML input based on exclusion listed and inclusion listed attributes configured in a script. User input should be securely treated when the data is being stored and processed on the application.This reduces client-side cross-site scripting attacks by output encoding the data. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -2150,7 +2150,7 @@ def servicenow_sspm_html_sanitizer_check(cache: dict, awsAccountId: str, awsRegi
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.11] Instance should be configured to sanitize HTML input",
+            "Title": "[Servicenow.InputValidation.11] Instance should be configured to sanitize HTML input",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to sanitize HTML input.",
             "Remediation": {
                 "Recommendation": {
@@ -2217,7 +2217,7 @@ def servicenow_sspm_html_sanitizer_check(cache: dict, awsAccountId: str, awsRegi
 @registry.register_check("servicenow.inputvalidation")
 def servicenow_sspm_javascript_jelly_interpolation_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.InputValidation.12] Instance should mitigate against malicious code execution attacks that can occur using Jelly Injection
+    [Servicenow.InputValidation.12] Instance should mitigate against malicious code execution attacks that can occur using Jelly Injection
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -2270,7 +2270,7 @@ def servicenow_sspm_javascript_jelly_interpolation_check(cache: dict, awsAccount
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.12] Instance should mitigate against malicious code execution attacks that can occur using Jelly Injection",
+            "Title": "[Servicenow.InputValidation.12] Instance should mitigate against malicious code execution attacks that can occur using Jelly Injection",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not mitigate against malicious code execution attacks that can occur using Jelly Injection. Use the 'glide.ui.jelly.js_interpolation.protect' property to ensure that any JavaScript about to be executed on a Jelly page is protected from injection with the help of Jelly interpolation. JEXL injection is a form of input injection unique to the Now Platform that can lead to both cross-site request forgery and code execution. Completely turning off the protection may potentially open many P1 security vulnerabilities. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -2346,7 +2346,7 @@ def servicenow_sspm_javascript_jelly_interpolation_check(cache: dict, awsAccount
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.12] Instance should mitigate against malicious code execution attacks that can occur using Jelly Injection",
+            "Title": "[Servicenow.InputValidation.12] Instance should mitigate against malicious code execution attacks that can occur using Jelly Injection",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does mitigate against malicious code execution attacks that can occur using Jelly Injection.",
             "Remediation": {
                 "Recommendation": {
@@ -2413,7 +2413,7 @@ def servicenow_sspm_javascript_jelly_interpolation_check(cache: dict, awsAccount
 @registry.register_check("servicenow.inputvalidation")
 def servicenow_sspm_soap_request_strict_security_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.InputValidation.13] Instance should ensure security ACLs are checked and validated even when the records are accessed through SOAP calls
+    [Servicenow.InputValidation.13] Instance should ensure security ACLs are checked and validated even when the records are accessed through SOAP calls
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -2466,7 +2466,7 @@ def servicenow_sspm_soap_request_strict_security_check(cache: dict, awsAccountId
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.13] Instance should ensure security ACLs are checked and validated even when the records are accessed through SOAP calls",
+            "Title": "[Servicenow.InputValidation.13] Instance should ensure security ACLs are checked and validated even when the records are accessed through SOAP calls",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not ensure security ACLs are checked and validated even when the records are accessed through SOAP calls. Use the 'glide.soap.strict_security' property to enforces web service security. Without appropriate authorization configured on the incoming SOAP requests, an unauthorized user can get access to sensitive content/data on the target instance. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -2542,7 +2542,7 @@ def servicenow_sspm_soap_request_strict_security_check(cache: dict, awsAccountId
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.InputValidation.13] Instance should ensure security ACLs are checked and validated even when the records are accessed through SOAP calls",
+            "Title": "[Servicenow.InputValidation.13] Instance should ensure security ACLs are checked and validated even when the records are accessed through SOAP calls",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does ensure security ACLs are checked and validated even when the records are accessed through SOAP calls.",
             "Remediation": {
                 "Recommendation": {

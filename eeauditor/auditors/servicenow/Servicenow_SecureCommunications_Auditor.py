@@ -61,7 +61,7 @@ def get_servicenow_sys_properties(cache: dict):
 @registry.register_check("servicenow.securecommunications")
 def servicenow_sspm_certificate_trust_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.SecureCommunications.1] Instance should be configured to enforce certificate validation for outgoing requests
+    [Servicenow.SecureCommunications.1] Instance should be configured to enforce certificate validation for outgoing requests
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -114,7 +114,7 @@ def servicenow_sspm_certificate_trust_check(cache: dict, awsAccountId: str, awsR
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecureCommunications.1] Instance should be configured to enforce certificate validation for outgoing requests",
+            "Title": "[Servicenow.SecureCommunications.1] Instance should be configured to enforce certificate validation for outgoing requests",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to enforce certificate validation for outgoing requests. By default, the 'com.glide.communications.trustmanager_trust_all' property is set to false. The Now Platform only trusts certificates that it can verify against the JVM certificate store. Self-signed and enterprise-signed certificates are not trusted. For confidentiality and integrity reasons, application should validate the certificate's CA before using the certificate for any transactional operations. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -188,7 +188,7 @@ def servicenow_sspm_certificate_trust_check(cache: dict, awsAccountId: str, awsR
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-             "Title": "[SSPM.Servicenow.SecureCommunications.1] Instance should be configured to enforce certificate validation for outgoing requests",
+             "Title": "[Servicenow.SecureCommunications.1] Instance should be configured to enforce certificate validation for outgoing requests",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to enforce certificate validation for outgoing requests.",
             "Remediation": {
                 "Recommendation": {
@@ -253,7 +253,7 @@ def servicenow_sspm_certificate_trust_check(cache: dict, awsAccountId: str, awsR
 @registry.register_check("servicenow.securecommunications")
 def servicenow_sspm_disable_ssl_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.SecureCommunications.2] Instance should be configured to disable SSLv2 and SSLv3 outbound connections
+    [Servicenow.SecureCommunications.2] Instance should be configured to disable SSLv2 and SSLv3 outbound connections
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -306,7 +306,7 @@ def servicenow_sspm_disable_ssl_check(cache: dict, awsAccountId: str, awsRegion:
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecureCommunications.2] Instance should be configured to disable SSLv2 and SSLv3 outbound connections",
+            "Title": "[Servicenow.SecureCommunications.2] Instance should be configured to disable SSLv2 and SSLv3 outbound connections",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to disable SSLv2 and SSLv3 outbound connections. Use the glide.outbound.sslv3.disabled property to force the MID Server to use TLS when making outbound connections, such as REST and SOAP requests. Normally, outbound connections from an instance are forced to use TLS instead of SSL. Legacy versions of SSL were proven to be insecure when utilized for HTTP secure shell implementation, due to client-side attacks, including BEAST and SSL heart-bleed. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -380,7 +380,7 @@ def servicenow_sspm_disable_ssl_check(cache: dict, awsAccountId: str, awsRegion:
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecureCommunications.2] Instance should be configured to disable SSLv2 and SSLv3 outbound connections",
+            "Title": "[Servicenow.SecureCommunications.2] Instance should be configured to disable SSLv2 and SSLv3 outbound connections",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to disable SSLv2 and SSLv3 outbound connections.",
             "Remediation": {
                 "Recommendation": {
@@ -445,7 +445,7 @@ def servicenow_sspm_disable_ssl_check(cache: dict, awsAccountId: str, awsRegion:
 @registry.register_check("servicenow.securecommunications")
 def servicenow_sspm_http_client_hostname_verification_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.SecureCommunications.3] Instance should be configured to verify hostname and certificate chain presented by remote SSL hosts
+    [Servicenow.SecureCommunications.3] Instance should be configured to verify hostname and certificate chain presented by remote SSL hosts
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -498,7 +498,7 @@ def servicenow_sspm_http_client_hostname_verification_check(cache: dict, awsAcco
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecureCommunications.3] Instance should be configured to verify hostname and certificate chain presented by remote SSL hosts",
+            "Title": "[Servicenow.SecureCommunications.3] Instance should be configured to verify hostname and certificate chain presented by remote SSL hosts",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to verify hostname and certificate chain presented by remote SSL hosts. Set 'com.glide.communications.httpclient.verify_hostname' to true to protect against MitM (man-in-the-middle) attacks in which communications between two parties are intercepted. Setting this property overrides the com.glide.communications.trustmanager_trust_all property. Allows or prevents the http client to connect to a potentially harmful hostname without exception. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -572,7 +572,7 @@ def servicenow_sspm_http_client_hostname_verification_check(cache: dict, awsAcco
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecureCommunications.3] Instance should be configured to verify hostname and certificate chain presented by remote SSL hosts",
+            "Title": "[Servicenow.SecureCommunications.3] Instance should be configured to verify hostname and certificate chain presented by remote SSL hosts",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to verify hostname and certificate chain presented by remote SSL hosts.",
             "Remediation": {
                 "Recommendation": {
@@ -637,7 +637,7 @@ def servicenow_sspm_http_client_hostname_verification_check(cache: dict, awsAcco
 @registry.register_check("servicenow.securecommunications")
 def servicenow_sspm_revoked_certificate_revocation_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.SecureCommunications.4] Instance should be configured to verify the revocation of all certificates
+    [Servicenow.SecureCommunications.4] Instance should be configured to verify the revocation of all certificates
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -690,7 +690,7 @@ def servicenow_sspm_revoked_certificate_revocation_check(cache: dict, awsAccount
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecureCommunications.4] Instance should be configured to verify the revocation of all certificates",
+            "Title": "[Servicenow.SecureCommunications.4] Instance should be configured to verify the revocation of all certificates",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to verify the revocation of all certificates. Use this property to disable the certification verification process that evaluates all certifications in the certification chain by checking the revocation status. API calls that use the high-security plugin may want to configure this property. If the full certification chain is not defined in the instance trust store or the certificates used may not be compatible with an OCSP (Online Certificate Status Protocol) revocation check, errors may be returned to the API calls. API calls using the High Security plugin will not be verified using an OCSP revocation check in the instance trust store. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -764,7 +764,7 @@ def servicenow_sspm_revoked_certificate_revocation_check(cache: dict, awsAccount
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecureCommunications.4] Instance should be configured to verify the revocation of all certificates",
+            "Title": "[Servicenow.SecureCommunications.4] Instance should be configured to verify the revocation of all certificates",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to verify the revocation of all certificates.",
             "Remediation": {
                 "Recommendation": {
