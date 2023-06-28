@@ -310,6 +310,13 @@ def salesforce_active_user_mfa_check(cache: dict, awsAccountId: str, awsRegion: 
                     userMfa["HasTotp"]
                 ):
                     userHasMfa = True
+                else:
+                    userHasMfa = False
+            else:
+                userHasMfa = False
+        else:
+            userHasMfa = False
+
         # this is a failing check
         if userHasMfa is not True:
             finding = {
