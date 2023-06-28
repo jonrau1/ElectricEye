@@ -151,7 +151,7 @@ def salesforce_active_user_check(cache: dict, awsAccountId: str, awsRegion: str,
                     "AssetRegion": salesforceInstanceLocation,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Users",
+                    "AssetService": "Salesforce Users",
                     "AssetComponent": "User"
                 },
                 "Resources": [
@@ -231,7 +231,7 @@ def salesforce_active_user_check(cache: dict, awsAccountId: str, awsRegion: str,
                     "AssetRegion": salesforceInstanceLocation,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Users",
+                    "AssetService": "Salesforce Users",
                     "AssetComponent": "User"
                 },
                 "Resources": [
@@ -347,7 +347,7 @@ def salesforce_active_user_mfa_check(cache: dict, awsAccountId: str, awsRegion: 
                     "AssetRegion": salesforceInstanceLocation,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Users",
+                    "AssetService": "Salesforce Users",
                     "AssetComponent": "User"
                 },
                 "Resources": [
@@ -427,7 +427,7 @@ def salesforce_active_user_mfa_check(cache: dict, awsAccountId: str, awsRegion: 
                     "AssetRegion": salesforceInstanceLocation,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Users",
+                    "AssetService": "Salesforce Users",
                     "AssetComponent": "User"
                 },
                 "Resources": [
@@ -542,7 +542,7 @@ def salesforce_active_user_phishing_resistant_mfa_check(cache: dict, awsAccountI
                     "AssetRegion": salesforceInstanceLocation,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Users",
+                    "AssetService": "Salesforce Users",
                     "AssetComponent": "User"
                 },
                 "Resources": [
@@ -622,7 +622,7 @@ def salesforce_active_user_phishing_resistant_mfa_check(cache: dict, awsAccountI
                     "AssetRegion": salesforceInstanceLocation,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Users",
+                    "AssetService": "Salesforce Users",
                     "AssetComponent": "User"
                 },
                 "Resources": [
@@ -719,7 +719,7 @@ def salesforce_federated_user_check(cache: dict, awsAccountId: str, awsRegion: s
                     "AssetRegion": salesforceInstanceLocation,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Users",
+                    "AssetService": "Salesforce Users",
                     "AssetComponent": "User"
                 },
                 "Resources": [
@@ -799,7 +799,7 @@ def salesforce_federated_user_check(cache: dict, awsAccountId: str, awsRegion: s
                     "AssetRegion": salesforceInstanceLocation,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Users",
+                    "AssetService": "Salesforce Users",
                     "AssetComponent": "User"
                 },
                 "Resources": [
@@ -896,7 +896,7 @@ def salesforce_user_without_logins_check(cache: dict, awsAccountId: str, awsRegi
                     "AssetRegion": salesforceInstanceLocation,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Users",
+                    "AssetService": "Salesforce Users",
                     "AssetComponent": "User"
                 },
                 "Resources": [
@@ -976,7 +976,7 @@ def salesforce_user_without_logins_check(cache: dict, awsAccountId: str, awsRegi
                     "AssetRegion": salesforceInstanceLocation,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Users",
+                    "AssetService": "Salesforce Users",
                     "AssetComponent": "User"
                 },
                 "Resources": [
@@ -1082,7 +1082,7 @@ def salesforce_user_failed_logins_above_limit_check(cache: dict, awsAccountId: s
                     "AssetRegion": salesforceInstanceLocation,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Users",
+                    "AssetService": "Salesforce Users",
                     "AssetComponent": "User"
                 },
                 "Resources": [
@@ -1162,7 +1162,7 @@ def salesforce_user_failed_logins_above_limit_check(cache: dict, awsAccountId: s
                     "AssetRegion": salesforceInstanceLocation,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Users",
+                    "AssetService": "Salesforce Users",
                     "AssetComponent": "User"
                 },
                 "Resources": [

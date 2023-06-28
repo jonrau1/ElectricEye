@@ -107,7 +107,7 @@ def servicenow_sspm_active_user_mfa_check(cache: dict, awsAccountId: str, awsReg
                     "AssetRegion": SNOW_INSTANCE_REGION,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Users & Groups",
+                    "AssetService": "Servicenow Users",
                     "AssetComponent": "User"
                 },
                 "Resources": [
@@ -190,7 +190,7 @@ def servicenow_sspm_active_user_mfa_check(cache: dict, awsAccountId: str, awsReg
                     "AssetRegion": SNOW_INSTANCE_REGION,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Users & Groups",
+                    "AssetService": "Servicenow Users",
                     "AssetComponent": "User"
                 },
                 "Resources": [
@@ -303,7 +303,7 @@ def servicenow_sspm_active_user_failed_login_audits_check(cache: dict, awsAccoun
                     "AssetRegion": SNOW_INSTANCE_REGION,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Users & Groups",
+                    "AssetService": "Servicenow Users",
                     "AssetComponent": "User"
                 },
                 "Resources": [
@@ -382,7 +382,7 @@ def servicenow_sspm_active_user_failed_login_audits_check(cache: dict, awsAccoun
                     "AssetRegion": SNOW_INSTANCE_REGION,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Users & Groups",
+                    "AssetService": "Servicenow Users",
                     "AssetComponent": "User"
                 },
                 "Resources": [
@@ -486,7 +486,7 @@ def servicenow_sspm_active_user_lockout_audit_check(cache: dict, awsAccountId: s
                     "AssetRegion": SNOW_INSTANCE_REGION,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Users & Groups",
+                    "AssetService": "Servicenow Users",
                     "AssetComponent": "User"
                 },
                 "Resources": [
@@ -565,7 +565,7 @@ def servicenow_sspm_active_user_lockout_audit_check(cache: dict, awsAccountId: s
                     "AssetRegion": SNOW_INSTANCE_REGION,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Users & Groups",
+                    "AssetService": "Servicenow Users",
                     "AssetComponent": "User"
                 },
                 "Resources": [
