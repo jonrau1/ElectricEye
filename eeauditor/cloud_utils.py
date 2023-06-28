@@ -340,7 +340,10 @@ class CloudConfig(object):
             environ["SALESFORCE_FAILED_LOGIN_BREACHING_RATE"] = salesforceFailedLoginBreachingRate
             environ["SFDC_API_VERSION"] = salesforceApiVersion
 
-            # Retrieve the values for the Salesforce Client ID, Client Secret, Username, Password, Security Token and Location
+            # Location is parsed from the config directly
+            self.salesforceInstanceLocation = salesforceInstanceLocation
+
+            # Retrieve the values for the Salesforce Client ID, Client Secret, Username, Password, and Security Token
             # Local config file
             if self.credentialsLocation == "CONFIG_FILE":
                 self.salesforceAppClientId = salesforceAppClientId
@@ -348,7 +351,6 @@ class CloudConfig(object):
                 self.salesforceApiUsername = salesforceApiUsername
                 self.salesforceApiPassword = salesforceApiPassword
                 self.salesforceUserSecurityToken = salesforceUserSecurityToken
-                self.salesforceInstanceLocation = salesforceInstanceLocation
             # SSM
             elif self.credentialsLocation == "AWS_SSM":
                 # Client ID
@@ -376,11 +378,6 @@ class CloudConfig(object):
                     salesforceUserSecurityToken,
                     "salesforce_api_enabled_security_token_value"
                 )
-                # Instance Location
-                self.salesforceInstanceLocation = self.get_credential_from_aws_ssm(
-                    salesforceInstanceLocation,
-                    "salesforce_instance_location"
-                )
             # AWS Secrets Manager
             elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
                 # Client ID
@@ -407,11 +404,6 @@ class CloudConfig(object):
                 self.salesforceUserSecurityToken = self.get_credential_from_aws_secrets_manager(
                     salesforceUserSecurityToken,
                     "salesforce_api_enabled_security_token_value"
-                )
-                # Instance Location
-                self.salesforceInstanceLocation = self.get_credential_from_aws_secrets_manager(
-                    salesforceInstanceLocation,
-                    "salesforce_instance_location"
                 )
 
     def get_aws_regions(self):
