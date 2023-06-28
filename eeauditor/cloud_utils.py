@@ -353,64 +353,64 @@ class CloudConfig(object):
             elif self.credentialsLocation == "AWS_SSM":
                 # Client ID
                 self.salesforceAppClientId = self.get_credential_from_aws_ssm(
-                    m365ClientId,
+                    salesforceAppClientId,
                     "salesforce_connected_app_client_id_value"
                 )
                 # Client Secret
                 self.salesforceAppClientSecret = self.get_credential_from_aws_ssm(
-                    m365SecretId,
+                    salesforceAppClientSecret,
                     "salesforce_connected_app_client_secret_value"
                 )
                 # API Username
                 self.salesforceApiUsername = self.get_credential_from_aws_ssm(
-                    m365TenantId,
+                    salesforceApiUsername,
                     "salesforce_api_enabled_username_value"
                 )
                 # API User Password
                 self.salesforceApiPassword = self.get_credential_from_aws_ssm(
-                    m365TenantId,
+                    salesforceApiPassword,
                     "salesforce_api_enabled_password_value"
                 )
                 # API User Security Token
                 self.salesforceUserSecurityToken = self.get_credential_from_aws_ssm(
-                    m365TenantId,
+                    salesforceUserSecurityToken,
                     "salesforce_api_enabled_security_token_value"
                 )
                 # Instance Location
                 self.salesforceInstanceLocation = self.get_credential_from_aws_ssm(
-                    m365TenantId,
+                    salesforceInstanceLocation,
                     "salesforce_instance_location"
                 )
             # AWS Secrets Manager
             elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
                 # Client ID
                 self.salesforceAppClientId = self.get_credential_from_aws_secrets_manager(
-                    m365ClientId,
+                    salesforceAppClientId,
                     "salesforce_connected_app_client_id_value"
                 )
                 # Client Secret
                 self.salesforceAppClientSecret = self.get_credential_from_aws_secrets_manager(
-                    m365SecretId,
+                    salesforceAppClientSecret,
                     "salesforce_connected_app_client_secret_value"
                 )
                 # API Username
                 self.salesforceApiUsername = self.get_credential_from_aws_secrets_manager(
-                    m365TenantId,
+                    salesforceApiUsername,
                     "salesforce_api_enabled_username_value"
                 )
                 # API User Password
                 self.salesforceApiPassword = self.get_credential_from_aws_secrets_manager(
-                    m365TenantId,
+                    salesforceApiPassword,
                     "salesforce_api_enabled_password_value"
                 )
                 # API User Security Token
                 self.salesforceUserSecurityToken = self.get_credential_from_aws_secrets_manager(
-                    m365TenantId,
+                    salesforceUserSecurityToken,
                     "salesforce_api_enabled_security_token_value"
                 )
                 # Instance Location
                 self.salesforceInstanceLocation = self.get_credential_from_aws_secrets_manager(
-                    m365TenantId,
+                    salesforceInstanceLocation,
                     "salesforce_instance_location"
                 )
 
