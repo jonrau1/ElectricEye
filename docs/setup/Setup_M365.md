@@ -88,7 +88,7 @@ To configure the TOML file, you need to modify the values of the variables in th
 
 ## Use ElectricEye for M365
 
-1. With >=Python 3.7 installed, install and upgrade `pip3` and setup `virtualenv`.
+1. With >=Python 3.8 installed, install and upgrade `pip3` and setup `virtualenv`.
 
 ```bash
 sudo apt install -y python3-pip
@@ -138,7 +138,7 @@ pip3 install --user -r requirements.txt
     python3 eeauditor/controller.py -t M365 -a M365_MDE_Auditor
     ```
 
-    - 7D. Evaluate your M365 environment against a specific Check within any Auditor, it is ***not required*** to specify the Auditor name as well. The below examples runs the "[M365.DefenderRecommendations.1] Microsoft 365 Defender recommendations for MacOS Security Controls should be implemented" check.
+    - 4D. Evaluate your M365 environment against a specific Check within any Auditor, it is ***not required*** to specify the Auditor name as well. The below examples runs the "[M365.DefenderRecommendations.1] Microsoft 365 Defender recommendations for MacOS Security Controls should be implemented" check.
 
     ```bash
     python3 eeauditor/controller.py -t M365 -c m365_security_center_recommendations_security_controls_for_macos_check

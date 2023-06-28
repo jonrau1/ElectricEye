@@ -79,15 +79,91 @@ To configure the TOML file, you need to modify the values of the variables in th
 
 **NOTE** When retrieving from SSM or Secrets Manager, your current Profile / Boto3 Session is used and *NOT* the ElectricEye Role that is specified in `aws_electric_eye_iam_role_name`. Ensure you have `ssm:GetParameter`, `secretsmanager:GetSecretValue`, and relevant `kms` permissions as needed to retrieve this values.
 
+- `salesforce_connected_app_client_id_value`: The location (or actual contents) of your Salesforce Connected App Client ID this location must match the value  of `global.credentials_location`.
+
+- `salesforce_connected_app_client_secret_value`: The location (or actual contents) of your Salesforce Connected App Client Secret this location must match the value  of `global.credentials_location`.
+
+- `salesforce_api_enabled_username_value`: The location (or actual contents) of your Salesforce User's Username that has MFA and API access this location must match the value  of `global.credentials_location`.
+
+- `salesforce_api_enabled_password_value`: The location (or actual contents) of your Salesforce User's Password that has MFA and API access this location must match the value  of `global.credentials_location`.
+
+- `salesforce_api_enabled_security_token_value`: The location (or actual contents) of your Salesforce User's Security Token that has MFA and API access this location must match the value  of `global.credentials_location`.
+
+- `salesforce_instance_location`: The Country Code OR the Instance Identifier Code (e.g., NA224, CS87, CS102, NA214, etc.) of your Salesforce Instance. This is found under **Company Settings** -> **Company Information**, use either `ADDRESS` or `INSTANCE`. Refer [here](https://help.salesforce.com/s/articleView?id=000382217&type=1) for possible instance identifiers.
+
+- `salesforce_failed_login_breaching_rate`: The threshold for when to create a failing finding for the `Salesforce_Users_Auditor` Check for failed login-in attempts by active users in your Instance (Check ID: `salesforce_user_failed_logins_above_limit_check`).
+
+- `salesforce_api_version`: The Salesforce API Version you will want to use, as of 27 JUNE 2023 ElectricEye uses `v58.0`.
+
 ## Use ElectricEye for Salesforce
+
+1. With >=Python 3.8 installed, install and upgrade `pip3` and setup `virtualenv`.
+
+```bash
+sudo apt install -y python3-pip
+pip3 install --upgrade pip
+pip3 install virtualenv --user
+virtualenv .venv
+```
+
+2. This will create a virtualenv directory called `.venv` which needs to be activated.
+
+```bash
+#For macOS and Linux
+. .venv/bin/activate
+
+#For Windows
+.venv\scripts\activate
+```
+
+3. Clone the repo and install all dependencies.
+
+```bash
+git clone https://github.com/jonrau1/ElectricEye.git
+cd ElectricEye
+pip3 install -r requirements.txt
+
+# if use AWS CloudShell
+pip3 install --user -r requirements.txt
+```
+
+4. Use the Controller to conduct different kinds of Assessments.
+
+    - 4A. Retrieve all options for the Controller.
+
+    ```bash
+    python3 eeauditor/controller.py --help
+    ```
+
+    - 4B. Evaluate your entire Salesforce Instance.
+
+    ```bash
+    python3 eeauditor/controller.py -t Salesforce
+    ```
+
+    - 4C. Evaluate your Salesforce Instance against a specifc Auditor (runs all Checks within the Auditor).
+
+    ```bash
+    python3 eeauditor/controller.py -t Salesforce -a Salesforce_Users_Auditor
+    ```
+
+    - 4D. Evaluate your Salesforce Instance against against a specific Check within any Auditor, it is ***not required*** to specify the Auditor name as well. The below examples runs the "[Salesforce.Users.2] Salesforce users that are active should have multi-factor authentication (MFA) enabledd" check.
+
+    ```bash
+    python3 eeauditor/controller.py -t Salesforce -c salesforce_active_user_mfa_check
+    ```
 
 ## Salesforce Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **2 Checks** across **1 Auditors** that support the secure configuration of **1 services/components**
+These are the following services and checks perform by each Auditor, there are currently **6 Checks** across **1 Auditors** that support the secure configuration of **1 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
 | Salesforce_Users_Auditor | Salesforce user | Users that are not active should be audited |
 | Salesforce_Users_Auditor | Salesforce user | Users should have an MFA device |
+| Salesforce_Users_Auditor | Salesforce user | Users should have a phishing-resistant MFA device |
+| Salesforce_Users_Auditor | Salesforce user | Users should access Salesforce via federated SSO |
+| Salesforce_Users_Auditor | Salesforce user | Users that have never logged in should be audited |
+| Salesforce_Users_Auditor | Salesforce user | Users with failed login attempts above a specified limit should be audited |
 
 Continue to check this section for information on active, retired, and renamed checks or using the `--list-checks` command in the CLI!

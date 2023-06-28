@@ -205,8 +205,8 @@ title = "ElectricEye Configuration"
 
         salesforce_instance_location = "NA224"
 
-        # The threshold for when to create a failing finding for the "Salesfroce_Users_Auditor" Check for failed login-in
-        # attempts by active users in your Instance
+        # The threshold for when to create a failing finding for the "Salesforce_Users_Auditor" Check for failed login-in
+        # (Check ID: `salesforce_user_failed_logins_above_limit_check`) attempts by active users in your Instance
 
         salesforce_failed_login_breaching_rate = "5"
 
