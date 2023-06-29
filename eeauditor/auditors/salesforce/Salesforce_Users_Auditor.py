@@ -100,7 +100,7 @@ def get_salesforce_users_with_mfa(cache: dict, salesforceAppClientId: str, sales
         else:
             userData["TwoFactorMethodsInfo"] = []
 
-    # Return a tuple of the list of MFA-enriched users, and the Instance URL which is the GUID for the instance
+    # Return a tuple of the list of MFA-enriched users and the Instance URL which is used as the GUID for the instance
     payload = (allUsers, instanceUrl)
 
     cache["get_salesforce_users_with_mfa"] = payload
@@ -125,9 +125,9 @@ def salesforce_active_user_check(cache: dict, awsAccountId: str, awsRegion: str,
         if user["IsActive"] is not True:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"servicenow/{payload[1]}/user/{userId}/salesforce-active-user-check",
+                "Id": f"salesforce/{payload[1]}/user/{userId}/salesforce-active-user-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"servicenow/{payload[1]}/user/{userId}/salesforce-active-user-check",
+                "GeneratorId": f"salesforce/{payload[1]}/user/{userId}/salesforce-active-user-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -205,9 +205,9 @@ def salesforce_active_user_check(cache: dict, awsAccountId: str, awsRegion: str,
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"servicenow/{payload[1]}/user/{userId}/salesforce-active-user-check",
+                "Id": f"salesforce/{payload[1]}/user/{userId}/salesforce-active-user-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"servicenow/{payload[1]}/user/{userId}/salesforce-active-user-check",
+                "GeneratorId": f"salesforce/{payload[1]}/user/{userId}/salesforce-active-user-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -321,9 +321,9 @@ def salesforce_active_user_mfa_check(cache: dict, awsAccountId: str, awsRegion: 
         if userHasMfa is not True:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"servicenow/{payload[1]}/user/{userId}/salesforce-active-user-mfa-check",
+                "Id": f"salesforce/{payload[1]}/user/{userId}/salesforce-active-user-mfa-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"servicenow/{payload[1]}/user/{userId}/salesforce-active-user-mfa-check",
+                "GeneratorId": f"salesforce/{payload[1]}/user/{userId}/salesforce-active-user-mfa-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -401,9 +401,9 @@ def salesforce_active_user_mfa_check(cache: dict, awsAccountId: str, awsRegion: 
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"servicenow/{payload[1]}/user/{userId}/salesforce-active-user-mfa-check",
+                "Id": f"salesforce/{payload[1]}/user/{userId}/salesforce-active-user-mfa-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"servicenow/{payload[1]}/user/{userId}/salesforce-active-user-mfa-check",
+                "GeneratorId": f"salesforce/{payload[1]}/user/{userId}/salesforce-active-user-mfa-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -516,9 +516,9 @@ def salesforce_active_user_phishing_resistant_mfa_check(cache: dict, awsAccountI
         if phishResistantMfa is not True:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"servicenow/{payload[1]}/user/{userId}/salesforce-active-user-phishing-resistant-mfa-check",
+                "Id": f"salesforce/{payload[1]}/user/{userId}/salesforce-active-user-phishing-resistant-mfa-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"servicenow/{payload[1]}/user/{userId}/salesforce-active-user-phishing-resistant-mfa-check",
+                "GeneratorId": f"salesforce/{payload[1]}/user/{userId}/salesforce-active-user-phishing-resistant-mfa-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -596,9 +596,9 @@ def salesforce_active_user_phishing_resistant_mfa_check(cache: dict, awsAccountI
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"servicenow/{payload[1]}/user/{userId}/salesforce-active-user-phishing-resistant-mfa-check",
+                "Id": f"salesforce/{payload[1]}/user/{userId}/salesforce-active-user-phishing-resistant-mfa-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"servicenow/{payload[1]}/user/{userId}/salesforce-active-user-phishing-resistant-mfa-check",
+                "GeneratorId": f"salesforce/{payload[1]}/user/{userId}/salesforce-active-user-phishing-resistant-mfa-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -693,9 +693,9 @@ def salesforce_federated_user_check(cache: dict, awsAccountId: str, awsRegion: s
         if user["FederationIdentifier"] is None:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"servicenow/{payload[1]}/user/{userId}/salesforce-federated-sso-check",
+                "Id": f"salesforce/{payload[1]}/user/{userId}/salesforce-federated-sso-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"servicenow/{payload[1]}/user/{userId}/salesforce-federated-sso-check",
+                "GeneratorId": f"salesforce/{payload[1]}/user/{userId}/salesforce-federated-sso-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -773,9 +773,9 @@ def salesforce_federated_user_check(cache: dict, awsAccountId: str, awsRegion: s
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"servicenow/{payload[1]}/user/{userId}/salesforce-federated-sso-check",
+                "Id": f"salesforce/{payload[1]}/user/{userId}/salesforce-federated-sso-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"servicenow/{payload[1]}/user/{userId}/salesforce-federated-sso-check",
+                "GeneratorId": f"salesforce/{payload[1]}/user/{userId}/salesforce-federated-sso-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -870,9 +870,9 @@ def salesforce_user_without_logins_check(cache: dict, awsAccountId: str, awsRegi
         if user["LastLoginDate"] is None:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"servicenow/{payload[1]}/user/{userId}/salesforce-user-without-logins-check",
+                "Id": f"salesforce/{payload[1]}/user/{userId}/salesforce-user-without-logins-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"servicenow/{payload[1]}/user/{userId}/salesforce-user-without-logins-check",
+                "GeneratorId": f"salesforce/{payload[1]}/user/{userId}/salesforce-user-without-logins-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -950,9 +950,9 @@ def salesforce_user_without_logins_check(cache: dict, awsAccountId: str, awsRegi
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"servicenow/{payload[1]}/user/{userId}/salesforce-user-without-logins-check",
+                "Id": f"salesforce/{payload[1]}/user/{userId}/salesforce-user-without-logins-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"servicenow/{payload[1]}/user/{userId}/salesforce-user-without-logins-check",
+                "GeneratorId": f"salesforce/{payload[1]}/user/{userId}/salesforce-user-without-logins-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1056,9 +1056,9 @@ def salesforce_user_failed_logins_above_limit_check(cache: dict, awsAccountId: s
         if failedLoginsBreaching is True:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"servicenow/{payload[1]}/user/{userId}/salesforce-user-breaching-failed-logins-check",
+                "Id": f"salesforce/{payload[1]}/user/{userId}/salesforce-user-breaching-failed-logins-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"servicenow/{payload[1]}/user/{userId}/salesforce-user-breaching-failed-logins-check",
+                "GeneratorId": f"salesforce/{payload[1]}/user/{userId}/salesforce-user-breaching-failed-logins-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1136,9 +1136,9 @@ def salesforce_user_failed_logins_above_limit_check(cache: dict, awsAccountId: s
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"servicenow/{payload[1]}/user/{userId}/salesforce-user-breaching-failed-logins-check",
+                "Id": f"salesforce/{payload[1]}/user/{userId}/salesforce-user-breaching-failed-logins-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"servicenow/{payload[1]}/user/{userId}/salesforce-user-breaching-failed-logins-check",
+                "GeneratorId": f"salesforce/{payload[1]}/user/{userId}/salesforce-user-breaching-failed-logins-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
