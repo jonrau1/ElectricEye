@@ -250,3 +250,5 @@
 ##############
 - AssetService: Salesforce Users
   ImageTag: <img src="https://iconography.electriceye.lol/Salesforce/SalesforceEmployees.svg">
+- AssetService: Salesforce Threat Detection
+  ImageTag: <img src="https://iconography.electriceye.lol/AWS/Res_Security-Identity-Compliance/Res_AWS-Security-Hub_Finding_48.svg">

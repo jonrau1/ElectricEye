@@ -162,7 +162,7 @@ pip3 install --user -r requirements.txt
 
 ## Salesforce Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **6 Checks** across **1 Auditors** that support the secure configuration of **1 services/components**
+These are the following services and checks perform by each Auditor, there are currently **10 Checks** across **2 Auditors** that support the secure configuration of **2 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
@@ -172,5 +172,9 @@ These are the following services and checks perform by each Auditor, there are c
 | Salesforce_Users_Auditor | Salesforce user | Users should access Salesforce via federated SSO |
 | Salesforce_Users_Auditor | Salesforce user | Users that have never logged in should be audited |
 | Salesforce_Users_Auditor | Salesforce user | Users with failed login attempts above a specified limit should be audited |
+| Salesforce_ThreatDetection_Auditor | Salesforce threat detection event | Open Threat Detection session hijacking events should be investigated |
+| Salesforce_ThreatDetection_Auditor | Salesforce threat detection event | Open Threat Detection credential stuffing events should be investigated |
+| Salesforce_ThreatDetection_Auditor | Salesforce threat detection event | Open Threat Detection report anomaly events should be investigated |
+| Salesforce_ThreatDetection_Auditor | Salesforce threat detection event | Open Threat Detection API anomaly events should be investigated |
 
 Continue to check this section for information on active, retired, and renamed checks or using the `--list-checks` command in the CLI!
