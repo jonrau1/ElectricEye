@@ -162,7 +162,7 @@ pip3 install --user -r requirements.txt
 
 ## Salesforce Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **10 Checks** across **2 Auditors** that support the secure configuration of **2 services/components**
+These are the following services and checks perform by each Auditor, there are currently **13 Checks** across **2 Auditors** that support the secure configuration of **3 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
@@ -176,5 +176,8 @@ These are the following services and checks perform by each Auditor, there are c
 | Salesforce_ThreatDetection_Auditor | Salesforce threat detection event | Open Threat Detection credential stuffing events should be investigated |
 | Salesforce_ThreatDetection_Auditor | Salesforce threat detection event | Open Threat Detection report anomaly events should be investigated |
 | Salesforce_ThreatDetection_Auditor | Salesforce threat detection event | Open Threat Detection API anomaly events should be investigated |
+| Salesforce_ThreatDetection_Auditor | Salesforce transaction security policy (TSP) | Salesforce instances should have TSPs |
+| Salesforce_ThreatDetection_Auditor | Salesforce transaction security policy (TSP) | Transaction security policies should define an alerting action |
+| Salesforce_ThreatDetection_Auditor | Salesforce transaction security policy (TSP) | Transaction security policies should define a blocking or MFA-challenge action |
 
 Continue to check this section for information on active, retired, and renamed checks or using the `--list-checks` command in the CLI!
