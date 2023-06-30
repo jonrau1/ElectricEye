@@ -194,11 +194,11 @@
 # SERVICENOW #
 ##############
 - AssetService: System Plugins
-  ImageTag: <svg class="plug-fill-thumbnail" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g stroke="none" fill="none"><path d="M10 7v2h3v1h-3v4h3v1h-3v2H9v-1H6.382L4 14.808V13H1v-2h3V9.191l2.382-1.19H9V7h1zm5 0v1h2.619l2.38 1.191v1.81h3v2h-3v1.807L17.62 16H15v1h-1V7h1z" fill="currentColor"></path></g></svg>
+  ImageTag: <img src="https://iconography.electriceye.lol/AWS/Res_General-Icons/Res_48_Light/Res_Toolkit_48_Light.svg">
 - AssetService: System Properties
-  ImageTag: <svg class="table-fill-thumbnail" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g stroke="none" fill="none"><path d="M22 4v15H2V4h20zm-1.001 11.001H16v3h4.999v-3zm-6 0H9v3h5.999v-3zm-6.999 0H3v3h5v-3zM20.999 11H16v3h4.999v-3zm-6 0H9v3h5.999v-3zM8 11H3v3h5v-3zm12.999-3.999H16v3h4.999v-3zm-6 0H9v3h5.999v-3zM8 7.001H3v3h5v-3z" fill="currentColor"></path></g></svg>
+  ImageTag: <img src="https://iconography.electriceye.lol/AWS/Res_General-Icons/Res_48_Light/Res_Gear_48_Light.svg">
 - AssetService: Servicenow Users
-  ImageTag: <svg class="user-group-fill-thumbnail" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g stroke="none" fill="none"><path d="M12 4a3.5 3.5 0 0 1 1.976 6.39 4.935 4.935 0 0 1 2.6 2.458 3.963 3.963 0 0 1 1.632-1.442 3 3 0 1 1 3.584 0c1.305.629 2.208 1.92 2.208 3.409V18h-7v1H7v-1H0v-3.185c0-1.49.903-2.78 2.208-3.409a3 3 0 1 1 3.584 0 3.974 3.974 0 0 1 1.632 1.442 4.931 4.931 0 0 1 2.6-2.458A3.5 3.5 0 0 1 12 4z" fill="currentColor"></path></g></svg>
+  ImageTag: <img src="https://iconography.electriceye.lol/AWS/Res_General-Icons/Res_48_Light/Res_Users_48_Light.svg">
 #######
 # OCI #
 #######
@@ -254,3 +254,5 @@
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Res_Security-Identity-Compliance/Res_AWS-Security-Hub_Finding_48.svg">
 - AssetService: Salesforce Enhanced Transaction Security
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Res_Security-Identity-Compliance/Res_AWS-Identity-Access-Management_Data-Encryption-Key_48.svg">
+- AssetService: Salesforce Single Sign-On
+  ImageTag: <img src="https://iconography.electriceye.lol/AWS/Res_General-Icons/Res_48_Light/Res_SAML-token_48_Light.svg">

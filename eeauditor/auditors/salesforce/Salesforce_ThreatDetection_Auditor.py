@@ -116,7 +116,7 @@ def get_salesforce_transaction_security_policies(cache: dict, salesforceAppClien
     if tspQuery.status_code != 200:
         print("Failed to retrieve Transaction Security Policies from Salesforce! Exiting.")
         raise tspQuery.reason
-    # Use a list comprehension to re-sort the data & append MFA data into
+    # Use a list comprehension to re-sort the data
     allTsps = [tpolicy for tpolicy in tspQuery.json()["records"]]
 
     # Return a tuple of the list of TSPs and the Instance URL which is used as the GUID for the instance
@@ -705,7 +705,7 @@ def salesforce_open_api_anomaly_threat_detection_results_check(cache: dict, awsA
         }
         yield finding
 
-@registry.register_check("salesforce.users")
+@registry.register_check("salesforce.threatdetection")
 def salesforce_transaction_security_policies_in_use_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, salesforceAppClientId: str, salesforceAppClientSecret: str, salesforceApiUsername: str, salesforceApiPassword: str, salesforceUserSecurityToken: str, salesforceInstanceLocation: str):
     """
     [Salesforce.ThreatDetection.5] Salesforce instances should implement transaction security policies
@@ -916,7 +916,7 @@ def salesforce_transaction_security_policies_in_use_check(cache: dict, awsAccoun
         }
         yield finding
 
-@registry.register_check("salesforce.users")
+@registry.register_check("salesforce.threatdetection")
 def salesforce_transaction_security_policy_alerting_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, salesforceAppClientId: str, salesforceAppClientSecret: str, salesforceApiUsername: str, salesforceApiPassword: str, salesforceUserSecurityToken: str, salesforceInstanceLocation: str):
     """
     [Salesforce.ThreatDetection.6] Salesforce transaction security policies should be configured to send alerts
@@ -1094,7 +1094,7 @@ def salesforce_transaction_security_policy_alerting_check(cache: dict, awsAccoun
             }
             yield finding
 
-@registry.register_check("salesforce.users")
+@registry.register_check("salesforce.threatdetection")
 def salesforce_transaction_security_policy_response_action_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, salesforceAppClientId: str, salesforceAppClientSecret: str, salesforceApiUsername: str, salesforceApiPassword: str, salesforceUserSecurityToken: str, salesforceInstanceLocation: str):
     """
     [Salesforce.ThreatDetection.7] Salesforce transaction security policies should be configured to enforce a blocking or MFA-challenge action
