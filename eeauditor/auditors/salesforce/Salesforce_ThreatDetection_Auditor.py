@@ -721,6 +721,7 @@ def salesforce_transaction_security_policies_in_use_check(cache: dict, awsAccoun
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(payload[0],default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
+        tspInUse = True
     # this is a failing check
     if tspInUse is False:
         finding = {
