@@ -96,9 +96,7 @@ def get_salesforce_saml_sso_config(cache: dict, salesforceAppClientId: str, sale
 
 @registry.register_check("salesforce.sso")
 def salesforce_sso_saml_sso_config_in_use_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, salesforceAppClientId: str, salesforceAppClientSecret: str, salesforceApiUsername: str, salesforceApiPassword: str, salesforceUserSecurityToken: str, salesforceInstanceLocation: str):
-    """
-    [Salesforce.SingleSignOn.1] Salesforce instances should be configured for Single-Sign On (SSO) by defining a SAML SSO configuration
-    """
+    """[Salesforce.SingleSignOn.1] Salesforce instances should be configured for Single-Sign On (SSO) by defining a SAML SSO configuration"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     # Retrieve cache
     payload = get_salesforce_saml_sso_config(cache, salesforceAppClientId, salesforceAppClientSecret, salesforceApiUsername, salesforceApiPassword, salesforceUserSecurityToken)
@@ -115,9 +113,9 @@ def salesforce_sso_saml_sso_config_in_use_check(cache: dict, awsAccountId: str, 
     if samlSsoConfigInUse is False:
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": f"salesforce/{payload[1]}/sso/salesforce-saml-ssoc-onfig-in-use-check",
+            "Id": f"salesforce/{payload[1]}/sso/salesforce-saml-sso-config-in-use-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": f"salesforce/{payload[1]}/sso/salesforce-saml-ssoc-onfig-in-use-check",
+            "GeneratorId": f"salesforce/{payload[1]}/sso/salesforce-saml-sso-config-in-use-check",
             "AwsAccountId": awsAccountId,
             "Types": ["Software and Configuration Checks"],
             "FirstObservedAt": iso8601Time,
@@ -186,9 +184,9 @@ def salesforce_sso_saml_sso_config_in_use_check(cache: dict, awsAccountId: str, 
     else:
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": f"salesforce/{payload[1]}/sso/salesforce-saml-ssoc-onfig-in-use-check",
+            "Id": f"salesforce/{payload[1]}/sso/salesforce-saml-sso-config-in-use-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": f"salesforce/{payload[1]}/sso/salesforce-saml-ssoc-onfig-in-use-check",
+            "GeneratorId": f"salesforce/{payload[1]}/sso/salesforce-saml-sso-config-in-use-check",
             "AwsAccountId": awsAccountId,
             "Types": ["Software and Configuration Checks"],
             "FirstObservedAt": iso8601Time,
@@ -254,5 +252,639 @@ def salesforce_sso_saml_sso_config_in_use_check(cache: dict, awsAccountId: str, 
             "RecordState": "ARCHIVED"
         }
         yield finding
+
+@registry.register_check("salesforce.sso")
+def salesforce_sso_saml_sso_config_req_sig_method_signing_algo_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, salesforceAppClientId: str, salesforceAppClientSecret: str, salesforceApiUsername: str, salesforceApiPassword: str, salesforceUserSecurityToken: str, salesforceInstanceLocation: str):
+    """[Salesforce.SingleSignOn.2] Salesforce Single-Sign On (SSO) SAML SSO configurations should be configured to use the specified request signature method as the signing algorithm"""
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    # Retrieve cache
+    payload = get_salesforce_saml_sso_config(cache, salesforceAppClientId, salesforceAppClientSecret, salesforceApiUsername, salesforceApiPassword, salesforceUserSecurityToken)
+    # Check if there any policies at all
+    for samlconfig in payload[0]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(samlconfig,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        samlSsoConfigId = samlconfig["attributes"]["url"].split("/")[6]
+        samlSsoConfigName = samlconfig["DeveloperName"]
+        # this is a failing check
+        if samlconfig["OptionsUseSameDigestAlgoForSigning"] is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"salesforce/{payload[1]}/sso/{samlSsoConfigId}/salesforce-saml-sso-config-req-sig-signing-algo-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"salesforce/{payload[1]}/sso/{samlSsoConfigId}/salesforce-saml-sso-config-req-sig-signing-algo-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[Salesforce.SingleSignOn.2] Salesforce Single-Sign On (SSO) SAML SSO configurations should be configured to use the specified request signature method as the signing algorithm",
+                "Description": f"Salesforce Single-Sign On (SSO) SAML SSO configuration {samlSsoConfigName} in instance {payload[1]} is not configured to use the specified request signature method as the signing algorithm. For SAML configurations where your org or Experience Cloud site acts as a service provider, create a SAML single sign-on (SSO) setting with the information from your identity provider. For configurations created after Spring 2022, the Request Signature Method (RSM) that you select determines the digest algorithm. For example, if you select RSA-SHA256, your digest algorithm is automatically set to SHA256. For configurations created before Spring 2022, the digest algorithm is SHA1 by default. To set the digest algorithm to match the Request Signature Method, select Use digest algorithm based on Request Signature Method. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on configuring SAML SSO configurations refer to the Step 2: Create a SAML Single Sign-On Setting in Salesforce section of the Salesforce Help Center.",
+                        "Url": "https://help.salesforce.com/s/articleView?id=sf.sso_service_provider_configuration.htm&type=5"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Salesforce",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": payload[1],
+                    "AssetRegion": salesforceInstanceLocation,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "Salesforce Single Sign-On",
+                    "AssetComponent": "SAML SSO Configuration"
+                },
+                "Resources": [
+                    {
+                        "Type": "SalesforceSamlSsoConfig",
+                        "Id": f"{payload[1]}/SamlSsoConfig/{samlSsoConfigId}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SalesforceInstanceUrl": payload[1],
+                                "DeveloperName": samlSsoConfigName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-2",
+                        "NIST SP 800-53 Rev. 4 SC-8",
+                        "NIST SP 800-53 Rev. 4 SC-11",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"salesforce/{payload[1]}/sso/{samlSsoConfigId}/salesforce-saml-sso-config-req-sig-signing-algo-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"salesforce/{payload[1]}/sso/{samlSsoConfigId}/salesforce-saml-sso-config-req-sig-signing-algo-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Salesforce.SingleSignOn.2] Salesforce Single-Sign On (SSO) SAML SSO configurations should be configured to use the specified request signature method as the signing algorithm",
+                "Description": f"Salesforce Single-Sign On (SSO) SAML SSO configuration {samlSsoConfigName} in instance {payload[1]} is configured to use the specified request signature method as the signing algorithm.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on configuring SAML SSO configurations refer to the Step 2: Create a SAML Single Sign-On Setting in Salesforce section of the Salesforce Help Center.",
+                        "Url": "https://help.salesforce.com/s/articleView?id=sf.sso_service_provider_configuration.htm&type=5"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Salesforce",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": payload[1],
+                    "AssetRegion": salesforceInstanceLocation,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "Salesforce Single Sign-On",
+                    "AssetComponent": "SAML SSO Configuration"
+                },
+                "Resources": [
+                    {
+                        "Type": "SalesforceSamlSsoConfig",
+                        "Id": f"{payload[1]}/SamlSsoConfig/{samlSsoConfigId}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SalesforceInstanceUrl": payload[1],
+                                "DeveloperName": samlSsoConfigName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-2",
+                        "NIST SP 800-53 Rev. 4 SC-8",
+                        "NIST SP 800-53 Rev. 4 SC-11",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("salesforce.sso")
+def salesforce_sso_saml_sso_config_sha2_signing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, salesforceAppClientId: str, salesforceAppClientSecret: str, salesforceApiUsername: str, salesforceApiPassword: str, salesforceUserSecurityToken: str, salesforceInstanceLocation: str):
+    """[Salesforce.SingleSignOn.3] Salesforce Single-Sign On (SSO) SAML SSO configurations should use Secure Hashing Algorithm Version 2 (SHA-2) as the signing algorithm"""
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    # Retrieve cache
+    payload = get_salesforce_saml_sso_config(cache, salesforceAppClientId, salesforceAppClientSecret, salesforceApiUsername, salesforceApiPassword, salesforceUserSecurityToken)
+    # Check if there any policies at all
+    for samlconfig in payload[0]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(samlconfig,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        samlSsoConfigId = samlconfig["attributes"]["url"].split("/")[6]
+        samlSsoConfigName = samlconfig["DeveloperName"]
+        # this is a failing check
+        if samlconfig["RequestSignatureMethod"] != "RSA-SHA256":
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"salesforce/{payload[1]}/sso/{samlSsoConfigId}/salesforce-saml-sso-config-sha2-signing-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"salesforce/{payload[1]}/sso/{samlSsoConfigId}/salesforce-saml-sso-config-sha2-signing-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[Salesforce.SingleSignOn.3] Salesforce Single-Sign On (SSO) SAML SSO configurations should use Secure Hashing Algorithm Version 2 (SHA-2) as the signing algorithm",
+                "Description": f"Salesforce Single-Sign On (SSO) SAML SSO configuration {samlSsoConfigName} in instance {payload[1]} is not configured to use Secure Hashing Algorithm Version 2 (SHA-2) as the signing algorithm. RSA-SHA1 is a cryptographic algorithm that combines the RSA encryption algorithm with the SHA-1 hashing algorithm. However, both RSA and SHA-1 are considered to be outdated and potentially vulnerable to certain attacks. On the other hand, RSA-SHA256 combines the RSA algorithm with the SHA-256 hashing algorithm, which produces a 256-bit hash value. SHA-256 is a member of the SHA-2 family, which is considered more secure than SHA-1. RSA-SHA256 provides stronger security than RSA-SHA1 because it uses a more secure hash function and supports larger key sizes. However, ensure that the signing algorithm is supported by upstream SAML versions. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on configuring SAML SSO configurations refer to the Step 2: Create a SAML Single Sign-On Setting in Salesforce section of the Salesforce Help Center.",
+                        "Url": "https://help.salesforce.com/s/articleView?id=sf.sso_service_provider_configuration.htm&type=5"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Salesforce",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": payload[1],
+                    "AssetRegion": salesforceInstanceLocation,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "Salesforce Single Sign-On",
+                    "AssetComponent": "SAML SSO Configuration"
+                },
+                "Resources": [
+                    {
+                        "Type": "SalesforceSamlSsoConfig",
+                        "Id": f"{payload[1]}/SamlSsoConfig/{samlSsoConfigId}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SalesforceInstanceUrl": payload[1],
+                                "DeveloperName": samlSsoConfigName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-6",
+                        "NIST SP 800-53 Rev. 4 SC-16",
+                        "NIST SP 800-53 Rev. 4 SI-7",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.2.1",
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
+                        "ISO 27001:2013 A.14.2.4"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"salesforce/{payload[1]}/sso/{samlSsoConfigId}/salesforce-saml-sso-config-sha2-signing-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"salesforce/{payload[1]}/sso/{samlSsoConfigId}/salesforce-saml-sso-config-sha2-signing-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Salesforce.SingleSignOn.3] Salesforce Single-Sign On (SSO) SAML SSO configurations should use Secure Hashing Algorithm Version 2 (SHA-2) as the signing algorithm",
+                "Description": f"Salesforce Single-Sign On (SSO) SAML SSO configuration {samlSsoConfigName} in instance {payload[1]} is configured to use Secure Hashing Algorithm Version 2 (SHA-2) as the signing algorithm.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on configuring SAML SSO configurations refer to the Step 2: Create a SAML Single Sign-On Setting in Salesforce section of the Salesforce Help Center.",
+                        "Url": "https://help.salesforce.com/s/articleView?id=sf.sso_service_provider_configuration.htm&type=5"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Salesforce",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": payload[1],
+                    "AssetRegion": salesforceInstanceLocation,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "Salesforce Single Sign-On",
+                    "AssetComponent": "SAML SSO Configuration"
+                },
+                "Resources": [
+                    {
+                        "Type": "SalesforceSamlSsoConfig",
+                        "Id": f"{payload[1]}/SamlSsoConfig/{samlSsoConfigId}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SalesforceInstanceUrl": payload[1],
+                                "DeveloperName": samlSsoConfigName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-6",
+                        "NIST SP 800-53 Rev. 4 SC-16",
+                        "NIST SP 800-53 Rev. 4 SI-7",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.2.1",
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
+                        "ISO 27001:2013 A.14.2.4"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("salesforce.sso")
+def salesforce_sso_saml_sso_config_enforce_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, salesforceAppClientId: str, salesforceAppClientSecret: str, salesforceApiUsername: str, salesforceApiPassword: str, salesforceUserSecurityToken: str, salesforceInstanceLocation: str):
+    """[Salesforce.SingleSignOn.4] Salesforce Single-Sign On (SSO) SAML SSO configurations should be evaluated for configuring multi-factor authentication (MFA) enforcement"""
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    # Retrieve cache
+    payload = get_salesforce_saml_sso_config(cache, salesforceAppClientId, salesforceAppClientSecret, salesforceApiUsername, salesforceApiPassword, salesforceUserSecurityToken)
+    # Check if there any policies at all
+    for samlconfig in payload[0]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(samlconfig,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        samlSsoConfigId = samlconfig["attributes"]["url"].split("/")[6]
+        samlSsoConfigName = samlconfig["DeveloperName"]
+        # this is a failing check
+        if samlconfig["OptionsRequireMfaSaml"] is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"salesforce/{payload[1]}/sso/{samlSsoConfigId}/salesforce-saml-sso-config-enforce-mfa-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"salesforce/{payload[1]}/sso/{samlSsoConfigId}/salesforce-saml-sso-config-enforce-mfa-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[Salesforce.SingleSignOn.4] Salesforce Single-Sign On (SSO) SAML SSO configurations should be evaluated for configuring multi-factor authentication (MFA) enforcement",
+                "Description": f"Salesforce Single-Sign On (SSO) SAML SSO configuration {samlSsoConfigName} in instance {payload[1]} is not configured to enforce multi-factor authentication (MFA). You can configure you SAML SSO configurations to enfroce multi-factor authentication (MFA) via the functionality provided in Salesforce instead of your SSO provider's MFA service. This feature isn't fully enabled until you enable MFA for your users via one of two methods. (1) Enable the 'Require multi-factor authentication (MFA) for all direct UI logins to your Salesforce org' setting. Or (2) assign the 'Multi-Factor Authentication for User Interface Logins' user permission to users who log in via SSO. With this configuration, before users can access Salesforce via their SSO provider, Salesforce prompts them to provide an MFA verification method to confirm their identity. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on configuring SAML SSO configurations refer to the Step 2: Create a SAML Single Sign-On Setting in Salesforce section of the Salesforce Help Center.",
+                        "Url": "https://help.salesforce.com/s/articleView?id=sf.sso_service_provider_configuration.htm&type=5"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Salesforce",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": payload[1],
+                    "AssetRegion": salesforceInstanceLocation,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "Salesforce Single Sign-On",
+                    "AssetComponent": "SAML SSO Configuration"
+                },
+                "Resources": [
+                    {
+                        "Type": "SalesforceSamlSsoConfig",
+                        "Id": f"{payload[1]}/SamlSsoConfig/{samlSsoConfigId}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SalesforceInstanceUrl": payload[1],
+                                "DeveloperName": samlSsoConfigName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-3",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-6",
+                        "NIST SP 800-53 Rev. 4 IA-7",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 IA-9",
+                        "NIST SP 800-53 Rev. 4 IA-10",
+                        "NIST SP 800-53 Rev. 4 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3",
+                        "MITRE ATT&CK T1589",
+                        "MITRE ATT&CK T1586"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"salesforce/{payload[1]}/sso/{samlSsoConfigId}/salesforce-saml-sso-config-enforce-mfa-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"salesforce/{payload[1]}/sso/{samlSsoConfigId}/salesforce-saml-sso-config-enforce-mfa-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Salesforce.SingleSignOn.4] Salesforce Single-Sign On (SSO) SAML SSO configurations should be evaluated for configuring multi-factor authentication (MFA) enforcement",
+                "Description": f"Salesforce Single-Sign On (SSO) SAML SSO configuration {samlSsoConfigName} in instance {payload[1]} is configured to enforce multi-factor authentication (MFA).",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on configuring SAML SSO configurations refer to the Step 2: Create a SAML Single Sign-On Setting in Salesforce section of the Salesforce Help Center.",
+                        "Url": "https://help.salesforce.com/s/articleView?id=sf.sso_service_provider_configuration.htm&type=5"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Salesforce",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": payload[1],
+                    "AssetRegion": salesforceInstanceLocation,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "Salesforce Single Sign-On",
+                    "AssetComponent": "SAML SSO Configuration"
+                },
+                "Resources": [
+                    {
+                        "Type": "SalesforceSamlSsoConfig",
+                        "Id": f"{payload[1]}/SamlSsoConfig/{samlSsoConfigId}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SalesforceInstanceUrl": payload[1],
+                                "DeveloperName": samlSsoConfigName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-3",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-6",
+                        "NIST SP 800-53 Rev. 4 IA-7",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 IA-9",
+                        "NIST SP 800-53 Rev. 4 IA-10",
+                        "NIST SP 800-53 Rev. 4 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3",
+                        "MITRE ATT&CK T1589",
+                        "MITRE ATT&CK T1586"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("salesforce.sso")
+def salesforce_sso_saml_sso_config_jit_provisioning_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, salesforceAppClientId: str, salesforceAppClientSecret: str, salesforceApiUsername: str, salesforceApiPassword: str, salesforceUserSecurityToken: str, salesforceInstanceLocation: str):
+    """[Salesforce.SingleSignOn.5] Salesforce Single-Sign On (SSO) SAML SSO configurations should be evaluated for configuring Just-in-Time (JIT) user provisioning"""
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    # Retrieve cache
+    payload = get_salesforce_saml_sso_config(cache, salesforceAppClientId, salesforceAppClientSecret, salesforceApiUsername, salesforceApiPassword, salesforceUserSecurityToken)
+    # Check if there any policies at all
+    for samlconfig in payload[0]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(samlconfig,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        samlSsoConfigId = samlconfig["attributes"]["url"].split("/")[6]
+        samlSsoConfigName = samlconfig["DeveloperName"]
+        # this is a failing check
+        if samlconfig["OptionsUserProvisioning"] is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"salesforce/{payload[1]}/sso/{samlSsoConfigId}/salesforce-saml-sso-config-jit-provisioning-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"salesforce/{payload[1]}/sso/{samlSsoConfigId}/salesforce-saml-sso-config-jit-provisioning-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[Salesforce.SingleSignOn.5] Salesforce Single-Sign On (SSO) SAML SSO configurations should be evaluated for configuring Just-in-Time (JIT) user provisioning",
+                "Description": f"Salesforce Single-Sign On (SSO) SAML SSO configuration {samlSsoConfigName} in instance {payload[1]} is not configured for Just-in-Time (JIT) user provisioning. Use Just-in-Time (JIT) provisioning to automatically create a user account in your Salesforce org the first time a user logs in with a SAML identity provider. JIT provisioning can reduce your workload and save time because you don't provision users or create user accounts in advance. With JIT provisioning, an identity provider passes user information to Salesforce in a SAML 2.0 assertion, which is processed by an Apex JIT handler class. The JIT handler does the heavy lifting of creating and updating user accounts. To let Salesforce manage the JIT handler for you, configure standard JIT provisioning. If you want more control, configure JIT provisioning with a custom handler. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on configuring JIT provisioning for SAML SSO configurations refer to the Enable Just-in-Time Provisioning section of the Salesforce Help Center.",
+                        "Url": "https://help.salesforce.com/s/articleView?id=sf.sso_jit_enable_jit.htm&type=5"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Salesforce",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": payload[1],
+                    "AssetRegion": salesforceInstanceLocation,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "Salesforce Single Sign-On",
+                    "AssetComponent": "SAML SSO Configuration"
+                },
+                "Resources": [
+                    {
+                        "Type": "SalesforceSamlSsoConfig",
+                        "Id": f"{payload[1]}/SamlSsoConfig/{samlSsoConfigId}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SalesforceInstanceUrl": payload[1],
+                                "DeveloperName": samlSsoConfigName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.DS-4",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 AU-4",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-7",
+                        "NIST SP 800-53 Rev. 4 CP-8",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 CP-13",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-6",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.12.3.1",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"salesforce/{payload[1]}/sso/{samlSsoConfigId}/salesforce-saml-sso-config-jit-provisioning-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"salesforce/{payload[1]}/sso/{samlSsoConfigId}/salesforce-saml-sso-config-jit-provisioning-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Salesforce.SingleSignOn.5] Salesforce Single-Sign On (SSO) SAML SSO configurations should be evaluated for configuring Just-in-Time (JIT) user provisioning",
+                "Description": f"Salesforce Single-Sign On (SSO) SAML SSO configuration {samlSsoConfigName} in instance {payload[1]} is configured for Just-in-Time (JIT) user provisioning.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on configuring JIT provisioning for SAML SSO configurations refer to the Enable Just-in-Time Provisioning section of the Salesforce Help Center.",
+                        "Url": "https://help.salesforce.com/s/articleView?id=sf.sso_jit_enable_jit.htm&type=5"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Salesforce",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": payload[1],
+                    "AssetRegion": salesforceInstanceLocation,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "Salesforce Single Sign-On",
+                    "AssetComponent": "SAML SSO Configuration"
+                },
+                "Resources": [
+                    {
+                        "Type": "SalesforceSamlSsoConfig",
+                        "Id": f"{payload[1]}/SamlSsoConfig/{samlSsoConfigId}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SalesforceInstanceUrl": payload[1],
+                                "DeveloperName": samlSsoConfigName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.DS-4",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 AU-4",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-7",
+                        "NIST SP 800-53 Rev. 4 CP-8",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 CP-13",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-6",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.12.3.1",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 ## END ??

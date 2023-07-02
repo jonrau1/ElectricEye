@@ -60,7 +60,7 @@ LABEL \
     maintainer="opensource@electriceye.cloud" \
     version="3.0" \
     license="Apache-2.0" \
-    description="ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to over 20 industry, regulatory, and best practice controls frameworks."
+    description="ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring supporting 100s of services and evaluations to harden your CSP & SaaS environments with controls mapped to over 20 industry, regulatory, and best practice controls frameworks."
 
 # Create a System Group and User for ElectricEye so we don't run as root
 RUN \

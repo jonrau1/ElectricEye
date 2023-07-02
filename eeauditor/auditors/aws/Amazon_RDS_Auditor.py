@@ -4231,7 +4231,7 @@ def rds_aurora_postgresql_log_fwd_vuln_check(cache: dict, session, awsAccountId:
             yield finding
 
 @registry.register_check("rds")
-def rds_instance_ha_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def rds_instance_minor_version_upgrade_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.19] Amazon Relational Database Service (RDS) instances should be configured to automatically apply minor engine version upgrades"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
