@@ -1,5 +1,5 @@
-awscli==1.27.161
-boto3==1.26.161
+awscli==1.27.165
+boto3==1.26.165
 click==8.1.3
 detect-secrets==1.4.0
 google-api-python-client>=2.88.0
