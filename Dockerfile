@@ -21,7 +21,7 @@
 # latest hash as of 15 JUNE 2023 - Alpine 3.18.0 / alpine:latest
 # https://hub.docker.com/layers/library/alpine/3.18.0/images/sha256-25fad2a32ad1f6f510e528448ae1ec69a28ef81916a004d3629874104f8a7f70?context=explore
 # use as builder image to pull in required deps
-FROM alpine@sha256:25fad2a32ad1f6f510e528448ae1ec69a28ef81916a004d3629874104f8a7f70 AS builder
+FROM alpine@sha256:82d1e9d7ed48a7523bdebc18cf6290bdb97b82302a8a9c27d4fe885949ea94d1 AS builder
 
 LABEL org.opencontainers.image.source="https://github.com/alpinelinux/docker-alpine"
 
@@ -43,7 +43,7 @@ RUN \
 
 # latest hash as of 15 JUNE 2023 - Alpine 3.18.0 / alpine:latest
 # https://hub.docker.com/layers/library/alpine/3.18.0/images/sha256-25fad2a32ad1f6f510e528448ae1ec69a28ef81916a004d3629874104f8a7f70?context=explore
-FROM alpine@sha256:25fad2a32ad1f6f510e528448ae1ec69a28ef81916a004d3629874104f8a7f70 as electriceye
+FROM alpine@sha256:82d1e9d7ed48a7523bdebc18cf6290bdb97b82302a8a9c27d4fe885949ea94d1 as electriceye
 
 COPY --from=builder /usr /usr
 
@@ -60,7 +60,7 @@ LABEL \
     maintainer="opensource@electriceye.cloud" \
     version="3.0" \
     license="Apache-2.0" \
-    description="ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to over 20 industry, regulatory, and best practice controls frameworks."
+    description="ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring supporting 100s of services and evaluations to harden your CSP & SaaS environments with controls mapped to over 20 industry, regulatory, and best practice controls frameworks."
 
 # Create a System Group and User for ElectricEye so we don't run as root
 RUN \

@@ -61,7 +61,7 @@ def get_servicenow_sys_properties(cache: dict):
 @registry.register_check("servicenow.emailsecurity")
 def servicenow_sspm_convert_inbound_email_html_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.EmailSecurity.1] Instance should be configured to restrict email image rendering in HTML body preview
+    [Servicenow.EmailSecurity.1] Instance should be configured to restrict email image rendering in HTML body preview
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -114,7 +114,7 @@ def servicenow_sspm_convert_inbound_email_html_check(cache: dict, awsAccountId: 
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.EmailSecurity.1] Instance should be configured to restrict email image rendering in HTML body preview",
+            "Title": "[Servicenow.EmailSecurity.1] Instance should be configured to restrict email image rendering in HTML body preview",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to restrict email image rendering in HTML body preview. Use the glide.email.inbound.convert_html_inline_attachment_references property to specify whether to convert inbound email HTML so email images appear in the email HTML body preview. If the property is not enabled, an attacker might send malicious image containing malware. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -190,7 +190,7 @@ def servicenow_sspm_convert_inbound_email_html_check(cache: dict, awsAccountId: 
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.EmailSecurity.1] Instance should be configured to restrict email image rendering in HTML body preview",
+            "Title": "[Servicenow.EmailSecurity.1] Instance should be configured to restrict email image rendering in HTML body preview",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to restrict email image rendering in HTML body preview.",
             "Remediation": {
                 "Recommendation": {
@@ -259,7 +259,7 @@ def servicenow_sspm_convert_inbound_email_html_check(cache: dict, awsAccountId: 
 @registry.register_check("servicenow.emailsecurity")
 def servicenow_sspm_restrict_access_to_empty_target_table_emails_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.EmailSecurity.2] Instance should be configured to block email client from showing emails when user does not authorize access
+    [Servicenow.EmailSecurity.2] Instance should be configured to block email client from showing emails when user does not authorize access
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -312,7 +312,7 @@ def servicenow_sspm_restrict_access_to_empty_target_table_emails_check(cache: di
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.EmailSecurity.2] Instance should be configured to block email client from showing emails when user does not authorize access",
+            "Title": "[Servicenow.EmailSecurity.2] Instance should be configured to block email client from showing emails when user does not authorize access",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to block email client from showing emails when user does not authorize access. Activate the 'glide.email.email_with_no_target_visible_to_all' property to restrict user access to emails, unless they were the one who sent the email or have an admin role. Unauthorized users are able to access emails in the sys_email_list table that are missing a target record. Instead of enforcing ACLs on email entries, this property restricts access only to the email sender and users with the admin role. If the property is not enabled, unauthorized users are able to access any email where the target_table field is empty. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -388,7 +388,7 @@ def servicenow_sspm_restrict_access_to_empty_target_table_emails_check(cache: di
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.EmailSecurity.2] Instance should be configured to block email client from showing emails when user does not authorize access",
+            "Title": "[Servicenow.EmailSecurity.2] Instance should be configured to block email client from showing emails when user does not authorize access",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to block email client from showing emails when user does not authorize access.",
             "Remediation": {
                 "Recommendation": {
@@ -455,7 +455,7 @@ def servicenow_sspm_restrict_access_to_empty_target_table_emails_check(cache: di
 @registry.register_check("servicenow.emailsecurity")
 def servicenow_sspm_restrict_emails_by_domain_for_user_creation_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.EmailSecurity.3] Instance should be configured to only accept emails from trusted domains
+    [Servicenow.EmailSecurity.3] Instance should be configured to only accept emails from trusted domains
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -508,7 +508,7 @@ def servicenow_sspm_restrict_emails_by_domain_for_user_creation_check(cache: dic
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.EmailSecurity.3] Instance should be configured to only accept emails from trusted domains",
+            "Title": "[Servicenow.EmailSecurity.3] Instance should be configured to only accept emails from trusted domains",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to only accept emails from trusted domains. Use the 'glide.user.trusted_domain' property to specify the comma-separated list of trusted domains used in the creation of users from incoming emails. By default, an asterisk (*) is used to trust all domains. Specific domains should be provided if it is not required to allow email from every domain. The instance ignores incoming email from other domains unless it is from an existing user's address. The instance doesn't create guest users from email from untrusted domains. If the property is not enabled, an attacker might use an email spoofing/spamming campaign to send multiple emails resulting in the creation of more unnecessary guest users. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -584,7 +584,7 @@ def servicenow_sspm_restrict_emails_by_domain_for_user_creation_check(cache: dic
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.EmailSecurity.3] Instance should be configured to only accept emails from trusted domains",
+            "Title": "[Servicenow.EmailSecurity.3] Instance should be configured to only accept emails from trusted domains",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to only accept emails from trusted domains.",
             "Remediation": {
                 "Recommendation": {

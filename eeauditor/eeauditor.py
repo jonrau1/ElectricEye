@@ -100,6 +100,16 @@ class EEAuditor(object):
             self.m365ClientId = utils.m365ClientId
             self.m365SecretId = utils.m365SecretId
             self.m365TenantId = utils.m365TenantId
+        # Salesforce
+        elif assessmentTarget == "Salesforce":
+            searchPath = "./auditors/salesforce"
+            utils = CloudConfig(assessmentTarget)
+            self.salesforceAppClientId = utils.salesforceAppClientId
+            self.salesforceAppClientSecret = utils.salesforceAppClientSecret
+            self.salesforceApiUsername = utils.salesforceApiUsername
+            self.salesforceApiPassword = utils.salesforceApiPassword
+            self.salesforceUserSecurityToken = utils.salesforceUserSecurityToken
+            self.salesforceInstanceLocation = utils.salesforceInstanceLocation
         # GitHub
         elif assessmentTarget == "GitHub":
             searchPath = "./auditors/github"
@@ -417,7 +427,55 @@ class EEAuditor(object):
                         print(f"Failed to execute check {checkName}")
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
-    
+
+    # Called from eeauditor/controller.py run_auditor()
+    def run_salesforce_checks(self, pluginName=None, delay=0):
+        """
+        Runs Salesforce Auditors using Password-based OAuth flow with Username, Password along with a 
+        Connected Application Client ID and Client Secret and a User Security Token
+        """
+
+        # These details are needed for the ASFF...
+        import boto3
+
+        sts = boto3.client("sts")
+
+        region = boto3.Session().region_name
+        account = sts.get_caller_identity()["Account"]
+        # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
+        partition = CloudConfig.check_aws_partition(region)
+
+        for serviceName, checkList in self.registry.checks.items():
+            # Pass the Cache at the "serviceName" level aka Plugin
+            auditorCache = {}
+            for checkName, check in checkList.items():
+                # if a specific check is requested, only run that one check
+                if (
+                    not pluginName
+                    or pluginName
+                    and pluginName == checkName
+                ):
+                    try:
+                        print(f"Executing Check {checkName} for Salesforce instance using User {self.salesforceApiUsername}")
+                        for finding in check(
+                            cache=auditorCache,
+                            awsAccountId=account,
+                            awsRegion=region,
+                            awsPartition=partition,
+                            salesforceAppClientId = self.salesforceAppClientId,
+                            salesforceAppClientSecret = self.salesforceAppClientSecret,
+                            salesforceApiUsername = self.salesforceApiUsername,
+                            salesforceApiPassword = self.salesforceApiPassword,
+                            salesforceUserSecurityToken = self.salesforceUserSecurityToken,
+                            salesforceInstanceLocation = self.salesforceInstanceLocation
+                        ):
+                            yield finding
+                    except Exception:
+                        print(format_exc())
+                        print(f"Failed to execute check {checkName}")
+            # optional sleep if specified - defaults to 0 seconds
+            sleep(delay)
+
     # Called from eeauditor/controller.py run_auditor()
     def run_non_aws_checks(self, pluginName=None, delay=0):
         """

@@ -61,7 +61,7 @@ def get_servicenow_sys_properties(cache: dict):
 @registry.register_check("servicenow.attachments")
 def servicenow_sspm_downloadable_mime_types_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.Attachments.1] Instance should restrict the file types from being rendered in the browser to avoid any hidden malicious script execution
+    [Servicenow.Attachments.1] Instance should restrict the file types from being rendered in the browser to avoid any hidden malicious script execution
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -114,7 +114,7 @@ def servicenow_sspm_downloadable_mime_types_check(cache: dict, awsAccountId: str
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.Attachments.1] Instance should restrict the file types from being rendered in the browser to avoid any hidden malicious script execution",
+            "Title": "[Servicenow.Attachments.1] Instance should restrict the file types from being rendered in the browser to avoid any hidden malicious script execution",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not restrict the file types from being rendered in the browser to avoid any hidden malicious script execution. Use the 'glide.ui.attachment.download_mime_types' property to specify a list of comma-separated attachment MIME types that should be downloaded but not render inline in the browser. Client-side scripting attack vectors come in different flavors and MIME type attachment abuse is no exception. Attackers can abuse MIME types and place unintended script content in the attachment on the victim's side to capture sensitive information. In the current context, populate the property with a list of comma-separated attachment mime types that should not render inline in the browser.  Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -190,7 +190,7 @@ def servicenow_sspm_downloadable_mime_types_check(cache: dict, awsAccountId: str
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.Attachments.1] Instance should restrict the file types from being rendered in the browser to avoid any hidden malicious script execution",
+            "Title": "[Servicenow.Attachments.1] Instance should restrict the file types from being rendered in the browser to avoid any hidden malicious script execution",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does restrict the file types from being rendered in the browser to avoid any hidden malicious script execution.",
             "Remediation": {
                 "Recommendation": {
@@ -257,7 +257,7 @@ def servicenow_sspm_downloadable_mime_types_check(cache: dict, awsAccountId: str
 @registry.register_check("servicenow.attachments")
 def servicenow_sspm_enable_deny_list_for_attachments_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.Attachments.2] Instance should restrict upload operation of attachments with questionable file extensions and file types
+    [Servicenow.Attachments.2] Instance should restrict upload operation of attachments with questionable file extensions and file types
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -310,7 +310,7 @@ def servicenow_sspm_enable_deny_list_for_attachments_check(cache: dict, awsAccou
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.Attachments.2] Instance should restrict upload operation of attachments with questionable file extensions and file types",
+            "Title": "[Servicenow.Attachments.2] Instance should restrict upload operation of attachments with questionable file extensions and file types",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not restrict upload (Insert/Write/Update) operation of attachments with questionable file extensions and file types. Use the 'glide.security.attachment_type.use_blacklist' property to designate if the Now Platform should validate the attachment against a specified exclusion list. A malicious user can upload malware infected attachment with common executable file extensions and/or types. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -386,7 +386,7 @@ def servicenow_sspm_enable_deny_list_for_attachments_check(cache: dict, awsAccou
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.Attachments.2] Instance should restrict upload operation of attachments with questionable file extensions and file types",
+            "Title": "[Servicenow.Attachments.2] Instance should restrict upload operation of attachments with questionable file extensions and file types",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does restrict upload (Insert/Write/Update) operation of attachments with questionable file extensions and file types.",
             "Remediation": {
                 "Recommendation": {
@@ -453,7 +453,7 @@ def servicenow_sspm_enable_deny_list_for_attachments_check(cache: dict, awsAccou
 @registry.register_check("servicenow.attachments")
 def servicenow_sspm_enable_file_download_restrictions_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.Attachments.3] Instance should be configured to implement file download restrictions 
+    [Servicenow.Attachments.3] Instance should be configured to implement file download restrictions 
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -506,7 +506,7 @@ def servicenow_sspm_enable_file_download_restrictions_check(cache: dict, awsAcco
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.Attachments.3] Instance should be configured to implement file download restrictions",
+            "Title": "[Servicenow.Attachments.3] Instance should be configured to implement file download restrictions",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to implement file download restrictions. Use the 'glide.ui.strict_customer_uploaded_static_content' property to enable restrictions on the file types that can be downloaded when they have been uploaded using the Upload File functionality. You use this property with the glide.ui.strict_customer_uploaded_content_types property, which creates a comma-delimited list of restricted downloadable file types. To learn more, see Downloadable file types. File download restrictions should be applied to any untrusted user input sources. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -582,7 +582,7 @@ def servicenow_sspm_enable_file_download_restrictions_check(cache: dict, awsAcco
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.Attachments.3] Instance should be configured to implement file download restrictions",
+            "Title": "[Servicenow.Attachments.3] Instance should be configured to implement file download restrictions",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to implement file download restrictions.",
             "Remediation": {
                 "Recommendation": {
@@ -649,7 +649,7 @@ def servicenow_sspm_enable_file_download_restrictions_check(cache: dict, awsAcco
 @registry.register_check("servicenow.attachments")
 def servicenow_sspm_strict_user_image_upload_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.Attachments.4] Instance should enable Access Control for the upload/update of a profile picture when performed on a user record
+    [Servicenow.Attachments.4] Instance should enable Access Control for the upload/update of a profile picture when performed on a user record
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -702,7 +702,7 @@ def servicenow_sspm_strict_user_image_upload_check(cache: dict, awsAccountId: st
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.Attachments.4] Instance should enable Access Control for the upload/update of a profile picture when performed on a user record",
+            "Title": "[Servicenow.Attachments.4] Instance should enable Access Control for the upload/update of a profile picture when performed on a user record",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not enable Access Control for the upload/update of a profile picture when performed on a user record. Use the 'glide.security.strict.user_image_upload' property to enable Access Control for the upload/update of a profile picture when performed on a user record. When you set this property to true, the table ACLs are enforced when uploading photos, only allowing authorized users to upload an image. When you set this property to false, an authenticated user could upload an image to another user's account without authorization. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -778,7 +778,7 @@ def servicenow_sspm_strict_user_image_upload_check(cache: dict, awsAccountId: st
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.Attachments.4] Instance should enable Access Control for the upload/update of a profile picture when performed on a user record",
+            "Title": "[Servicenow.Attachments.4] Instance should enable Access Control for the upload/update of a profile picture when performed on a user record",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does enable Access Control for the upload/update of a profile picture when performed on a user record.",
             "Remediation": {
                 "Recommendation": {
@@ -845,7 +845,7 @@ def servicenow_sspm_strict_user_image_upload_check(cache: dict, awsAccountId: st
 @registry.register_check("servicenow.attachments")
 def servicenow_sspm_force_download_mime_types_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.Attachments.5] Instance should be configured to enforce downloading of all attachments
+    [Servicenow.Attachments.5] Instance should be configured to enforce downloading of all attachments
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -898,7 +898,7 @@ def servicenow_sspm_force_download_mime_types_check(cache: dict, awsAccountId: s
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.Attachments.5] Instance should be configured to enforce downloading of all attachments",
+            "Title": "[Servicenow.Attachments.5] Instance should be configured to enforce downloading of all attachments",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to enforce downloading of all attachments. Use the 'glide.ui.attachment.force_download_all_mime_types' property to force the download of all MIME type attachments. To reduce the client-side scripting attacks, file attachments should be force downloaded as opposed to being rendered in the browser context. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -974,7 +974,7 @@ def servicenow_sspm_force_download_mime_types_check(cache: dict, awsAccountId: s
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.Attachments.5] Instance should be configured to enforce downloading of all attachments",
+            "Title": "[Servicenow.Attachments.5] Instance should be configured to enforce downloading of all attachments",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to enforce downloading of all attachments.",
             "Remediation": {
                 "Recommendation": {
@@ -1041,7 +1041,7 @@ def servicenow_sspm_force_download_mime_types_check(cache: dict, awsAccountId: s
 @registry.register_check("servicenow.attachments")
 def servicenow_sspm_restrict_file_restrictions_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.Attachments.6] Instance should define acceptable file extensions to be uploaded during file attachment
+    [Servicenow.Attachments.6] Instance should define acceptable file extensions to be uploaded during file attachment
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -1094,7 +1094,7 @@ def servicenow_sspm_restrict_file_restrictions_check(cache: dict, awsAccountId: 
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.Attachments.6] Instance should define acceptable file extensions to be uploaded during file attachment",
+            "Title": "[Servicenow.Attachments.6] Instance should define acceptable file extensions to be uploaded during file attachment",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not define acceptable file extensions to be uploaded during file attachment. Define which file types can be uploaded to your instance using the 'glide.attachment.extensions' system property. This property uses a comma-delimited list of allowed file extension types. Only the specified file extension types be uploaded as attachments. Use this property to improve security by preventing users from uploading harmful files, such as viruses, as attachments. Secure your instance by blocking types that are typically used by executable programs or scripts. As MIME type verification depends on this property, it is recommended to mitigate against the vulnerabilities related to malicious file upload. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -1170,7 +1170,7 @@ def servicenow_sspm_restrict_file_restrictions_check(cache: dict, awsAccountId: 
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.Attachments.6] Instance should define acceptable file extensions to be uploaded during file attachment",
+            "Title": "[Servicenow.Attachments.6] Instance should define acceptable file extensions to be uploaded during file attachment",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does define acceptable file extensions to be uploaded during file attachment.",
             "Remediation": {
                 "Recommendation": {
@@ -1237,7 +1237,7 @@ def servicenow_sspm_restrict_file_restrictions_check(cache: dict, awsAccountId: 
 @registry.register_check("servicenow.attachments")
 def servicenow_sspm_restrict_unauthenticated_attachment_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.Attachments.7] Instance should be configured to prevent unauthenticated access of attachments
+    [Servicenow.Attachments.7] Instance should be configured to prevent unauthenticated access of attachments
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -1290,7 +1290,7 @@ def servicenow_sspm_restrict_unauthenticated_attachment_access_check(cache: dict
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.Attachments.7] Instance should be configured to prevent unauthenticated access of attachments",
+            "Title": "[Servicenow.Attachments.7] Instance should be configured to prevent unauthenticated access of attachments",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to prevent unauthenticated access of attachments. Use the 'glide.image_provider.security_enabled' property to control the security settings for images. If set to true, images are visible only to authenticated and authorized users. If set to false, images are visible to anyone with a URL to the attachment. Restriction must be applied for unauthenticated users as some attachment might contain sensitive information. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -1366,7 +1366,7 @@ def servicenow_sspm_restrict_unauthenticated_attachment_access_check(cache: dict
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.Attachments.7] Instance should be configured to prevent unauthenticated access of attachments",
+            "Title": "[Servicenow.Attachments.7] Instance should be configured to prevent unauthenticated access of attachments",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to prevent unauthenticated access of attachments.",
             "Remediation": {
                 "Recommendation": {
@@ -1433,7 +1433,7 @@ def servicenow_sspm_restrict_unauthenticated_attachment_access_check(cache: dict
 @registry.register_check("servicenow.attachments")
 def servicenow_sspm_specify_excluded_attachments_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.Attachments.8] Instance should be configured to prevent upload of specific file extension types
+    [Servicenow.Attachments.8] Instance should be configured to prevent upload of specific file extension types
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -1486,7 +1486,7 @@ def servicenow_sspm_specify_excluded_attachments_check(cache: dict, awsAccountId
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.Attachments.8] Instance should be configured to prevent upload of specific file extension types",
+            "Title": "[Servicenow.Attachments.8] Instance should be configured to prevent upload of specific file extension types",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to prevent upload of specific file extension types. When you enable exclusion list validation in the Now Platform, use the 'glide.attachment.blacklisted.extensions' property to create a comma-delimited list of restricted uploadable file extension types. Uploading of the specified file extension types is restricted. A malicious user can upload malware infected attachment with common executable file extensions. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -1562,7 +1562,7 @@ def servicenow_sspm_specify_excluded_attachments_check(cache: dict, awsAccountId
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.Attachments.8] Instance should be configured to prevent upload of specific file extension types",
+            "Title": "[Servicenow.Attachments.8] Instance should be configured to prevent upload of specific file extension types",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to prevent upload of specific file extension types.",
             "Remediation": {
                 "Recommendation": {
@@ -1629,7 +1629,7 @@ def servicenow_sspm_specify_excluded_attachments_check(cache: dict, awsAccountId
 @registry.register_check("servicenow.attachments")
 def servicenow_sspm_specify_excluded_attachments_mime_type_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.Attachments.9] Instance should be configured to prevent upload of specific file (MIME) types
+    [Servicenow.Attachments.9] Instance should be configured to prevent upload of specific file (MIME) types
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -1682,7 +1682,7 @@ def servicenow_sspm_specify_excluded_attachments_mime_type_check(cache: dict, aw
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.Attachments.9] Instance should be configured to prevent upload of specific file (MIME) types",
+            "Title": "[Servicenow.Attachments.9] Instance should be configured to prevent upload of specific file (MIME) types",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to prevent upload of specific file (MIME) types. When the exclusion list validation is enabled in the Now Platform, use the 'glide.attachment.blacklisted.types' property to create a comma-delimited list of restricted uploadable file types. Uploading of the specified file types is restricted. A malicious user can upload malware infected attachment with common executable file types. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -1758,7 +1758,7 @@ def servicenow_sspm_specify_excluded_attachments_mime_type_check(cache: dict, aw
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.Attachments.9] Instance should be configured to prevent upload of specific file (MIME) types",
+            "Title": "[Servicenow.Attachments.9] Instance should be configured to prevent upload of specific file (MIME) types",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to prevent upload of specific file (MIME) types.",
             "Remediation": {
                 "Recommendation": {
@@ -1825,7 +1825,7 @@ def servicenow_sspm_specify_excluded_attachments_mime_type_check(cache: dict, aw
 @registry.register_check("servicenow.attachments")
 def servicenow_sspm_restrict_downloaded_file_types_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.Attachments.10] Instance should be configured to restrict downloading specific file (MIME) types
+    [Servicenow.Attachments.10] Instance should be configured to restrict downloading specific file (MIME) types
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -1878,7 +1878,7 @@ def servicenow_sspm_restrict_downloaded_file_types_check(cache: dict, awsAccount
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.Attachments.10] Instance should be configured to restrict downloading specific file (MIME) types",
+            "Title": "[Servicenow.Attachments.10] Instance should be configured to restrict downloading specific file (MIME) types",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to restrict downloading specific file (MIME) types. Use the 'glide.ui.strict_customer_uploaded_content_types' property to create a comma-delimited list of restricted downloadable file types. The specified files types are the only ones that can be downloaded as static content from an instance. File download restrictions should be applied to any untrusted user input sources. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -1954,7 +1954,7 @@ def servicenow_sspm_restrict_downloaded_file_types_check(cache: dict, awsAccount
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.Attachments.10] Instance should be configured to restrict downloading specific file (MIME) types",
+            "Title": "[Servicenow.Attachments.10] Instance should be configured to restrict downloading specific file (MIME) types",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to restrict downloading specific file (MIME) types.",
             "Remediation": {
                 "Recommendation": {
@@ -2021,7 +2021,7 @@ def servicenow_sspm_restrict_downloaded_file_types_check(cache: dict, awsAccount
 @registry.register_check("servicenow.attachments")
 def servicenow_sspm_upload_mime_type_restriction_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.Attachments.11] Instance should be configured to activate MIME type checking for uploads
+    [Servicenow.Attachments.11] Instance should be configured to activate MIME type checking for uploads
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -2074,7 +2074,7 @@ def servicenow_sspm_upload_mime_type_restriction_check(cache: dict, awsAccountId
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.Attachments.11] Instance should be configured to activate MIME type checking for uploads",
+            "Title": "[Servicenow.Attachments.11] Instance should be configured to activate MIME type checking for uploads",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to activate MIME type checking for uploads. Use the glide.security.file.mime_type.validation property to activate MIME type checking for uploads. You can enable (set the property to true) or disable (set it to false) MIME type validation for file attachments. To reduce vulnerabilities such as file inclusion and malicious file uploads, MIME type verification should be enabled. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -2150,7 +2150,7 @@ def servicenow_sspm_upload_mime_type_restriction_check(cache: dict, awsAccountId
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.Attachments.11] Instance should be configured to activate MIME type checking for uploads",
+            "Title": "[Servicenow.Attachments.11] Instance should be configured to activate MIME type checking for uploads",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to activate MIME type checking for uploads.",
             "Remediation": {
                 "Recommendation": {

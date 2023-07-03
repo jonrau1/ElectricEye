@@ -53,6 +53,8 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
         findings = list(app.run_oci_checks(pluginName=pluginName, delay=delay))
     elif assessmentTarget == "M365":
         findings = list(app.run_m365_checks(pluginName=pluginName, delay=delay))
+    elif assessmentTarget == "Salesforce":
+        findings = list(app.run_salesforce_checks(pluginName=pluginName, delay=delay))
     else:
         findings = list(app.run_non_aws_checks(pluginName=pluginName, delay=delay))
 
@@ -78,7 +80,8 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
             "OCI",
             "GCP",
             "Servicenow",
-            "M365"
+            "M365",
+            "Salesforce"
         ],
         case_sensitive=True
     ),
