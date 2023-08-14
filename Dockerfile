@@ -21,7 +21,7 @@
 # latest hash as of 15 JUNE 2023 - Alpine 3.18.0 / alpine:latest
 # https://hub.docker.com/layers/library/alpine/3.18.0/images/sha256-25fad2a32ad1f6f510e528448ae1ec69a28ef81916a004d3629874104f8a7f70?context=explore
 # use as builder image to pull in required deps
-FROM alpine@sha256:25fad2a32ad1f6f510e528448ae1ec69a28ef81916a004d3629874104f8a7f70 AS builder
+FROM alpine@sha256:7144f7bab3d4c2648d7e59409f15ec52a18006a128c733fcff20d3a4a54ba44a AS builder
 
 LABEL org.opencontainers.image.source="https://github.com/alpinelinux/docker-alpine"
 
@@ -43,7 +43,7 @@ RUN \
 
 # latest hash as of 15 JUNE 2023 - Alpine 3.18.0 / alpine:latest
 # https://hub.docker.com/layers/library/alpine/3.18.0/images/sha256-25fad2a32ad1f6f510e528448ae1ec69a28ef81916a004d3629874104f8a7f70?context=explore
-FROM alpine@sha256:25fad2a32ad1f6f510e528448ae1ec69a28ef81916a004d3629874104f8a7f70 as electriceye
+FROM alpine@sha256:7144f7bab3d4c2648d7e59409f15ec52a18006a128c733fcff20d3a4a54ba44a as electriceye
 
 COPY --from=builder /usr /usr
 
