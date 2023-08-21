@@ -18,10 +18,10 @@
 #specific language governing permissions and limitations
 #under the License.
 
-# latest hash as of 15 JUNE 2023 - Alpine 3.18.0 / alpine:latest
-# https://hub.docker.com/layers/library/alpine/3.18.0/images/sha256-25fad2a32ad1f6f510e528448ae1ec69a28ef81916a004d3629874104f8a7f70?context=explore
+# latest hash as of 7 AUG 2023 - Alpine 3.18.3
+# https://hub.docker.com/layers/library/alpine/3.18.3/images/sha256-c5c5fda71656f28e49ac9c5416b3643eaa6a108a8093151d6d1afc9463be8e33?context=explore
 # use as builder image to pull in required deps
-FROM alpine@sha256:82d1e9d7ed48a7523bdebc18cf6290bdb97b82302a8a9c27d4fe885949ea94d1 AS builder
+FROM alpine@sha256:c5c5fda71656f28e49ac9c5416b3643eaa6a108a8093151d6d1afc9463be8e33 AS builder
 
 LABEL org.opencontainers.image.source="https://github.com/alpinelinux/docker-alpine"
 
@@ -41,9 +41,9 @@ RUN \
     rm -rf /tmp/* && \
     rm -f /var/cache/apk/*
 
-# latest hash as of 15 JUNE 2023 - Alpine 3.18.0 / alpine:latest
-# https://hub.docker.com/layers/library/alpine/3.18.0/images/sha256-25fad2a32ad1f6f510e528448ae1ec69a28ef81916a004d3629874104f8a7f70?context=explore
-FROM alpine@sha256:82d1e9d7ed48a7523bdebc18cf6290bdb97b82302a8a9c27d4fe885949ea94d1 as electriceye
+# latest hash as of 7 AUG 2023 - Alpine 3.18.3
+# https://hub.docker.com/layers/library/alpine/3.18.3/images/sha256-c5c5fda71656f28e49ac9c5416b3643eaa6a108a8093151d6d1afc9463be8e33?context=explore
+FROM alpine@sha256:c5c5fda71656f28e49ac9c5416b3643eaa6a108a8093151d6d1afc9463be8e33 as electriceye
 
 COPY --from=builder /usr /usr
 
