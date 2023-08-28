@@ -6,7 +6,7 @@ google-api-python-client>=2.88.0
 oci>=2.104.0
 pluginbase==1.0.1
 psycopg2-binary==2.9.6
-pymongo==4.3.3
+pymongo==4.5.0
 pysnow<=0.7.9
 python3-nmap==1.6.0
 tomli==2.0.1
