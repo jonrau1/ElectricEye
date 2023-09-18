@@ -19,7 +19,7 @@ jobs:
 
       # Assume Role via OIDC Provider
       - name: Assume AWS Role with OIDC
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::${{ secrets.ELECTRIC_EYE_OPENSOURCE_AWS_ACCOUNT_ID }}:role/ElectricEyeOIDCGitHubActionRole
           aws-region: us-east-1
