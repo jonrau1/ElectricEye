@@ -180,9 +180,9 @@ These are the following services and checks perform by each Auditor, there are c
 | Salesforce_ThreatDetection_Auditor | Salesforce transaction security policy (TSP) | Transaction security policies should define an alerting action |
 | Salesforce_ThreatDetection_Auditor | Salesforce transaction security policy (TSP) | Transaction security policies should define a blocking or MFA-challenge action |
 | Salesforce_SingleSignOn_Auditor | Salesforce Single Sign On (SSO) | SSO should be enabled for the instance (check if SAML SSO configs exist) |
-| Salesforce_SingleSignOn_Auditor | Salesforce Single Sign On (SSO) | SSO SAML configs should xxxxxxxxx |
-| Salesforce_SingleSignOn_Auditor | Salesforce Single Sign On (SSO) | SSO SAML configs should xxxxxxxxx |
-| Salesforce_SingleSignOn_Auditor | Salesforce Single Sign On (SSO) | SSO SAML configs should xxxxxxxxx |
-| Salesforce_SingleSignOn_Auditor | Salesforce Single Sign On (SSO) | SSO SAML configs should xxxxxxxxx |
+| Salesforce_SingleSignOn_Auditor | Salesforce Single Sign On (SSO) | SSO SAML configs should define specific signature signing method as the signing algorithm |
+| Salesforce_SingleSignOn_Auditor | Salesforce Single Sign On (SSO) | SSO SAML configs should use SHA-2 as the signing algorithm |
+| Salesforce_SingleSignOn_Auditor | Salesforce Single Sign On (SSO) | SSO SAML configs should configure MFA |
+| Salesforce_SingleSignOn_Auditor | Salesforce Single Sign On (SSO) | SSO SAML configs should should use Just-in-Time user provisioning |
 
 Continue to check this section for information on active, retired, and renamed checks or using the `--list-checks` command in the CLI!
