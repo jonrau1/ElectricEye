@@ -18,10 +18,10 @@
 #specific language governing permissions and limitations
 #under the License.
 
-# latest hash as of 15 JUNE 2023 - Alpine 3.18.0 / alpine:latest
-# https://hub.docker.com/layers/library/alpine/3.18.0/images/sha256-25fad2a32ad1f6f510e528448ae1ec69a28ef81916a004d3629874104f8a7f70?context=explore
+# latest hash as of 19 NOV 2023 - Alpine 3.18.4
+# https://hub.docker.com/layers/library/alpine/3.18.4/images/sha256-48d9183eb12a05c99bcc0bf44a003607b8e941e1d4f41f9ad12bdcc4b5672f86?context=explore
 # use as builder image to pull in required deps
-FROM alpine@sha256:25fad2a32ad1f6f510e528448ae1ec69a28ef81916a004d3629874104f8a7f70 AS builder
+FROM alpine@sha256:48d9183eb12a05c99bcc0bf44a003607b8e941e1d4f41f9ad12bdcc4b5672f86 AS builder
 
 LABEL org.opencontainers.image.source="https://github.com/alpinelinux/docker-alpine"
 
@@ -41,9 +41,9 @@ RUN \
     rm -rf /tmp/* && \
     rm -f /var/cache/apk/*
 
-# latest hash as of 15 JUNE 2023 - Alpine 3.18.0 / alpine:latest
-# https://hub.docker.com/layers/library/alpine/3.18.0/images/sha256-25fad2a32ad1f6f510e528448ae1ec69a28ef81916a004d3629874104f8a7f70?context=explore
-FROM alpine@sha256:25fad2a32ad1f6f510e528448ae1ec69a28ef81916a004d3629874104f8a7f70 as electriceye
+# latest hash as of 19 NOV 2023 - Alpine 3.18.4
+# https://hub.docker.com/layers/library/alpine/3.18.4/images/sha256-48d9183eb12a05c99bcc0bf44a003607b8e941e1d4f41f9ad12bdcc4b5672f86?context=explore
+FROM alpine@sha256:48d9183eb12a05c99bcc0bf44a003607b8e941e1d4f41f9ad12bdcc4b5672f86 as electriceye
 
 COPY --from=builder /usr /usr
 
@@ -60,7 +60,7 @@ LABEL \
     maintainer="opensource@electriceye.cloud" \
     version="3.0" \
     license="Apache-2.0" \
-    description="ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to over 20 industry, regulatory, and best practice controls frameworks."
+    description="ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring supporting 100s of services and evaluations to harden your CSP & SaaS environments with controls mapped to over 20 industry, regulatory, and best practice controls frameworks."
 
 # Create a System Group and User for ElectricEye so we don't run as root
 RUN \

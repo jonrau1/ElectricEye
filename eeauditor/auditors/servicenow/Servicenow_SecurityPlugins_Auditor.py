@@ -60,7 +60,7 @@ def get_servicenow_plugins(cache: dict):
 @registry.register_check("servicenow.securityplugins")
 def servicenow_sspm_contextual_security_role_mgmt_plugin_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.SecurityPlugins.1] Instance should have the Contextual Security: Role Management (V2) plugin installed and activated
+    [Servicenow.SecurityPlugins.1] Instance should have the Contextual Security: Role Management (V2) plugin installed and activated
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -119,7 +119,7 @@ def servicenow_sspm_contextual_security_role_mgmt_plugin_check(cache: dict, awsA
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityPlugins.1] Instance should have the Contextual Security: Role Management (V2) plugin installed and activated",
+            "Title": "[Servicenow.SecurityPlugins.1] Instance should have the Contextual Security: Role Management (V2) plugin installed and activated",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not have the Contextual Security: Role Management (V2) plugin installed and activated. Activate the Contextual Security: Role Management (com.glide.role_management) plugin to enable contextual security, which secures a record/information using create, read, write, and delete functionality. Functional level access controls must be enforced from the server side prior to executing CRUD operations, ensuring the appropriate level of access to instance users. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -198,7 +198,7 @@ def servicenow_sspm_contextual_security_role_mgmt_plugin_check(cache: dict, awsA
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityPlugins.1] Instance should have the Contextual Security: Role Management (V2) plugin installed and activated",
+            "Title": "[Servicenow.SecurityPlugins.1] Instance should have the Contextual Security: Role Management (V2) plugin installed and activated",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does have the Contextual Security: Role Management (V2) plugin installed and activated.",
             "Remediation": {
                 "Recommendation": {
@@ -268,7 +268,7 @@ def servicenow_sspm_contextual_security_role_mgmt_plugin_check(cache: dict, awsA
 @registry.register_check("servicenow.securityplugins")
 def servicenow_sspm_explicit_role_plugin_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.SecurityPlugins.2] Instance should have the Explicit Role plugin installed and activated
+    [Servicenow.SecurityPlugins.2] Instance should have the Explicit Role plugin installed and activated
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -327,7 +327,7 @@ def servicenow_sspm_explicit_role_plugin_check(cache: dict, awsAccountId: str, a
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityPlugins.2] Instance should have the Explicit Role plugin installed and activated",
+            "Title": "[Servicenow.SecurityPlugins.2] Instance should have the Explicit Role plugin installed and activated",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not have the Explicit Role plugin installed and activated. Activate the Explicit Role (com.glide.explicit_roles) plugin to provide the instance with the new snc_internal and snc_external roles for B2B and B2C applications, preventing external users from accessing internal data. Enterprise users (employees) must have the internal role while non-enterprise users (non-employees) must have the external role. External Users (Non-employees) can access to many sensitive tables in the Now Platform that do not have any roles assigned to it. They are meant to be accessible by internal users (Employees) only. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -406,7 +406,7 @@ def servicenow_sspm_explicit_role_plugin_check(cache: dict, awsAccountId: str, a
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityPlugins.2] Instance should have the Explicit Role plugin installed and activated",
+            "Title": "[Servicenow.SecurityPlugins.2] Instance should have the Explicit Role plugin installed and activated",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does have the Explicit Role plugin installed and activated.",
             "Remediation": {
                 "Recommendation": {
@@ -476,7 +476,7 @@ def servicenow_sspm_explicit_role_plugin_check(cache: dict, awsAccountId: str, a
 @registry.register_check("servicenow.securityplugins")
 def servicenow_sspm_saml20_web_browser_sso_profile_plugin_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.SecurityPlugins.3] Instance should have the SAML 2.0 Single Sign-On plugin installed and activated
+    [Servicenow.SecurityPlugins.3] Instance should have the SAML 2.0 Single Sign-On plugin installed and activated
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -535,7 +535,7 @@ def servicenow_sspm_saml20_web_browser_sso_profile_plugin_check(cache: dict, aws
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityPlugins.3] Instance should have the SAML 2.0 Single Sign-On plugin installed and activated",
+            "Title": "[Servicenow.SecurityPlugins.3] Instance should have the SAML 2.0 Single Sign-On plugin installed and activated",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not have the SAML 2.0 Single Sign-On plugin installed and activated. The com.snc.integration.sso.saml20.update1 plugin ensures that the status of the SAML 2.0 Single Sign-On plugin is active. Security Assertion Markup Language (SAML) is an XML-based standard for exchanging authentication and authorization data between security domains. SAML exchanges security information between an identity provider (a producer of assertions) and a Service Provider (a consumer of assertions). The sso.multi.installer installs all required SAML-related plugins, and also contains saml2 implementation scripts that provide options for response validation. To learn more, see the topics in References in More Information. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -614,7 +614,7 @@ def servicenow_sspm_saml20_web_browser_sso_profile_plugin_check(cache: dict, aws
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityPlugins.3] Instance should have the SAML 2.0 Single Sign-On plugin installed and activated",
+            "Title": "[Servicenow.SecurityPlugins.3] Instance should have the SAML 2.0 Single Sign-On plugin installed and activated",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does have the SAML 2.0 Single Sign-On plugin installed and activated.",
             "Remediation": {
                 "Recommendation": {
@@ -684,7 +684,7 @@ def servicenow_sspm_saml20_web_browser_sso_profile_plugin_check(cache: dict, aws
 @registry.register_check("servicenow.securityplugins")
 def servicenow_sspm_security_jumpstart_plugin_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.SecurityPlugins.4] Instance should have the Security Jump Start (ACL Rules) plugin installed and activated
+    [Servicenow.SecurityPlugins.4] Instance should have the Security Jump Start (ACL Rules) plugin installed and activated
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -743,7 +743,7 @@ def servicenow_sspm_security_jumpstart_plugin_check(cache: dict, awsAccountId: s
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityPlugins.4] Instance should have the Security Jump Start (ACL Rules) plugin installed and activated",
+            "Title": "[Servicenow.SecurityPlugins.4] Instance should have the Security Jump Start (ACL Rules) plugin installed and activated",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not have the Security Jump Start (ACL Rules) plugin installed and activated. Activate the Security Jump Start (ACL Rules) (com.snc.system_security) plugin to create several important ACLs that validate the Access Controls on some of the key system tables within the Now Platform. These rules provide a jump-start on securing many system tables, making it easier for an organization to get an instance into production. The Security Jump Start (ACL Rules) plugin is installed automatically on all new instances. Access control should be enforced to lock down the unintended access to the instance. ACL jumpstart rules were created to provide a starting point on securing many system tables to make it easier for an organization to quickly get into production. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -822,7 +822,7 @@ def servicenow_sspm_security_jumpstart_plugin_check(cache: dict, awsAccountId: s
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityPlugins.4] Instance should have the Security Jump Start (ACL Rules) plugin installed and activated",
+            "Title": "[Servicenow.SecurityPlugins.4] Instance should have the Security Jump Start (ACL Rules) plugin installed and activated",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does have the Security Jump Start (ACL Rules) plugin installed and activated.",
             "Remediation": {
                 "Recommendation": {
@@ -892,7 +892,7 @@ def servicenow_sspm_security_jumpstart_plugin_check(cache: dict, awsAccountId: s
 @registry.register_check("servicenow.securityplugins")
 def servicenow_sspm_snc_access_control_plugin_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.SecurityPlugins.5] Instance should have the SNC Access Control plugin installed and activated
+    [Servicenow.SecurityPlugins.5] Instance should have the SNC Access Control plugin installed and activated
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -951,7 +951,7 @@ def servicenow_sspm_snc_access_control_plugin_check(cache: dict, awsAccountId: s
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "LOW"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityPlugins.5] Instance should have the SNC Access Control plugin installed and activated",
+            "Title": "[Servicenow.SecurityPlugins.5] Instance should have the SNC Access Control plugin installed and activated",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not have the SNC Access Control plugin installed and activated. Activate the SNC Access Control (com.snc.snc_access_control) plugin to control access to your instances by Customer Service and Support personnel. The default configuration for the Now Platform enables Customer Service and Support to access instances through an internal process that creates short-term support credentials. Although all access is audited, some customers prefer to control this access. Without this Plugin, you can add unnecessary exposure of instance access to wider group of people. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -1030,7 +1030,7 @@ def servicenow_sspm_snc_access_control_plugin_check(cache: dict, awsAccountId: s
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityPlugins.5] Instance should have the SNC Access Control plugin installed and activated",
+            "Title": "[Servicenow.SecurityPlugins.5] Instance should have the SNC Access Control plugin installed and activated",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does have the SNC Access Control plugin installed and activated.",
             "Remediation": {
                 "Recommendation": {
@@ -1100,7 +1100,7 @@ def servicenow_sspm_snc_access_control_plugin_check(cache: dict, awsAccountId: s
 @registry.register_check("servicenow.securityplugins")
 def servicenow_sspm_email_spam_scoring_filtering_plugin_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.SecurityPlugins.6] Instance should have the Email Filters plugin installed and activated
+    [Servicenow.SecurityPlugins.6] Instance should have the Email Filters plugin installed and activated
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -1159,7 +1159,7 @@ def servicenow_sspm_email_spam_scoring_filtering_plugin_check(cache: dict, awsAc
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityPlugins.6] Instance should have the Email Filters plugin installed and activated",
+            "Title": "[Servicenow.SecurityPlugins.6] Instance should have the Email Filters plugin installed and activated",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not have the Email Filters plugin installed and activated. Install the Email Filter (com.glide.email_filter) plugin to install email filtering within the instance. This filtering identifies existing headers, which enables you to decide what to do with the email based on the associated header. Every message sent through Now Platform email servers is assessed for the likelihood of being spam. Email filters enable administrators to use a condition builder or conditional script to specify when to ignore malicious incoming emails from known/unknown sender. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -1238,7 +1238,7 @@ def servicenow_sspm_email_spam_scoring_filtering_plugin_check(cache: dict, awsAc
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityPlugins.6] Instance should have the Email Filters plugin installed and activated",
+            "Title": "[Servicenow.SecurityPlugins.6] Instance should have the Email Filters plugin installed and activated",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does have the Email Filters plugin installed and activated.",
             "Remediation": {
                 "Recommendation": {

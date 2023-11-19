@@ -129,9 +129,10 @@ def describe_es_os_domains(cache, session):
     domainDetails = []
 
     for domain in elasticsearch.list_domain_names()["DomainNames"]:
+        domainName = domain["DomainName"]
         domainDetails.append(
             elasticsearch.describe_elasticsearch_domain(
-                DomainName=domain
+                DomainName=domainName
             )
         )
 

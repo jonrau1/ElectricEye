@@ -167,6 +167,53 @@ title = "ElectricEye Configuration"
 
         servicenow_failed_login_breaching_rate = "5"
 
+    [credentials.salesforce]
+
+        # The location (or actual contents) of your Salesforce Connected App Client ID this location must match the value 
+        # of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should 
+        # be the name of the AWS Systems Manager Parameter Store SecureString Parameter 
+
+        salesforce_connected_app_client_id_value = ""
+
+        # The location (or actual contents) of your Salesforce Connected App Client Secret
+        # this location must match the value  of `global.credentials_location` e.g., if you specify "AWS_SSM" 
+        # then the value for this variable should  be the name of the AWS Systems Manager Parameter Store SecureString Parameter 
+
+        salesforce_connected_app_client_secret_value = ""
+
+        # The location (or actual contents) of your Salesforce User's Username that has MFA and API access
+        # this location must match the value  of `global.credentials_location` e.g., if you specify "AWS_SSM" 
+        # then the value for this variable should  be the name of the AWS Systems Manager Parameter Store SecureString Parameter 
+
+        salesforce_api_enabled_username_value = ""
+
+        # The location (or actual contents) of your Salesforce User's Password that has MFA and API access
+        # this location must match the value  of `global.credentials_location` e.g., if you specify "AWS_SSM" 
+        # then the value for this variable should  be the name of the AWS Systems Manager Parameter Store SecureString Parameter 
+
+        salesforce_api_enabled_password_value = ""
+
+        # The location (or actual contents) of your Salesforce User's Security Token that has MFA and API access
+        # this location must match the value  of `global.credentials_location` e.g., if you specify "AWS_SSM" 
+        # then the value for this variable should  be the name of the AWS Systems Manager Parameter Store SecureString Parameter 
+
+        salesforce_api_enabled_security_token_value = ""
+
+        # The Country Code OR the Instance Identifier Code (e.g., NA224, CS87, CS102, NA214, etc.) of your Salesforce Instance
+        # this is found under Company Settings -> Company Information either ADDRESS or INSTANCE
+        # refer here for possible instance identifiers: https://help.salesforce.com/s/articleView?id=000382217&type=1
+
+        salesforce_instance_location = "NA224"
+
+        # The threshold for when to create a failing finding for the "Salesforce_Users_Auditor" Check for failed login-in
+        # (Check ID: `salesforce_user_failed_logins_above_limit_check`) attempts by active users in your Instance
+
+        salesforce_failed_login_breaching_rate = "5"
+
+        # The Salesforce API Version you will want to use, as of 27 JUNE 2023 ElectricEye uses v58.0
+
+        salesforce_api_version = "v58.0"
+
 [outputs]
 
     # ***IMPORTANT*** 

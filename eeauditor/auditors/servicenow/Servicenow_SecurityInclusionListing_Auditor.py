@@ -61,7 +61,7 @@ def get_servicenow_sys_properties(cache: dict):
 @registry.register_check("servicenow.securityinclusionlisting")
 def servicenow_sspm_url_allowlist_cors_iframe_communication_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.SecurityInclusionListing.1] Instance should enable URL allow lists for cross-origin iframe communication
+    [Servicenow.SecurityInclusionListing.1] Instance should enable URL allow lists for cross-origin iframe communication
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -114,7 +114,7 @@ def servicenow_sspm_url_allowlist_cors_iframe_communication_check(cache: dict, a
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.1] Instance should enable URL allow lists for cross-origin iframe communication",
+            "Title": "[Servicenow.SecurityInclusionListing.1] Instance should enable URL allow lists for cross-origin iframe communication",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not enable URL allow lists for cross-origin iframe communication. Use the 'glide.ui.concourse.onmessage_enforce_same_origin' property to enable cross-origin communication between iframes. If a web page contains event handlers that do not perform proper origin validation, a web page, or script from any origin, can communicate with it. It can also initiate any functionality performed by the event handler. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -190,7 +190,7 @@ def servicenow_sspm_url_allowlist_cors_iframe_communication_check(cache: dict, a
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.1] Instance should enable URL allow lists for cross-origin iframe communication",
+            "Title": "[Servicenow.SecurityInclusionListing.1] Instance should enable URL allow lists for cross-origin iframe communication",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does enable URL allow lists for cross-origin iframe communication.",
             "Remediation": {
                 "Recommendation": {
@@ -257,7 +257,7 @@ def servicenow_sspm_url_allowlist_cors_iframe_communication_check(cache: dict, a
 @registry.register_check("servicenow.securityinclusionlisting")
 def servicenow_sspm_enforce_relative_links_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.SecurityInclusionListing.2] Instance should be configured to enforce relative links to restrict attempts to link to unauthorized external content
+    [Servicenow.SecurityInclusionListing.2] Instance should be configured to enforce relative links to restrict attempts to link to unauthorized external content
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -310,7 +310,7 @@ def servicenow_sspm_enforce_relative_links_check(cache: dict, awsAccountId: str,
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.2] Instance should be configured to enforce relative links to restrict attempts to link to unauthorized external content",
+            "Title": "[Servicenow.SecurityInclusionListing.2] Instance should be configured to enforce relative links to restrict attempts to link to unauthorized external content",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to enforce relative links to restrict attempts to link to unauthorized external content. Use the 'glide.cms.catalog_uri_relative' property to enforce relative links from the URI parameter on /ess/catalog.do. Absolute URLs can pose a security risk when used as a part of parameter or a field value, thus redirecting the source page to an adversary-controlled website. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -386,7 +386,7 @@ def servicenow_sspm_enforce_relative_links_check(cache: dict, awsAccountId: str,
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.2] Instance should be configured to enforce relative links to restrict attempts to link to unauthorized external content",
+            "Title": "[Servicenow.SecurityInclusionListing.2] Instance should be configured to enforce relative links to restrict attempts to link to unauthorized external content",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to enforce relative links to restrict attempts to link to unauthorized external content.",
             "Remediation": {
                 "Recommendation": {
@@ -455,7 +455,7 @@ def servicenow_sspm_enforce_relative_links_check(cache: dict, awsAccountId: str,
 @registry.register_check("servicenow.securityinclusionlisting")
 def servicenow_sspm_specify_url_allowlists_cors_iframe_communications_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.SecurityInclusionListing.3] Instance should configure a specific URL allow list for cross-origin iframe communication
+    [Servicenow.SecurityInclusionListing.3] Instance should configure a specific URL allow list for cross-origin iframe communication
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -508,7 +508,7 @@ def servicenow_sspm_specify_url_allowlists_cors_iframe_communications_check(cach
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.3] Instance should configure a specific URL allow list for cross-origin iframe communication",
+            "Title": "[Servicenow.SecurityInclusionListing.3] Instance should configure a specific URL allow list for cross-origin iframe communication",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not configure a specific URL allow list for cross-origin iframe communication. Use the 'glide.ui.concourse.onmessage_enforce_same_origin_whitelist' property to enable cross-origin communication between iframes from trusted domains you specify in an inclusion list. If a web page contains event handlers that do not perform proper origin validation, a web page, or script from any origin, can communicate with it. It can also initiate any functionality performed by the event handler. Communication with iframes from other domains is a security risk. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -584,7 +584,7 @@ def servicenow_sspm_specify_url_allowlists_cors_iframe_communications_check(cach
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.3] Instance should configure a specific URL allow list for cross-origin iframe communication",
+            "Title": "[Servicenow.SecurityInclusionListing.3] Instance should configure a specific URL allow list for cross-origin iframe communication",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does configure a specific URL allow list for cross-origin iframe communication.",
             "Remediation": {
                 "Recommendation": {
@@ -651,7 +651,7 @@ def servicenow_sspm_specify_url_allowlists_cors_iframe_communications_check(cach
 @registry.register_check("servicenow.securityinclusionlisting")
 def servicenow_sspm_url_allowlist_logout_redirects_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.SecurityInclusionListing.4] Instance should configure a specific URL allow list for logout redirects
+    [Servicenow.SecurityInclusionListing.4] Instance should configure a specific URL allow list for logout redirects
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -704,7 +704,7 @@ def servicenow_sspm_url_allowlist_logout_redirects_check(cache: dict, awsAccount
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.4] Instance should configure a specific URL allow list for logout redirects",
+            "Title": "[Servicenow.SecurityInclusionListing.4] Instance should configure a specific URL allow list for logout redirects",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not configure a specific URL allow list for logout redirects. Use the 'glide.security.url.whitelist' property to add extra layer of validation to ensure whether any external URL introduced should be a part of inclusion listed URLs. Open redirection occurs when a vulnerable web page is redirected to an untrusted and malicious page that may compromise the user. Open redirection attacks come with a phishing attack because the modified vulnerable link is identical to the original site, increasing the likelihood of success for the phishing attack. Client-side open redirection can enable attacker to redirect victims/users to attacker-controlled website and is viewed as a security risk. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -780,7 +780,7 @@ def servicenow_sspm_url_allowlist_logout_redirects_check(cache: dict, awsAccount
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.4] Instance should configure a specific URL allow list for logout redirects",
+            "Title": "[Servicenow.SecurityInclusionListing.4] Instance should configure a specific URL allow list for logout redirects",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does configure a specific URL allow list for logout redirects.",
             "Remediation": {
                 "Recommendation": {
@@ -847,7 +847,7 @@ def servicenow_sspm_url_allowlist_logout_redirects_check(cache: dict, awsAccount
 @registry.register_check("servicenow.securityinclusionlisting")
 def servicenow_sspm_virtual_agent_embedded_csp_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.SecurityInclusionListing.5] Instance should enable the creation of a customized Content Security Policy for the embeddable Virtual Agent page
+    [Servicenow.SecurityInclusionListing.5] Instance should enable the creation of a customized Content Security Policy for the embeddable Virtual Agent page
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -900,7 +900,7 @@ def servicenow_sspm_virtual_agent_embedded_csp_check(cache: dict, awsAccountId: 
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.5] Instance should enable the creation of a customized Content Security Policy for the embeddable Virtual Agent page",
+            "Title": "[Servicenow.SecurityInclusionListing.5] Instance should enable the creation of a customized Content Security Policy for the embeddable Virtual Agent page",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not enable the creation of a customized Content Security Policy for the embeddable Virtual Agent page. Use the 'com.glide.cs.embed.csp_frame_ancestors' property to enable the configuration of the frame-ancestors policy for only the https://<your-instance>.service-now.com/sn_va_web_client_app_embed.do page. The Virtual Agent Plugin enables embedding of a client in an external web page. To enable the client page to be embedded in the web page, the Content Security Policy must allow the external page as a parent frame. If configured improperly (allowing all parent frames), it may possibly leave the embeddable client page vulnerable to clickjacking. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -976,7 +976,7 @@ def servicenow_sspm_virtual_agent_embedded_csp_check(cache: dict, awsAccountId: 
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.5] Instance should enable the creation of a customized Content Security Policy for the embeddable Virtual Agent page",
+            "Title": "[Servicenow.SecurityInclusionListing.5] Instance should enable the creation of a customized Content Security Policy for the embeddable Virtual Agent page",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does enable the creation of a customized Content Security Policy for the embeddable Virtual Agent page.",
             "Remediation": {
                 "Recommendation": {
@@ -1043,7 +1043,7 @@ def servicenow_sspm_virtual_agent_embedded_csp_check(cache: dict, awsAccountId: 
 @registry.register_check("servicenow.securityinclusionlisting")
 def servicenow_sspm_virtual_agent_embedded_xfo_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.SecurityInclusionListing.6] Instance should enable the configuration of a X-Frame-Options header for the embeddable Virtual Agent page
+    [Servicenow.SecurityInclusionListing.6] Instance should enable the configuration of a X-Frame-Options header for the embeddable Virtual Agent page
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -1096,7 +1096,7 @@ def servicenow_sspm_virtual_agent_embedded_xfo_check(cache: dict, awsAccountId: 
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.6] Instance should enable the configuration of a X-Frame-Options header for the embeddable Virtual Agent page",
+            "Title": "[Servicenow.SecurityInclusionListing.6] Instance should enable the configuration of a X-Frame-Options header for the embeddable Virtual Agent page",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not enable the configuration of a X-Frame-Options header for the embeddable Virtual Agent page. Use the 'com.glide.cs.embed.xframe_options' property to enable the configuration of the X-Frame header for only the https://<your-instance>.service-now.com/sn_va_web_client_app_embed.do page. The Virtual Agent Plugin enables embedding of a client in an external web page. To enable the client page to be embedded in the web page, the X-Frame-Options header must enable the iframe to be included in the parent frame. If configured improperly (allowing all parent frames), it may possibly leave the embeddable client page vulnerable to clickjacking. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -1172,7 +1172,7 @@ def servicenow_sspm_virtual_agent_embedded_xfo_check(cache: dict, awsAccountId: 
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.6] Instance should enable the configuration of a X-Frame-Options header for the embeddable Virtual Agent page",
+            "Title": "[Servicenow.SecurityInclusionListing.6] Instance should enable the configuration of a X-Frame-Options header for the embeddable Virtual Agent page",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does enable the configuration of a X-Frame-Options header for the embeddable Virtual Agent page.",
             "Remediation": {
                 "Recommendation": {
@@ -1239,7 +1239,7 @@ def servicenow_sspm_virtual_agent_embedded_xfo_check(cache: dict, awsAccountId: 
 @registry.register_check("servicenow.securityinclusionlisting")
 def servicenow_sspm_xfo_sameorigin_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.SecurityInclusionListing.7] Instance should set the X-Frame-Options to SAMEORIGIN for all UI pages to mitgate clickjacking attacks
+    [Servicenow.SecurityInclusionListing.7] Instance should set the X-Frame-Options to SAMEORIGIN for all UI pages to mitgate clickjacking attacks
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -1292,7 +1292,7 @@ def servicenow_sspm_xfo_sameorigin_check(cache: dict, awsAccountId: str, awsRegi
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.7] Instance should set the X-Frame-Options to SAMEORIGIN for all UI pages to mitgate clickjacking attacks",
+            "Title": "[Servicenow.SecurityInclusionListing.7] Instance should set the X-Frame-Options to SAMEORIGIN for all UI pages to mitgate clickjacking attacks",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not set the X-Frame-Options to SAMEORIGIN for all UI pages to mitgate clickjacking attacks. Use the X-Frame-Options HTTP response header to indicate whether browser should be allowed to render a page in a <frame> or <iframe>. Sites can use this function to avoid clickjacking attacks by ensuring that their content is not embedded into other sites. An attacker could embed your page into their own page and make your page elements perform maliciously. The end user may think the page is legitimate because it resembles your page. The end user may click on elements like usual only to have malicious scripts or elements run. The Same Origin policy enables you to restrict a domain from retrieving a script or a resource from another domains. All modern browsers support this functionality. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -1368,7 +1368,7 @@ def servicenow_sspm_xfo_sameorigin_check(cache: dict, awsAccountId: str, awsRegi
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.7] Instance should set the X-Frame-Options to SAMEORIGIN for all UI pages to mitgate clickjacking attacks",
+            "Title": "[Servicenow.SecurityInclusionListing.7] Instance should set the X-Frame-Options to SAMEORIGIN for all UI pages to mitgate clickjacking attacks",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does set the X-Frame-Options to SAMEORIGIN for all UI pages to mitgate clickjacking attacks.",
             "Remediation": {
                 "Recommendation": {
@@ -1435,7 +1435,7 @@ def servicenow_sspm_xfo_sameorigin_check(cache: dict, awsAccountId: str, awsRegi
 @registry.register_check("servicenow.securityinclusionlisting")
 def servicenow_sspm_xxe_entity_expansion_threshold_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.SecurityInclusionListing.8] Instance should configure the XML external entity (XXE) processing expansion threshold for XMLDocument and XMLUtil parsing
+    [Servicenow.SecurityInclusionListing.8] Instance should configure the XML external entity (XXE) processing expansion threshold for XMLDocument and XMLUtil parsing
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -1488,7 +1488,7 @@ def servicenow_sspm_xxe_entity_expansion_threshold_check(cache: dict, awsAccount
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.8] Instance should configure the XML external entity (XXE) processing expansion threshold for XMLDocument and XMLUtil parsing",
+            "Title": "[Servicenow.SecurityInclusionListing.8] Instance should configure the XML external entity (XXE) processing expansion threshold for XMLDocument and XMLUtil parsing",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not configure the XML external entity (XXE) processing expansion threshold for XMLDocument and XMLUtil parsing. Use the 'glide.xmlutil.max_entity_expansion' property to change the maximum entity expansion limit to a smaller number. An attacker can use this vulnerability to expand data exponentially, quickly consuming all system resources. Note: 3000 is the default minimum imposed by the Now Platform, which is considered to be a safe threshold. Hence, platform considers this default minimum if the integer value you enter is below 3000. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -1564,7 +1564,7 @@ def servicenow_sspm_xxe_entity_expansion_threshold_check(cache: dict, awsAccount
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.8] Instance should configure the XML external entity (XXE) processing expansion threshold for XMLDocument and XMLUtil parsing",
+            "Title": "[Servicenow.SecurityInclusionListing.8] Instance should configure the XML external entity (XXE) processing expansion threshold for XMLDocument and XMLUtil parsing",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does configure the XML external entity (XXE) processing expansion threshold for XMLDocument and XMLUtil parsing.",
             "Remediation": {
                 "Recommendation": {
@@ -1631,7 +1631,7 @@ def servicenow_sspm_xxe_entity_expansion_threshold_check(cache: dict, awsAccount
 @registry.register_check("servicenow.securityinclusionlisting")
 def servicenow_sspm_xxe_xmldoc_xmlutil_entity_validation_allowlist_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.SecurityInclusionListing.9] Instance should enable an allow list for XML external entity (XXE) XMLDocument/XMLUtil entity parsing validation
+    [Servicenow.SecurityInclusionListing.9] Instance should enable an allow list for XML external entity (XXE) XMLDocument/XMLUtil entity parsing validation
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -1684,7 +1684,7 @@ def servicenow_sspm_xxe_xmldoc_xmlutil_entity_validation_allowlist_check(cache: 
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.9] Instance should enable an allow list for XML external entity (XXE) XMLDocument/XMLUtil entity parsing validation",
+            "Title": "[Servicenow.SecurityInclusionListing.9] Instance should enable an allow list for XML external entity (XXE) XMLDocument/XMLUtil entity parsing validation",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not enable an allow list for XML external entity (XXE) XMLDocument/XMLUtil entity parsing validation. Use the 'glide.xml.entity.whitelist.enabled' property to enable the validation of external entity, and only allows processing of inclusion listed ones. An attacker can use the DTD to include arbitrary HTTP requests that the server might execute. This could lead to other attacks using the server's trust relationship with other entities. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -1760,7 +1760,7 @@ def servicenow_sspm_xxe_xmldoc_xmlutil_entity_validation_allowlist_check(cache: 
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.9] Instance should enable an allow list for XML external entity (XXE) XMLDocument/XMLUtil entity parsing validation",
+            "Title": "[Servicenow.SecurityInclusionListing.9] Instance should enable an allow list for XML external entity (XXE) XMLDocument/XMLUtil entity parsing validation",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does enable an allow list for XML external entity (XXE) XMLDocument/XMLUtil entity parsing validation.",
             "Remediation": {
                 "Recommendation": {
@@ -1827,7 +1827,7 @@ def servicenow_sspm_xxe_xmldoc_xmlutil_entity_validation_allowlist_check(cache: 
 @registry.register_check("servicenow.securityinclusionlisting")
 def servicenow_sspm_xxe_disable_entity_expansion_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.SecurityInclusionListing.10] Instance should disable XML external entity (XXE) entity expansion
+    [Servicenow.SecurityInclusionListing.10] Instance should disable XML external entity (XXE) entity expansion
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -1880,7 +1880,7 @@ def servicenow_sspm_xxe_disable_entity_expansion_check(cache: dict, awsAccountId
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.10] Instance should disable XML external entity (XXE) entity expansion",
+            "Title": "[Servicenow.SecurityInclusionListing.10] Instance should disable XML external entity (XXE) entity expansion",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not disable XML external entity (XXE) entity expansion. If customizations do not require entity expansion, use the glide.stax.allow_entity_resolution property to completely disable external entity expansion. The XML completes parsing but doesn't include any internal or external entities. An attacker can use this vulnerability to expand data exponentially, quickly consuming all system resources. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -1956,7 +1956,7 @@ def servicenow_sspm_xxe_disable_entity_expansion_check(cache: dict, awsAccountId
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.10] Instance should disable XML external entity (XXE) entity expansion",
+            "Title": "[Servicenow.SecurityInclusionListing.10] Instance should disable XML external entity (XXE) entity expansion",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does disable XML external entity (XXE) entity expansion.",
             "Remediation": {
                 "Recommendation": {
@@ -2023,7 +2023,7 @@ def servicenow_sspm_xxe_disable_entity_expansion_check(cache: dict, awsAccountId
 @registry.register_check("servicenow.securityinclusionlisting")
 def servicenow_sspm_xxe_xmldoc2_entity_validation_allowlist_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.SecurityInclusionListing.11] Instance should enable an allow list for XML external entity (XXE) XMLdoc2 entity parsing validation
+    [Servicenow.SecurityInclusionListing.11] Instance should enable an allow list for XML external entity (XXE) XMLdoc2 entity parsing validation
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -2076,7 +2076,7 @@ def servicenow_sspm_xxe_xmldoc2_entity_validation_allowlist_check(cache: dict, a
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.11] Instance should enable an allow list for XML external entity (XXE) XMLdoc2 entity parsing validation",
+            "Title": "[Servicenow.SecurityInclusionListing.11] Instance should enable an allow list for XML external entity (XXE) XMLdoc2 entity parsing validation",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not enable an allow list for XML external entity (XXE) XMLdoc2 entity parsing validation. Use a property to enable processing, using XMLDocument2, of external entities that are inclusion listed. An attacker can use the DTD may include arbitrary HTTP requests that the server may execute. Using the server's trust relationship with other entities, it could lead to other attacks. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -2152,7 +2152,7 @@ def servicenow_sspm_xxe_xmldoc2_entity_validation_allowlist_check(cache: dict, a
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.11] Instance should enable an allow list for XML external entity (XXE) XMLdoc2 entity parsing validation",
+            "Title": "[Servicenow.SecurityInclusionListing.11] Instance should enable an allow list for XML external entity (XXE) XMLdoc2 entity parsing validation",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does enable an allow list for XML external entity (XXE) XMLdoc2 entity parsing validation.",
             "Remediation": {
                 "Recommendation": {
@@ -2219,7 +2219,7 @@ def servicenow_sspm_xxe_xmldoc2_entity_validation_allowlist_check(cache: dict, a
 @registry.register_check("servicenow.securityinclusionlisting")
 def servicenow_sspm_xxe_processing_allowlist_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.SecurityInclusionListing.12] Instance should configure an allow list of URLs that XML external entity (XXE) processing can access
+    [Servicenow.SecurityInclusionListing.12] Instance should configure an allow list of URLs that XML external entity (XXE) processing can access
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -2272,7 +2272,7 @@ def servicenow_sspm_xxe_processing_allowlist_check(cache: dict, awsAccountId: st
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.12] Instance should configure an allow list of URLs that XML external entity (XXE) processing can access",
+            "Title": "[Servicenow.SecurityInclusionListing.12] Instance should configure an allow list of URLs that XML external entity (XXE) processing can access",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not configure an allow list of URLs that XML external entity (XXE) processing can access. Use the 'glide.xml.entity.whitelist' property to enable access to a listing of comma-delimited FQDN, if needed. These URLs are the only ones that can be reached using XML Entity processing. An attacker can use the DTD may include arbitrary HTTP requests that the server may execute. This could lead to other attacks using the server's trust relationship with other entities Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -2348,7 +2348,7 @@ def servicenow_sspm_xxe_processing_allowlist_check(cache: dict, awsAccountId: st
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.SecurityInclusionListing.12] Instance should configure an allow list of URLs that XML external entity (XXE) processing can access",
+            "Title": "[Servicenow.SecurityInclusionListing.12] Instance should configure an allow list of URLs that XML external entity (XXE) processing can access",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does configure an allow list of URLs that XML external entity (XXE) processing can access.",
             "Remediation": {
                 "Recommendation": {
