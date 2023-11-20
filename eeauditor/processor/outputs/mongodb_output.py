@@ -42,7 +42,7 @@ with open(f"{here}/mapped_compliance_controls.json") as jsonfile:
 CREDENTIALS_LOCATION_CHOICES = ["AWS_SSM", "AWS_SECRETS_MANAGER", "CONFIG_FILE"]
 
 @ElectricEyeOutput
-class JsonProvider(object):
+class MongodbProvider(object):
     __provider__ = "mongodb"
 
     def __init__(self):
