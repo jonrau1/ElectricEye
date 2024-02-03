@@ -21,9 +21,7 @@
 # latest hash as of 25 JAN 2024 - Alpine 3.19.1
 # https://hub.docker.com/layers/library/alpine/3.19.1/images/sha256-6457d53fb065d6f250e1504b9bc42d5b6c65941d57532c072d929dd0628977d0?context=explore&tab=vulnerabilities
 # use as builder image to pull in required deps
-FROM alpine@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b AS builder
-
-LABEL org.opencontainers.image.source="https://github.com/alpinelinux/docker-alpine"
+FROM alpine@sha256:6457d53fb065d6f250e1504b9bc42d5b6c65941d57532c072d929dd0628977d0 AS builder
 
 ENV PYTHONUNBUFFERED=1
 
@@ -44,9 +42,20 @@ RUN \
 
 # latest hash as of 25 JAN 2024 - Alpine 3.19.1
 # https://hub.docker.com/layers/library/alpine/3.19.1/images/sha256-6457d53fb065d6f250e1504b9bc42d5b6c65941d57532c072d929dd0628977d0?context=explore&tab=vulnerabilities
-FROM alpine@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b as electriceye
+FROM alpine@sha256:6457d53fb065d6f250e1504b9bc42d5b6c65941d57532c072d929dd0628977d0 as electriceye
 
 COPY --from=builder /usr /usr
+
+LABEL \
+    org.opencontainers.image.title="ElectricEye" \
+    org.opencontainers.image.description="ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring supporting 100s of services and evaluations to harden your CSP & SaaS environments with controls mapped to over 20 industry, regulatory, and best practice controls frameworks." \
+    org.opencontainers.image.version="3.0" \
+    org.opencontainers.image.created="2024-02-02T00:00:00Z" \
+    org.opencontainers.image.documentation="https://github.com/jonrau1/ElectricEye" \
+    org.opencontainers.image.revision="sha256:6457d53fb065d6f250e1504b9bc42d5b6c65941d57532c072d929dd0628977d0" \
+    org.opencontainers.image.source="https://github.com/alpinelinux/docker-alpine" \
+    org.opencontainers.image.licenses="Apache-2.0" \
+    org.opencontainers.image.authors="opensource@electriceye.cloud"
 
 # NOTE: This will copy all application files and auditors to the container
 # IMPORTANT: ADD YOUR TOML CONFIGURATIONS BEFORE YOU BUILD THIS! - or use docker run -v options to override
