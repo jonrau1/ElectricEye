@@ -270,7 +270,7 @@ class EEAuditor(object):
 
                     # For Support & Shield (Advanced) Auditors, check if the Account in question has the proper Support level and/or an active Shield Advanced Subscription
                     if serviceName == "support":
-                        if CloudConfig.get_aws_support_eligiblity is False:
+                        if CloudConfig.get_aws_support_eligibility is False:
                             logger.info(
                                 "%s cannot access Trusted Advisor Checks due to not having Business, Enterprise or Enterprise On-Ramp Support.",
                                 account
