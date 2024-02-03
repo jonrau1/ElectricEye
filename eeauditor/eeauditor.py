@@ -18,9 +18,11 @@
 #specific language governing permissions and limitations
 #under the License.
 
+import logging
+from os import path
 from functools import partial
 from inspect import getfile
-from os import path
+import sys
 from time import sleep
 from traceback import format_exc
 import json
@@ -28,6 +30,8 @@ from requests import get
 from check_register import CheckRegister
 from cloud_utils import CloudConfig
 from pluginbase import PluginBase
+
+logger = logging.getLogger(__name__)
 
 here = path.abspath(path.dirname(__file__))
 getPath = partial(path.join, here)
@@ -137,13 +141,21 @@ class EEAuditor(object):
             try:
                 self.source.load_plugin(auditorName)
             except Exception as e:
-                print(f"Failed to load plugin {auditorName} with exception {e}")
+                logger.error(
+                    "Failed to load plugin %s with exception: %s",
+                    auditorName, e
+                )
+                raise e
         else:
             for auditorName in self.source.list_plugins():
                 try:
                     self.source.load_plugin(auditorName)
                 except Exception as e:
-                    print(f"Failed to load plugin {auditorName} with exception {e}")
+                    logger.error(
+                        "Failed to load plugin %s with exception: %s",
+                        auditorName, e
+                    )
+                    raise e
 
     # Called within this class    
     def check_service_endpoint_availability(self, endpointData, awsPartition, service, awsRegion):
@@ -245,19 +257,28 @@ class EEAuditor(object):
                     )
                     # Check service availability, not always accurate
                     if self.check_service_endpoint_availability(endpointData, partition, serviceName, region) is False:
-                        print(f"{serviceName} is not available in {region}")
+                        logger.info(
+                            "%s is not available in %s",
+                            serviceName, region
+                        )
                         continue
 
                     # For Support & Shield (Advanced) Auditors, check if the Account in question has the proper Support level and/or an active Shield Advanced Subscription
                     if serviceName == "support":
                         if CloudConfig.get_aws_support_eligiblity is False:
-                            print(f"{account} cannot access Trusted Advisor Checks due to not having Business, Enterprise or Enterprise On-Ramp Support.")
+                            logger.info(
+                                "%s cannot access Trusted Advisor Checks due to not having Business, Enterprise or Enterprise On-Ramp Support.",
+                                account
+                            )
                             globalAuditorsCompleted.append(serviceName)
                             continue
 
                     if serviceName == "shield":
                         if CloudConfig.get_aws_shield_advanced_eligiblity is False:
-                            print(f"{account} cannot access Shield Advanced Checks due to not having an active Subscription.")
+                            logger.info(
+                                "%s cannot access Shield Advanced Checks due to not having an active Subscription.",
+                                account    
+                            )
                             globalAuditorsCompleted.append(serviceName)
                             continue
                     
@@ -268,7 +289,10 @@ class EEAuditor(object):
                         if serviceName not in globalAuditorsCompleted:
                             globalAuditorsCompleted.append(serviceName)
                         else:
-                            print(f"{serviceName.capitalize()} Auditor was either already run or ineligble to run for AWS Account {account}. Global Auditors only need to run once per Account.")
+                            logger.info(
+                                "%s Auditor was either already run or ineligble to run for AWS Account %s. Global Auditors only need to run once per Account.",
+                                serviceName.capitalize(), account    
+                            )
                             continue
 
                     for checkName, check in checkList.items():
@@ -279,7 +303,10 @@ class EEAuditor(object):
                             and pluginName == checkName
                         ):
                             try:
-                                print(f"Executing Check {checkName} for Account {account} in {region}")
+                                logger.info(
+                                    "Executing Check %s for Account %s in region %s",
+                                    checkName, account, region
+                                )
                                 for finding in check(
                                     cache=auditorCache,
                                     session=session,
@@ -289,8 +316,10 @@ class EEAuditor(object):
                                 ):
                                     yield finding
                             except Exception:
-                                print(f"Failed to execute check {checkName}")
-                                print(format_exc())
+                                logger.warn(
+                                    "Failed to execute check %s with traceback %s",
+                                    checkName, format_exc()
+                                )
                         
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
@@ -323,7 +352,10 @@ class EEAuditor(object):
                         and pluginName == checkName
                     ):
                         try:
-                            print(f"Executing Check {checkName} for GCP Project {project}")
+                            logger.info(
+                                "Executing Check %s for GCP Project %s",
+                                checkName, project
+                            )
                             for finding in check(
                                 cache=auditorCache,
                                 awsAccountId=account,
@@ -333,8 +365,10 @@ class EEAuditor(object):
                             ):
                                 yield finding
                         except Exception:
-                            print(format_exc())
-                            print(f"Failed to execute check {checkName}")
+                            logger.warn(
+                                "Failed to execute check %s with traceback %s",
+                                checkName, format_exc()
+                            )
                 # optional sleep if specified - defaults to 0 seconds
                 sleep(delay)
 
@@ -364,7 +398,10 @@ class EEAuditor(object):
                     and pluginName == checkName
                 ):
                     try:
-                        print(f"Executing Check: {checkName}")
+                        logger.info(
+                            "Executing Check %s for OCI",
+                            checkName
+                        )
                         for finding in check(
                             cache=auditorCache,
                             awsAccountId=account,
@@ -377,9 +414,11 @@ class EEAuditor(object):
                             ociUserApiKeyFingerprint=self.ociUserApiKeyFingerprint
                         ):
                             yield finding
-                    except Exception as e:
-                        print(format_exc())
-                        print(f"Failed to execute check {checkName} with exception {e}")
+                    except Exception:
+                        logger.warn(
+                            "Failed to execute check %s with traceback %s",
+                            checkName, format_exc()
+                        )
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
 
@@ -410,7 +449,10 @@ class EEAuditor(object):
                     and pluginName == checkName
                 ):
                     try:
-                        print(f"Executing Check {checkName} for M365 Tenant {self.m365TenantId}")
+                        logger.info(
+                            "Executing Check %s for M365 Tenant %s",
+                            checkName, self.m365TenantId
+                        )
                         for finding in check(
                             cache=auditorCache,
                             awsAccountId=account,
@@ -423,8 +465,10 @@ class EEAuditor(object):
                         ):
                             yield finding
                     except Exception:
-                        print(format_exc())
-                        print(f"Failed to execute check {checkName}")
+                        logger.warn(
+                            "Failed to execute check %s with traceback %s",
+                            checkName, format_exc()
+                        )
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
 
@@ -456,7 +500,10 @@ class EEAuditor(object):
                     and pluginName == checkName
                 ):
                     try:
-                        print(f"Executing Check {checkName} for Salesforce instance using User {self.salesforceApiUsername}")
+                        logger.info(
+                            "Executing Check %s for Salesforce instance using User %s",
+                            checkName, self.salesforceApiUsername
+                        )
                         for finding in check(
                             cache=auditorCache,
                             awsAccountId=account,
@@ -471,8 +518,10 @@ class EEAuditor(object):
                         ):
                             yield finding
                     except Exception:
-                        print(format_exc())
-                        print(f"Failed to execute check {checkName}")
+                        logger.warn(
+                            "Failed to execute check %s with traceback %s",
+                            checkName, format_exc()
+                        )
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
 
@@ -502,7 +551,10 @@ class EEAuditor(object):
                     and pluginName == checkName
                 ):
                     try:
-                        print(f"Executing Check: {checkName}")
+                        logger.info(
+                            "Executing Check %s",
+                            checkName
+                        )
                         for finding in check(
                             cache=auditorCache,
                             awsAccountId=account,
@@ -511,8 +563,10 @@ class EEAuditor(object):
                         ):
                             yield finding
                     except Exception as e:
-                        print(format_exc())
-                        print(f"Failed to execute check {checkName} with exception {e}")
+                        logger.warn(
+                            "Failed to execute check %s with traceback %s",
+                            checkName, format_exc()
+                        )
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
 
