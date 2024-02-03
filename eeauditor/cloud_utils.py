@@ -18,13 +18,16 @@
 #specific language governing permissions and limitations
 #under the License.
 
+import logging
 import boto3
 from tomli import load as tomload
-from sys import exit
-from os import environ, path
+import sys
+from os import environ, path, chmod
 from re import compile
 import json
 from botocore.exceptions import ClientError
+
+logger = logging.getLogger(__name__)
 
 # Boto3 Clients
 sts = boto3.client("sts")
@@ -51,13 +54,16 @@ class CloudConfig(object):
 
         # From TOML [global]
         if data["global"]["aws_multi_account_target_type"] not in AWS_MULTI_ACCOUNT_TARGET_TYPE_CHOICES:
-            print("Invalid option for [global.aws_multi_account_target_type].")
-            exit(2)
+            logger.error("Invalid option for [global.aws_multi_account_target_type].")
+            sys.exit(2)
         self.awsMultiAccountTargetType = data["global"]["aws_multi_account_target_type"]
 
         if data["global"]["credentials_location"] not in CREDENTIALS_LOCATION_CHOICES:
-            print(f"Invalid option for [global.credentials_location]. Must be one of {str(CREDENTIALS_LOCATION_CHOICES)}.")
-            exit(2)
+            logger.error(
+                "Invalid option for [global.credentials_location]. Must be one of %s.",
+                CREDENTIALS_LOCATION_CHOICES
+            )
+            sys.exit(2)
         self.credentialsLocation = data["global"]["credentials_location"]
 
         ##################################
@@ -75,14 +81,14 @@ class CloudConfig(object):
                     self.awsAccountTargets = awsAccountTargets
             elif self.awsMultiAccountTargetType == "OU":
                 if not awsAccountTargets:
-                    print("OU was specified but targets were not specified.")
-                    exit(2)
+                    logger.error("OU was specified but targets were not specified.")
+                    sys.exit(2)
                 # Regex to check for Valid OUs
                 ouIdRegex = compile(r"^ou-[0-9a-z]{4,32}-[a-z0-9]{8,32}$")
                 for ou in awsAccountTargets:
                     if not ouIdRegex.match(ou):
-                        print(f"Invalid Organizational Unit ID {ou}.")
-                        exit(2)
+                        logger.error(f"Invalid Organizational Unit ID {ou}.")
+                        sys.exit(2)
                 self.awsAccountTargets = self.get_aws_accounts_from_organizational_units(awsAccountTargets)
             elif self.awsMultiAccountTargetType == "Organization":
                 self.awsAccountTargets = self.get_aws_accounts_from_organization()
@@ -102,8 +108,8 @@ class CloudConfig(object):
             # Process ["aws_electric_eye_iam_role_name"]
             electricEyeRoleName = data["regions_and_accounts"]["aws"]["aws_electric_eye_iam_role_name"]
             if electricEyeRoleName == (None or ""):
-                print(f"A value for ['aws_electric_eye_iam_role_name'] was not provided. Fix the TOML file and run ElectricEye again.")
-                exit(2)
+                logger.error(f"A value for ['aws_electric_eye_iam_role_name'] was not provided. Fix the TOML file and run ElectricEye again.")
+                sys.exit(2)
             self.electricEyeRoleName = electricEyeRoleName
         
         # GCP
@@ -111,8 +117,8 @@ class CloudConfig(object):
             # Process ["gcp_project_ids"]
             gcpProjects = data["regions_and_accounts"]["gcp"]["gcp_project_ids"]
             if not gcpProjects:
-                print("No GCP Projects were provided in [regions_and_accounts.gcp.gcp_project_ids].")
-                exit(2)
+                logger.error("No GCP Projects were provided in [regions_and_accounts.gcp.gcp_project_ids].")
+                sys.exit(2)
             else:
                 self.gcpProjectIds = gcpProjects
             
@@ -151,8 +157,8 @@ class CloudConfig(object):
                     ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint, ociUserApiKeyPemValue
                     ]
                 ):
-                print(f"One of your Oracle Cloud TOML entries in [regions_and_accounts.oci] or [credentials.oci] is empty!")
-                exit(2)
+                logger.error(f"One of your Oracle Cloud TOML entries in [regions_and_accounts.oci] or [credentials.oci] is empty!")
+                sys.exit(2)
 
             # Assign ["regions_and_accounts"]["oci"] values to `self`
             self.ociTenancyId = ociTenancyId
@@ -197,15 +203,15 @@ class CloudConfig(object):
 
         # Azure
         elif assessmentTarget == "Azure":
-            print("Coming soon!")
+            logger.info("Coming soon!")
 
         # Alibaba Cloud
         elif assessmentTarget == "Alibaba":
-            print("Coming soon!")
+            logger.info("Coming soon!")
 
         # VMWare Cloud on AWS
         elif assessmentTarget == "VMC":
-            print("Coming soon!")
+            logger.info("Coming soon!")
 
         ###################################
         # SOFTWARE-AS-A-SERVICE PROVIDERS #
@@ -227,8 +233,8 @@ class CloudConfig(object):
                     snowInstanceName, snowInstanceRegion, snowUserName, snowUserLoginBreachRate
                     ]
                 ):
-                print(f"One of your ServiceNow TOML entries in [credentials.servicenow] is empty!")
-                exit(2)
+                logger.error(f"One of your ServiceNow TOML entries in [credentials.servicenow] is empty!")
+                sys.exit(2)
             
             # Retrieve ServiceNow ElectricEye user password
             serviceNowPwVal = serviceNowValues["servicenow_sspm_password_value"]
@@ -267,8 +273,8 @@ class CloudConfig(object):
                     m365ClientId, m365SecretId, m365TenantId, m365TenantLocation
                     ]
                 ):
-                print(f"One of your M365 TOML entries in [credentials.m365] is empty!")
-                exit(2)
+                logger.error(f"One of your M365 TOML entries in [credentials.m365] is empty!")
+                sys.exit(2)
 
             # This value (tenant location) will always be in plaintext
             self.m365TenantLocation = m365TenantLocation
@@ -333,8 +339,8 @@ class CloudConfig(object):
                     salesforceAppClientId, salesforceAppClientSecret, salesforceApiUsername, salesforceApiPassword, salesforceUserSecurityToken, salesforceInstanceLocation, salesforceFailedLoginBreachingRate, salesforceApiVersion
                     ]
                 ):
-                print(f"One of your Salesforce TOML entries in [credentials.salesforce] is empty!")
-                exit(2)
+                logger.error(f"One of your Salesforce TOML entries in [credentials.salesforce] is empty!")
+                sys.exit(2)
 
             # The failed login breaching rate and API Version will be in plaintext/env vars
             environ["SALESFORCE_FAILED_LOGIN_BREACHING_RATE"] = salesforceFailedLoginBreachingRate
@@ -426,10 +432,12 @@ class CloudConfig(object):
         Retrieves a TOML variable from AWS Systems Manager Parameter Store and returns it
         """
 
-        # Check that a value was provided
-        if value == (None or ""):
-            print(f"A value for {configurationName} was not provided. Fix the TOML file and run ElectricEye again.")
-            exit(2)
+        if value is None or value == "":
+            logger.error(
+                "A value for %s was not provided. Fix the TOML file and run ElectricEye again.",
+                configurationName
+            )
+            sys.exit(2)
 
         # Retrieve the credential from SSM Parameter Store
         try:
@@ -438,6 +446,10 @@ class CloudConfig(object):
                 WithDecryption=True
             )["Parameter"]["Value"]
         except ClientError as e:
+            logger.error(
+                "Failed to retrieve the credential for %s from SSM Parameter Store: %s",
+                configurationName, e
+            )
             raise e
         
         return credential
@@ -446,20 +458,22 @@ class CloudConfig(object):
         """
         Retrieves a TOML variable from AWS Secrets Manager and returns it
         """
+        if value is None or value == "":
+            logger.error(
+                "A value for %s was not provided. Fix the TOML file and run ElectricEye again.",
+                configurationName
+            )
+            sys.exit(2)
 
-        # Check that a value was provided
-        if value == (None or ""):
-            print(f"A value for {configurationName} was not provided. Fix the TOML file and run ElectricEye again.")
-            exit(2)
-
-        # Retrieve the credential from AWS Secrets Manager
         try:
-            credential = asm.get_secret_value(
-                SecretId=value,
-            )["SecretString"]
+            credential = asm.get_secret_value(SecretId=value)["SecretString"]
         except ClientError as e:
+            logger.error(
+                "Failed to retrieve the credential for %s from AWS Secrets Manager: %s",
+                configurationName, e
+            )
             raise e
-        
+
         return credential
 
     def get_aws_accounts_from_organization(self):
@@ -469,38 +483,38 @@ class CloudConfig(object):
         try:
             accounts = [account["Id"] for account in org.list_accounts()["Accounts"] if account["Status"] == "ACTIVE"]
         except ClientError as e:
+            logger.error(
+                "Failed to retrieve accounts from AWS Organizations: %s", e
+            )
             raise e
-        
+
         return accounts
 
     def get_aws_accounts_from_organizational_units(self, targets):
         """
         Uses Organizations ListAccountsForParent API to get a list of "ACTIVE" AWS Accounts for specified OUs
         """
-        accounts = []
-        # Sometimes the caller Account may not be in the OU, add them in
-        accounts.append(sts.get_caller_identity()["Account"])
+        accounts = [sts.get_caller_identity()["Account"]]  # Caller account is added directly.
 
         for parent in targets:
-            print(f"Processing accounts for Organizational Unit {parent}.")
+            logger.info("Processing accounts for Organizational Unit %s.", parent)
             try:
-                for account in org.list_accounts_for_parent(ParentId=parent)["Accounts"]:
-                    if account["Status"] == "ACTIVE":
-                        if account["Id"] not in accounts:
-                            accounts.append(account["Id"])
-                        else:
-                            continue
+                active_accounts = [account["Id"] for account in org.list_accounts_for_parent(ParentId=parent)["Accounts"] if account["Status"] == "ACTIVE"]
+                accounts.extend(account for account in active_accounts if account not in accounts)
             except ClientError as e:
+                logger.error(
+                    "Failed to retrieve accounts for Organizational Unit %s: %s",
+                    parent, e
+                )
                 raise e
-        
-        return accounts
-    
-    # This function is called outside of this Class
-    def create_aws_session(account, partition, region, roleName):
-        """
-        Uses STS AssumeRole to create a temporary Boto3 Session with a specified Account, Partition, and Region
-        """
 
+        return accounts
+
+    # This function is called outside of this Class
+    def create_aws_session(account: str, partition: str, region: str, roleName: str) -> boto3.Session:
+        """
+        Creates a Boto3 Session by assuming a given AWS IAM Role
+        """
         crossAccountRoleArn = f"arn:{partition}:iam::{account}:role/{roleName}"
 
         try:
@@ -508,7 +522,12 @@ class CloudConfig(object):
                 RoleArn=crossAccountRoleArn,
                 RoleSessionName="ElectricEye"
             )
+            logger.info("Assumed role: %s successfully", crossAccountRoleArn)
         except ClientError as e:
+            logger.error(
+                "Failed to assume role %s: %s",
+                crossAccountRoleArn, e
+            )
             raise e
 
         session = boto3.Session(
@@ -521,10 +540,11 @@ class CloudConfig(object):
         return session
     
     # This function is called outside of this Class and from create_aws_session()
-    def check_aws_partition(region):
+    def check_aws_partition(region: str):
         """
         Returns the AWS Partition based on the current Region of a Session
         """
+
         # GovCloud partition override
         if region in ["us-gov-east-1", "us-gov-west-1"]:
             partition = "aws-us-gov"
@@ -543,31 +563,37 @@ class CloudConfig(object):
         return partition
 
     # This function is called outside of this Class
-    def get_aws_support_eligiblity(session):
+    def get_aws_support_eligibility(session):
         support = session.client("support")
 
         try:
             support.describe_trusted_advisor_checks(language='en')
             supportEligible = True
+            logger.info("AWS Support is eligible.")
         except ClientError as e:
-            if str(e) == "An error occurred (SubscriptionRequiredException) when calling the DescribeTrustedAdvisorChecks operation: Amazon Web Services Premium Support Subscription is required to use this service.":
+            if "SubscriptionRequiredException" in str(e):
                 supportEligible = False
+                logger.warning("AWS Support is not eligible: %s", e)
             else:
+                logger.error("Error checking AWS Support eligibility: %s", e)
                 raise e
 
         return supportEligible
 
     # This function is called outside of this Class
-    def get_aws_shield_advanced_eligiblity(session):
+    def get_aws_shield_advanced_eligibility(session):
         shield = session.client("shield")
 
         try:
             shield.describe_subscription()
             shieldEligible = True
+            logger.info("AWS Shield Advanced is eligible.")
         except ClientError as e:
-            if str(e) == "An error occurred (ResourceNotFoundException) when calling the DescribeSubscription operation: The subscription does not exist.":
+            if "ResourceNotFoundException" in str(e):
                 shieldEligible = False
+                logger.warning("AWS Shield Advanced is not eligible: %s", e)
             else:
+                logger.error("Error checking AWS Shield Advanced eligibility: %s", e)
                 raise e
 
         return shieldEligible
@@ -583,18 +609,22 @@ class CloudConfig(object):
         by this overall Class (CloudConfig), writes it to a JSON file, and specifies that location as the environment variable "GOOGLE_APPLICATION_CREDENTIALS"
         """
         here = path.abspath(path.dirname(__file__))
-        # Write the result of ["gcp_service_account_json_payload_value"] to file
-        with open(f"{here}/gcp_cred.json", 'w') as jsonfile:
-            json.dump(
-                json.loads(
-                    credentialValue
-                ),
-                jsonfile,
-                indent=2
+        credentials_file_path = path.join(here, 'gcp_cred.json')
+
+        # Attempt to parse the credential value and write it to a file
+        try:
+            credentials = json.loads(credentialValue)
+            with open(credentials_file_path, 'w') as jsonfile:
+                json.dump(credentials, jsonfile, indent=2)
+                chmod(credentials_file_path, 0o600)  # Set file to be readable and writable only by the owner
+        except json.JSONDecodeError as e:
+            logger.error(
+                "Failed to parse GCP credentials JSON: %s", e
             )
-        # Set Cred global path
-        print(f"{here}/gcp_cred.json saved to environment variable")
-        environ["GOOGLE_APPLICATION_CREDENTIALS"] = f"{here}/gcp_cred.json"
+            raise e
+
+        logger.info("%s saved to environment variable", credentials_file_path)
+        environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_file_path
 
     def setup_oci_credentials(self, credentialValue):
         """
@@ -602,12 +632,14 @@ class CloudConfig(object):
         contents to a file and save the location to an environment variable to be used
         """
         here = path.abspath(path.dirname(__file__))
-        # Write the result of ["oci_user_api_key_private_key_pem_contents_value"] to file
-        with open(f"{here}/oci_api_key.pem", "w") as f:
-            f.write(credentialValue)
+        credentials_file_path = path.join(here, 'oci_api_key.pem')
 
-        # Set the location
-        print(f"{here}/oci_api_key.pem saved to environment variable")
-        environ["OCI_PEM_FILE_PATH"] = f"{here}/oci_api_key.pem"
+        # Write the PEM contents to a file
+        with open(credentials_file_path, "w") as f:
+            f.write(credentialValue)
+            chmod(credentials_file_path, 0o600)  # Set file to be readable and writable only by the owner
+
+        logger.info("%s saved to environment variable", credentials_file_path)
+        environ["OCI_PEM_FILE_PATH"] = credentials_file_path
         
 ## EOF
