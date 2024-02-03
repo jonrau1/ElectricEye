@@ -503,7 +503,262 @@ To use this Output include the following arguments in your ElectricEye CLI: `pyt
 ### Example Open Cyber Security Format (OCSF) V1.1.0 Output
 
 ```json
-{}
+{
+    "activity_id": 1,
+    "activity_name": "Create",
+    "category_name": "Findings",
+    "category_uid": 2,
+    "class_name": "Compliance Finding",
+    "class_uid": 2003,
+    "confidence_score": 99,
+    "severity": "Informational",
+    "severity_id": 99,
+    "status": "New",
+    "status_id": 1,
+    "time": 1706990423,
+    "type_name": "Compliance Finding: Create",
+    "type_uid": 200301,
+    "metadata": {
+        "uid": "arn:aws:lambda:us-isob-east-1:123456789012:function:super_secret_squirrel_serverless/public-lambda-function-check",
+        "correlation_uid": "arn:aws:lambda:us-isob-east-1:123456789012:function:super_secret_squirrel_serverless",
+        "version": "1.1.0",
+        "product": {
+            "name": "ElectricEye",
+            "version": "3.0",
+            "url_string": "https://github.com/jonrau1/ElectricEye",
+            "vendor_name": "ElectricEye"
+        },
+        "profiles": [
+            "cloud"
+        ]
+    },
+    "cloud": {
+        "provider": "AWS",
+        "project_uid": "123456789012",
+        "region": "us-isob-east-1",
+        "account": {
+            "uid": "123456789012",
+            "type": "AWS Account",
+            "type_uid": 10
+        }
+    },
+    "observables": [
+        {
+            "name": "cloud.project_uid",
+            "type": "Resource UID",
+            "type_id": 10,
+            "value": "123456789012"
+        },
+        {
+            "name": "resource.uid",
+            "type": "Resource UID",
+            "type_id": 10,
+            "value": "arn:aws:lambda:us-isob-east-1:123456789012:function:super_secret_squirrel_serverless"
+        }
+    ],
+    "compliance": {
+        "requirements": [
+            "NIST CSF V1.1 PR.AC-3",
+            "NIST SP 800-53 Rev. 4 AC-1",
+            "NIST SP 800-53 Rev. 4 AC-17",
+            "NIST SP 800-53 Rev. 4 AC-19",
+            "NIST SP 800-53 Rev. 4 AC-20",
+            "NIST SP 800-53 Rev. 4 SC-15",
+            "AICPA TSC CC6.6",
+            "ISO 27001:2013 A.6.2.1",
+            "ISO 27001:2013 A.6.2.2",
+            "ISO 27001:2013 A.11.2.6",
+            "ISO 27001:2013 A.13.1.1",
+            "ISO 27001:2013 A.13.2.1",
+            "CIS Critical Security Controls V8 4.11",
+            "NIST SP 800-53 Rev. 5 AC-19",
+            "CSA Cloud Controls Matrix V4.0 UEM-13",
+            "CMMC 2.0 AC.L2-3.1.18",
+            "UK NCSC Cyber Assessment Framework V3.1 B3.d",
+            "NZISM V3.5 21.1.20. Emergency destruction (CID:4519)",
+            "ISO 27001:2022 A8.1",
+            "ECB CROE 2.3.2.1-13",
+            "Critical Risk Profile V1.2 PR.IP-1.2",
+            "ISO 27001:2022 A8.10",
+            "NZISM V3.5 21.4.11. BYOD Infrastructure and System Controls (CID:4666)",
+            "NIST SP 800-53 Rev. 5 AC-20",
+            "CIS Critical Security Controls V8 6.4",
+            "NIST SP 800-171 Rev. 2 3.1.12",
+            "CSA Cloud Controls Matrix V4.0 HRS-04",
+            "CMMC 2.0 AC.L2-3.1.12",
+            "UK NCSC Cyber Essentials V2.2 Key Control",
+            "FFIEC Cybersecurity Assessment Tool D3.PC.Am.B.9",
+            "NERC Critical Infrastructure Protection CIP-005-7, Requirement R2 Part 2.3",
+            "NYDFS 23 NYCRR Part 500 500.12 (b)",
+            "UK NCSC Cyber Assessment Framework V3.1 B2.a",
+            "PCI-DSS V4.0 8.4.3",
+            "NZISM V3.5 19.1.20. System user authentication (CID:3686)",
+            "ISO 27001:2022 A6.7",
+            "FFIEC Cybersecurity Assessment Tool D3.PC.Am.B.15",
+            "UK NCSC Cyber Essentials V2.2 A4.10",
+            "CMMC 2.0 AC.L2-3.1.15",
+            "CMMC 2.0 IA.L2-3.5.3",
+            "CMMC 2.0 MA.L2-3.7.5",
+            "NIST SP 800-171 Rev. 2 3.1.18",
+            "NIST SP 800-171 Rev. 2 3.5.3",
+            "NIST SP 800-53 Rev. 5 IA-2(1)",
+            "NIST SP 800-53 Rev. 5 IA-2(2)",
+            "CIS Critical Security Controls V8 6.6",
+            "NIST SP 800-53 Rev. 5 CM-8",
+            "CSA Cloud Controls Matrix V4.0 IAM-01",
+            "FFIEC Cybersecurity Assessment Tool D3.PC.Am.B.6",
+            "PCI-DSS V4.0 12.5.2",
+            "ISO 27001:2022 A8.5",
+            "NIST SP 800-53 Rev. 5 IA-8(2)",
+            "CIS Critical Security Controls V8 12.7",
+            "NIST SP 800-53 Rev. 5 AC-17",
+            "NZISM V3.5 16.5.10. Authentication (CID:1973)",
+            "ECB CROE 2.3.2.1-15",
+            "Critical Risk Profile V1.2 PR.AC-3.1",
+            "NZISM V3.5 16.5.12. VPNs (CID:1982)",
+            "NZISM V3.5 21.4.13. BYOD Device Controls (CID:4689)",
+            "NERC Critical Infrastructure Protection CIP-010-4, Requirement R4",
+            "CMMC 2.0 AC.L2-3.1.14",
+            "CMMC 2.0 AC.L2-3.1.13",
+            "CSA Cloud Controls Matrix V4.0 IAM-14",
+            "NIST SP 800-171 Rev. 2 3.1.14",
+            "NIST SP 800-53 Rev. 5 AC-17(1)",
+            "NIST SP 800-53 Rev. 5 AC-17(3)",
+            "CIS Critical Security Controls V8 13.5",
+            "NERC Critical Infrastructure Protection CIP-003-8, Requirement R2",
+            "ISO 27001:2022 A8.3",
+            "NERC Critical Infrastructure Protection CIP-005-7, Requirement R1 Part 1.4",
+            "NIST SP 800-53 Rev. 5 SI-4",
+            "NIST SP 800-53 Rev. 5 SC-7",
+            "Equifax SCF V1.0 NI-CS-11",
+            "Equifax SCF V1.0 NI-CS-3",
+            "FBI CJIS Security Policy V5.9 5.6.2.2.1",
+            "FBI CJIS Security Policy V5.9 5.6.2.2.2",
+            "FBI CJIS Security Policy V5.9 5.13.7",
+            "FBI CJIS Security Policy V5.9 5.10.1",
+            "FBI CJIS Security Policy V5.9 5.13.7.2.1",
+            "FBI CJIS Security Policy V5.9 5.6.2.1.2",
+            "FBI CJIS Security Policy V5.9 5.10.3.1",
+            "FBI CJIS Security Policy V5.9 5.13.3",
+            "FBI CJIS Security Policy V5.9 5.5.6.1",
+            "FBI CJIS Security Policy V5.9 5.13.6",
+            "FBI CJIS Security Policy V5.9 5.4.1.1",
+            "FBI CJIS Security Policy V5.9 5.6.2.1.3",
+            "FBI CJIS Security Policy V5.9 5.6.2.2",
+            "FBI CJIS Security Policy V5.9 5.5.6.2",
+            "FBI CJIS Security Policy V5.9 5.6.4",
+            "FBI CJIS Security Policy V5.9 5.10.1.2.3",
+            "FBI CJIS Security Policy V5.9 5.10.1.3",
+            "FBI CJIS Security Policy V5.9 5.10.1.1",
+            "FBI CJIS Security Policy V5.9 5.4.1",
+            "FBI CJIS Security Policy V5.9 5.10.4.1",
+            "FBI CJIS Security Policy V5.9 5.13.2",
+            "FBI CJIS Security Policy V5.9 5.5.6",
+            "FBI CJIS Security Policy V5.9 5.7.2",
+            "FBI CJIS Security Policy V5.9 5.13.7.2",
+            "FBI CJIS Security Policy V5.9 5.10.1.5"
+        ],
+        "control": "Lambda.5",
+        "standards": [
+            "NIST Cybersecurity Framework Version 1.1",
+            "NIST Special Publication 800-53 Revision 4",
+            "NIST Special Publication 800-53 Revision 5",
+            "NIST Special Publication 800-171 Revision 2",
+            "American Institute of Certified Public Accountants (AICPA) Trust Service Criteria (TSC) 2017/2020 for SOC 2",
+            "ISO/IEC 27001:2013/2017 Annex A",
+            "ISO/IEC 27001:2022 Annex A",
+            "Center for Internet Security (CIS) Critical Security Controls Version 8",
+            "Cloud Security Alliance (CSA) Cloud Controls Matrix (CCM) Version 4.0",
+            "United States Department of Defense Cybersecurity Maturity Model Certification (CMMC) Version 2.0",
+            "United States Federal Bureau of Investigation (FBI) Criminal Justice Information System (CJIS) Security Policy Version 5.9",
+            "United Kingdom National Cybercrime Security Center (NCSC) Cyber Essentials Version 2.2",
+            "United Kingdom National Cybercrime Security Center (NCSC) Assessment Framework Version 3.1",
+            "HIPAA 'Security Rule' U.S. Code 45 CFR Part 164 Subpart C",
+            "Federal Financial Institutions Examination Council (FFIEC) Cybersecurity Assessment Tool (CAT)",
+            "North American Electric Reliability Corporation (NERC) Critical Infrastructure Protection (CIP) Standard",
+            "New Zealand Information Security Manual Version 3.5",
+            "New York Department of Financial Services (NYDFS) Series 23 NYCRR Part 500; AKA NYDFS500",
+            "Critical Risk Institute (CRI) Critical Risk Profile Version 1.2",
+            "European Central Bank (ECB) Cyber Resilience Oversight Expectations (CROEs)",
+            "Equifax Security Controls Framework Version 1.0",
+            "Payment Card Industry (PCI) Data Security Standard (DSS) Version 4.0"
+        ],
+        "status": "Pass",
+        "status_id": 1
+    },
+    "finding_info": {
+        "created_time": 1706990423,
+        "desc": "Lambda function super_secret_squirrel_serverless is not allowed to be publicly invoked due to not having an invocation policy and is thus exempt from this check.",
+        "first_seen_time": 1706990423,
+        "modified_time": 1706990423,
+        "product_uid": "arn:aws:securityhub:us-isob-east-1:123456789012:product/123456789012/default",
+        "title": "[Lambda.5] Lambda functions should not be publicly shared",
+        "types": [
+            "Software and Configuration Checks/AWS Security Best Practices",
+            "Effects/Data Exposure"
+        ],
+        "uid": "arn:aws:lambda:us-isob-east-1:123456789012:function:super_secret_squirrel_serverless/public-lambda-function-check"
+    },
+    "remediation": {
+        "desc": "For more information on Lambda function resource-based policies and modifiying their permissions refer to the Using resource-based policies for AWS Lambda section of the Amazon Lambda Developer Guide",
+        "references": [
+            "https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html"
+        ]
+    },
+    "resource": {
+        "data": {
+            "FunctionName": "super_secret_squirrel_serverless",
+            "FunctionArn": "arn:aws:lambda:us-isob-east-1:123456789012:function:super_secret_squirrel_serverless",
+            "Runtime": "python3.9",
+            "Role": "arn:aws:iam::123456789012:role/SecretSquirrelAdmin",
+            "Handler": "lambda_handler.lambda_handler",
+            "CodeSize": 3199,
+            "Description": "",
+            "Timeout": 45,
+            "MemorySize": 3008,
+            "LastModified": "2023-09-22T22:33:45.693+0000",
+            "CodeSha256": "KCDZzRVjonhasalongmustacheLueX9fI=",
+            "Version": "$LATEST",
+            "Environment": {
+                "Variables": {
+                    "SPY_ARRAY": "nsa_001",
+                    "TARGET": "voldermort_zelensky"
+                }
+            },
+            "TracingConfig": {
+                "Mode": "PassThrough"
+            },
+            "RevisionId": "872121f4-the-chair-is-cn-the-w2ll-a",
+            "PackageType": "Zip",
+            "Architectures": [
+                "x86_64"
+            ],
+            "EphemeralStorage": {
+                "Size": 512
+            },
+            "SnapStart": {
+                "ApplyOn": "None",
+                "OptimizationStatus": "Off"
+            },
+            "LoggingConfig": {
+                "LogFormat": "Text",
+                "LogGroup": "/aws/lambda/super_secret_squirrel_serverless"
+            }
+        },
+        "cloud_partition": "aws",
+        "region": "us-isob-east-1",
+        "type": "AWS Lambda",
+        "uid": "arn:aws:lambda:us-isob-east-1:123456789012:function:super_secret_squirrel_serverless"
+    },
+    "unmapped": {
+        "provide_type": "CSP",
+        "asset_class": "Compute",
+        "asset_service": "AWS Lambda",
+        "asset_component": "Function",
+        "workflow_status": "RESOLVED",
+        "record_state": "ARCHIVED"
+    }
+}
 ```
 
 ## MongoDB & AWS DocumentDB Output
@@ -526,7 +781,7 @@ Additionally, values within the `[outputs.mongodb]` section of the TOML file *mu
 
 - **`mongodb_username`**: The MongoDB username. If you are utilizing Mongo Role-based Access Control (RBAC), ensure the user has the proper permissions to write to Databases such as `readWrite` or `readWriteAnyDatabase`. If you are not using a Password then you can leave this value blank, ElectricEye will overwrite the value here to ensure the "pre-flight" check for blank values won't fail it.
 
-- **`mongodb_endpoint`**: The hostname or IP address of your MongoDB / AWS DocumentDB instance. This could be "192.1.2.40", "localhost", or an AWS Doc DB cluster endpoint "sample-cluster.node.us-east-1.docdb.amazonaws.com".
+- **`mongodb_endpoint`**: The hostname or IP address of your MongoDB / AWS DocumentDB instance. This could be "192.1.2.40", "localhost", or an AWS Doc DB cluster endpoint "sample-cluster.node.us-isob-east-1.docdb.amazonaws.com".
 
 - **`mongodb_port`**: The port number for your MongoDB / AWS DocumentDB deployment. Defaults to 27017.
 
