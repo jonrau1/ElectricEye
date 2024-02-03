@@ -18,11 +18,14 @@
 #specific language governing permissions and limitations
 #under the License.
 
+import logging
 from check_register import CheckRegister
 from botocore.exceptions import ClientError
 import datetime
 import base64
 import json
+
+logger = logging.getLogger(__name__)
 
 registry = CheckRegister()
 
@@ -62,7 +65,12 @@ def trusted_advisor_failing_cloudfront_ssl_cert_iam_certificate_store_check(cach
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # Use a list comprehension to get the specific Check we care about and generate vars and determining pass/fail
-    filteredCheck = [check for check in describe_trusted_advisor_checks(cache, session) if check["name"] == "CloudFront Custom SSL Certificates in the IAM Certificate Store"][0]
+    try:
+        filteredCheck = [check for check in describe_trusted_advisor_checks(cache, session) if check["name"] == "CloudFront Custom SSL Certificates in the IAM Certificate Store"][0]
+    except IndexError:
+        logging.warn(
+            "Index Error was found encountered attempted to evaluate Trusted Advisor, this is likely because you do not have the appropriate AWS Support level."
+        )
     checkId = filteredCheck["id"]
     category = filteredCheck["category"]
     checkArn = f"arn:{awsPartition}:trustedadvisor:{awsRegion}:{awsAccountId}/{category}/{checkId}"
@@ -205,7 +213,12 @@ def trusted_advisor_failing_cloudfront_ssl_cert_on_origin_check(cache: dict, ses
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # Use a list comprehension to get the specific Check we care about and generate vars and determining pass/fail
-    filteredCheck = [check for check in describe_trusted_advisor_checks(cache, session) if check["name"] == "CloudFront SSL Certificate on the Origin Server"][0]
+    try:
+        filteredCheck = [check for check in describe_trusted_advisor_checks(cache, session) if check["name"] == "CloudFront SSL Certificate on the Origin Server"][0]
+    except IndexError:
+        logging.warn(
+            "Index Error was found encountered attempted to evaluate Trusted Advisor, this is likely because you do not have the appropriate AWS Support level."
+        )
     checkId = filteredCheck["id"]
     category = filteredCheck["category"]
     checkArn = f"arn:{awsPartition}:trustedadvisor:{awsRegion}:{awsAccountId}/{category}/{checkId}"
@@ -348,7 +361,12 @@ def trusted_advisor_failing_exposed_access_keys_check(cache: dict, session, awsA
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # Use a list comprehension to get the specific Check we care about and generate vars and determining pass/fail
-    filteredCheck = [check for check in describe_trusted_advisor_checks(cache, session) if check["name"] == "Exposed Access Keys"][0]
+    try:
+        filteredCheck = [check for check in describe_trusted_advisor_checks(cache, session) if check["name"] == "Exposed Access Keys"][0]
+    except IndexError:
+        logging.warn(
+            "Index Error was found encountered attempted to evaluate Trusted Advisor, this is likely because you do not have the appropriate AWS Support level."
+        )
     checkId = filteredCheck["id"]
     category = filteredCheck["category"]
     checkArn = f"arn:{awsPartition}:trustedadvisor:{awsRegion}:{awsAccountId}/{category}/{checkId}"
