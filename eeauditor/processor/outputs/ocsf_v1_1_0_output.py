@@ -18,12 +18,15 @@
 #specific language governing permissions and limitations
 #under the License.
 
+import logging
 from typing import NamedTuple
 from os import path
 from processor.outputs.output_base import ElectricEyeOutput
 import json
 from base64 import b64decode
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 # NOTE TO SELF: Updated this and FAQ.md as new standards are added
 SUPPORTED_STANDARDS = [
@@ -69,10 +72,10 @@ class OcsfV110Output(object):
 
     def write_findings(self, findings: list, output_file: str, **kwargs):
         if len(findings) == 0:
-            print("There are not any findings to write to file!")
+            logger.info("There are not any findings to write to file!")
             exit(0)
 
-        print(f"Writing {len(findings)} OCSF Compliance Findings to JSON!")
+        logger.info(f"Writing {len(findings)} OCSF Compliance Findings to JSON!")
 
         """# Use another list comprehension to remove `ProductFields.AssetDetails` from non-Asset reporting outputs
         newFindings = [
@@ -124,7 +127,7 @@ class OcsfV110Output(object):
         
         # create output file based on inputs
         jsonfile = f"{output_file}_ocsf_v1-1-0_compliance_findings.json"
-        print(f"Output file named: {jsonfile}")
+        logger.info(f"Output file named: {jsonfile}")
         
         with open(jsonfile, "w") as jsonfile:
             json.dump(
@@ -220,6 +223,8 @@ class OcsfV110Output(object):
 
         ocsfFindings = []
 
+        logger.info("Mapping ASFF to OCSF")
+
         for finding in findings:
 
             asffToOcsf = self.asff_to_ocsf_normalization(
@@ -307,5 +312,6 @@ class OcsfV110Output(object):
                     "record_state": finding["RecordState"]
                 }
             }
+            ocsfFindings.append(ocsf)
 
         return ocsfFindings
