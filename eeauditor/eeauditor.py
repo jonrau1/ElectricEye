@@ -279,7 +279,7 @@ class EEAuditor(object):
                             continue
 
                     if serviceName == "shield":
-                        if CloudConfig.get_aws_shield_advanced_eligiblity is False:
+                        if CloudConfig.get_aws_shield_advanced_eligibility is False:
                             logger.info(
                                 "%s cannot access Shield Advanced Checks due to not having an active Subscription.",
                                 account    
