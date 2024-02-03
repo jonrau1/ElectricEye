@@ -1,8 +1,6 @@
 name: "Syft & Grype SBOM and Vuln Scan"
 
 on:
-  push:
-    branches: [ master ]
   pull_request:
     branches: [ master ]
 

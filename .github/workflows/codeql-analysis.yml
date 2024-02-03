@@ -12,7 +12,7 @@
 name: "CodeQL Security Scan"
 
 on:
-  push:
+  pull_request:
     branches: [ master ]
   schedule:
     - cron: '0 0 * * 3'

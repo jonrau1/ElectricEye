@@ -222,7 +222,7 @@ class OcsfV110Output(object):
         
     def ocsf_compliance_finding_mapping(self, findings: list) -> list:
         """
-        Takes ElectricEye ASFF and outputs to OCSF v1.1.0(-dev) Compliance Finding (2003), returns a list of new findings
+        Takes ElectricEye ASFF and outputs to OCSF v1.1.0 Compliance Finding (2003), returns a list of new findings
         """
 
         ocsfFindings = []
@@ -278,6 +278,23 @@ class OcsfV110Output(object):
                         "type_uid": asffToOcsf[2]
                     }
                 },
+                # Observables
+                "observables": [
+                    # Cloud Account (Project) UID
+                    {
+                        "name": "cloud.project_uid",
+                        "type": "Resource UID",
+                        "type_id": 10,
+                        "value": finding["ProductFields"]["ProviderAccountId"]
+                    },
+                    # Resource UID
+                    {
+                        "name": "resource.uid",
+                        "type": "Resource UID",
+                        "type_id": 10,
+                        "value": finding["Resources"][0]["Id"]
+                    }
+                ],
                 # Compliance Finding Class Info
                 "compliance": {
                     "requirements": finding["Compliance"]["RelatedRequirements"],
