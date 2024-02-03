@@ -3,7 +3,7 @@ boto3==1.34.34
 click==8.1.7
 detect-secrets==1.4.0
 google-api-python-client>=2.88.0
-matplotlib==3.8.0
+matplotlib==3.8.2
 oci>=2.104.0
 pandas==2.0.3
 pluginbase==1.0.1
