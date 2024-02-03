@@ -54,7 +54,7 @@ ElectricEye uses the term Audit Readiness when communicating the intended use ca
 
 ## 10. What control frameworks does ElectricEye support?
 
-The controls frameworks that ElectricEye supports is always being updated as newer versions and mappings are available, as of 8 JUNE 2023 the following frameworks and legal requirements are supported.
+The controls frameworks that ElectricEye supports is always being updated as newer versions and mappings are available, as of 1 FEB 2024 the following frameworks and legal requirements are supported.
 
 - NIST Cybersecurity Framework Version 1.1
 - NIST Special Publication 800-53 Revision 4
