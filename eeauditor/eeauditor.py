@@ -58,7 +58,7 @@ class EEAuditor(object):
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.awsAccountTargets = utils.awsAccountTargets
             self.awsRegionsSelection = utils.awsRegionsSelection
-            self.aws_electric_eye_iam_role_name = utils.electricEyeRoleName
+            self.electricEyeRoleName = utils.electricEyeRoleName
         # GCP
         elif assessmentTarget == "GCP":
             searchPath = "./auditors/gcp"
@@ -249,12 +249,17 @@ class EEAuditor(object):
                     # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
                     partition = CloudConfig.check_aws_partition(region)
                     # Setup Boto3 Session with STS AssumeRole
-                    session = CloudConfig.create_aws_session(
-                        account,
-                        partition,
-                        region,
-                        self.aws_electric_eye_iam_role_name
-                    )
+                    if self.electricEyeRoleName is not None:
+                        session = CloudConfig.create_aws_session(
+                            account,
+                            partition,
+                            region,
+                            self.electricEyeRoleName
+                        )
+                    # attempt to use current session creds
+                    else:
+                        import boto3
+                        session = boto3.Session(region_name=region)
                     # Check service availability, not always accurate
                     if self.check_service_endpoint_availability(endpointData, partition, serviceName, region) is False:
                         logger.info(

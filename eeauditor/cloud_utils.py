@@ -107,9 +107,12 @@ class CloudConfig(object):
             
             # Process ["aws_electric_eye_iam_role_name"]
             electricEyeRoleName = data["regions_and_accounts"]["aws"]["aws_electric_eye_iam_role_name"]
-            if electricEyeRoleName == (None or ""):
-                logger.error(f"A value for ['aws_electric_eye_iam_role_name'] was not provided. Fix the TOML file and run ElectricEye again.")
-                sys.exit(2)
+            if electricEyeRoleName is None or electricEyeRoleName == "":
+                logger.warn(
+                    "A value for ['aws_electric_eye_iam_role_name'] was not provided. Will attempt to use current session credentials, this will likely fail if you're attempting to assess another AWS account."
+                )
+                electricEyeRoleName = None
+            
             self.electricEyeRoleName = electricEyeRoleName
         
         # GCP
