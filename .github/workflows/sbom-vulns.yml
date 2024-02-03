@@ -25,22 +25,23 @@ jobs:
         with:
           image: localbuild/electriceye:latest
           format: cyclonedx-json # the One True SBOM Format
-          artifact-name: syft-cdx-sbom.json
-          output-file: syft-cdx-sbom.json
+          artifact-name: "${{ github.event.repository.name }}-sbom.spdx.json"
+          output-file: "${{ github.event.repository.name }}-sbom.spdx.json"
 
       # Print SBOM to stdout
       - name: SBOM Printer Goes Brrrr
-        run: cat "syft-cdx-sbom.json"
+        run: cat "${{ github.event.repository.name }}-sbom.spdx.json"
 
       # Scan the CDX SBOM with Grype
       - name: Grype Scan SBOM
-        uses: anchore/scan-action@v3.3.6
+        uses: anchore/scan-action@v3.6.4
         id: scan
         with:
           output-format: sarif
-          sbom: "syft-cdx-sbom.json"
+          sbom: "${{ github.event.repository.name }}-sbom.spdx.json"
           severity-cutoff: critical
           fail-build: true
+          only-fixed: true
 
       # Print Grype SARIF Report to stdout
       - name: View Grype Scan SBOM Report
