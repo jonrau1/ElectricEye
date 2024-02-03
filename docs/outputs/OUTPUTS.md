@@ -242,7 +242,7 @@ To use this Output include the following arguments in your ElectricEye CLI: `pyt
         {
             "Type": "AwsLambdaFunction",
             "Id": "arn:aws-iso:lambda:us-iso-west-1:111111111111:function:national-security-lambda",
-            "Partition": "aws",
+            "Partition": "aws-iso",
             "Region": "us-iso-west-1",
             "Details": {
                 "AwsLambdaFunction": {
@@ -952,3 +952,11 @@ An example of the "Findings" output.
 ## Microsoft Teams Summary Output
 
 *Coming Soon*
+
+## Open Security Finding Format (OCSF) v1.1.0
+
+The Open Security Finding Format (OCSF) v1.1.0 Output will write all ElectricEye findings to a JSON file using Python's `json.dumps()` in the OCSF v1.1.0 format (as of 21 NOV 2023 `v1.1.0-dev` is still the tag). OCSF is a normalized security data format, ElectricEye makes use of the proposed [Compliance Finding (2003)](https://schema.ocsf.io/1.1.0-dev/classes/compliance_finding?extensions=) Event Class to normalize data about the finding, related compliance controls, remediation, resource and cloud-specific information.
+
+This Output will provide the `ProductFields.AssetDetails` information.
+
+To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o ocsf_v1_1_0 --output-file my_file_name_here`

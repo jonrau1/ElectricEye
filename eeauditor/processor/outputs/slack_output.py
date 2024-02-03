@@ -42,7 +42,7 @@ with open(f"{here}/mapped_compliance_controls.json") as jsonfile:
     CONTROLS_CROSSWALK = json.load(jsonfile)
 
 @ElectricEyeOutput
-class PostgresProvider(object):
+class SlackProvider(object):
     __provider__ = "slack"
 
     def __init__(self):

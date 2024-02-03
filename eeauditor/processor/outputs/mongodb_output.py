@@ -42,7 +42,7 @@ with open(f"{here}/mapped_compliance_controls.json") as jsonfile:
 CREDENTIALS_LOCATION_CHOICES = ["AWS_SSM", "AWS_SECRETS_MANAGER", "CONFIG_FILE"]
 
 @ElectricEyeOutput
-class JsonProvider(object):
+class MongodbProvider(object):
     __provider__ = "mongodb"
 
     def __init__(self):
@@ -251,6 +251,17 @@ class JsonProvider(object):
         
         return credential
 
+    def nist_csf_v_1_1_controls_crosswalk(self, nistCsfSubcategory):
+        """
+        This function returns a list of additional control framework control IDs that mapped into a provided
+        NIST CSF V1.1 Subcategory (control)
+        """
+
+        # Not every single NIST CSF Control maps across to other frameworks
+        try:
+            return CONTROLS_CROSSWALK[nistCsfSubcategory]
+        except KeyError:
+            return []
 # EOF
 
 """

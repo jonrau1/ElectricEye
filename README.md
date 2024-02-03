@@ -4,7 +4,7 @@
   <img src="./screenshots/logo.svg" width="420" height="420">
 </p>
 
-ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to over 20 industry, regulatory, and best practice controls frameworks.
+ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring supporting 100s of services and evaluations to harden your CSP & SaaS environments with controls mapped to over 20 industry, regulatory, and best practice controls frameworks.
 
 ![VulnScan](https://github.com/jonrau1/ElectricEye/actions/workflows/sbom-vulns.yml/badge.svg)  ![CodeQL](https://github.com/jonrau1/ElectricEye/actions/workflows/codeql-analysis.yml/badge.svg) ![EcrBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-ecr-public.yml/badge.svg) ![OcrBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-ocr-public.yml/badge.svg) ![DockerHubBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-docker-hub.yml/badge.svg)
 
@@ -18,8 +18,8 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 </p>
 
 <p align="center">
-  <a href="https://gallery.ecr.aws/t4o3u7t2/electriceye"><img width="150" height=40" alt="AWS ECR Gallery" src="https://user-images.githubusercontent.com/3985464/151531396-b6535a68-c907-44eb-95a1-a09508178616.png"></a>
-  <a href="https://hub.docker.com/r/electriceye/electriceye"><img width="150" height=40" alt="Docker Hub" src="https://www.unixtutorial.org/images/software/docker-hub.png"></a>
+  <a href="https://gallery.ecr.aws/t4o3u7t2/electriceye"><img width="150" height="40" padding="5" alt="AWS ECR Gallery" src="https://user-images.githubusercontent.com/3985464/151531396-b6535a68-c907-44eb-95a1-a09508178616.png"></a>
+  <a href="https://hub.docker.com/r/electriceye/electriceye"><img width="150" height="40" padding="5" alt="Docker Hub" src="https://www.unixtutorial.org/images/software/docker-hub.png"></a>
 </p>
 
 ***Up here in space***<br/>
@@ -45,23 +45,23 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 
 ## Workflow
 
-![Architecture](./screenshots/ElectricEye2023Architecture.svg)
+![Architecture](./screenshots/ElectricEyeAnimated.gif)
 
 ## Quick Run Down :running: :running:
 
-- ElectricEye is a Python CLI tool that offers cross-Account, cross-Region, multi-Cloud & SaaS Asset Management, Security Posture Management, and Attack Surface Monitoring capabilities across [AWS, all Partitions supported!](https://aws.amazon.com/), [GCP](https://cloud.google.com/), [Oracle Cloud Infrastructure (OCI)](https://www.oracle.com/cloud/), [ServiceNow](https://www.servicenow.com/), and [Microsoft 365 Enterprise (*M365*)](https://www.microsoft.com/en-us/microsoft-365/compare-microsoft-365-enterprise-plans) *with more on the way*.
+- ElectricEye is a Python CLI tool that offers cross-Account, cross-Region, multi-Cloud & SaaS Asset Management, Security Posture Management, and Attack Surface Monitoring capabilities across [AWS, all Partitions supported!](https://aws.amazon.com/), [GCP](https://cloud.google.com/), [Oracle Cloud Infrastructure (OCI)](https://www.oracle.com/cloud/), [ServiceNow](https://www.servicenow.com/), [Microsoft 365 Enterprise (*M365*)](https://www.microsoft.com/en-us/microsoft-365/compare-microsoft-365-enterprise-plans), and [Salesforce (*SFDC*)](https://help.salesforce.com/s), *with more on the way*.
 
-- ElectricEye offers over *900* checks for security, reliability, monitoring, and exposure across more than 100 CSP & SaaS services, including atypical services not supported by AWS Config/Google Cloud Asset API or mainstream CSPM & CNAPP tools.
+- ElectricEye offers over *1000* Checks against security, resilience, performance, and financial best practices across more than 100 CSP & SaaS services, including atypical services not supported by CSP/SaaS-native asset management tools/views or mainstream CSPM & CNAPP tools.
 
-- Every single Check is mapped to over 20 controls frameworks covering general best practices, regulatory, industry-specific, and legal frameworks such as NIST CSF, AICPA TSCs (for SOC 2), the HIPAA Security Rule, NIST 800-171 Rev. 2, CMMC V2.0, European Central Bank's CROE Section 2, PCI-DSS V4.0, and more!
+- Every single Check is mapped to over 20 controls frameworks covering general best practices, regulatory, industry-specific, and legal frameworks such as NIST CSF, AICPA TSCs (for SOC 2), the HIPAA Security Rule, NIST 800-171 Rev. 2, CMMC V2.0, European Central Bank's CROE Section 2, PCI-DSS V4.0, CIS Foundations Benchmarks, and more!
 
-- Multi-faceted Attack Surface Monitoring uses tools such as VirusTotal, Nmap, Shodan.io, Detect-Secrets, and CISA's KEV to locate assets indexed on the internet, find exposed services, locate exploitable vulnerabilities, and malicious packages in artifact repositories.
+- Multi-faceted Attack Surface Monitoring uses tools such as VirusTotal, Nmap, Shodan.io, Detect-Secrets, and CISA's KEV to locate assets indexed on the internet, find exposed services, locate exploitable vulnerabilities, and malicious packages in artifact repositories, respectively.
 
 - Outputs to [AWS Security Hub](https://aws.amazon.com/security-hub/), [AWS DocumentDB](https://aws.amazon.com/documentdb/), JSON, CSV, HTML Reports, [MongoDB](https://www.mongodb.com/), [Amazon SQS](https://aws.amazon.com/sqs/), [PostgreSQL](https://www.postgresql.org/), [Slack](https://slack.com/) (via Slack App Bots), and [FireMon Cloud Defense](https://www.firemon.com/introducing-disruptops/).
 
 ElectricEye's core concept is the **Auditor** which are sets of Python scripts that run **Checks** per Service dedicated to a specific SaaS vendor or public cloud service provider called an **Assessment Target**.  You can run an entire Assessment Target, a specific Auditor, or a specific Check within an Auditor. After ElectricEye is done with evaluations, it supports over a dozen types of **Outputs** ranging from an HTML executive report to AWS DocumentDB clusters - you can run multiple Outputs as you see fit.
 
-ElectricEye also uses utilizes other tools such as [Shodan](https://www.shodan.io/), [`detect-secrets`](https://pypi.org/project/detect-secrets/), [VirusTotal](https://www.virustotal.com/gui/home/upload), the United States Cyber and Infrastructure Security Agency (CISA) Known Exploited Vulnerability (KEV) Catalog, and [NMAP](https://nmap.org/) for carrying out its Checks and enriching their findings.
+ElectricEye also uses utilizes other tools such as [Shodan.io](https://www.shodan.io/), [Yelp's `detect-secrets`](https://pypi.org/project/detect-secrets/), [VirusTotal](https://www.virustotal.com/gui/home/upload), the [United States Cyber and Infrastructure Security Agency (CISA)](https://www.cisa.gov/) [Known Exploited Vulnerability (KEV)](https://www.cisa.gov/known-exploited-vulnerabilities-catalog) Catalog, and [NMAP](https://nmap.org/) for carrying out its Checks and enriching their findings.
 
 1. First, clone this repository and install the requirements using `pip3`: `pip3 install -r requirements.txt`.
 
@@ -74,7 +74,7 @@ $ python3 eeauditor/controller.py --help
 Usage: controller.py [OPTIONS]
 
 Options:
-  -t, --target-provider [AWS|Azure|OCI|GCP|Servicenow|M365]
+  -t, --target-provider [AWS|Azure|OCI|GCP|Servicenow|M365|Salesforce]
                                   CSP or SaaS Vendor Assessment Target, ensure
                                   that any -a or -c arg maps to your target
                                   provider e.g., -t AWS -a
@@ -129,13 +129,13 @@ The following Cloud Service Providers are on the Roadmap
 
 - [For ServiceNow](./docs/setup/Setup_ServiceNow.md)
 - [For Microsoft M365](./docs/setup/Setup_M365.md)
+- [For Salesforce](./docs/setup/Setup_Salesforce.md)
 
 The following SaaS Providers are on the Roadmap
 
 - [For Workday ERP (*Coming Soon*)](./docs/setup/Setup_WorkDay.md)
 - [For GitHub (*Coming Soon*)](./docs/setup/Setup_GitHub.md)
 - [For Google Workspaces (*Coming Soon*)](./docs/setup/Setup_Google_Workspaces.md)
-- [For Salesforce (*Coming Soon*)](./docs//setup/Setup_Salesforce.md)
 
 ## ElectricEye on Docker
 
@@ -257,10 +257,10 @@ For more information on ElectricEye's CAM concept of operations and schema, refe
 In total there are:
 
 - **3** Supported Public CSPs: `AWS`, `GCP`, `OCI`
-- **2** Supported SaaS Provider: `ServiceNow`, `M365`
-- **1037** ElectricEye Checks
-- **156** Supported CSP & SaaS Asset Components across all Services
-- **117** ElectricEye Auditors
+- **3** Supported SaaS Providers: `ServiceNow`, `M365`, `Salesforce`
+- **1055** ElectricEye Checks
+- **160** Supported CSP & SaaS Asset Components across all Services
+- **120** ElectricEye Auditors
 
 The tables of supported Services and Checks have been migrated to the respective per-Provider setup documentation linked above in [Configuring ElectricEye](#configuring-electriceye).
 

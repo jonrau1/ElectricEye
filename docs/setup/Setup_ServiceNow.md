@@ -6,6 +6,7 @@ This documentation is dedicated to using ElectricEye for evaluation of ServiceNo
 
 - [Configuring TOML](#configuring-toml)
 - [Quickstart on ServiceNow](#use-electriceye-for-servicenow)
+- [Servicenow Checks & Services](#servicenow-checks--services)
 
 ## Configuring TOML
 
