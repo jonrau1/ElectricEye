@@ -492,6 +492,20 @@ To use this Output include the following arguments in your ElectricEye CLI: `pyt
 }
 ```
 
+## Open Cyber Security Format (OCSF) V1.1.0 Output
+
+The OCSF V1.1.0 Output selection will convert all ElectricEye findings into the OCSF format (in JSON) which is a normalized and standardized security-centric data model, well-suited to ingestion in Data Lakes and Data Lake Houses built upon Amazon Security Lake, AWS Glue Data Catalog, Snowflake, Apache Iceberg, Google BigQuery, and more. The Event Class used for this finding is [`compliance_finding [2003]`](https://schema.ocsf.io/1.1.0/classes/compliance_finding?extensions=)
+
+This Output will provide the `ProductFields.AssetDetails` information, it is mapped within `resource.data`.
+
+To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o ocsf_v1_1_0`
+
+### Example Open Cyber Security Format (OCSF) V1.1.0 Output
+
+```json
+{}
+```
+
 ## MongoDB & AWS DocumentDB Output
 
 The MongoDB Output selection will write all ElectricEye findings to a MongoDB database or to an AWS DocumentDB Instance/Cluster along with the `ProductFields.AssetDetails` using `pymongo`. To facilitate mutable records being written to a Collection, ElectricEye will duplicate the ASFF `Id` (the finding's GUID) into the MongoDB `_id` field and write all records sequentially using the `update_one(upsert=True)` method within `pymongo`. This is written with a filter to replace the entire record where and existing `_id` is located.
