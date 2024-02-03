@@ -25,7 +25,6 @@ import json
 from base64 import b64decode
 from datetime import datetime
 
-
 # NOTE TO SELF: Updated this and FAQ.md as new standards are added
 SUPPORTED_STANDARDS = [
     "NIST Cybersecurity Framework Version 1.1",
