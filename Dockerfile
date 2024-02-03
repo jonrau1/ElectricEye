@@ -33,10 +33,11 @@ RUN \
     apk update && \
     apk add --no-cache python3 postgresql-libs && \
     apk add --no-cache --virtual .build-deps gcc zlib-dev python3-dev musl-dev postgresql-dev && \
+    python3 -m venv /opt/venv && \
+    source /opt/venv/bin/activate && \
     python3 -m ensurepip && \
-    pip3 install --no-cache --upgrade pip setuptools wheel && \
-    rm -r /usr/lib/python*/ensurepip && \
-    pip3 install -r /tmp/requirements-docker.txt --no-cache-dir && \
+    pip install --no-cache --upgrade pip setuptools wheel && \
+    pip install -r /tmp/requirements-docker.txt --no-cache-dir && \
     apk --purge del .build-deps && \
     rm -rf /tmp/* && \
     rm -f /var/cache/apk/*
@@ -75,4 +76,4 @@ RUN \
 USER eeuser
 
 # IMPORTANT: Modify the controller.py command to run other clouds/SaaS or modify outputs
-CMD python3 eeauditor/controller.py
+CMD ["sh", "-c", "source /opt/venv/bin/activate && python3 eeauditor/controller.py"]
