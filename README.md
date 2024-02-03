@@ -218,7 +218,7 @@ You can also retrieve temporary credentials from Federated identities, read more
 
 Run ElectricEye using the following commands, passing in your Session credentials. Change the commands within the container to evaluate different environments with ElectricEye. Change the value of `/path/to/my/external_providers.toml` to your exact path, such as `~/electriceye-docker/external_providers.toml` for example.
 
-**IMPORTANT NOTE** If you are using an AWS IAM User with Access Keys, hardcode the values and omit the value for `AWS_SESSION_TOKEN`!!
+**IMPORTANT NOTE** If you are using an AWS IAM User with Access Keys, hardcode the values and omit the value for `AWS_SESSION_TOKEN`!! If you are running this container on an AWS container/Kubernetes service you do not need to provide these values!
 
 ```bash
 sudo docker run \
