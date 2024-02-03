@@ -40,21 +40,33 @@ This section explains how to configure ElectricEye using a TOML configuration fi
 
 To configure the TOML file, you need to modify the values of the variables in the `[global]` and `[regions_and_accounts.aws]` sections of the file. Here's an overview of the key variables you need to configure:
 
-- `aws_multi_account_target_type`: Set this variable to specify if you want to run ElectricEye against a list of AWS Accounts (`Accounts`), a list of accounts within specific OUs (`OU`), or every account in an AWS Organization (`Organization`).
+- `aws_multi_account_target_type`: 
 
-- `credentials_location`: Set this variable to specify the location of where credentials are stored and will be retrieved from. You can choose from AWS Systems Manager Parameter Store (`AWS_SSM`), AWS Secrets Manager (`AWS_SECRETS_MANAGER`), or from the TOML file itself (`CONFIG_FILE`) which is **NOT** recommended.
+    Set this variable to specify if you want to run ElectricEye against a list of AWS Accounts (`Accounts`), a list of accounts within specific OUs (`OU`), or every account in an AWS Organization (`Organization`).
 
-**NOTE** When retrieving from SSM or Secrets Manager, your current Profile / Boto3 Session is used and *NOT* the ElectricEye Role that is specified in `aws_electric_eye_iam_role_name`. Ensure you have `ssm:GetParameter`, `secretsmanager:GetSecretValue`, and relevant `kms` permissions as needed to retrieve this values.
+- `credentials_location`: 
 
-- `shodan_api_key_value`: This variable specifies the location (or actual value) of your Shodan.io API Key based on the option for `credentials_location`. This is an optional value but encouraged as having your resources being index by Shodan can be a useful pre-attack indicator if it is accurate information *and* your configurations are bad to begin with. This is only used for the **Amazon_Shodan_Auditor**.
+    Set this variable to specify the location of where credentials are stored and will be retrieved from. You can choose from AWS Systems Manager Parameter Store (`AWS_SSM`), AWS Secrets Manager (`AWS_SECRETS_MANAGER`), or from the TOML file itself (`CONFIG_FILE`) which is **NOT** recommended.
 
-- `aws_account_targets`: This variable specifies a list of AWS accounts, OU IDs, or an organization's principal ID that you want to run ElectricEye against. If you do not specify any values, and your `aws_multi_account_target_type` is set to `Accounts` then your current AWS Account will be evaluated.
+    **NOTE** When retrieving from SSM or Secrets Manager, your current Profile / Boto3 Session is used and *NOT* the ElectricEye Role that is specified in `aws_electric_eye_iam_role_name`. Ensure you have `ssm:GetParameter`, `secretsmanager:GetSecretValue`, and relevant `kms` permissions as needed to retrieve this values.
 
-If you are running this against your Organization **leave this option empty**. Additionally, the Account you are running ElectricEye from must either be the AWS Organizations Management Account or an Account which is a Delegated Admin for an Organizations-scoped service such as AWS FMS, Amazon GuardDuty, or otherwise.
+- `shodan_api_key_value`: 
 
-- `aws_regions_selection`: This variable specifies the AWS regions that you want to scan. If left blank, the current AWS region is used. You can provide a list of AWS regions or simply use `["All"]` to scan all regions.
+    This variable specifies the location (or actual value) of your Shodan.io API Key based on the option for `credentials_location`. This is an optional value but encouraged as having your resources being index by Shodan can be a useful pre-attack indicator if it is accurate information *and* your configurations are bad to begin with. This is only used for the **Amazon_Shodan_Auditor**.
 
-- `aws_electric_eye_iam_role_name`: This variable specifies the ***Name*** of the AWS IAM role that ElectricEye will assume and utilize to execute its Checks. The role name must be the same for all accounts, including your current account. To facilitate this, use [this CloudFormation template](../../cloudformation/ElectricEye_Organizations_StackSet.yaml) and deploy it as an AWS CloudFormation StackSet. This is done to keep the credentials used for **Auditors** separate from the credentials you use for Outputs and for retrieving Secrets, it also makes it easier to audit (via CloudTrail or otherwise) the usage of the ElectricEye role.
+- `aws_account_targets`: 
+
+    This variable specifies a list of AWS accounts, OU IDs, or an organization's principal ID that you want to run ElectricEye against. If you do not specify any values, and your `aws_multi_account_target_type` is set to `Accounts` then your current AWS Account will be evaluated.
+
+    If you are running this against your Organization **leave this option empty**. Additionally, the Account you are running ElectricEye from must either be the AWS Organizations Management Account or an Account which is a Delegated Admin for an Organizations-scoped service such as AWS FMS, Amazon GuardDuty, or otherwise.
+
+- `aws_regions_selection`: 
+
+    This variable specifies the AWS regions that you want to scan. If left blank, the current AWS region is used. You can provide a list of AWS regions or simply use `["All"]` to scan all regions.
+
+- `aws_electric_eye_iam_role_name`: (**UPDATE AS OF 4 FEB 2024**: If you do not provide a value here, your current Boto3 Session will be used, if you provided an Org ID, OU IDs or Accounts those assessments will (obviously) fail!) 
+
+    This variable specifies the ***Name*** of the AWS IAM role that ElectricEye will assume and utilize to execute its Checks. The role name must be the same for all accounts, including your current account. To facilitate this, use [this CloudFormation template](../../cloudformation/ElectricEye_Organizations_StackSet.yaml) and deploy it as an AWS CloudFormation StackSet. This is done to keep the credentials used for **Auditors** separate from the credentials you use for Outputs and for retrieving Secrets, it also makes it easier to audit (via CloudTrail or otherwise) the usage of the ElectricEye role.
 
 By configuring these variables in the TOML file, you can customize ElectricEye's behavior to suit your specific AWS environments.
 
@@ -697,8 +709,8 @@ These are the following services and checks perform by each Auditor, there are c
 | AWS_Systems_Manager_Auditor | SSM Association | Does an SSM Association that targets all Instances conduct SSM Agent updates |
 | AWS_Systems_Manager_Auditor | SSM Association | Does an SSM Association that targets all Instances conduct patching |
 | AWS_Systems_Manager_Auditor | SSM Association | Does an SSM Association that targets all Instances conduct inventory gathering |
-| AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | ~~Is the Trusted Advisor check for MFA on Root Account failing~~ </br> **THIS FINDING HAS BEEN RETIRED** |
-| AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | ~~Is the Trusted Advisor check for ELB Listener Security failing~~ </br> **THIS FINDING HAS BEEN RETIRED** |
+| ~~AWS_TrustedAdvisor_Auditor~~ | ~~Trusted Advisor Check~~ | ~~Is the Trusted Advisor check for MFA on Root Account failing~~ </br> **THIS FINDING HAS BEEN RETIRED** |
+| ~~AWS_TrustedAdvisor_Auditor~~ | ~~Trusted Advisor Check~~ | ~~Is the Trusted Advisor check for ELB Listener Security failing~~ </br> **THIS FINDING HAS BEEN RETIRED** |
 | AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | Is the Trusted Advisor check for CloudFront SSL Certs in IAM Cert Store failing |
 | AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | Is the Trusted Advisor check for CloudFront SSL Cert on Origin Server failing |
 | AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | Is the Trusted Advisor check for Exposed Access Keys failing |

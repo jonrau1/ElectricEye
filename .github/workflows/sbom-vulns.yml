@@ -50,6 +50,6 @@ jobs:
 
       # Upload Grype SARIF Report to GitHub Security
       - name: Upload Grype Scan SBOM Report
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: ${{ steps.scan.outputs.sarif }}
