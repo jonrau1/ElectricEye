@@ -18,12 +18,16 @@
 #specific language governing permissions and limitations
 #under the License.
 
+import logging
+import sys
 from typing import NamedTuple
 from os import path
 from processor.outputs.output_base import ElectricEyeOutput
 import json
 from base64 import b64decode
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 # NOTE TO SELF: Updated this and FAQ.md as new standards are added
 SUPPORTED_STANDARDS = [
@@ -69,10 +73,13 @@ class OcsfV110Output(object):
 
     def write_findings(self, findings: list, output_file: str, **kwargs):
         if len(findings) == 0:
-            print("There are not any findings to write to file!")
-            exit(0)
+            logger.error("There are not any findings to write to file!")
+            sys.exit(0)
 
-        print(f"Writing {len(findings)} OCSF Compliance Findings to JSON!")
+        logger.info(
+            "Writing %s OCSF Compliance Findings to JSON!",
+            len(findings)
+        )
 
         """# Use another list comprehension to remove `ProductFields.AssetDetails` from non-Asset reporting outputs
         newFindings = [
@@ -124,7 +131,7 @@ class OcsfV110Output(object):
         
         # create output file based on inputs
         jsonfile = f"{output_file}_ocsf_v1-1-0_compliance_findings.json"
-        print(f"Output file named: {jsonfile}")
+        logger.info(f"Output file named: {jsonfile}")
         
         with open(jsonfile, "w") as jsonfile:
             json.dump(
@@ -156,22 +163,22 @@ class OcsfV110Output(object):
         # map Severity.Label -> base_event.severity_id, base_event.severity
         if severityLabel == "INFORMATIONAL":
             severityId = 1
-            severity = severityLabel.lower()
+            severity = severityLabel.lower().capitalize()
         if severityLabel == "LOW":
             severityId = 2
-            severity = severityLabel.lower()
+            severity = severityLabel.lower().capitalize()
         if severityLabel == "MEDIUM":
             severityId = 3
-            severity = severityLabel.lower()
+            severity = severityLabel.lower().capitalize()
         if severityLabel == "HIGH":
             severityId = 4
-            severity = severityLabel.lower()
+            severity = severityLabel.lower().capitalize()
         if severityLabel == "CRITICAL":
             severityId = 5
-            severity = severityLabel.lower()
+            severity = severityLabel.lower().capitalize()
         else:
             severityId = 99
-            severity = severityLabel.lower()
+            severity = severityLabel.lower().capitalize()
 
         # map ProductFields.Provider -> cloud.account.type_id, cloud.account.type
         if cloudProvider == "AWS":
@@ -219,6 +226,8 @@ class OcsfV110Output(object):
         """
 
         ocsfFindings = []
+
+        logger.info("Mapping ASFF to OCSF")
 
         for finding in findings:
 
@@ -307,5 +316,6 @@ class OcsfV110Output(object):
                     "record_state": finding["RecordState"]
                 }
             }
+            ocsfFindings.append(ocsf)
 
         return ocsfFindings

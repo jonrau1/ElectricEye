@@ -18,11 +18,14 @@
 #specific language governing permissions and limitations
 #under the License.
 
+import logging
 from check_register import CheckRegister
 import datetime
 import base64
 import json
 from botocore.exceptions import ClientError
+
+logger = logging.getLogger(__name__)
 
 registry = CheckRegister()
 
@@ -1525,10 +1528,18 @@ def cloudtrail_cloudwatch_metric_alarm_unauth_api_calls_check(cache: dict, sessi
         if "CloudWatchLogsLogGroupArn" in trail:
             logGroupArn = trail["CloudWatchLogsLogGroupArn"]
             logGroupAccount = logGroupArn.split(":")[4]
+            logGroupRegion = logGroupArn.split(":")[3]
             logGroupName = logGroupArn.split(":")[6]
             if awsAccountId != logGroupAccount:
-                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
-                continue
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed account (%s) and cannot be assessed.",
+                    trailName, awsAccountId
+                )
+            if awsRegion != logGroupRegion:
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed region (%s) and cannot be assessed.",
+                    trailName, awsRegion
+                )
             else:
                 # Pull out the filters for the Log Group
                 metricFilters = logs.describe_metric_filters(
@@ -1759,10 +1770,18 @@ def cloudtrail_cloudwatch_metric_alarm_console_login_no_mfa_check(cache: dict, s
         if "CloudWatchLogsLogGroupArn" in trail:
             logGroupArn = trail["CloudWatchLogsLogGroupArn"]
             logGroupAccount = logGroupArn.split(":")[4]
+            logGroupRegion = logGroupArn.split(":")[3]
             logGroupName = logGroupArn.split(":")[6]
             if awsAccountId != logGroupAccount:
-                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
-                continue
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed account (%s) and cannot be assessed.",
+                    trailName, awsAccountId
+                )
+            if awsRegion != logGroupRegion:
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed region (%s) and cannot be assessed.",
+                    trailName, awsRegion
+                )
             else:
                 # Pull out the filters for the Log Group
                 metricFilters = logs.describe_metric_filters(
@@ -1993,10 +2012,18 @@ def cloudtrail_cloudwatch_metric_alarm_root_user_usage_check(cache: dict, sessio
         if "CloudWatchLogsLogGroupArn" in trail:
             logGroupArn = trail["CloudWatchLogsLogGroupArn"]
             logGroupAccount = logGroupArn.split(":")[4]
+            logGroupRegion = logGroupArn.split(":")[3]
             logGroupName = logGroupArn.split(":")[6]
             if awsAccountId != logGroupAccount:
-                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
-                continue
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed account (%s) and cannot be assessed.",
+                    trailName, awsAccountId
+                )
+            if awsRegion != logGroupRegion:
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed region (%s) and cannot be assessed.",
+                    trailName, awsRegion
+                )
             else:
                 # Pull out the filters for the Log Group
                 metricFilters = logs.describe_metric_filters(
@@ -2227,10 +2254,18 @@ def cloudtrail_cloudwatch_metric_alarm_iam_policy_changes_check(cache: dict, ses
         if "CloudWatchLogsLogGroupArn" in trail:
             logGroupArn = trail["CloudWatchLogsLogGroupArn"]
             logGroupAccount = logGroupArn.split(":")[4]
+            logGroupRegion = logGroupArn.split(":")[3]
             logGroupName = logGroupArn.split(":")[6]
             if awsAccountId != logGroupAccount:
-                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
-                continue
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed account (%s) and cannot be assessed.",
+                    trailName, awsAccountId
+                )
+            if awsRegion != logGroupRegion:
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed region (%s) and cannot be assessed.",
+                    trailName, awsRegion
+                )
             else:
                 # Pull out the filters for the Log Group
                 metricFilters = logs.describe_metric_filters(
@@ -2461,10 +2496,18 @@ def cloudtrail_cloudwatch_metric_alarm_cloudtrail_config_changes_check(cache: di
         if "CloudWatchLogsLogGroupArn" in trail:
             logGroupArn = trail["CloudWatchLogsLogGroupArn"]
             logGroupAccount = logGroupArn.split(":")[4]
+            logGroupRegion = logGroupArn.split(":")[3]
             logGroupName = logGroupArn.split(":")[6]
             if awsAccountId != logGroupAccount:
-                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
-                continue
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed account (%s) and cannot be assessed.",
+                    trailName, awsAccountId
+                )
+            if awsRegion != logGroupRegion:
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed region (%s) and cannot be assessed.",
+                    trailName, awsRegion
+                )
             else:
                 # Pull out the filters for the Log Group
                 metricFilters = logs.describe_metric_filters(
@@ -2695,10 +2738,18 @@ def cloudtrail_cloudwatch_metric_alarm_console_authentication_failures_check(cac
         if "CloudWatchLogsLogGroupArn" in trail:
             logGroupArn = trail["CloudWatchLogsLogGroupArn"]
             logGroupAccount = logGroupArn.split(":")[4]
+            logGroupRegion = logGroupArn.split(":")[3]
             logGroupName = logGroupArn.split(":")[6]
             if awsAccountId != logGroupAccount:
-                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
-                continue
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed account (%s) and cannot be assessed.",
+                    trailName, awsAccountId
+                )
+            if awsRegion != logGroupRegion:
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed region (%s) and cannot be assessed.",
+                    trailName, awsRegion
+                )
             else:
                 # Pull out the filters for the Log Group
                 metricFilters = logs.describe_metric_filters(
@@ -2929,10 +2980,18 @@ def cloudtrail_cloudwatch_metric_alarm_disable_or_delete_aws_kms_cmks_check(cach
         if "CloudWatchLogsLogGroupArn" in trail:
             logGroupArn = trail["CloudWatchLogsLogGroupArn"]
             logGroupAccount = logGroupArn.split(":")[4]
+            logGroupRegion = logGroupArn.split(":")[3]
             logGroupName = logGroupArn.split(":")[6]
             if awsAccountId != logGroupAccount:
-                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
-                continue
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed account (%s) and cannot be assessed.",
+                    trailName, awsAccountId
+                )
+            if awsRegion != logGroupRegion:
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed region (%s) and cannot be assessed.",
+                    trailName, awsRegion
+                )
             else:
                 # Pull out the filters for the Log Group
                 metricFilters = logs.describe_metric_filters(
@@ -3163,10 +3222,18 @@ def cloudtrail_cloudwatch_metric_alarm_s3_bucket_policy_change_check(cache: dict
         if "CloudWatchLogsLogGroupArn" in trail:
             logGroupArn = trail["CloudWatchLogsLogGroupArn"]
             logGroupAccount = logGroupArn.split(":")[4]
+            logGroupRegion = logGroupArn.split(":")[3]
             logGroupName = logGroupArn.split(":")[6]
             if awsAccountId != logGroupAccount:
-                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
-                continue
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed account (%s) and cannot be assessed.",
+                    trailName, awsAccountId
+                )
+            if awsRegion != logGroupRegion:
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed region (%s) and cannot be assessed.",
+                    trailName, awsRegion
+                )
             else:
                 # Pull out the filters for the Log Group
                 metricFilters = logs.describe_metric_filters(
@@ -3397,10 +3464,18 @@ def cloudtrail_cloudwatch_metric_alarm_aws_config_configuration_changes_check(ca
         if "CloudWatchLogsLogGroupArn" in trail:
             logGroupArn = trail["CloudWatchLogsLogGroupArn"]
             logGroupAccount = logGroupArn.split(":")[4]
+            logGroupRegion = logGroupArn.split(":")[3]
             logGroupName = logGroupArn.split(":")[6]
             if awsAccountId != logGroupAccount:
-                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
-                continue
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed account (%s) and cannot be assessed.",
+                    trailName, awsAccountId
+                )
+            if awsRegion != logGroupRegion:
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed region (%s) and cannot be assessed.",
+                    trailName, awsRegion
+                )
             else:
                 # Pull out the filters for the Log Group
                 metricFilters = logs.describe_metric_filters(
@@ -3631,10 +3706,18 @@ def cloudtrail_cloudwatch_metric_alarm_security_group_changes_check(cache: dict,
         if "CloudWatchLogsLogGroupArn" in trail:
             logGroupArn = trail["CloudWatchLogsLogGroupArn"]
             logGroupAccount = logGroupArn.split(":")[4]
+            logGroupRegion = logGroupArn.split(":")[3]
             logGroupName = logGroupArn.split(":")[6]
             if awsAccountId != logGroupAccount:
-                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
-                continue
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed account (%s) and cannot be assessed.",
+                    trailName, awsAccountId
+                )
+            if awsRegion != logGroupRegion:
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed region (%s) and cannot be assessed.",
+                    trailName, awsRegion
+                )
             else:
                 # Pull out the filters for the Log Group
                 metricFilters = logs.describe_metric_filters(
@@ -3865,10 +3948,18 @@ def cloudtrail_cloudwatch_metric_alarm_nacl_changes_check(cache: dict, session, 
         if "CloudWatchLogsLogGroupArn" in trail:
             logGroupArn = trail["CloudWatchLogsLogGroupArn"]
             logGroupAccount = logGroupArn.split(":")[4]
+            logGroupRegion = logGroupArn.split(":")[3]
             logGroupName = logGroupArn.split(":")[6]
             if awsAccountId != logGroupAccount:
-                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
-                continue
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed account (%s) and cannot be assessed.",
+                    trailName, awsAccountId
+                )
+            if awsRegion != logGroupRegion:
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed region (%s) and cannot be assessed.",
+                    trailName, awsRegion
+                )
             else:
                 # Pull out the filters for the Log Group
                 metricFilters = logs.describe_metric_filters(
@@ -4099,10 +4190,18 @@ def cloudtrail_cloudwatch_metric_alarm_network_gateway_changes_check(cache: dict
         if "CloudWatchLogsLogGroupArn" in trail:
             logGroupArn = trail["CloudWatchLogsLogGroupArn"]
             logGroupAccount = logGroupArn.split(":")[4]
+            logGroupRegion = logGroupArn.split(":")[3]
             logGroupName = logGroupArn.split(":")[6]
             if awsAccountId != logGroupAccount:
-                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
-                continue
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed account (%s) and cannot be assessed.",
+                    trailName, awsAccountId
+                )
+            if awsRegion != logGroupRegion:
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed region (%s) and cannot be assessed.",
+                    trailName, awsRegion
+                )
             else:
                 # Pull out the filters for the Log Group
                 metricFilters = logs.describe_metric_filters(
@@ -4333,10 +4432,18 @@ def cloudtrail_cloudwatch_metric_alarm_vpc_route_table_changes_check(cache: dict
         if "CloudWatchLogsLogGroupArn" in trail:
             logGroupArn = trail["CloudWatchLogsLogGroupArn"]
             logGroupAccount = logGroupArn.split(":")[4]
+            logGroupRegion = logGroupArn.split(":")[3]
             logGroupName = logGroupArn.split(":")[6]
             if awsAccountId != logGroupAccount:
-                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
-                continue
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed account (%s) and cannot be assessed.",
+                    trailName, awsAccountId
+                )
+            if awsRegion != logGroupRegion:
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed region (%s) and cannot be assessed.",
+                    trailName, awsRegion
+                )
             else:
                 # Pull out the filters for the Log Group
                 metricFilters = logs.describe_metric_filters(
@@ -4567,10 +4674,18 @@ def cloudtrail_cloudwatch_metric_alarm_vpc_changes_check(cache: dict, session, a
         if "CloudWatchLogsLogGroupArn" in trail:
             logGroupArn = trail["CloudWatchLogsLogGroupArn"]
             logGroupAccount = logGroupArn.split(":")[4]
+            logGroupRegion = logGroupArn.split(":")[3]
             logGroupName = logGroupArn.split(":")[6]
             if awsAccountId != logGroupAccount:
-                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
-                continue
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed account (%s) and cannot be assessed.",
+                    trailName, awsAccountId
+                )
+            if awsRegion != logGroupRegion:
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed region (%s) and cannot be assessed.",
+                    trailName, awsRegion
+                )
             else:
                 # Pull out the filters for the Log Group
                 metricFilters = logs.describe_metric_filters(
@@ -4801,10 +4916,18 @@ def cloudtrail_cloudwatch_metric_alarm_aws_organizations_changes_check(cache: di
         if "CloudWatchLogsLogGroupArn" in trail:
             logGroupArn = trail["CloudWatchLogsLogGroupArn"]
             logGroupAccount = logGroupArn.split(":")[4]
+            logGroupRegion = logGroupArn.split(":")[3]
             logGroupName = logGroupArn.split(":")[6]
             if awsAccountId != logGroupAccount:
-                print(f"AWS CloudTrail trail {trailName} has a CloudWatch Logs Group not located in this Account ({awsAccountId}) and cannot be in assessed, skipping it!")
-                continue
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed account (%s) and cannot be assessed.",
+                    trailName, awsAccountId
+                )
+            if awsRegion != logGroupRegion:
+                logger.info(
+                    "AWS CloudTrail trail %s has an attached CloudWatch Logs Group that is not located in the currently assessed region (%s) and cannot be assessed.",
+                    trailName, awsRegion
+                )
             else:
                 # Pull out the filters for the Log Group
                 metricFilters = logs.describe_metric_filters(

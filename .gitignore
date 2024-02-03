@@ -4,3 +4,4 @@
 .json.gz
 .git
 .aws
+*.pyc

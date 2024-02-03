@@ -18,10 +18,14 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import datetime
+import logging
 from check_register import CheckRegister
+from botocore.exceptions import ClientError
+import datetime
 import base64
 import json
+
+logger = logging.getLogger(__name__)
 
 registry = CheckRegister()
 
@@ -35,11 +39,20 @@ def get_license_manager_configurations(cache, session):
     
     licensemanager = session.client("license-manager")
 
+    try:
+        liscMgrConfigs = licensemanager.list_license_configurations()["LicenseConfigurations"]
+    except ClientError as e:
+        logger.warn(
+            "Cannot retrieve Amazon License Manager configurations, this is likely due to not using this service or you deleted the IAM Service Role. Refer to the error for more information: %s",
+            e.response["Error"]["Message"]
+        )
+        return {}
+
     # Check if LM even has results
-    if not licensemanager.list_license_configurations()["LicenseConfigurations"]:
+    if not liscMgrConfigs:
         return {}
     
-    for license in licensemanager.list_license_configurations()["LicenseConfigurations"]:
+    for license in liscMgrConfigs:
         licenseManagerConfigs.append(
             licensemanager.get_license_configuration(
                 LicenseConfigurationArn=license["LicenseConfigurationArn"]

@@ -31,30 +31,38 @@ registry = CheckRegister()
 
 dirPath = os.path.dirname(os.path.realpath(__file__))
 
+def get_code_build_projects(cache, session):
+    codebuild = session.client("codebuild")
+    response = cache.get("codebuild_projects")
+    if response:
+        return response
+    projectNames = codebuild.list_projects()["projects"]
+    if projectNames:
+        codebuildProjects = codebuild.batch_get_projects(names=projectNames)["projects"]
+        cache["codebuild_projects"] = codebuildProjects
+        return cache["codebuild_projects"]
+    else:
+        return {}
+
 @registry.register_check("codebuild")
 def secret_scan_codebuild_envvar_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Secrets.CodeBuild.1] CodeBuild Project environment variables should not have secrets stored in Plaintext"""
-    codebuild = session.client("codebuild")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # setup some reusable variables
     scanFile = f"{dirPath}/codebuild-data-sample.json"
     resultsFile = f"{dirPath}/codebuild-scan-result.json"
     scanCommand = f"detect-secrets scan {scanFile} > {resultsFile}"
-    # Collect all CodeBuild Projects and send to the Batch API
-    cbList = []
-    for p in codebuild.list_projects()["projects"]:
-        cbList.append(str(p))
     # Submit batch request
-    for proj in codebuild.batch_get_projects(names=cbList)["projects"]:
+    for projects in get_code_build_projects(cache, session):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(proj,default=str).encode("utf-8")
+        assetJson = json.dumps(projects,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         # Create an empty list per loop to put "Plaintext" env vars as the SSM and Secrets Manager types will just be a name
         envvarList = []
-        cbName = str(proj["name"])
-        cbArn = str(proj["arn"])
-        sourceType = str(proj["source"]["type"])
-        for e in proj["environment"]["environmentVariables"]:
+        cbName = str(projects["name"])
+        cbArn = str(projects["arn"])
+        sourceType = str(projects["source"]["type"])
+        for e in projects["environment"]["environmentVariables"]:
             if str(e["type"]) == "PLAINTEXT":
                 # Append a dict into the envvarlist - this will be written into a new file
                 envvarList.append({"name": str(e["name"]),"value": str(e["value"])})
