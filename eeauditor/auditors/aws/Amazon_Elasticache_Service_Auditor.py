@@ -137,7 +137,9 @@ def elasticache_service_redis_auth_token_check(cache: dict, session, awsAccountI
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.7.1.1",
                         "ISO 27001:2013 A.9.2.1",
-                        "CIS AWS Database Services Benchmark V1.0 5.1"
+                        "CIS AWS Database Services Benchmark V1.0 5.1",
+                        "CIS AWS Database Services Benchmark V1.0 5.7",
+                        "CIS AWS Database Services Benchmark V1.0 5.10"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -212,7 +214,9 @@ def elasticache_service_redis_auth_token_check(cache: dict, session, awsAccountI
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.7.1.1",
                         "ISO 27001:2013 A.9.2.1",
-                        "CIS AWS Database Services Benchmark V1.0 5.1"
+                        "CIS AWS Database Services Benchmark V1.0 5.1",
+                        "CIS AWS Database Services Benchmark V1.0 5.7",
+                        "CIS AWS Database Services Benchmark V1.0 5.10"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -288,7 +292,9 @@ def elasticache_service_redis_encryption_at_check_check(cache: dict, session, aw
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3",
-                        "CIS AWS Database Services Benchmark V1.0 5.3"
+                        "CIS AWS Database Services Benchmark V1.0 5.3",
+                        "CIS AWS Database Services Benchmark V1.0 5.7",
+                        "CIS AWS Database Services Benchmark V1.0 5.10"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -352,7 +358,9 @@ def elasticache_service_redis_encryption_at_check_check(cache: dict, session, aw
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3",
-                        "CIS AWS Database Services Benchmark V1.0 5.1"
+                        "CIS AWS Database Services Benchmark V1.0 5.3",
+                        "CIS AWS Database Services Benchmark V1.0 5.7",
+                        "CIS AWS Database Services Benchmark V1.0 5.10"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -433,7 +441,9 @@ def elasticache_service_redis_encryption_in_transit_check(cache: dict, session, 
                         "ISO 27001:2013 A.13.2.3",
                         "ISO 27001:2013 A.14.1.2",
                         "ISO 27001:2013 A.14.1.3",
-                        "CIS AWS Database Services Benchmark V1.0 5.1"
+                        "CIS AWS Database Services Benchmark V1.0 5.3",
+                        "CIS AWS Database Services Benchmark V1.0 5.7",
+                        "CIS AWS Database Services Benchmark V1.0 5.10"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -502,7 +512,9 @@ def elasticache_service_redis_encryption_in_transit_check(cache: dict, session, 
                         "ISO 27001:2013 A.13.2.3",
                         "ISO 27001:2013 A.14.1.2",
                         "ISO 27001:2013 A.14.1.3",
-                        "CIS AWS Database Services Benchmark V1.0 5.1"
+                        "CIS AWS Database Services Benchmark V1.0 5.3",
+                        "CIS AWS Database Services Benchmark V1.0 5.7",
+                        "CIS AWS Database Services Benchmark V1.0 5.10"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
