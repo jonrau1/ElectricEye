@@ -64,7 +64,9 @@ To configure the TOML file, you need to modify the values of the variables in th
 
     This variable specifies the AWS regions that you want to scan. If left blank, the current AWS region is used. You can provide a list of AWS regions or simply use `["All"]` to scan all regions.
 
-- `aws_electric_eye_iam_role_name`: (**UPDATE AS OF 4 FEB 2024**: If you do not provide a value here, your current Boto3 Session will be used, if you provided an Org ID, OU IDs or Accounts those assessments will (obviously) fail!) 
+- `aws_electric_eye_iam_role_name`: 
+
+    (**UPDATE AS OF 4 FEB 2024**: If you do not provide a value here, your current Boto3 Session will be used, if you provided an Org ID, OU IDs or Accounts those assessments will (obviously) fail!) 
 
     This variable specifies the ***Name*** of the AWS IAM role that ElectricEye will assume and utilize to execute its Checks. The role name must be the same for all accounts, including your current account. To facilitate this, use [this CloudFormation template](../../cloudformation/ElectricEye_Organizations_StackSet.yaml) and deploy it as an AWS CloudFormation StackSet. This is done to keep the credentials used for **Auditors** separate from the credentials you use for Outputs and for retrieving Secrets, it also makes it easier to audit (via CloudTrail or otherwise) the usage of the ElectricEye role.
 
@@ -237,7 +239,7 @@ The ASM Module uses NMAP at its core and will be expanded to include ZAP and Sho
 
 ## AWS Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **633 Checks** across **85 Auditors** that support the secure configuration of **120 services/components**
+These are the following services and checks perform by each Auditor, there are currently **634 Checks** across **85 Auditors** that support the secure configuration of **120 services/components**
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service**: AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
@@ -670,6 +672,7 @@ These are the following services and checks perform by each Auditor, there are c
 | AWS_IAM_Auditor | IAM Access Key | Access Keys that have been unused for 45 days should be disabled |
 | AWS_IAM_Auditor | Root User | Has the Root User been used in the last 90 days |
 | AWS_IAM_Auditor | IAM Access Analyzer | Is IAM Access Analyzer enabled |
+| AWS_IAM_Auditor | IAM User | Do users have more than one access key |
 | AWS_IAMRA_Auditor | IAMRA Trust Anchor | Do Trust Anchors contain self-signed certificates |
 | AWS_IAMRA_Auditor | IAMRA Trust Anchor | Do Trust Anchors use a Certificate Revocation List (CRL) |
 | AWS_IAMRA_Auditor | IAMRA Profile | Do IAMRA Profiles specify a Session Policy |
