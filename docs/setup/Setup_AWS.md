@@ -239,7 +239,7 @@ The ASM Module uses NMAP at its core and will be expanded to include ZAP and Sho
 
 ## AWS Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **634 Checks** across **85 Auditors** that support the secure configuration of **120 services/components**
+These are the following services and checks perform by each Auditor, there are currently **636 Checks** across **85 Auditors** that support the secure configuration of **120 services/components**
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service**: AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
@@ -673,6 +673,8 @@ These are the following services and checks perform by each Auditor, there are c
 | AWS_IAM_Auditor | Root User | Has the Root User been used in the last 90 days |
 | AWS_IAM_Auditor | IAM Access Analyzer | Is IAM Access Analyzer enabled |
 | AWS_IAM_Auditor | IAM User | Do users have more than one access key |
+| AWS_IAM_Auditor | AWS Account | Does an AWS Support access Role exist |
+| AWS_IAM_Auditor | AWS Account | Is the AWSCloudShellFullAccess policy attached to any roles |
 | AWS_IAMRA_Auditor | IAMRA Trust Anchor | Do Trust Anchors contain self-signed certificates |
 | AWS_IAMRA_Auditor | IAMRA Trust Anchor | Do Trust Anchors use a Certificate Revocation List (CRL) |
 | AWS_IAMRA_Auditor | IAMRA Profile | Do IAMRA Profiles specify a Session Policy |

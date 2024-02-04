@@ -3742,9 +3742,9 @@ def aws_support_iam_role_in_use_check(cache: dict, session, awsAccountId: str, a
                 "ProviderAccountId": awsAccountId,
                 "AssetRegion": global_region_generator(awsPartition),
                 "AssetDetails": assetB64,
-                "AssetClass": "Security Services",
-                "AssetService": "Amazon Shield Advanced",
-                "AssetComponent": "Shield Response Team Access"
+                "AssetClass": "Identity & Access Management",
+                "AssetService": "AWS IAM",
+                "AssetComponent": "IAM Role Check"
             },
             "Resources": [
                 {
@@ -3810,9 +3810,9 @@ def aws_support_iam_role_in_use_check(cache: dict, session, awsAccountId: str, a
                 "ProviderAccountId": awsAccountId,
                 "AssetRegion": global_region_generator(awsPartition),
                 "AssetDetails": assetB64,
-                "AssetClass": "Security Services",
-                "AssetService": "Amazon Shield Advanced",
-                "AssetComponent": "Shield Response Team Access"
+                "AssetClass": "Identity & Access Management",
+                "AssetService": "AWS IAM",
+                "AssetComponent": "IAM Role Check"
             },
             "Resources": [
                 {
@@ -3844,6 +3844,167 @@ def aws_support_iam_role_in_use_check(cache: dict, session, awsAccountId: str, a
                     "ISO 27001:2013 A.9.2.1",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.17",
                     "CIS Amazon Web Services Foundations Benchmark V2.0 1.17"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+
+@registry.register_check("iam")
+def cloud_shell_iam_role_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[IAM.20] No AWS IAM Role should have the AWSCloudShellFullAccess policy attached to reduce exfiltration risk"""
+    iam = session.client("iam")
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    # check if the support policy exists and is attached to a role
+    fullCloudShellRoleUsed = False
+    entityAttachment = iam.list_entities_for_policy(
+        PolicyArn="arn:aws:iam::aws:policy/AWSCloudShellFullAccess",
+        EntityFilter="Role",
+        PolicyUsageFilter="PermissionsPolicy"
+    )
+    # B64 encode all of the details for the Asset
+    assetJson = json.dumps(entityAttachment,default=str).encode("utf-8")
+    assetB64 = base64.b64encode(assetJson)
+    if entityAttachment["PolicyRoles"]:
+        fullCloudShellRoleUsed = True
+
+    # this is a failing check
+    if fullCloudShellRoleUsed is True:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{awsAccountId}/iam-cloud-shell-full-access-role-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"{awsAccountId}/iam-cloud-shell-full-access-role-check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "HIGH"},
+            "Confidence": 99,
+            "Title": "[IAM.20] No AWS IAM Role should have the AWSCloudShellFullAccess policy attached to reduce exfiltration risk",
+            "Description": f"At least one AWS IAM Role with the AWSCloudShellFullAccess policy attached exists in AWS Account {awsAccountId}. AWS CloudShell is a convenient way of running CLI commands against AWS services; the full access policy allows file upload and download capability between a user's local system and the CloudShell environment. Within the CloudShell environment a user has sudo permissions, and can access the internet. So it is feasible to install file transfer software (for example) and move data from CloudShell to external internet servers. Access to this policy should be restricted as it presents a potential channel for data exfiltration by malicious cloud admins that are given full permissions to the service. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information on reducing the blast radius and file transfer capabilities with AWS CloudShell refer to the Managing AWS CloudShell access and usage with IAM policies section of the AWS CloudShell User Guide.",
+                    "Url": "https://docs.aws.amazon.com/cloudshell/latest/userguide/sec-auth-with-identities.html"
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": global_region_generator(awsPartition),
+                "AssetDetails": assetB64,
+                "AssetClass": "Identity & Access Management",
+                "AssetService": "AWS IAM",
+                "AssetComponent": "IAM Role Check"
+            },
+            "Resources": [
+                {
+                    "Type": "AwsAccount",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_CloudShell_Role",
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.AC-4",
+                    "NIST SP 800-53 Rev. 4 AC-2",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 AC-5",
+                    "NIST SP 800-53 Rev. 4 AC-6",
+                    "NIST SP 800-53 Rev. 4 AC-16",
+                    "AICPA TSC CC6.3",
+                    "ISO 27001:2013 A.6.1.2",
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.2.3",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "MITRE ATT&CK T1210",
+                    "MITRE ATT&CK T1570",
+                    "MITRE ATT&CK T1021.007",
+                    "MITRE ATT&CK T1020",
+                    "MITRE ATT&CK T1048",
+                    "MITRE ATT&CK T1567",
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.16",
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.22"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{awsAccountId}/iam-cloud-shell-full-access-role-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"{awsAccountId}/iam-cloud-shell-full-access-role-check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[IAM.20] No AWS IAM Role should have the AWSCloudShellFullAccess policy attached to reduce exfiltration risk",
+            "Description": f"No AWS IAM Role with the AWSCloudShellFullAccess policy attached exists in AWS Account {awsAccountId}. However, other roles with AdministratorAccess to a custom policy allowing this may also exist.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information on reducing the blast radius and file transfer capabilities with AWS CloudShell refer to the Managing AWS CloudShell access and usage with IAM policies section of the AWS CloudShell User Guide.",
+                    "Url": "https://docs.aws.amazon.com/cloudshell/latest/userguide/sec-auth-with-identities.html"
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": global_region_generator(awsPartition),
+                "AssetDetails": assetB64,
+                "AssetClass": "Identity & Access Management",
+                "AssetService": "AWS IAM",
+                "AssetComponent": "IAM Role Check"
+            },
+            "Resources": [
+                {
+                    "Type": "AwsAccount",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_CloudShell_Role",
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.AC-4",
+                    "NIST SP 800-53 Rev. 4 AC-2",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 AC-5",
+                    "NIST SP 800-53 Rev. 4 AC-6",
+                    "NIST SP 800-53 Rev. 4 AC-16",
+                    "AICPA TSC CC6.3",
+                    "ISO 27001:2013 A.6.1.2",
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.2.3",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "MITRE ATT&CK T1210",
+                    "MITRE ATT&CK T1570",
+                    "MITRE ATT&CK T1021.007",
+                    "MITRE ATT&CK T1020",
+                    "MITRE ATT&CK T1048",
+                    "MITRE ATT&CK T1567",
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.16",
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.22"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
