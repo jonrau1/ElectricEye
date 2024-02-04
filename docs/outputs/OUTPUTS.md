@@ -33,7 +33,7 @@ To review the list of possible Output providers, use the following ElectricEye c
 
 ```bash
 $ python3 eeauditor/controller.py --list-options
-['amazon_sqs', 'cam_json', 'cam_mongodb', 'cam_postgresql', 'csv', 'ddb_backend', 'firemon_cloud_defense', 'html', 'html_compliance', 'json', 'json_normalized', 'mongodb', 'postgresql', 'sechub', 'slack', 'stdout']
+['amazon_sqs', 'cam_json', 'cam_mongodb', 'cam_postgresql', 'csv', 'firemon_cloud_defense', 'html', 'html_compliance', 'json', 'json_normalized', 'mongodb', 'ocsf_kdf', 'ocsf_v1_1_0', 'postgresql', 'sechub', 'slack', 'stdout']
 ```
 
 #### IMPORTANT NOTE!! You can specify multiple Outputs by providing the `-o` or `--outputs` argument multiple times, for instance: `python3 eeauditor/controller.py -t AWS -o json -o csv -o postgresql`
