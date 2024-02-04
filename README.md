@@ -65,7 +65,7 @@ ElectricEye also uses utilizes other tools such as [Shodan.io](https://www.shoda
 
 1. First, clone this repository and install the requirements using `pip3`: `pip3 install -r requirements.txt`.
 
-2. If you are evaluating anything other than your local AWS Account, provide a path to a modified [TOML configuration](./eeauditor/external_providers.toml) with `--toml-file` located in `ElectricEye/eeauditor/external_providers.toml`, or modify the example provided and do not provide that argument. The TOML file specifies multi-account, mulit-region, credential, and output specifics.
+2. If you are evaluating anything other than your local AWS Account, modify the [TOML configuration](./eeauditor/external_providers.toml)  located in `ElectricEye/eeauditor/external_providers.toml`, or provide a path to your own with with `--toml-path`. The TOML file specifies multi-account, mulit-region, credential, and output specifics.
 
 3. Finally, run the Controller to learn about the various Checks, Auditors, Assessment Targets, and Outputs.
 
