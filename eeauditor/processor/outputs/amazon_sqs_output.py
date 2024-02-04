@@ -55,7 +55,7 @@ class AmazonSqsProvider(object):
         queueBatchSize = sqsDetails["amazon_sqs_batch_size"]
         awsRegion = sqsDetails["amazon_sqs_queue_region"]
         if awsRegion is None or awsRegion == "":
-            awsRegion == boto3.Session().region_name
+            awsRegion = boto3.Session().region_name
 
         # Ensure that values are provided for all variable - use all() and a list comprehension to check the vars
         # empty strings will trigger `if not`

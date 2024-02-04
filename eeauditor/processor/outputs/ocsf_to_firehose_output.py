@@ -97,11 +97,11 @@ class OcsfFirehoseOutput(object):
         deliveryStream = sqsDetails["kinesis_firehose_delivery_stream_name"]
         awsRegion = sqsDetails["kinesis_firehose_region"]
         if awsRegion is None or awsRegion == "":
-            awsRegion == boto3.Session().region_name
+            awsRegion = boto3.Session().region_name
 
         # Ensure that values are provided for all variable - use all() and a list comprehension to check the vars
         # empty strings will trigger `if not`
-        if not all(s for s in [deliveryStream, awsRegion]):
+        if not deliveryStream:
             logger.error("An empty value was detected in '[outputs.firehose]'. Review the TOML file and try again!")
             sys.exit(2)
 
@@ -192,6 +192,8 @@ class OcsfFirehoseOutput(object):
                     e.response["Error"]["Message"]
                 )
                 continue
+
+        print("Finished write OCSF Compliance Findings to Kinesis Data Firehose.")
             
         return True
     

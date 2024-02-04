@@ -21,7 +21,6 @@ This documentation is all about Outputs supported by ElectricEye and how to conf
 - [Firemon Cloud Defense (DisruptOps) Output](#firemon-cloud-defense-disruptops-output)
 - [Amazon Simple Queue Service (SQS) Output](#amazon-simple-queue-service-sqs-output)
 - [Slack Output](#slack-output)
-- [AWS Security Finding Format (ASFF) -> Amazon Kinesis Data Firehose](#aws-security-finding-format-asff---amazon-kinesis-data-firehose)
 - [Open Cybersecurity Format (OCSF) -> Amazon Kinesis Data Firehose](#open-cybersecurity-format-ocsf---amazon-kinesis-data-firehose)
 
 ## Key Considerations
@@ -1214,18 +1213,6 @@ The "Findings" output will contain the follow values from the ElectricEye ASFF:
 An example of the "Findings" output.
 
 ![SlackFindings](../../screenshots/outputs/slack_findings_output.jpg)
-
-## AWS Security Finding Format (ASFF) -> Amazon Kinesis Data Firehose
-
-**IMPORTANT NOTE**: This requires `firehose:PutRecordBatch` IAM permissions!
-
-This output will send the default AWS Security Finding Format (ASFF) records to Kinesis Data Firehose. Kinesis Data Firehouse is an extremely high-throughput data streaming service on AWS that allows you to batch several 100 events per second to select locations such as Snowflake, Splunk, Amazon S3, Datadog, OpenSearch Service, and more. You can configure buffering which allows your records to be batch-written to locations, this is helpful for building data lakes on AWS as you can ensure you have as big as a file as you can to keep the overall amount of files low. Additionally, you can configure dynamic partitioning in certain platforms to craft Hive-like partitions (e.g., `year=YYYY/month=MM/day=DD` and so on), additionally for certain locations you can automatically transform the data into the Apache Parquet columnar binary format or use AWS Lambda to perform Extraction-Loading-Transformation (ELT) to the records.
-
-This Output will *not* provide the `ProductFields.AssetDetails` information.
-
-To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o asff_kdf`
-
-Additionally, values within the `[outputs.firehose]` section of the TOML file *must be provided* for this integration to work.
 
 ## Open Cybersecurity Format (OCSF) -> Amazon Kinesis Data Firehose
 
