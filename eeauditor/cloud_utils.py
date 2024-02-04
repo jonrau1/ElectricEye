@@ -563,9 +563,11 @@ class CloudConfig(object):
         # AWS Top Secret Region override
         elif region in ["us-iso-east-1", "us-iso-west-1"] or "iso-" in region:
             partition = "aws-iso"
+        # AWS UKSOF / British MOD Region override
         elif "iso-e" in region or "isoe" in region:
             partition = "aws-isoe"
-        elif "iso-f" in region or "isof" in region:
+        # AWS Intel Community us-isof-south-1 Region override
+        elif region in ["us-isof-south-1"] or "iso-f" in region or "isof" in region:
             partition = "aws-isof"
         else:
             partition = "aws"
