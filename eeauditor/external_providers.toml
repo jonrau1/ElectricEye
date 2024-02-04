@@ -319,29 +319,19 @@ title = "ElectricEye Configuration"
 
         mongodb_collection_name = ""
 
-    [outputs.dynamodb]
-
-        # Table name
-
-        dynamodb_table_name = ""
-
     [outputs.amazon_sqs]
 
-        # Queue Name / URL
+        # Queue Name / URL, this must be in the same account as your current credentials
 
         amazon_sqs_queue_url = ""
 
-        # Batch
+        # Batch Size
 
         amazon_sqs_batch_size = 10 # This must be an integer
 
-    [outputs.microsoft_teams]
+        # Queue Region
 
-        # The location (or actual contents) of the Webhook for your MS Teams Channel
-        # this location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then
-        # the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
-        
-        microsoft_teams_webhook_value = ""
+        amazon_sqs_queue_region = ""
 
     [outputs.slack]
 
@@ -373,3 +363,13 @@ title = "ElectricEye Configuration"
         # `electric_eye_slack_message_type` is "FindingS". This defaults to ["ACTIVE"]
 
         electric_eye_slack_finding_state_filter = ["ACTIVE"] # VALID VALUES | "ACTIVE", "ARCHIVED"
+
+    [outputs.firehose]
+
+        # The name of your Kinesis Data Firehose Delivery Stream, this must be in the same account as your current credentials
+
+        kinesis_firehose_delivery_stream_name = ""
+
+        # Delivery Stream Region
+
+        kinesis_firehose_region = ""

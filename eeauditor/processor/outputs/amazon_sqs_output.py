@@ -29,7 +29,7 @@ from botocore.exceptions import ClientError
 from processor.outputs.output_base import ElectricEyeOutput
 
 @ElectricEyeOutput
-class JsonProvider(object):
+class AmazonSqsProvider(object):
     __provider__ = "amazon_sqs"
 
     def __init__(self):
@@ -54,6 +54,8 @@ class JsonProvider(object):
         queueUrl = sqsDetails["amazon_sqs_queue_url"]
         queueBatchSize = sqsDetails["amazon_sqs_batch_size"]
         awsRegion = sqsDetails["amazon_sqs_queue_region"]
+        if awsRegion is None or awsRegion == "":
+            awsRegion == boto3.Session().region_name
 
         # Ensure that values are provided for all variable - use all() and a list comprehension to check the vars
         # empty strings will trigger `if not`

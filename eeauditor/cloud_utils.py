@@ -569,6 +569,7 @@ class CloudConfig(object):
         # AWS Intel Community us-isof-south-1 Region override
         elif region in ["us-isof-south-1"] or "iso-f" in region or "isof" in region:
             partition = "aws-isof"
+        # TODO: Add European Sovreign Cloud Partition
         else:
             partition = "aws"
 
