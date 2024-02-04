@@ -19,13 +19,16 @@
 #under the License.
 
 import logging
+import tomli
+import boto3
 import sys
 from typing import NamedTuple
-from os import path
+from os import path, environ
 from processor.outputs.output_base import ElectricEyeOutput
 import json
 from base64 import b64decode
 from datetime import datetime
+from botocore.exceptions import ClientError
 
 logger = logging.getLogger("OCSF_to_KDF_Output")
 
@@ -71,6 +74,39 @@ with open(f"{here}/mapped_compliance_controls.json") as jsonfile:
 @ElectricEyeOutput
 class OcsfFirehoseOutput(object):
     __provider__ = "ocsf_kdf"
+
+    def __init__(self):
+        print("Preparing to send OCSF V1.1.0 Compliance Findings to Amazon Kinesis Data Firehose.")
+
+        if environ["TOML_FILE_PATH"] == "None":
+            # Get the absolute path of the current directory
+            currentDir = path.abspath(path.dirname(__file__))
+            # Go two directories back to /eeauditor/
+            twoBack = path.abspath(path.join(currentDir, "../../"))
+            # TOML is located in /eeauditor/ directory
+            tomlFile = f"{twoBack}/external_providers.toml"
+        else:
+            tomlFile = environ["TOML_FILE_PATH"]
+
+        with open(tomlFile, "rb") as f:
+            data = tomli.load(f)
+
+        # Variable for the entire [outputs.amazon_sqs] section
+        sqsDetails = data["outputs"]["firehose"]
+
+        deliveryStream = sqsDetails["kinesis_firehose_delivery_stream_name"]
+        awsRegion = sqsDetails["kinesis_firehose_region"]
+        if awsRegion is None or awsRegion == "":
+            awsRegion == boto3.Session().region_name
+
+        # Ensure that values are provided for all variable - use all() and a list comprehension to check the vars
+        # empty strings will trigger `if not`
+        if not all(s for s in [deliveryStream, awsRegion]):
+            logger.error("An empty value was detected in '[outputs.firehose]'. Review the TOML file and try again!")
+            sys.exit(2)
+
+        self.deliveryStream = deliveryStream
+        self.firehose = boto3.client("firehose", region_name=awsRegion)
 
     def write_findings(self, findings: list, **kwargs):
         if len(findings) == 0:
@@ -129,6 +165,33 @@ class OcsfFirehoseOutput(object):
         ocsfFindings = self.ocsf_compliance_finding_mapping(decodedFindings)
 
         del decodedFindings
+
+        firehose = self.firehose
+
+        # TODO: Make this more performant, because woah dawg, this shit's stupid!
+        for i in range(0, len(ocsfFindings), 25):
+            encodedRecords = []
+            records = ocsfFindings[i : i + 25]
+            for record in records:
+                encodedRecords.append({"Data": json.dumps(record).encode("utf-8")})
+            del records
+
+            try:
+                response = firehose.put_record_batch(
+                    DeliveryStreamName=self.deliveryStream,
+                    Records=encodedRecords
+                )
+                if response["FailedPutCount"] > 0:
+                    logger.warning(
+                        "Failed to deliver %s records",
+                        response["FailedPutCount"]
+                    )
+            except ClientError as e:
+                logger.warning(
+                    "Error with sending batch to Firehose due to: %s",
+                    e.response["Error"]["Message"]
+                )
+                continue
             
         return True
     

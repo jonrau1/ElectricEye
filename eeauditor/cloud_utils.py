@@ -111,7 +111,7 @@ class CloudConfig(object):
             # Process ["aws_electric_eye_iam_role_name"]
             electricEyeRoleName = data["regions_and_accounts"]["aws"]["aws_electric_eye_iam_role_name"]
             if electricEyeRoleName is None or electricEyeRoleName == "":
-                logger.warn(
+                logger.warning(
                     "A value for ['aws_electric_eye_iam_role_name'] was not provided. Will attempt to use current session credentials, this will likely fail if you're attempting to assess another AWS account."
                 )
                 electricEyeRoleName = None
@@ -429,6 +429,10 @@ class CloudConfig(object):
             # majority of Regions have a "opt-in-not-required", hence the "not not opted in" list comp
             regions = [region["RegionName"] for region in ec2.describe_regions()["Regions"] if region["OptInStatus"] != "not-opted-in"]
         except ClientError as e:
+            logger.error(
+                "Could not retrieve AWS Regions because: %s",
+                e
+            )
             raise e
 
         return regions
