@@ -48,13 +48,16 @@ class MongodbProvider(object):
     def __init__(self):
         print("Preparing MongoDB / AWS DocumentDB credentials and PEM files (as needed).")
 
-        # Get the absolute path of the current directory
-        currentDir = os.path.abspath(os.path.dirname(__file__))
-        # Go two directories back to /eeauditor/
-        twoBack = os.path.abspath(os.path.join(currentDir, "../../"))
-
-        # TOML is located in /eeauditor/ directory
-        tomlFile = f"{twoBack}/external_providers.toml"
+        if os.environ["TOML_FILE_PATH"] == "None":
+            # Get the absolute path of the current directory
+            currentDir = os.path.abspath(os.path.dirname(__file__))
+            # Go two directories back to /eeauditor/
+            twoBack = os.path.abspath(os.path.join(currentDir, "../../"))
+            # TOML is located in /eeauditor/ directory
+            tomlFile = f"{twoBack}/external_providers.toml"
+        else:
+            tomlFile = os.environ["TOML_FILE_PATH"]
+            
         with open(tomlFile, "rb") as f:
             data = tomli.load(f)
 

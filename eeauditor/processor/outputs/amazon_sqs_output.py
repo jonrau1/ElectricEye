@@ -21,7 +21,7 @@
 import tomli
 import boto3
 import sys
-from os import path
+import os
 import json
 from base64 import b64decode
 #from hashlib import new as hasher
@@ -37,13 +37,16 @@ class JsonProvider(object):
     def __init__(self):
         print("Preparing Amazon SQS output.")
 
-        # Get the absolute path of the current directory
-        currentDir = path.abspath(path.dirname(__file__))
-        # Go two directories back to /eeauditor/
-        twoBack = path.abspath(path.join(currentDir, "../../"))
+        if os.environ["TOML_FILE_PATH"] == "None":
+            # Get the absolute path of the current directory
+            currentDir = os.path.abspath(os.path.dirname(__file__))
+            # Go two directories back to /eeauditor/
+            twoBack = os.path.abspath(os.path.join(currentDir, "../../"))
+            # TOML is located in /eeauditor/ directory
+            tomlFile = f"{twoBack}/external_providers.toml"
+        else:
+            tomlFile = os.environ["TOML_FILE_PATH"]
 
-        # TOML is located in /eeauditor/ directory
-        tomlFile = f"{twoBack}/external_providers.toml"
         with open(tomlFile, "rb") as f:
             data = tomli.load(f)
 

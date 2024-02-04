@@ -23,6 +23,7 @@ import click
 from insights import create_sechub_insights
 from eeauditor import EEAuditor
 from processor.main import get_providers, process_findings
+from os import environ
 
 def print_controls(assessmentTarget, auditorName=None):
     app = EEAuditor(assessmentTarget)
@@ -60,6 +61,11 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
         findings = list(app.run_non_aws_checks(pluginName=pluginName, delay=delay))
 
     print(f"Done running Checks for {assessmentTarget}")
+
+    if tomlPath is None:
+        environ["TOML_FILE_PATH"] = "None"
+    else:
+        environ["TOML_FILE_PATH"] = tomlPath
     
     # Multiple outputs supported
     process_findings(

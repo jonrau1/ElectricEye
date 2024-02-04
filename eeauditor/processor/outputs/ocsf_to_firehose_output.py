@@ -27,7 +27,7 @@ import json
 from base64 import b64decode
 from datetime import datetime
 
-logger = logging.getLogger("OCSF_V1.1.0_Output")
+logger = logging.getLogger("OCSF_to_KDF_Output")
 
 # NOTE TO SELF: Updated this and FAQ.md as new standards are added
 SUPPORTED_FRAMEWORKS = [
@@ -69,16 +69,16 @@ with open(f"{here}/mapped_compliance_controls.json") as jsonfile:
     CONTROLS_CROSSWALK = json.load(jsonfile)
 
 @ElectricEyeOutput
-class OcsfV110Output(object):
-    __provider__ = "ocsf_v1_1_0"
+class OcsfFirehoseOutput(object):
+    __provider__ = "ocsf_kdf"
 
     def write_findings(self, findings: list, output_file: str, **kwargs):
         if len(findings) == 0:
-            logger.error("There are not any findings to write to file!")
+            logger.error("There are not any findings to send to Kinesis Data Firehose!")
             sys.exit(0)
 
         logger.info(
-            "Writing %s OCSF Compliance Findings to JSON!",
+            "Writing %s OCSF Compliance Findings to Kinesis Data Firehose!",
             len(findings)
         )
 
@@ -129,18 +129,6 @@ class OcsfV110Output(object):
         ocsfFindings = self.ocsf_compliance_finding_mapping(decodedFindings)
 
         del decodedFindings
-        
-        # create output file based on inputs
-        jsonfile = f"{output_file}_ocsf_v1-1-0_compliance_findings.json"
-        logger.info(f"Output file named: {jsonfile}")
-        
-        with open(jsonfile, "w") as jsonfile:
-            json.dump(
-                ocsfFindings,
-                jsonfile,
-                indent=4,
-                default=str
-            )
             
         return True
     
