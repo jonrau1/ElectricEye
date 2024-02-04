@@ -137,7 +137,9 @@ def security_group_all_open_check(cache: dict, session, awsAccountId: str, awsRe
                             "ISO 27001:2013 A.13.1.1",
                             "ISO 27001:2013 A.13.2.1",
                             "CIS Amazon Web Services Foundations Benchmark V1.5 5.2",
-                            "CIS Amazon Web Services Foundations Benchmark V1.5 5.3"
+                            "CIS Amazon Web Services Foundations Benchmark V1.5 5.3",
+                            "CIS Amazon Web Services Foundations Benchmark V2.0 5.2",
+                            "CIS Amazon Web Services Foundations Benchmark V2.0 5.3"
                         ]
                     },
                     "Workflow": {"Status": "NEW"},
@@ -406,7 +408,9 @@ def security_group_master_auditor_check(cache: dict, session, awsAccountId: str,
                                     "ISO 27001:2013 A.13.1.1",
                                     "ISO 27001:2013 A.13.2.1",
                                     "CIS Amazon Web Services Foundations Benchmark V1.5 5.2",
-                                    "CIS Amazon Web Services Foundations Benchmark V1.5 5.3"
+                                    "CIS Amazon Web Services Foundations Benchmark V1.5 5.3",
+                                    "CIS Amazon Web Services Foundations Benchmark V2.0 5.2",
+                                    "CIS Amazon Web Services Foundations Benchmark V2.0 5.3"
                                 ]
                             },
                             "Workflow": {"Status": "RESOLVED"},
@@ -498,7 +502,8 @@ def security_group_default_sg_has_rules_check(cache: dict, session, awsAccountId
                             "ISO 27001:2013 A.11.2.6",
                             "ISO 27001:2013 A.13.1.1",
                             "ISO 27001:2013 A.13.2.1",
-                            "CIS Amazon Web Services Foundations Benchmark V1.5 5.4"
+                            "CIS Amazon Web Services Foundations Benchmark V1.5 5.4",
+                            "CIS Amazon Web Services Foundations Benchmark V2.0 5.4"
                         ]
                     },
                     "Workflow": {"Status": "NEW"},
@@ -563,7 +568,8 @@ def security_group_default_sg_has_rules_check(cache: dict, session, awsAccountId
                             "ISO 27001:2013 A.11.2.6",
                             "ISO 27001:2013 A.13.1.1",
                             "ISO 27001:2013 A.13.2.1",
-                            "CIS Amazon Web Services Foundations Benchmark V1.5 5.4"
+                            "CIS Amazon Web Services Foundations Benchmark V1.5 5.4",
+                            "CIS Amazon Web Services Foundations Benchmark V2.0 5.4"
                         ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
