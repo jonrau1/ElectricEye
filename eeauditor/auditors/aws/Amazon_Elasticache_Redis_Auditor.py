@@ -68,10 +68,8 @@ def redis_auth_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
         assetB64 = base64.b64encode(assetJson)
         clusterId = str(clusters["CacheClusterId"])
         engineVersion = str(clusters["EngineVersion"])
-        # check for auth token
-        authTokenCheck = str(clusters["AuthTokenEnabled"])
         
-        if authTokenCheck == "False":
+        if clusters["AuthTokenEnabled"] is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clusterId + "/no-redis-auth-token",
@@ -115,8 +113,8 @@ def redis_auth_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "Other": {"ClusterId": clusterId, "EngineVersion": engineVersion,}
-                        },
+                            "Other": {"ClusterId": clusterId, "EngineVersion": engineVersion}
+                        }
                     }
                 ],
                 "Compliance": {
@@ -139,10 +137,11 @@ def redis_auth_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.7.1.1",
                         "ISO 27001:2013 A.9.2.1",
-                    ],
+                        "CIS AWS Database Services Benchmark V1.0 5.1"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
         else:
@@ -190,7 +189,7 @@ def redis_auth_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                         "Region": awsRegion,
                         "Details": {
                             "Other": {"ClusterId": clusterId, "EngineVersion": engineVersion,}
-                        },
+                        }
                     }
                 ],
                 "Compliance": {
@@ -213,10 +212,11 @@ def redis_auth_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.7.1.1",
                         "ISO 27001:2013 A.9.2.1",
-                    ],
+                        "CIS AWS Database Services Benchmark V1.0 5.1"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
 
@@ -231,7 +231,7 @@ def encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsRegion:
         assetB64 = base64.b64encode(assetJson)
         clusterId = str(clusters["CacheClusterId"])
         engineVersion = str(clusters["EngineVersion"])
-        if str(clusters["AtRestEncryptionEnabled"]) == "False":
+        if clusters["AtRestEncryptionEnabled"] is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clusterId + "/no-encryption-at-rest",
@@ -276,7 +276,7 @@ def encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Region": awsRegion,
                         "Details": {
                             "Other": {"ClusterId": clusterId, "EngineVersion": engineVersion,}
-                        },
+                        }
                     }
                 ],
                 "Compliance": {
@@ -288,10 +288,11 @@ def encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3",
-                    ],
+                        "CIS AWS Database Services Benchmark V1.0 5.3"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
         else:
@@ -339,7 +340,7 @@ def encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Region": awsRegion,
                         "Details": {
                             "Other": {"ClusterId": clusterId, "EngineVersion": engineVersion,}
-                        },
+                        }
                     }
                 ],
                 "Compliance": {
@@ -351,10 +352,11 @@ def encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3",
-                    ],
+                        "CIS AWS Database Services Benchmark V1.0 5.1"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
 
@@ -369,8 +371,7 @@ def encryption_in_transit_check(cache: dict, session, awsAccountId: str, awsRegi
         assetB64 = base64.b64encode(assetJson)
         clusterId = str(clusters["CacheClusterId"])
         engineVersion = str(clusters["EngineVersion"])
-        # check for encryption in transit
-        if str(clusters["TransitEncryptionEnabled"]) == "False":
+        if clusters["TransitEncryptionEnabled"] is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clusterId + "/no-encryption-in-transit",
@@ -415,7 +416,7 @@ def encryption_in_transit_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Region": awsRegion,
                         "Details": {
                             "Other": {"ClusterId": clusterId, "EngineVersion": engineVersion,}
-                        },
+                        }
                     }
                 ],
                 "Compliance": {
@@ -432,10 +433,11 @@ def encryption_in_transit_check(cache: dict, session, awsAccountId: str, awsRegi
                         "ISO 27001:2013 A.13.2.3",
                         "ISO 27001:2013 A.14.1.2",
                         "ISO 27001:2013 A.14.1.3",
-                    ],
+                        "CIS AWS Database Services Benchmark V1.0 5.1"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
         else:
@@ -483,7 +485,7 @@ def encryption_in_transit_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Region": awsRegion,
                         "Details": {
                             "Other": {"ClusterId": clusterId, "EngineVersion": engineVersion,}
-                        },
+                        }
                     }
                 ],
                 "Compliance": {
@@ -500,9 +502,13 @@ def encryption_in_transit_check(cache: dict, session, awsAccountId: str, awsRegi
                         "ISO 27001:2013 A.13.2.3",
                         "ISO 27001:2013 A.14.1.2",
                         "ISO 27001:2013 A.14.1.3",
-                    ],
+                        "CIS AWS Database Services Benchmark V1.0 5.1"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
+
+
+# EOF

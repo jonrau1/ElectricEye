@@ -118,7 +118,9 @@ def ddb_kms_cmk_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
                         "NIST SP 800-53 Rev. 4 SC-12",
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3"
+                        "ISO 27001:2013 A.8.2.3",
+                        "CIS AWS Database Services Benchmark V1.0 4.3",
+                        "CIS AWS Database Services Benchmark V1.0 4.4"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -178,7 +180,9 @@ def ddb_kms_cmk_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
                         "NIST SP 800-53 Rev. 4 SC-12",
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3"
+                        "ISO 27001:2013 A.8.2.3",
+                        "CIS AWS Database Services Benchmark V1.0 4.3",
+                        "CIS AWS Database Services Benchmark V1.0 4.4"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -360,6 +364,6 @@ def ddb_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
             }
             yield finding
 
-# TODO: Deletion Protection, Autoscaling (On-Demand Capacity), Global Tables/Replicas
+# TODO: Deletion Protection, Autoscaling (On-Demand Capacity), Global Tables/Replicas, VPC Endpoint, CloudTrail Data Events
 
 ## END ??
