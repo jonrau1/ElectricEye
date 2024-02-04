@@ -1184,7 +1184,7 @@ def shield_advanced_drt_access_check(cache: dict, session, awsAccountId: str, aw
                     "Type": "AwsAccount",
                     "Id": srtArn,
                     "Partition": awsPartition,
-                    "Region": awsRegion,
+                    "Region": awsRegion
                 }
             ],
             "Compliance": {
@@ -1207,10 +1207,10 @@ def shield_advanced_drt_access_check(cache: dict, session, awsAccountId: str, aw
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.7.1.1",
                     "ISO 27001:2013 A.9.2.1"
-                ],
+                ]
             },
             "Workflow": {"Status": "RESOLVED"},
-            "RecordState": "ARCHIVED",
+            "RecordState": "ARCHIVED"
         }
         yield finding
     except ClientError:
@@ -1250,7 +1250,7 @@ def shield_advanced_drt_access_check(cache: dict, session, awsAccountId: str, aw
                     "Type": "AwsAccount",
                     "Id": srtArn,
                     "Partition": awsPartition,
-                    "Region": awsRegion,
+                    "Region": awsRegion
                 }
             ],
             "Compliance": {
@@ -1276,7 +1276,7 @@ def shield_advanced_drt_access_check(cache: dict, session, awsAccountId: str, aw
                 ]
             },
             "Workflow": {"Status": "NEW"},
-            "RecordState": "ACTIVE",
+            "RecordState": "ACTIVE"
         }
         yield finding
 

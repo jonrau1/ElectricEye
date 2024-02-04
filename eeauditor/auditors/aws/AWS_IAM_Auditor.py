@@ -67,6 +67,20 @@ def get_custom_policies(cache, session):
     cache["get_custom_policies"] = iam.list_policies(Scope="Local")["Policies"]
     return cache["get_custom_policies"]
 
+def get_managed_policies(cache, session):
+    response = cache.get("get_managed_policies")
+    if response:
+        return response
+    
+    iam = session.client("iam")
+
+    cache["get_managed_policies"] = iam.list_policies(
+        Scope="AWS",
+        PolicyUsageFilter="PermissionsPolicy",
+        OnlyAttached=False
+    )["Policies"]
+    return cache["get_managed_policies"]
+
 def get_iam_groups(cache, session):
     response = cache.get("get_iam_groups")
     if response:
@@ -898,7 +912,9 @@ def user_direct_attached_policy_check(cache: dict, session, awsAccountId: str, a
                         "ISO 27001:2013 A.9.2.6",
                         "ISO 27001:2013 A.9.3.1",
                         "ISO 27001:2013 A.9.4.2",
-                        "ISO 27001:2013 A.9.4.3"
+                        "ISO 27001:2013 A.9.4.3",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 1.15",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 1.15"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -977,7 +993,9 @@ def user_direct_attached_policy_check(cache: dict, session, awsAccountId: str, a
                         "ISO 27001:2013 A.9.2.6",
                         "ISO 27001:2013 A.9.3.1",
                         "ISO 27001:2013 A.9.4.2",
-                        "ISO 27001:2013 A.9.4.3"
+                        "ISO 27001:2013 A.9.4.3",
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 1.15",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 1.15"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -1266,7 +1284,8 @@ def aws_iam_server_certifcates_check(cache: dict, session, awsAccountId: str, aw
                     "ISO 27001:2013 A.9.3.1",
                     "ISO 27001:2013 A.9.4.2",
                     "ISO 27001:2013 A.9.4.3",
-                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.19"
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.19",
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.19"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -1343,7 +1362,8 @@ def aws_iam_server_certifcates_check(cache: dict, session, awsAccountId: str, aw
                     "ISO 27001:2013 A.9.3.1",
                     "ISO 27001:2013 A.9.4.2",
                     "ISO 27001:2013 A.9.4.3",
-                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.19"
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.19",
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.19"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -1460,11 +1480,12 @@ def iam_created_managed_policy_least_priv_check(cache: dict, session, awsAccount
                             "ISO 27001:2013 A.11.2.6",
                             "ISO 27001:2013 A.13.1.1",
                             "ISO 27001:2013 A.13.2.1",
-                            "CIS Amazon Web Services Foundations Benchmark V1.5 1.16"
-                        ],
+                            "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
+                            "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
+                        ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
             elif leastPrivilegeRating == "failedLow":
@@ -1527,7 +1548,8 @@ def iam_created_managed_policy_least_priv_check(cache: dict, session, awsAccount
                             "ISO 27001:2013 A.11.2.6",
                             "ISO 27001:2013 A.13.1.1",
                             "ISO 27001:2013 A.13.2.1",
-                            "CIS Amazon Web Services Foundations Benchmark V1.5 1.16"
+                            "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
+                            "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
                         ],
                     },
                     "Workflow": {"Status": "NEW"},
@@ -1594,7 +1616,8 @@ def iam_created_managed_policy_least_priv_check(cache: dict, session, awsAccount
                             "ISO 27001:2013 A.11.2.6",
                             "ISO 27001:2013 A.13.1.1",
                             "ISO 27001:2013 A.13.2.1",
-                            "CIS Amazon Web Services Foundations Benchmark V1.5 1.16"
+                            "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
+                            "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
                         ],
                     },
                     "Workflow": {"Status": "NEW"},
@@ -1720,7 +1743,8 @@ def iam_user_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "ISO 27001:2013 A.9.2.3",
                                 "ISO 27001:2013 A.9.4.1",
                                 "ISO 27001:2013 A.9.4.4",
-                                "CIS Amazon Web Services Foundations Benchmark V1.5 1.16"
+                                "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
                             ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
@@ -1792,7 +1816,8 @@ def iam_user_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "ISO 27001:2013 A.9.2.3",
                                 "ISO 27001:2013 A.9.4.1",
                                 "ISO 27001:2013 A.9.4.4",
-                                "CIS Amazon Web Services Foundations Benchmark V1.5 1.16"
+                                "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
                             ]
                         },
                         "Workflow": {"Status": "NEW"},
@@ -1864,7 +1889,8 @@ def iam_user_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "ISO 27001:2013 A.9.2.3",
                                 "ISO 27001:2013 A.9.4.1",
                                 "ISO 27001:2013 A.9.4.4",
-                                "CIS Amazon Web Services Foundations Benchmark V1.5 1.16"
+                                "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
                             ]
                         },
                         "Workflow": {"Status": "NEW"},
@@ -1990,7 +2016,8 @@ def iam_group_policy_least_priv_check(cache: dict, session, awsAccountId: str, a
                                 "ISO 27001:2013 A.9.2.3",
                                 "ISO 27001:2013 A.9.4.1",
                                 "ISO 27001:2013 A.9.4.4",
-                                "CIS Amazon Web Services Foundations Benchmark V1.5 1.16"
+                                "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
                             ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
@@ -2062,7 +2089,8 @@ def iam_group_policy_least_priv_check(cache: dict, session, awsAccountId: str, a
                                 "ISO 27001:2013 A.9.2.3",
                                 "ISO 27001:2013 A.9.4.1",
                                 "ISO 27001:2013 A.9.4.4",
-                                "CIS Amazon Web Services Foundations Benchmark V1.5 1.16"
+                                "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
                             ]
                         },
                         "Workflow": {"Status": "NEW"},
@@ -2134,7 +2162,8 @@ def iam_group_policy_least_priv_check(cache: dict, session, awsAccountId: str, a
                                 "ISO 27001:2013 A.9.2.3",
                                 "ISO 27001:2013 A.9.4.1",
                                 "ISO 27001:2013 A.9.4.4",
-                                "CIS Amazon Web Services Foundations Benchmark V1.5 1.16"
+                                "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
                             ]
                         },
                         "Workflow": {"Status": "NEW"},
@@ -2260,7 +2289,8 @@ def iam_role_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "ISO 27001:2013 A.11.2.6",
                                 "ISO 27001:2013 A.13.1.1",
                                 "ISO 27001:2013 A.13.2.1",
-                                "CIS Amazon Web Services Foundations Benchmark V1.5 1.16"
+                                "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
                             ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
@@ -2332,7 +2362,8 @@ def iam_role_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "ISO 27001:2013 A.11.2.6",
                                 "ISO 27001:2013 A.13.1.1",
                                 "ISO 27001:2013 A.13.2.1",
-                                "CIS Amazon Web Services Foundations Benchmark V1.5 1.16"
+                                "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
                             ]
                         },
                         "Workflow": {"Status": "NEW"},
@@ -2404,7 +2435,8 @@ def iam_role_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "ISO 27001:2013 A.9.2.3",
                                 "ISO 27001:2013 A.9.4.1",
                                 "ISO 27001:2013 A.9.4.4",
-                                "CIS Amazon Web Services Foundations Benchmark V1.5 1.16"
+                                "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
                             ]
                         },
                         "Workflow": {"Status": "NEW"},
@@ -3409,7 +3441,8 @@ def aws_iam_access_analyzer_enabled_check(cache: dict, session, awsAccountId: st
                     "ISO 27001:2013 A.12.4.1",
                     "ISO 27001:2013 A.16.1.1",
                     "ISO 27001:2013 A.16.1.4",
-                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.20"
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.20",
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.20"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -3469,7 +3502,8 @@ def aws_iam_access_analyzer_enabled_check(cache: dict, session, awsAccountId: st
                     "ISO 27001:2013 A.12.4.1",
                     "ISO 27001:2013 A.16.1.1",
                     "ISO 27001:2013 A.16.1.4",
-                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.20"
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.20",
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.20"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -3657,4 +3691,164 @@ def iam_user_multiple_access_key_check(cache: dict, session, awsAccountId: str, 
                 "RecordState": "ARCHIVED"
             }
             yield finding
+
+@registry.register_check("iam")
+def aws_support_iam_role_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[IAM.19] An IAM Role should be configured to allow incident management capability with AWS Support"""
+    iam = session.client("iam")
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    # check if the support policy exists and is attached to a role
+    iamSupportRoleEnabled = False
+    supportPolicy = [policy for policy in get_managed_policies(cache, session) if policy["PolicyName"] == "AWSSupportAccess"]
+    if supportPolicy:
+        entityAttachment = iam.list_entities_for_policy(
+            PolicyArn="arn:aws:iam::aws:policy/AWSSupportAccess",
+            EntityFilter="Role",
+            PolicyUsageFilter="PermissionsPolicy"
+        )
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(entityAttachment,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        if entityAttachment["PolicyRoles"]:
+            iamSupportRoleEnabled = True
+
+    # this is a failing check
+    if iamSupportRoleEnabled is False:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{awsAccountId}/iam-aws-support-role-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"{awsAccountId}/iam-aws-support-role-check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[IAM.19] An IAM Role should be configured to allow incident management capability with AWS Support",
+            "Description": f"AWS Support access in AWS Account {awsAccountId} does not exist due to the AWSSupportAccess policy not existing, or an IAM Role does not have the policy assigned. AWS provides a support center that can be used for incident notification and response, as well as technical support and customer services. Create an IAM Role, with the appropriate policy assigned, to allow authorized users to manage incidents with AWS Support. By implementing least privilege for access control, an IAM Role will require an appropriate IAM Policy to allow Support Center Access in order to manage Incidents with AWS Support. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "Create an IAM Role with a placeholder trust policy and attach the AWSSupportAccess policy. Change the IAM principals to trust a break glass role or assign it to a federation system.",
+                    "Url": "https://aws.amazon.com/premiumsupport/pricing/"
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": global_region_generator(awsPartition),
+                "AssetDetails": assetB64,
+                "AssetClass": "Security Services",
+                "AssetService": "Amazon Shield Advanced",
+                "AssetComponent": "Shield Response Team Access"
+            },
+            "Resources": [
+                {
+                    "Type": "AwsAccount",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_Support_Role",
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.AC-6",
+                    "NIST SP 800-53 Rev. 4 AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-2",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 AC-16",
+                    "NIST SP 800-53 Rev. 4 AC-19",
+                    "NIST SP 800-53 Rev. 4 AC-24",
+                    "NIST SP 800-53 Rev. 4 IA-1",
+                    "NIST SP 800-53 Rev. 4 IA-2",
+                    "NIST SP 800-53 Rev. 4 IA-4",
+                    "NIST SP 800-53 Rev. 4 IA-5",
+                    "NIST SP 800-53 Rev. 4 IA-8",
+                    "NIST SP 800-53 Rev. 4 PE-2",
+                    "NIST SP 800-53 Rev. 4 PS-3",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.7.1.1",
+                    "ISO 27001:2013 A.9.2.1",
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.17",
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.17"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{awsAccountId}/iam-aws-support-role-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"{awsAccountId}/iam-aws-support-role-check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[IAM.19] An IAM Role should be configured to allow incident management capability with AWS Support",
+            "Description": f"AWS Support access in AWS Account {awsAccountId} does not exist due to the AWSSupportAccess policy not existing, or an IAM Role does not have the policy assigned. AWS provides a support center that can be used for incident notification and response, as well as technical support and customer services. Create an IAM Role, with the appropriate policy assigned, to allow authorized users to manage incidents with AWS Support. By implementing least privilege for access control, an IAM Role will require an appropriate IAM Policy to allow Support Center Access in order to manage Incidents with AWS Support. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "Create an IAM Role with a placeholder trust policy and attach the AWSSupportAccess policy. Change the IAM principals to trust a break glass role or assign it to a federation system.",
+                    "Url": "https://aws.amazon.com/premiumsupport/pricing/"
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": global_region_generator(awsPartition),
+                "AssetDetails": assetB64,
+                "AssetClass": "Security Services",
+                "AssetService": "Amazon Shield Advanced",
+                "AssetComponent": "Shield Response Team Access"
+            },
+            "Resources": [
+                {
+                    "Type": "AwsAccount",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_Support_Role",
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.AC-6",
+                    "NIST SP 800-53 Rev. 4 AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-2",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 AC-16",
+                    "NIST SP 800-53 Rev. 4 AC-19",
+                    "NIST SP 800-53 Rev. 4 AC-24",
+                    "NIST SP 800-53 Rev. 4 IA-1",
+                    "NIST SP 800-53 Rev. 4 IA-2",
+                    "NIST SP 800-53 Rev. 4 IA-4",
+                    "NIST SP 800-53 Rev. 4 IA-5",
+                    "NIST SP 800-53 Rev. 4 IA-8",
+                    "NIST SP 800-53 Rev. 4 PE-2",
+                    "NIST SP 800-53 Rev. 4 PS-3",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.7.1.1",
+                    "ISO 27001:2013 A.9.2.1",
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.17",
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.17"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+
 ## EOF

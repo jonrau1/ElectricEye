@@ -863,7 +863,7 @@ class JsonProvider(object):
             """
         
         # CIS Amazon Web Services Foundations Benchmark V2.0
-        elif framework == "CIS Amazon Web Services Foundations Benchmark V1.5":
+        elif framework == "CIS Amazon Web Services Foundations Benchmark V2.0":
             imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/CIS_AWS_Foundation_V2_0.JPG" class="framework__header__image">'
             frameworkInfo = """
             All CIS Benchmarks focus on technical configuration settings used to maintain and/or increase the security of the addressed technology, and they should be used in conjunction with other essential cyber hygiene tasks like: Monitoring the base operating system for vulnerabilities and quickly updating with the latest security patches or Monitoring applications and libraries for vulnerabilities and quickly updating with the latest security patches.</br>
