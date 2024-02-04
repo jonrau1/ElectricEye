@@ -647,7 +647,8 @@ def aws_s3_bucket_policy_allows_public_access_check(cache: dict, session, awsAcc
                         "ISO 27001:2013 A.13.2.4",
                         "ISO 27001:2013 A.14.1.2",
                         "ISO 27001:2013 A.14.1.3",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.5"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.5",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 2.1.4"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -755,7 +756,8 @@ def aws_s3_bucket_policy_allows_public_access_check(cache: dict, session, awsAcc
                         "ISO 27001:2013 A.13.2.4",
                         "ISO 27001:2013 A.14.1.2",
                         "ISO 27001:2013 A.14.1.3",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.5"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.5",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 2.1.4"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -1526,7 +1528,8 @@ def aws_s3_bucket_deny_http_access_check(cache: dict, session, awsAccountId: str
                         "ISO 27001:2013 A.13.2.3",
                         "ISO 27001:2013 A.14.1.2",
                         "ISO 27001:2013 A.14.1.3",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.2"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.2",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 2.1.1"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -1587,7 +1590,8 @@ def aws_s3_bucket_deny_http_access_check(cache: dict, session, awsAccountId: str
                         "ISO 27001:2013 A.13.2.3",
                         "ISO 27001:2013 A.14.1.2",
                         "ISO 27001:2013 A.14.1.3",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.2"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.2",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 2.1.1"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},

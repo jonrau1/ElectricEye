@@ -787,7 +787,8 @@ def rds_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                         "ISO 27001:2013 A.17.1.2",
                         "ISO 27001:2013 A.17.1.3",
                         "ISO 27001:2013 A.17.2.1",
-                        "ISO 27001:2013 A.18.1.3"
+                        "ISO 27001:2013 A.18.1.3",
+                        "CIS AWS Database Services Benchmark V1.0 3.10"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -872,7 +873,8 @@ def rds_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                         "ISO 27001:2013 A.17.1.2",
                         "ISO 27001:2013 A.17.1.3",
                         "ISO 27001:2013 A.17.2.1",
-                        "ISO 27001:2013 A.18.1.3"
+                        "ISO 27001:2013 A.18.1.3",
+                        "CIS AWS Database Services Benchmark V1.0 3.10"
                     ]
                     },
                     "Workflow": {"Status": "NEW"},
