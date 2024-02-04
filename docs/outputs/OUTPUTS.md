@@ -11,6 +11,7 @@ This documentation is all about Outputs supported by ElectricEye and how to conf
 - [HTML Compliance Output](#html-compliance-output)
 - [Normalized JSON Output](#json-normalized-output)
 - [Cloud Asset Management JSON Output](#json-cloud-asset-management-cam-output)
+- [Open Cyber Security Format (OCSF) V1.1.0 Output](#open-cyber-security-format-ocsf-v110-output)
 - [CSV Output](#csv-output)
 - [AWS Security Hub Output](#aws-security-hub-output)
 - [MongoDB & AWS DocumentDB Output](#mongodb--aws-documentdb-output)
@@ -18,10 +19,9 @@ This documentation is all about Outputs supported by ElectricEye and how to conf
 - [PostgreSQL Output](#postgresql-output)
 - [Cloud Asset Management PostgreSQL Output](#postgresql-cloud-asset-management-cam-output)
 - [Firemon Cloud Defense (DisruptOps) Output](#firemon-cloud-defense-disruptops-output)
-- [AWS DynamoDB Output](#aws-dynamodb-output)
 - [Amazon Simple Queue Service (SQS) Output](#amazon-simple-queue-service-sqs-output)
 - [Slack Output](#slack-output)
-- [Microsoft Teams Summary Output](#microsoft-teams-summary-output)
+- [Open Cybersecurity Format (OCSF) -> Amazon Kinesis Data Firehose](#open-cybersecurity-format-ocsf---amazon-kinesis-data-firehose)
 
 ## Key Considerations
 
@@ -385,6 +385,8 @@ arn:aws-iso:ec2:us-iso-west-1:111111111111:volume/vol-123456abcdef/ebs-volume-en
 ```
 
 ## AWS Security Hub Output
+
+**IMPORTANT NOTE**: This requires `securityhub:BatchImportFindings` IAM permissions!
 
 The AWS Security Hub Output selection will write all ElectricEye findings into AWS Security Hub using the BatchImportFindings API in chunks of 100. All ElectricEye findings are already in ASFF, so no other processing is done to them, besides removing `ProductFields.AssetDetails` as Security Hub *cannot* support dicts or other complex types within `ProductFields`.
 
@@ -1111,15 +1113,9 @@ Additionally, values within the `[outputs.postgresql]` section of the TOML file 
 
 - **`firemon_cloud_defense_api_key_value`**: This variable should be set to the API Key for your FireMon Cloud Defense tenant. This key is used to authenticate with the FireMon Cloud Defense API. The location where these credentials are stored should match the value of the `global.credentials_location` variable, which specifies the location of the credentials for all integrations.
 
-### Example Firemon Cloud Defense (DisruptOps) Output
-
-**NOT AVAILABLE**
-
-## AWS DynamoDB Output
-
-*Coming Soon*
-
 ## Amazon Simple Queue Service (SQS) Output
+
+**IMPORTANT NOTE**: This requires `sqs:SendMessage` IAM permissions!
 
 The Amazon SQS Output selection will write all ElectricEye findings to an Amazon Simple Queue Service (SQS) queue by using `json.dumps()` to insert messages into the queue with a one-second delay. To make use of the messages in the queue, ensure you are parsing the `["body"]` using `json.loads()`, or using another library in your preferred language to load the stringified JSON back into a proper JSON object. Using Amazon SQS is a great way to distribute ElectricEye findings to many other locations using various messaging service architectures with Lambda or Amazon Simple Notification Service (SNS) topics.
 
@@ -1218,14 +1214,16 @@ An example of the "Findings" output.
 
 ![SlackFindings](../../screenshots/outputs/slack_findings_output.jpg)
 
-## Microsoft Teams Summary Output
+## Open Cybersecurity Format (OCSF) -> Amazon Kinesis Data Firehose
 
-*Coming Soon*
+**IMPORTANT NOTE**: This requires `firehose:PutRecordBatch` IAM permissions!
 
-## Open Security Finding Format (OCSF) v1.1.0
+This output will send whichever the most up-to-date version of OCSF that ElectricEye supports to Kinesis Data Firehose, as of 4 FEB 2024 that is OCSF V1.1.0 mapped into Compliance Findings. Kinesis Data Firehouse is an extremely high-throughput data streaming service on AWS that allows you to batch several 100 events per second to select locations such as Snowflake, Splunk, Amazon S3, Datadog, OpenSearch Service, and more. You can configure buffering which allows your records to be batch-written to locations, this is helpful for building data lakes on AWS as you can ensure you have as big as a file as you can to keep the overall amount of files low. Additionally, you can configure dynamic partitioning in certain platforms to craft Hive-like partitions (e.g., `year=YYYY/month=MM/day=DD` and so on), additionally for certain locations you can automatically transform the data into the Apache Parquet columnar binary format or use AWS Lambda to perform Extraction-Loading-Transformation (ELT) to the records.
 
-The Open Security Finding Format (OCSF) v1.1.0 Output will write all ElectricEye findings to a JSON file using Python's `json.dumps()` in the OCSF v1.1.0 format (as of 21 NOV 2023 `v1.1.0-dev` is still the tag). OCSF is a normalized security data format, ElectricEye makes use of the proposed [Compliance Finding (2003)](https://schema.ocsf.io/1.1.0-dev/classes/compliance_finding?extensions=) Event Class to normalize data about the finding, related compliance controls, remediation, resource and cloud-specific information.
+As an added bonus, this is well suited for adding a custom CSPM, EASM & SSPM source into your Amazon Security Lake or Snowflake Data Cloud!
 
 This Output will provide the `ProductFields.AssetDetails` information.
 
-To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o ocsf_v1_1_0 --output-file my_file_name_here`
+To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o ocsf_kdf`
+
+Additionally, values within the `[outputs.firehose]` section of the TOML file *must be provided* for this integration to work.

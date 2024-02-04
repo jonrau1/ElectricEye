@@ -203,7 +203,7 @@ def trusted_advisor_failing_cloudfront_ssl_cert_iam_certificate_store_check(cach
             }
             yield finding
     except IndexError:
-        logging.warn(
+        logging.warning(
             "Index Error was found encountered attempted to evaluate Trusted Advisor, this is likely because you do not have the appropriate AWS Support level."
         )
 
@@ -351,7 +351,7 @@ def trusted_advisor_failing_cloudfront_ssl_cert_on_origin_check(cache: dict, ses
             }
             yield finding
     except IndexError:
-        logging.warn(
+        logging.warning(
             "Index Error was found encountered attempted to evaluate Trusted Advisor, this is likely because you do not have the appropriate AWS Support level."
         )
 
@@ -531,7 +531,7 @@ def trusted_advisor_failing_exposed_access_keys_check(cache: dict, session, awsA
             }
             yield finding
     except IndexError:
-        logging.warn(
+        logging.warning(
             "Index Error was found encountered attempted to evaluate Trusted Advisor, this is likely because you do not have the appropriate AWS Support level."
         )
 

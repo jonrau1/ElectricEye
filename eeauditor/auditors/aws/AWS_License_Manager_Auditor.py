@@ -42,7 +42,7 @@ def get_license_manager_configurations(cache, session):
     try:
         liscMgrConfigs = licensemanager.list_license_configurations()["LicenseConfigurations"]
     except ClientError as e:
-        logger.warn(
+        logger.warning(
             "Cannot retrieve Amazon License Manager configurations, this is likely due to not using this service or you deleted the IAM Service Role. Refer to the error for more information: %s",
             e.response["Error"]["Message"]
         )

@@ -31,7 +31,7 @@ from check_register import CheckRegister
 from cloud_utils import CloudConfig
 from pluginbase import PluginBase
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("EEAuditor")
 
 here = path.abspath(path.dirname(__file__))
 getPath = partial(path.join, here)
@@ -42,7 +42,7 @@ class EEAuditor(object):
     credentials and cross-boundary configurations, and runs Checks and yields results back to controller.py CLI
     """
 
-    def __init__(self, assessmentTarget, searchPath=None):
+    def __init__(self, assessmentTarget, tomlPath=None, searchPath=None):
         # each check must be decorated with the @registry.register_check("cache_name")
         # to be discovered during plugin loading.
         self.registry = CheckRegister()
@@ -54,7 +54,7 @@ class EEAuditor(object):
         # AWS
         if assessmentTarget == "AWS":
             searchPath = "./auditors/aws"
-            utils = CloudConfig(assessmentTarget)
+            utils = CloudConfig(assessmentTarget, tomlPath)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.awsAccountTargets = utils.awsAccountTargets
             self.awsRegionsSelection = utils.awsRegionsSelection
@@ -62,13 +62,13 @@ class EEAuditor(object):
         # GCP
         elif assessmentTarget == "GCP":
             searchPath = "./auditors/gcp"
-            utils = CloudConfig(assessmentTarget)
+            utils = CloudConfig(assessmentTarget, tomlPath)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.gcpProjectIds = utils.gcp_project_ids
         # OCI
         elif assessmentTarget == "OCI":
             searchPath = "./auditors/oci"
-            utils = CloudConfig(assessmentTarget)
+            utils = CloudConfig(assessmentTarget, tomlPath)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.ociTenancyId = utils.ociTenancyId
             self.ociUserId = utils.ociUserId
@@ -78,15 +78,15 @@ class EEAuditor(object):
         # Azure
         elif assessmentTarget == "Azure":
             searchPath = "./auditors/azure"
-            utils = CloudConfig(assessmentTarget)
+            utils = CloudConfig(assessmentTarget, tomlPath)
         # Alibaba
         elif assessmentTarget == "Alibaba":
             searchPath = "./auditors/alibabacloud"
-            utils = CloudConfig(assessmentTarget)
+            utils = CloudConfig(assessmentTarget, tomlPath)
         # VMWare Cloud on AWS
         elif assessmentTarget == "VMC":
             searchPath = "./auditors/vmwarecloud"
-            utils = CloudConfig(assessmentTarget)
+            utils = CloudConfig(assessmentTarget, tomlPath)
         
         ###################################
         # SOFTWARE-AS-A-SERVICE PROVIDERS #
@@ -94,11 +94,11 @@ class EEAuditor(object):
         # Servicenow
         elif assessmentTarget == "Servicenow":
             searchPath = "./auditors/servicenow"
-            utils = CloudConfig(assessmentTarget)
+            utils = CloudConfig(assessmentTarget, tomlPath)
         # M365
         elif assessmentTarget == "M365":
             searchPath = "./auditors/m365"
-            utils = CloudConfig(assessmentTarget)
+            utils = CloudConfig(assessmentTarget, tomlPath)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.m365TenantLocation = utils.m365TenantLocation
             self.m365ClientId = utils.m365ClientId
@@ -107,7 +107,7 @@ class EEAuditor(object):
         # Salesforce
         elif assessmentTarget == "Salesforce":
             searchPath = "./auditors/salesforce"
-            utils = CloudConfig(assessmentTarget)
+            utils = CloudConfig(assessmentTarget, tomlPath)
             self.salesforceAppClientId = utils.salesforceAppClientId
             self.salesforceAppClientSecret = utils.salesforceAppClientSecret
             self.salesforceApiUsername = utils.salesforceApiUsername
@@ -117,15 +117,15 @@ class EEAuditor(object):
         # GitHub
         elif assessmentTarget == "GitHub":
             searchPath = "./auditors/github"
-            utils = CloudConfig(assessmentTarget)
+            utils = CloudConfig(assessmentTarget, tomlPath)
         # Google Workspaces
         elif assessmentTarget == "GoogleWorkspaces":
             searchPath = "./auditors/google_workspaces"
-            utils = CloudConfig(assessmentTarget)
+            utils = CloudConfig(assessmentTarget, tomlPath)
         # Workday ERP
         elif assessmentTarget == "Workday":
             searchPath = "./auditors/workday_erp"
-            utils = CloudConfig(assessmentTarget)
+            utils = CloudConfig(assessmentTarget, tomlPath)
 
         # Search path for Auditors
         self.source = self.plugin_base.make_plugin_source(

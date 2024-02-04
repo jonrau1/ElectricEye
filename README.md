@@ -65,45 +65,51 @@ ElectricEye also uses utilizes other tools such as [Shodan.io](https://www.shoda
 
 1. First, clone this repository and install the requirements using `pip3`: `pip3 install -r requirements.txt`.
 
-2. Then, modify the [TOML configuration](./eeauditor/external_providers.toml) located in `ElectricEye/eeauditor/external_providers.toml` to specify various configurations for the CSP(s) and SaaS Provider(s) you want to assess, specify where credentials are stored, and configure Outputs.
+2. If you are evaluating anything other than your local AWS Account, provide a path to a modified [TOML configuration](./eeauditor/external_providers.toml) with `--toml-file` located in `ElectricEye/eeauditor/external_providers.toml`, or modify the example provided and do not provide that argument. The TOML file specifies multi-account, mulit-region, credential, and output specifics.
 
 3. Finally, run the Controller to learn about the various Checks, Auditors, Assessment Targets, and Outputs.
 
 ```
-$ python3 eeauditor/controller.py --help
+python3 eeauditor/controller.py --help
 Usage: controller.py [OPTIONS]
 
 Options:
-  -t, --target-provider [AWS|Azure|OCI|GCP|Servicenow|M365|Salesforce]
+  -t, --target-provider [AWS|Azure|OCI|GCP|Servicenow|M365|Salesforce]        
                                   CSP or SaaS Vendor Assessment Target, ensure
-                                  that any -a or -c arg maps to your target
+                                  that any -a or -c arg maps to your target   
                                   provider e.g., -t AWS -a
                                   Amazon_APGIW_Auditor
-  -a, --auditor-name TEXT         Specify which Auditor you want to run by
-                                  using its name NOT INCLUDING .py. Defaults
+  -a, --auditor-name TEXT         Specify which Auditor you want to run by    
+                                  using its name NOT INCLUDING .py. Defaults  
                                   to ALL Auditors
-  -c, --check-name TEXT           A specific Check in a specific Auditor you
+  -c, --check-name TEXT           A specific Check in a specific Auditor you  
                                   want to run, this correlates to the function
                                   name. Defaults to ALL Checks
-  -d, --delay INTEGER             Time in seconds to sleep between Auditors
+  -d, --delay INTEGER             Time in seconds to sleep between Auditors   
                                   being ran, defaults to 0
-  -o, --outputs TEXT              A list of Outputs (files, APIs, databases,
-                                  ChatOps) to send ElectricEye Findings,
-                                  specify multiple with additional arguments:
-                                  -o csv -o postgresql -o slack  [default:
+  -o, --outputs TEXT              A list of Outputs (files, APIs, databases,  
+                                  ChatOps) to send ElectricEye Findings,      
+                                  specify multiple with additional arguments: 
+                                  -o csv -o postgresql -o slack  [default:    
                                   stdout]
-  --output-file TEXT              For file outputs such as JSON and CSV, the
-                                  name of the file, DO NOT SPECIFY .file_type
+  --output-file TEXT              For file outputs such as JSON and CSV, the  
+                                  name of the file, DO NOT SPECIFY .file_type 
                                   [default: output]
   --list-options                  Lists all valid Output options
-  --list-checks                   Prints a table of Auditors, Checks, and
-                                  Check descriptions to stdout - use this for
+  --list-checks                   Prints a table of Auditors, Checks, and     
+                                  Check descriptions to stdout - use this for 
                                   -a or -c args
   --create-insights               Create AWS Security Hub Insights for
                                   ElectricEye. This only needs to be done once
                                   per Account per Region for Security Hub
   --list-controls                 Lists all ElectricEye Controls (e.g. Check
                                   Titles) for an Assessment Target
+  --toml-path TEXT                The full path to the TOML file used for
+                                  configure e.g.,
+                                  ~/path/to/mydir/external_providers.toml. If
+                                  this value is not provided the default path
+                                  of ElectricEye/eeauditor/external_providers.
+                                  toml is used.
   --help                          Show this message and exit.
 ```
 
@@ -169,9 +175,15 @@ To pull from the various repositories, use these commands, you can replace `late
 
 #### NOTE!! You can skip this section if you are using hard-coded credentials in your TOML and if you will not be using any AWS Output or running any AWS Auditors
 
-When interacting with AWS credential stores such as AWS Systems Manager, AWS Secrets Manager and Outputs such as AWS Security and for Role Assumption into the Role specified in the `aws_electric_eye_iam_role_name` TOML parameter, ElectricEye uses your current (default) Boto3 Session which is derived from your credentials. Running ElectricEye from AWS Infrastructure that has an attached Role, or running from a location with `aws cli` credentials already instantiated, this is handled transparently. When using Docker, you will need to provide [Environment Variables](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html#using-environment-variables) directly to the Container.
+When interacting with AWS credential stores such as AWS Systems Manager, AWS Secrets Manager and Outputs such as AWS Security and for Role Assumption into the Role specified in the `aws_electric_eye_iam_role_name` TOML parameter, ElectricEye uses your current (default) Boto3 Session which is derived from your credentials.
 
-Ensure that if you will be using AWS SSM (`ssm:GetParameter`), AWS Secrets Manager (`secretsmanager:GetSecretValue`), AWS Security Hub (`securityhub:BatchImportFindings`), Amazon SQS (`sqs:SendMessage`), and/or Amazon DynamoDB (`dynamodb:PutItem`) for credentials and Outputs that you have the proper permissions! You will likely also require `kms:Decrypt` depending if you are using AWS Key Management Service (KMS) Customer-managed Keys (CMKs) for your secrets/parameters encryption. You will need `sts:AssumeRole` to assume into the Role specified in the `aws_electric_eye_iam_role_name` TOML parameter.
+Running ElectricEye from AWS Infrastructure that has an attached Role, or running from a location with `aws cli` credentials already instantiated, this is handled transparently. 
+
+When using Docker, you will need to provide [Environment Variables](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html#using-environment-variables) directly to the Container.
+
+Ensure that if you will be using AWS SSM (`ssm:GetParameter`), AWS Secrets Manager (`secretsmanager:GetSecretValue`), AWS Security Hub (`securityhub:BatchImportFindings`), Amazon SQS (`sqs:SendMessage`), and/or Amazon DynamoDB (`dynamodb:PutItem`) for credentials and Outputs that you have the proper permissions! You will likely also require `kms:Decrypt` depending if you are using AWS Key Management Service (KMS) Customer-managed Keys (CMKs) for your secrets/parameters encryption.
+
+You will need `sts:AssumeRole` to assume into the Role specified in the `aws_electric_eye_iam_role_name` TOML parameter.
 
 You will need to pass in your AWS Region, an AWS Access Key, and an AWS Secret Access Key. If you are NOT using an AWS IAM User with Access Keys you will need to also provide an AWS Session Token which is produced by temporary credentials such as an IAM Role or EC2 Instance Profile.
 
@@ -231,7 +243,11 @@ sudo docker run \
     electriceye /bin/bash -c "python3 eeauditor/controller.py --help"
 ```
 
-To save a local file output such as `-o json`. `-o cam-json`, `-o csv`, or `-o html` and so on, ensure that you specify a file name that begins with `/eeauditor/` as the `eeuser` within the Docker Image only has permissions within that directory. To remove the files you cannot use `docker cp` but you can submit the file to remote APIs you have control of by `base64` encoding the output or you can use the Session with AWS S3 permissions to upload the file to S3. If you are evaluating Oracle Cloud or Google Cloud Platform, your credentials will be locally loaded and you can upload to Oracle Object Storage or Google Cloud Storage buckets, respectively.
+To save a local file output such as `-o json`. `-o cam-json`, `-o csv`, or `-o html` and so on, ensure that you specify a file name that begins with `/eeauditor/` as the `eeuser` within the Docker Image only has permissions within that directory.
+
+To remove the files you cannot use `docker cp` but you can submit the file to remote APIs you have control of by `base64` encoding the output or you can use the Session with AWS S3 permissions to upload the file to S3.
+
+If you are evaluating Oracle Cloud or Google Cloud Platform, your credentials will be locally loaded and you can upload to Oracle Object Storage or Google Cloud Storage buckets, respectively.
 
 ```bash
 BUCKET_NAME="your_s3_bucket_you_have_access_to"
@@ -272,7 +288,7 @@ Feel free to open PRs and Issues where syntax, grammatic, and implementation err
 
 ### ElectricEye is for sale
 
-Contact the maintainer for more information!
+Hit me up at opensource@electriceye.cloud (I don't actually have a SaaS tool) and I'll gladly sell the rights to this repo and take it down and give you all of the domains and even the AWS Accounts that I use behind the scenes.
 
 ### Early Contributors
 

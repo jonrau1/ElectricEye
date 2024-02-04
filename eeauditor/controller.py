@@ -23,6 +23,7 @@ import click
 from insights import create_sechub_insights
 from eeauditor import EEAuditor
 from processor.main import get_providers, process_findings
+from os import environ
 
 def print_controls(assessmentTarget, auditorName=None):
     app = EEAuditor(assessmentTarget)
@@ -38,11 +39,12 @@ def print_checks(assessmentTarget, auditorName=None):
         
     app.print_checks_md()
 
-def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, outputs=None, outputFile=""):
+def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, outputs=None, outputFile="", tomlPath=None):
     if not outputs:
         outputs = ["stdout"]
     
-    app = EEAuditor(assessmentTarget)
+    app = EEAuditor(assessmentTarget, tomlPath)
+
     app.load_plugins(auditorName)
     # Per-target calls - ensure you use the right run_*_checks*() function
     if assessmentTarget == "AWS":
@@ -59,6 +61,11 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
         findings = list(app.run_non_aws_checks(pluginName=pluginName, delay=delay))
 
     print(f"Done running Checks for {assessmentTarget}")
+
+    if tomlPath is None:
+        environ["TOML_FILE_PATH"] = "None"
+    else:
+        environ["TOML_FILE_PATH"] = tomlPath
     
     # Multiple outputs supported
     process_findings(
@@ -147,6 +154,12 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
     is_flag=True,
     help="Lists all ElectricEye Controls (e.g. Check Titles) for an Assessment Target"
 )
+# TOML Path
+@click.option(
+    "--toml-path",
+    default=None,
+    help="The full path to the TOML file used for configure e.g., ~/path/to/mydir/external_providers.toml. If this value is not provided the default path of ElectricEye/eeauditor/external_providers.toml is used."
+)
 
 def main(
     target_provider,
@@ -159,6 +172,7 @@ def main(
     list_checks,
     create_insights,
     list_controls,
+    toml_path
 ):
     if list_controls:
         print_controls(
@@ -191,6 +205,7 @@ def main(
         delay=delay,
         outputs=outputs,
         outputFile=output_file,
+        tomlPath=toml_path
     )
 
 if __name__ == "__main__":

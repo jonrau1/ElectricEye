@@ -27,7 +27,7 @@ from re import compile
 import json
 from botocore.exceptions import ClientError
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("CloudUtils")
 
 # Boto3 Clients
 sts = boto3.client("sts")
@@ -45,9 +45,12 @@ class CloudConfig(object):
     for use in EEAuditor when running ElectricEye Auditors and Check
     """
 
-    def __init__(self, assessmentTarget):
-        here = path.abspath(path.dirname(__file__))
-        tomlFile = f"{here}/external_providers.toml"
+    def __init__(self, assessmentTarget, tomlPath):
+        if tomlPath is None:
+            here = path.abspath(path.dirname(__file__))
+            tomlFile = f"{here}/external_providers.toml"
+        else:
+            tomlFile = tomlPath
 
         with open(tomlFile, "rb") as f:
             data = tomload(f)
@@ -108,7 +111,7 @@ class CloudConfig(object):
             # Process ["aws_electric_eye_iam_role_name"]
             electricEyeRoleName = data["regions_and_accounts"]["aws"]["aws_electric_eye_iam_role_name"]
             if electricEyeRoleName is None or electricEyeRoleName == "":
-                logger.warn(
+                logger.warning(
                     "A value for ['aws_electric_eye_iam_role_name'] was not provided. Will attempt to use current session credentials, this will likely fail if you're attempting to assess another AWS account."
                 )
                 electricEyeRoleName = None
@@ -426,6 +429,10 @@ class CloudConfig(object):
             # majority of Regions have a "opt-in-not-required", hence the "not not opted in" list comp
             regions = [region["RegionName"] for region in ec2.describe_regions()["Regions"] if region["OptInStatus"] != "not-opted-in"]
         except ClientError as e:
+            logger.error(
+                "Could not retrieve AWS Regions because: %s",
+                e
+            )
             raise e
 
         return regions
@@ -549,17 +556,24 @@ class CloudConfig(object):
         """
 
         # GovCloud partition override
-        if region in ["us-gov-east-1", "us-gov-west-1"]:
+        if region in ["us-gov-east-1", "us-gov-west-1"] or "us-gov-" in region:
             partition = "aws-us-gov"
         # China partition override
-        elif region in ["cn-north-1", "cn-northwest-1"]:
+        elif region in ["cn-north-1", "cn-northwest-1"] or "cn-" in region:
             partition = "aws-cn"
         # AWS Secret Region override
-        elif region in ["us-isob-east-1", "us-isob-west-1"]:
+        elif region in ["us-isob-east-1", "us-isob-west-1"] or "isob-" in region:
             partition = "aws-isob"
         # AWS Top Secret Region override
-        elif region in ["us-iso-east-1", "us-iso-west-1"]:
+        elif region in ["us-iso-east-1", "us-iso-west-1"] or "iso-" in region:
             partition = "aws-iso"
+        # AWS UKSOF / British MOD Region override
+        elif "iso-e" in region or "isoe" in region:
+            partition = "aws-isoe"
+        # AWS Intel Community us-isof-south-1 Region override
+        elif region in ["us-isof-south-1"] or "iso-f" in region or "isof" in region:
+            partition = "aws-isof"
+        # TODO: Add European Sovreign Cloud Partition
         else:
             partition = "aws"
 
