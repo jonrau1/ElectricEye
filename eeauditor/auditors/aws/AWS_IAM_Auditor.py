@@ -209,7 +209,8 @@ def iam_access_key_age_check(cache: dict, session, awsAccountId: str, awsRegion:
                                 "ISO 27001:2013 A.9.4.3",
                                 "MITRE ATT&CK T1589",
                                 "MITRE ATT&CK T1586",
-                                "CIS Amazon Web Services Foundations Benchmark V1.5 1.14"
+                                "CIS Amazon Web Services Foundations Benchmark V1.5 1.14",
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.14"
                             ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
@@ -293,7 +294,8 @@ def iam_access_key_age_check(cache: dict, session, awsAccountId: str, awsRegion:
                                 "ISO 27001:2013 A.9.4.3",
                                 "MITRE ATT&CK T1589",
                                 "MITRE ATT&CK T1586",
-                                "CIS Amazon Web Services Foundations Benchmark V1.5 1.14"
+                                "CIS Amazon Web Services Foundations Benchmark V1.5 1.14",
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.14"
                             ]
                         },
                         "Workflow": {"Status": "NEW"},

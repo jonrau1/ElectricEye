@@ -52,7 +52,8 @@ SUPPORTED_FRAMEWORKS = [
     "Equifax SCF V1.0",
     "FBI CJIS Security Policy V5.9",
     "CIS Amazon Web Services Foundations Benchmark V1.5",
-    "CIS Amazon Web Services Foundations Benchmark V2.0"
+    "CIS Amazon Web Services Foundations Benchmark V2.0",
+    "MITRE ATT&CK"
 ]
 
 with open(f"{here}/mapped_compliance_controls.json") as jsonfile:
@@ -858,7 +859,25 @@ class JsonProvider(object):
             frameworkInfo = """
             All CIS Benchmarks focus on technical configuration settings used to maintain and/or increase the security of the addressed technology, and they should be used in conjunction with other essential cyber hygiene tasks like: Monitoring the base operating system for vulnerabilities and quickly updating with the latest security patches or Monitoring applications and libraries for vulnerabilities and quickly updating with the latest security patches.</br>
 
-            </br>This benchmark provides prescriptive guidance for configuring security options for a subset of Amazon Web Services with an emphasis on foundational, testable, and architecture agnostic settings. This CIS Benchmark was created using a consensus review process comprised of a global community of subject matter experts. The process combines real world experience with data-based information to create technology specific guidance to assist users to secure their environments. Consensus participants provide perspective from a diverse set of backgrounds including consulting, software development, audit and compliance, security research, operations, government, and legal. 
+            </br>This benchmark provides prescriptive guidance for configuring security options for a subset of Amazon Web Services with an emphasis on foundational, testable, and architecture agnostic settings. This CIS Benchmark was created using a consensus review process comprised of a global community of subject matter experts. The process combines real world experience with data-based information to create technology specific guidance to assist users to secure their environments. Consensus participants provide perspective from a diverse set of backgrounds including consulting, software development, audit and compliance, security research, operations, government, and legal.
+            """
+        
+        # CIS Amazon Web Services Foundations Benchmark V2.0
+        elif framework == "CIS Amazon Web Services Foundations Benchmark V1.5":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/CIS_AWS_Foundation_V2_0.JPG" class="framework__header__image">'
+            frameworkInfo = """
+            All CIS Benchmarks focus on technical configuration settings used to maintain and/or increase the security of the addressed technology, and they should be used in conjunction with other essential cyber hygiene tasks like: Monitoring the base operating system for vulnerabilities and quickly updating with the latest security patches or Monitoring applications and libraries for vulnerabilities and quickly updating with the latest security patches.</br>
+
+            </br>This benchmark provides prescriptive guidance for configuring security options for a subset of Amazon Web Services with an emphasis on foundational, testable, and architecture agnostic settings. This CIS Benchmark was created using a consensus review process comprised of a global community of subject matter experts. The process combines real world experience with data-based information to create technology specific guidance to assist users to secure their environments. Consensus participants provide perspective from a diverse set of backgrounds including consulting, software development, audit and compliance, security research, operations, government, and legal.
+            """
+
+        # MITRE ATT&CK
+        elif framework == "MITRE ATT&CK":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/MITRE_ATTACK_ENTERPRISE.JPG" class="framework__header__image">'
+            frameworkInfo = """
+            MITRE ATT&CK® is a globally-accessible knowledge base of adversary tactics and techniques based on real-world observations. The ATT&CK knowledge base is used as a foundation for the development of specific threat models and methodologies in the private sector, in government, and in the cybersecurity product and service community.</br>
+
+            </br>With the creation of ATT&CK, MITRE is fulfilling its mission to solve problems for a safer world — by bringing communities together to develop more effective cybersecurity. ATT&CK is open and available to any person or organization for use at no charge.
             """
 
         else:
