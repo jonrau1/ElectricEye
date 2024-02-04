@@ -27,7 +27,7 @@ from re import compile
 import json
 from botocore.exceptions import ClientError
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("CloudUtils")
 
 # Boto3 Clients
 sts = boto3.client("sts")
@@ -45,9 +45,12 @@ class CloudConfig(object):
     for use in EEAuditor when running ElectricEye Auditors and Check
     """
 
-    def __init__(self, assessmentTarget):
-        here = path.abspath(path.dirname(__file__))
-        tomlFile = f"{here}/external_providers.toml"
+    def __init__(self, assessmentTarget, tomlPath):
+        if tomlPath is None:
+            here = path.abspath(path.dirname(__file__))
+            tomlFile = f"{here}/external_providers.toml"
+        else:
+            tomlFile = tomlPath
 
         with open(tomlFile, "rb") as f:
             data = tomload(f)
