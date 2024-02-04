@@ -552,17 +552,21 @@ class CloudConfig(object):
         """
 
         # GovCloud partition override
-        if region in ["us-gov-east-1", "us-gov-west-1"]:
+        if region in ["us-gov-east-1", "us-gov-west-1"] or "us-gov-" in region:
             partition = "aws-us-gov"
         # China partition override
-        elif region in ["cn-north-1", "cn-northwest-1"]:
+        elif region in ["cn-north-1", "cn-northwest-1"] or "cn-" in region:
             partition = "aws-cn"
         # AWS Secret Region override
-        elif region in ["us-isob-east-1", "us-isob-west-1"]:
+        elif region in ["us-isob-east-1", "us-isob-west-1"] or "isob-" in region:
             partition = "aws-isob"
         # AWS Top Secret Region override
-        elif region in ["us-iso-east-1", "us-iso-west-1"]:
+        elif region in ["us-iso-east-1", "us-iso-west-1"] or "iso-" in region:
             partition = "aws-iso"
+        elif "iso-e" in region or "isoe" in region:
+            partition = "aws-isoe"
+        elif "iso-f" in region or "isof" in region:
+            partition = "aws-isof"
         else:
             partition = "aws"
 

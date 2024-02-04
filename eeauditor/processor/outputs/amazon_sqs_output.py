@@ -28,8 +28,6 @@ from base64 import b64decode
 from botocore.exceptions import ClientError
 from processor.outputs.output_base import ElectricEyeOutput
 
-sqs = boto3.client("sqs")
-
 @ElectricEyeOutput
 class JsonProvider(object):
     __provider__ = "amazon_sqs"
@@ -55,15 +53,17 @@ class JsonProvider(object):
 
         queueUrl = sqsDetails["amazon_sqs_queue_url"]
         queueBatchSize = sqsDetails["amazon_sqs_batch_size"]
+        awsRegion = sqsDetails["amazon_sqs_queue_region"]
 
         # Ensure that values are provided for all variable - use all() and a list comprehension to check the vars
         # empty strings will trigger `if not`
-        if not all(s for s in [queueUrl, queueBatchSize]):
+        if not all(s for s in [queueUrl, queueBatchSize, awsRegion]):
             print("An empty value was detected in '[outputs.amazon_sqs]'. Review the TOML file and try again!")
             sys.exit(2)
 
         self.queueUrl = queueUrl
         self.queueBatchSize = queueBatchSize
+        self.sqs = boto3.client("sqs", region_name=awsRegion)
 
     def write_findings(self, findings: list, **kwargs):
         if len(findings) == 0:
@@ -113,8 +113,10 @@ class JsonProvider(object):
 
     def send_message_to_sqs(self, batch):
         """
-        TO DO
+        Writes batches of ASFF findings into SQS
         """
+        sqs = self.sqs
+
         for entry in batch:
             try:
                 sqs.send_message(
