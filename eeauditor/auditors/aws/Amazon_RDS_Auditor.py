@@ -2409,6 +2409,7 @@ def rds_aurora_cluster_activity_streams_check(cache: dict, session, awsAccountId
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
                         "ISO 27001:2013 A.16.1.7",
+                        "CIS AWS Database Services Benchmark V1.0 2.6"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -2481,6 +2482,7 @@ def rds_aurora_cluster_activity_streams_check(cache: dict, session, awsAccountId
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
                         "ISO 27001:2013 A.16.1.7",
+                        "CIS AWS Database Services Benchmark V1.0 2.6"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -2570,7 +2572,8 @@ def rds_aurora_cluster_encryption_check(cache: dict, session, awsAccountId: str,
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.1",
-                        "CIS Amazon Web Services Foundations Benchmark V2.0 2.3.1"
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 2.3.1",
+                        "CIS AWS Database Services Benchmark V1.0 2.3"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -2642,7 +2645,8 @@ def rds_aurora_cluster_encryption_check(cache: dict, session, awsAccountId: str,
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.1",
-                        "CIS Amazon Web Services Foundations Benchmark V2.0 2.3.1"
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 2.3.1",
+                        "CIS AWS Database Services Benchmark V1.0 2.3",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -2747,6 +2751,7 @@ def rds_instance_snapshot_check(cache: dict, session, awsAccountId: str, awsRegi
                         "ISO 27001:2013 A.17.1.3",
                         "ISO 27001:2013 A.17.2.1",
                         "ISO 27001:2013 A.18.1.3",
+                        "CIS AWS Database Services Benchmark V1.0 2.10",
                         "CIS AWS Database Services Benchmark V1.0 3.10",
                         "CIS AWS Database Services Benchmark V1.0 3.11"
                     ]
@@ -2833,6 +2838,7 @@ def rds_instance_snapshot_check(cache: dict, session, awsAccountId: str, awsRegi
                         "ISO 27001:2013 A.17.1.3",
                         "ISO 27001:2013 A.17.2.1",
                         "ISO 27001:2013 A.18.1.3",
+                        "CIS AWS Database Services Benchmark V1.0 2.10",
                         "CIS AWS Database Services Benchmark V1.0 3.10",
                         "CIS AWS Database Services Benchmark V1.0 3.11"
                     ]
@@ -2951,6 +2957,7 @@ def rds_instance_secgroup_risk_check(cache: dict, session, awsAccountId: str, aw
                                         "ISO 27001:2013 A.11.2.6",
                                         "ISO 27001:2013 A.13.1.1",
                                         "ISO 27001:2013 A.13.2.1",
+                                        "CIS AWS Database Services Benchmark V1.0 2.2",
                                         "CIS AWS Database Services Benchmark V1.0 3.4",
                                         "CIS AWS Database Services Benchmark V1.0 3.11"
                                     ]
@@ -3026,6 +3033,7 @@ def rds_instance_secgroup_risk_check(cache: dict, session, awsAccountId: str, aw
                                         "ISO 27001:2013 A.11.2.6",
                                         "ISO 27001:2013 A.13.1.1",
                                         "ISO 27001:2013 A.13.2.1",
+                                        "CIS AWS Database Services Benchmark V1.0 2.2",
                                         "CIS AWS Database Services Benchmark V1.0 3.4",
                                         "CIS AWS Database Services Benchmark V1.0 3.11"
                                     ]

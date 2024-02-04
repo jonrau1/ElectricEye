@@ -53,7 +53,8 @@ SUPPORTED_FRAMEWORKS = [
     "FBI CJIS Security Policy V5.9",
     "CIS Amazon Web Services Foundations Benchmark V1.5",
     "CIS Amazon Web Services Foundations Benchmark V2.0",
-    "MITRE ATT&CK"
+    "MITRE ATT&CK",
+    "CIS AWS Database Services Benchmark V1.0"
 ]
 
 with open(f"{here}/mapped_compliance_controls.json") as jsonfile:
@@ -878,6 +879,20 @@ class JsonProvider(object):
             MITRE ATT&CK® is a globally-accessible knowledge base of adversary tactics and techniques based on real-world observations. The ATT&CK knowledge base is used as a foundation for the development of specific threat models and methodologies in the private sector, in government, and in the cybersecurity product and service community.</br>
 
             </br>With the creation of ATT&CK, MITRE is fulfilling its mission to solve problems for a safer world — by bringing communities together to develop more effective cybersecurity. ATT&CK is open and available to any person or organization for use at no charge.
+            """
+
+        elif framework == "CIS AWS Database Services Benchmark V1.0":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/CIS_AWS_Database_Services_Benchmark_V1_0.JPG" class="framework__header__image">'
+            frameworkInfo = """
+            All CIS Benchmarks focus on technical configuration settings used to maintain and/or increase the security of the addressed technology, and they should be used in conjunction with other essential cyber hygiene tasks like: </br>
+            
+            </br>Monitoring the base operating system for vulnerabilities and quickly updating with the latest security patches</br>
+            
+            </br>Monitoring applications and libraries for vulnerabilities and quickly updating with the latest security patches.</br>
+
+            </br>In the end, the CIS Benchmarks are designed as a key component of a comprehensive cybersecurity program.</br>
+            
+            </br>This benhcmark provides prescriptive guidance for configuring security options for the services within the Database category in AWS. This Benchmark is intended to be used in conjunction with the CIS Amazon Web Services Foundations Benchmark. For more information about this approach see the Introduction section of this document. The specific AWS Services in scope for this document include: Amazon Aurora, Amazon DocumentDB, Amazon DynamoDBm Amazon ElastiCache, Amazon Keyspaces (for Apache Cassandra), Amazon MemoryDB for Redis, Amazon Neptune, Amazon RDS, and Amazon Timestream.
             """
 
         else:
