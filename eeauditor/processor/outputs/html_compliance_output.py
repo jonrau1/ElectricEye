@@ -51,7 +51,8 @@ SUPPORTED_FRAMEWORKS = [
     "ECB CROE",
     "Equifax SCF V1.0",
     "FBI CJIS Security Policy V5.9",
-    "CIS Amazon Web Services Foundations Benchmark V1.5"
+    "CIS Amazon Web Services Foundations Benchmark V1.5",
+    "CIS Amazon Web Services Foundations Benchmark V2.0"
 ]
 
 with open(f"{here}/mapped_compliance_controls.json") as jsonfile:
