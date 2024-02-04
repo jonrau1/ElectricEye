@@ -239,7 +239,7 @@ The ASM Module uses NMAP at its core and will be expanded to include ZAP and Sho
 
 ## AWS Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **636 Checks** across **85 Auditors** that support the secure configuration of **120 services/components**
+These are the following services and checks perform by each Auditor, there are currently **638 Checks** across **85 Auditors** that support the secure configuration of **121 services/components**
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service**: AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
@@ -390,9 +390,11 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_EKS_Auditor | EKS Cluster | Are auth or audit logs enabled |
 | Amazon_EKS_Auditor | EKS Cluster | Is K8s Secrets envelope encryption used |
 | Amazon_EKS_Auditor | EKS Cluster | Is a deprecated K8s version used |
-| Amazon_Elasticache_Redis_Auditor | Elasticache Redis Cluster | Is an AUTH Token used |
-| Amazon_Elasticache_Redis_Auditor | Elasticache Redis Cluster | Is the cluster encrypted at rest |
-| Amazon_Elasticache_Redis_Auditor | Elasticache Redis Cluster | Does the cluster encrypt in transit |
+| Amazon_Elasticache_Service_Auditor | Elasticache Redis Cluster | Is an AUTH Token used |
+| Amazon_Elasticache_Service_Auditor | Elasticache Redis Cluster | Is the cluster encrypted at rest |
+| Amazon_Elasticache_Service_Auditor | Elasticache Redis Cluster | Does the cluster encrypt in transit |
+| Amazon_Elasticache_Service_Auditor | Elasticache Redis Cluster | Cluster should be configured to auto upgrade to the latest minor version |
+| Amazon_Elasticache_Service_Auditor | Elasticache Memcached Cluster | Cluster should be configured to auto upgrade to the latest minor version |
 | Amazon_ElasticBeanstalk_Auditor | Elastic Beanstalk environment | Is IMDSv1 disabled |
 | Amazon_ElasticBeanstalk_Auditor | Elastic Beanstalk environment | Is platform auto-update and instance refresh enabled |
 | Amazon_ElasticBeanstalk_Auditor | Elastic Beanstalk environment | Is enhanced health reporting enabled |
