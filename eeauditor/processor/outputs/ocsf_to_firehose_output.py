@@ -72,7 +72,7 @@ with open(f"{here}/mapped_compliance_controls.json") as jsonfile:
 class OcsfFirehoseOutput(object):
     __provider__ = "ocsf_kdf"
 
-    def write_findings(self, findings: list, output_file: str, **kwargs):
+    def write_findings(self, findings: list, **kwargs):
         if len(findings) == 0:
             logger.error("There are not any findings to send to Kinesis Data Firehose!")
             sys.exit(0)
