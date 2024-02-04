@@ -100,7 +100,8 @@ def efs_filesys_encryption_check(cache: dict, session, awsAccountId: str, awsReg
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.4.1"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.4.1",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 2.4.1"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -160,7 +161,8 @@ def efs_filesys_encryption_check(cache: dict, session, awsAccountId: str, awsReg
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.4.1"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 2.4.1",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 2.4.1"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
