@@ -7,7 +7,7 @@ matplotlib==3.8.2
 oci>=2.104.0
 pandas==2.0.3
 pluginbase==1.0.1
-psycopg2-binary==2.9.6
+psycopg2-binary==2.9.9
 pymongo==4.6.1
 pysnow<=0.7.17
 python3-nmap==1.6.0
