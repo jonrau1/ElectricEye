@@ -54,7 +54,8 @@ SUPPORTED_FRAMEWORKS = [
     "CIS Amazon Web Services Foundations Benchmark V1.5",
     "CIS Amazon Web Services Foundations Benchmark V2.0",
     "MITRE ATT&CK",
-    "CIS AWS Database Services Benchmark V1.0"
+    "CIS AWS Database Services Benchmark V1.0",
+    "CIS Amazon Web Services Foundations Benchmark V3.0"
 ]
 
 with open(f"{here}/mapped_compliance_controls.json") as jsonfile:
@@ -348,7 +349,7 @@ class JsonProvider(object):
         assetComponentSentence = ", ".join(assetComponentsAssessed)
 
         summary = f"""
-            ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to over two dozen controls frameworks, standards, laws, and policies. Each Check within ElectricEye evaluates a specific component for a specific service for a specific Cloud Service Provider or SasS Vendor such as ensuring storage for a compute service is encrypted, or if a particular type of logging for a service is enabled. For each of those checks, several controls mapping to NIST CSF V1.1 are provided which are in turn mapped to other major frameworks which can aid in audit readiness or other internal audit or controls management exercises.</br> 
+            ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring that supports 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to several dozen control frameworks, standards, laws, and policies. Each Check within ElectricEye evaluates a specific component for a specific service for a specific Cloud Service Provider or SasS Vendor such as ensuring storage for a compute service is encrypted, or if a particular type of logging for a service is enabled. For each of those checks, several controls mapped to NIST CSF V1.1 are provided which are in turn mapped to other major frameworks which can aid in audit readiness or other internal audit or controls management exercises.</br> 
             
             </br>This report is not an attestation, certificate, or fancy plaque you paid for that says "SOC2" on it. For enhanced mapping, each NIST CSF V1.1 Subcategory is mapped to CIS Critical Controls V8 which (unless otherwise noted) provide a bulk of the "back-mapping" to other controls and requirements.</br>
 
@@ -381,7 +382,7 @@ class JsonProvider(object):
             # Continue with populated Frameworks, this is more or less to be "fuck up proof" in case I forgot to add a Framework to SUPPORTED_FRAMEWORKS
             print(f"Creating a visualization for the {framework} framework!")
             # remove shit we don't need so the filename doesn't get dicked up
-            frameworkSavefile = str(framework).replace(".","").replace(" ", "").lower()
+            frameworkSavefile = str(framework).replace(".","").replace(" ", "").replace(":","").lower()
             # access the dict with the specific aggregations
             controlsData = controlsAggregation[framework]
 
@@ -881,6 +882,7 @@ class JsonProvider(object):
             </br>With the creation of ATT&CK, MITRE is fulfilling its mission to solve problems for a safer world — by bringing communities together to develop more effective cybersecurity. ATT&CK is open and available to any person or organization for use at no charge.
             """
 
+        # CIS AWS Database Services Benchmark V1.0
         elif framework == "CIS AWS Database Services Benchmark V1.0":
             imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/CIS_AWS_Database_Services_Benchmark_V1_0.JPG" class="framework__header__image">'
             frameworkInfo = """
@@ -894,6 +896,10 @@ class JsonProvider(object):
             
             </br>This benhcmark provides prescriptive guidance for configuring security options for the services within the Database category in AWS. This Benchmark is intended to be used in conjunction with the CIS Amazon Web Services Foundations Benchmark. For more information about this approach see the Introduction section of this document. The specific AWS Services in scope for this document include: Amazon Aurora, Amazon DocumentDB, Amazon DynamoDBm Amazon ElastiCache, Amazon Keyspaces (for Apache Cassandra), Amazon MemoryDB for Redis, Amazon Neptune, Amazon RDS, and Amazon Timestream.
             """
+
+        # CIS Amazon Web Services Foundations Benchmark V3.0
+        elif framework == "CIS Amazon Web Services Foundations Benchmark V3.0":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/CIS_AWS_Foundation_V3_0.JPG" class="framework__header__image">'
 
         else:
             return []
