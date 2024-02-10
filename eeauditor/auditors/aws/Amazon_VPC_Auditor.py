@@ -1460,7 +1460,8 @@ def aws_network_acl_allow_unrestricted_ssh_access_check(cache: dict, session, aw
                         "ISO 27001:2013 A.13.1.1",
                         "ISO 27001:2013 A.13.2.1",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 5.1",
-                        "CIS Amazon Web Services Foundations Benchmark V2.0 5.1"
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 5.1",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 5.1",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -1531,7 +1532,8 @@ def aws_network_acl_allow_unrestricted_ssh_access_check(cache: dict, session, aw
                         "ISO 27001:2013 A.13.1.1",
                         "ISO 27001:2013 A.13.2.1",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 5.1",
-                        "CIS Amazon Web Services Foundations Benchmark V2.0 5.1"
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 5.1",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 5.1",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
