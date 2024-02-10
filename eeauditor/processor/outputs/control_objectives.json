@@ -7161,7 +7161,7 @@
     },
     {
         "ControlTitle":"ECB CROE 2.8.2.1-7",
-        "ControlDescription":"The FMI should set a range of indicators and develop management information to measure and monitor the effective implementation of the cyber resilience strategy and framework on a regular basis and its evolution over time. For example, relevant information and indicators could be: the percentage of the FMI's staff that have received cybersecurity training; the percentage of incidents reported within the required timeframe per applicable incident category; the percentage of vulnerabilities mitigated within a defined time period after discovery; and yearly reports monitoring progress of indicators, etc."
+        "ControlDescription":"The FMI should set a range of indicators and develop management information to measure and monitor the effective implementation of the cyber resilience strategy and framework on a regular basis and its evolution over time. For example, relevant information and indicators could be: the percentage of the FMI's staff that have received cybersecurity training; the percentage of incidents reported within the required timeframe per applicable incident category; the percentage of vulnerabilities mitigated within a defined time period after discovery; and yearly reports monitoring progress of indicators, etc"
     },
     {
         "ControlTitle":"NIST SP 800-53 Rev. 4 AC-1",
@@ -15389,23 +15389,23 @@
     },
     {
         "ControlTitle":"CIS AWS Database Services Benchmark V1.0 6.1",
-        "ControlDescription":"Ensure CloudTrail is enabled in all AWS regions to capture every API call."
+        "ControlDescription":"Ensure CloudTrail is enabled in all AWS regions to capture every API call"
     },
     {
         "ControlTitle":"CIS AWS Database Services Benchmark V1.0 6.2",
-        "ControlDescription":"Ensure CloudTrail log file validation is enabled to ensure the integrity of the logs."
+        "ControlDescription":"Ensure CloudTrail log file validation is enabled to ensure the integrity of the logs"
     },
     {
         "ControlTitle":"CIS AWS Database Services Benchmark V1.0 6.3",
-        "ControlDescription":"Ensure that CloudTrail logs are encrypted at rest using AWS KMS keys."
+        "ControlDescription":"Ensure that CloudTrail logs are encrypted at rest using AWS KMS keys"
     },
     {
         "ControlTitle":"CIS AWS Database Services Benchmark V1.0 6.4",
-        "ControlDescription":"Ensure CloudTrail trails are configured to store logs in a secure location."
+        "ControlDescription":"Ensure CloudTrail trails are configured to store logs in a secure location"
     },
     {
         "ControlTitle":"CIS AWS Database Services Benchmark V1.0 6.5",
-        "ControlDescription":"Ensure AWS Config is enabled for security configuration monitoring and auditing."
+        "ControlDescription":"Ensure AWS Config is enabled for security configuration monitoring and auditing"
     },
     {
         "ControlTitle":"CIS AWS Database Services Benchmark V1.0 6.6",
@@ -15413,19 +15413,19 @@
     },
     {
         "ControlTitle":"CIS AWS Database Services Benchmark V1.0 7.1",
-        "ControlDescription":"Ensure access keys are rotated every 90 days or less."
+        "ControlDescription":"Ensure access keys are rotated every 90 days or less"
     },
     {
         "ControlTitle":"CIS AWS Database Services Benchmark V1.0 7.2",
-        "ControlDescription":"Ensure IAM policies are least privileged by limiting AWS service and resource access."
+        "ControlDescription":"Ensure IAM policies are least privileged by limiting AWS service and resource access"
     },
     {
         "ControlTitle":"CIS AWS Database Services Benchmark V1.0 7.3",
-        "ControlDescription":"Ensure a log metric filter and alarm exist for disabling or scheduled deletion of customer created CMKs."
+        "ControlDescription":"Ensure a log metric filter and alarm exist for disabling or scheduled deletion of customer created CMKs"
     },
     {
         "ControlTitle":"CIS AWS Database Services Benchmark V1.0 7.4",
-        "ControlDescription":"Ensure a log metric filter and alarm exist for S3 bucket policy changes."
+        "ControlDescription":"Ensure a log metric filter and alarm exist for S3 bucket policy changes"
     },
     {
         "ControlTitle":"CIS AWS Database Services Benchmark V1.0 7.5",
@@ -15457,7 +15457,7 @@
     },
     {
         "ControlTitle":"CIS AWS Database Services Benchmark V1.0 8.1",
-        "ControlDescription":"Ensure VPC flow logging is enabled in all VPCs for network traffic monitoring."
+        "ControlDescription":"Ensure VPC flow logging is enabled in all VPCs for network traffic monitoring"
     },
     {
         "ControlTitle":"CIS AWS Database Services Benchmark V1.0 8.2",
