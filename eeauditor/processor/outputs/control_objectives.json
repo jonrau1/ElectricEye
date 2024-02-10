@@ -14994,5 +14994,229 @@
     {
       "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V2.0 5.5",
       "ControlDescription": "Ensure that AWS Security Hub is enabled"
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 1.1",
+        "ControlDescription": "Maintain current contact details. Ensure contact email and telephone details for AWS accounts are current and map to more than one individual in your organization to allow for AWS to contact the account owner if suspicious activity is observed."
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 1.2",
+        "ControlDescription": "Ensure security contact information is registered. This information is used by AWS to contact your organization if they observe activity indicative of a security incident involving your account."
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 1.3",
+        "ControlDescription": "Ensure security questions are registered in the AWS account. Security questions are used as an authentication mechanism for customer support interactions."
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 1.4",
+        "ControlDescription": "Ensure no 'root' account access key exists. The 'root' account access key represents a significant security risk, and AWS best practices dictate that it should not exist."
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 1.5",
+        "ControlDescription": "Ensure MFA is enabled for the 'root' user account to add an additional layer of security on top of the username and password."
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 1.6",
+        "ControlDescription": "Ensure hardware MFA is enabled for the 'root' user account. Hardware MFA devices provide a higher level of security than virtual MFA devices."
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 1.7",
+        "ControlDescription": "Eliminate use of the 'root' user for administrative and daily tasks. The root user has full access to all resources in the account and its use should be restricted to only a few account and service management tasks."
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 1.8",
+        "ControlDescription": "Ensure IAM password policy requires minimum length of 14 or greater. A strong password policy enhances security."
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 1.9",
+        "ControlDescription": "Ensure IAM password policy prevents password reuse. This policy helps in mitigating the risk of password guessing and brute-force attacks."
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 1.10",
+        "ControlDescription": "Ensure multi-factor authentication (MFA) is enabled for all IAM users that have a console password. MFA adds an additional layer of security."
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 1.11",
+        "ControlDescription": "Do not setup access keys during initial user setup for all IAM users that have a console password. Users should be forced to take an explicit action to create access keys."
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 1.12",
+        "ControlDescription": "Ensure credentials unused for 45 days or greater are disabled. Old, unused credentials pose a security risk."
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 1.13",
+        "ControlDescription": "Ensure there is only one active access key available for any single IAM user. This minimizes the risk of unauthorized AWS access."
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 1.14",
+        "ControlDescription": "Ensure access keys are rotated every 90 days or less. Regular rotation reduces the risk of unauthorized access."
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 1.15",
+        "ControlDescription": "Ensure IAM users receive permissions only through groups. This simplifies the management and auditing of permissions."
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 1.16",
+        "ControlDescription": "Ensure IAM policies that allow full '*:*' administrative privileges are not attached (Automated)"
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 1.17",
+        "ControlDescription": "Ensure a support role has been created to manage incidents with AWS Support (Automated)"
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 1.18",
+        "ControlDescription": "Ensure IAM instance roles are used for AWS resource access from instances (Manual)"
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 1.19",
+        "ControlDescription": "Ensure that all the expired SSL/TLS certificates stored in AWS IAM are removed (Automated)"
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 1.20",
+        "ControlDescription": "Ensure that IAM Access analyzer is enabled (Automated)"
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 1.21",
+        "ControlDescription": "Ensure IAM users are managed centrally via identity federation or AWS Organizations for multi-account environments (Manual)"
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 1.22",
+        "ControlDescription": "Ensure access to AWSCloudShellFullAccess is restricted (Manual)"
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 2.1.1",
+        "ControlDescription": "Ensure S3 Bucket Policy is set to deny HTTP requests (Automated)"
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 2.1.2",
+        "ControlDescription": "Ensure MFA Delete is enabled on S3 buckets (Manual)"
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 2.1.3",
+        "ControlDescription": "Ensure all data in Amazon S3 has been discovered, classified, and secured when required. (Manual)"
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 2.1.4",
+        "ControlDescription": "Ensure that S3 Buckets are configured with 'Block public access (bucket settings)' (Automated)"
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 2.2.1",
+        "ControlDescription": "Ensure EBS Volume Encryption is Enabled in all Regions (Automated)"
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 2.3.1",
+        "ControlDescription": "Ensure that encryption-at-rest is enabled for RDS Instances (Automated)"
+    },
+    {
+    "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 2.3.2",
+    "ControlDescription": "Ensure Auto Minor Version Upgrade feature is Enabled for RDS Instances (Automated)"
+  },
+  {
+    "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 2.3.3",
+    "ControlDescription": "Ensure that public access is not given to RDS Instance (Automated)"
+  },
+  {
+    "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 2.4.1",
+    "ControlDescription": "Ensure that encryption is enabled for EFS file systems (Automated)"
+  },
+  {
+    "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 3.1",
+    "ControlDescription": "Ensure CloudTrail is enabled in all regions (Automated)"
+  },
+  {
+    "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 3.3",
+    "ControlDescription": "Ensure AWS Config is enabled in all regions (Automated)"
+  },
+  {
+    "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 3.4",
+    "ControlDescription": "Ensure S3 bucket access logging is enabled on the CloudTrail S3 bucket (Automated)"
+  },
+  {
+    "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 3.5",
+    "ControlDescription": "Ensure CloudTrail logs are encrypted at rest using KMS CMKs (Automated)"
+  },
+  {
+    "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 3.6",
+    "ControlDescription": "Ensure rotation for customer-created symmetric CMKs is enabled (Automated)"
+  },
+  {
+    "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 3.7",
+    "ControlDescription": "Ensure VPC flow logging is enabled in all VPCs (Automated)"
+  },
+  {
+    "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 3.8",
+    "ControlDescription": "Ensure that Object-level logging for write events is enabled for S3 bucket (Automated)"
+  },
+  {
+    "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 3.9",
+    "ControlDescription": "Ensure that Object-level logging for read events is enabled for S3 bucket (Automated)"
+  },
+  {
+    "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 4.1",
+    "ControlDescription": "Ensure unauthorized API calls are monitored (Manual)"
+  },
+  {
+    "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 4.3",
+    "ControlDescription": "Ensure usage of 'root' account is monitored (Manual)"
+  },
+  {
+    "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 4.8",
+    "ControlDescription": "Ensure S3 bucket policy changes are monitored (Manual)"
+  },
+  {
+    "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 4.9",
+    "ControlDescription": "Ensure AWS Config configuration changes are monitored (Manual)"
+  },
+  {
+    "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 4.10",
+    "ControlDescription": "Ensure security group changes are monitored (Manual)"
+  },
+  {
+    "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 4.11",
+    "ControlDescription": "Ensure Network Access Control Lists (NACL) changes are monitored (Manual)"
+  },
+  {
+    "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 4.12",
+    "ControlDescription": "Ensure changes to network gateways are monitored (Manual)"
+  },
+  {
+    "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 4.13",
+    "ControlDescription": "Ensure route table changes are monitored (Manual)"
+  },
+  {
+    "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 4.14",
+    "ControlDescription": "Ensure VPC changes are monitored (Manual)"
+  },
+  {
+    "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 4.15",
+    "ControlDescription": "Ensure AWS Organizations changes are monitored (Manual)"
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 4.16",
+        "ControlDescription": "Ensure AWS Security Hub is enabled (Automated)"
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 5.1",
+        "ControlDescription": "Ensure no Network ACLs allow ingress from 0.0.0.0/0 to remote server administration ports (Automated)"
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 5.2",
+        "ControlDescription": "Ensure no security groups allow ingress from 0.0.0.0/0 to remote server administration ports (Automated)"
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 5.3",
+        "ControlDescription": "Ensure no security groups allow ingress from ::/0 to remote server administration ports (Automated)"
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 5.4",
+        "ControlDescription": "Ensure the default security group of every VPC restricts all traffic (Automated)"
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 5.5",
+        "ControlDescription": "Ensure routing tables for VPC peering are 'least access' (Manual)"
+    },
+    {
+        "ControlTitle": "CIS Amazon Web Services Foundations Benchmark V3.0 5.6",
+        "ControlDescription": "Ensure that EC2 Metadata Service only allows IMDSv2 (Automated)"
     }
 ]
