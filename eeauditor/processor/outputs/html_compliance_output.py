@@ -51,7 +51,11 @@ SUPPORTED_FRAMEWORKS = [
     "ECB CROE",
     "Equifax SCF V1.0",
     "FBI CJIS Security Policy V5.9",
-    "CIS Amazon Web Services Foundations Benchmark V1.5"
+    "CIS Amazon Web Services Foundations Benchmark V1.5",
+    "CIS Amazon Web Services Foundations Benchmark V2.0",
+    "MITRE ATT&CK",
+    "CIS AWS Database Services Benchmark V1.0",
+    "CIS Amazon Web Services Foundations Benchmark V3.0"
 ]
 
 with open(f"{here}/mapped_compliance_controls.json") as jsonfile:
@@ -345,7 +349,7 @@ class JsonProvider(object):
         assetComponentSentence = ", ".join(assetComponentsAssessed)
 
         summary = f"""
-            ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring supporting 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to over two dozen controls frameworks, standards, laws, and policies. Each Check within ElectricEye evaluates a specific component for a specific service for a specific Cloud Service Provider or SasS Vendor such as ensuring storage for a compute service is encrypted, or if a particular type of logging for a service is enabled. For each of those checks, several controls mapping to NIST CSF V1.1 are provided which are in turn mapped to other major frameworks which can aid in audit readiness or other internal audit or controls management exercises.</br> 
+            ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring that supports 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to several dozen control frameworks, standards, laws, and policies. Each Check within ElectricEye evaluates a specific component for a specific service for a specific Cloud Service Provider or SasS Vendor such as ensuring storage for a compute service is encrypted, or if a particular type of logging for a service is enabled. For each of those checks, several controls mapped to NIST CSF V1.1 are provided which are in turn mapped to other major frameworks which can aid in audit readiness or other internal audit or controls management exercises.</br> 
             
             </br>This report is not an attestation, certificate, or fancy plaque you paid for that says "SOC2" on it. For enhanced mapping, each NIST CSF V1.1 Subcategory is mapped to CIS Critical Controls V8 which (unless otherwise noted) provide a bulk of the "back-mapping" to other controls and requirements.</br>
 
@@ -378,7 +382,7 @@ class JsonProvider(object):
             # Continue with populated Frameworks, this is more or less to be "fuck up proof" in case I forgot to add a Framework to SUPPORTED_FRAMEWORKS
             print(f"Creating a visualization for the {framework} framework!")
             # remove shit we don't need so the filename doesn't get dicked up
-            frameworkSavefile = str(framework).replace(".","").replace(" ", "").lower()
+            frameworkSavefile = str(framework).replace(".","").replace(" ", "").replace(":","").lower()
             # access the dict with the specific aggregations
             controlsData = controlsAggregation[framework]
 
@@ -857,8 +861,45 @@ class JsonProvider(object):
             frameworkInfo = """
             All CIS Benchmarks focus on technical configuration settings used to maintain and/or increase the security of the addressed technology, and they should be used in conjunction with other essential cyber hygiene tasks like: Monitoring the base operating system for vulnerabilities and quickly updating with the latest security patches or Monitoring applications and libraries for vulnerabilities and quickly updating with the latest security patches.</br>
 
-            </br>This benchmark provides prescriptive guidance for configuring security options for a subset of Amazon Web Services with an emphasis on foundational, testable, and architecture agnostic settings. This CIS Benchmark was created using a consensus review process comprised of a global community of subject matter experts. The process combines real world experience with data-based information to create technology specific guidance to assist users to secure their environments. Consensus participants provide perspective from a diverse set of backgrounds including consulting, software development, audit and compliance, security research, operations, government, and legal. 
+            </br>This benchmark provides prescriptive guidance for configuring security options for a subset of Amazon Web Services with an emphasis on foundational, testable, and architecture agnostic settings. This CIS Benchmark was created using a consensus review process comprised of a global community of subject matter experts. The process combines real world experience with data-based information to create technology specific guidance to assist users to secure their environments. Consensus participants provide perspective from a diverse set of backgrounds including consulting, software development, audit and compliance, security research, operations, government, and legal.
             """
+        
+        # CIS Amazon Web Services Foundations Benchmark V2.0
+        elif framework == "CIS Amazon Web Services Foundations Benchmark V2.0":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/CIS_AWS_Foundation_V2_0.JPG" class="framework__header__image">'
+            frameworkInfo = """
+            All CIS Benchmarks focus on technical configuration settings used to maintain and/or increase the security of the addressed technology, and they should be used in conjunction with other essential cyber hygiene tasks like: Monitoring the base operating system for vulnerabilities and quickly updating with the latest security patches or Monitoring applications and libraries for vulnerabilities and quickly updating with the latest security patches.</br>
+
+            </br>This benchmark provides prescriptive guidance for configuring security options for a subset of Amazon Web Services with an emphasis on foundational, testable, and architecture agnostic settings. This CIS Benchmark was created using a consensus review process comprised of a global community of subject matter experts. The process combines real world experience with data-based information to create technology specific guidance to assist users to secure their environments. Consensus participants provide perspective from a diverse set of backgrounds including consulting, software development, audit and compliance, security research, operations, government, and legal.
+            """
+
+        # MITRE ATT&CK
+        elif framework == "MITRE ATT&CK":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/MITRE_ATTACK_ENTERPRISE.JPG" class="framework__header__image">'
+            frameworkInfo = """
+            MITRE ATT&CK® is a globally-accessible knowledge base of adversary tactics and techniques based on real-world observations. The ATT&CK knowledge base is used as a foundation for the development of specific threat models and methodologies in the private sector, in government, and in the cybersecurity product and service community.</br>
+
+            </br>With the creation of ATT&CK, MITRE is fulfilling its mission to solve problems for a safer world — by bringing communities together to develop more effective cybersecurity. ATT&CK is open and available to any person or organization for use at no charge.
+            """
+
+        # CIS AWS Database Services Benchmark V1.0
+        elif framework == "CIS AWS Database Services Benchmark V1.0":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/CIS_AWS_Database_Services_Benchmark_V1_0.JPG" class="framework__header__image">'
+            frameworkInfo = """
+            All CIS Benchmarks focus on technical configuration settings used to maintain and/or increase the security of the addressed technology, and they should be used in conjunction with other essential cyber hygiene tasks like: </br>
+            
+            </br>Monitoring the base operating system for vulnerabilities and quickly updating with the latest security patches</br>
+            
+            </br>Monitoring applications and libraries for vulnerabilities and quickly updating with the latest security patches.</br>
+
+            </br>In the end, the CIS Benchmarks are designed as a key component of a comprehensive cybersecurity program.</br>
+            
+            </br>This benhcmark provides prescriptive guidance for configuring security options for the services within the Database category in AWS. This Benchmark is intended to be used in conjunction with the CIS Amazon Web Services Foundations Benchmark. For more information about this approach see the Introduction section of this document. The specific AWS Services in scope for this document include: Amazon Aurora, Amazon DocumentDB, Amazon DynamoDBm Amazon ElastiCache, Amazon Keyspaces (for Apache Cassandra), Amazon MemoryDB for Redis, Amazon Neptune, Amazon RDS, and Amazon Timestream.
+            """
+
+        # CIS Amazon Web Services Foundations Benchmark V3.0
+        elif framework == "CIS Amazon Web Services Foundations Benchmark V3.0":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/CIS_AWS_Foundation_V3_0.JPG" class="framework__header__image">'
 
         else:
             return []

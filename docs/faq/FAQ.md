@@ -54,7 +54,7 @@ ElectricEye uses the term Audit Readiness when communicating the intended use ca
 
 ## 10. What control frameworks does ElectricEye support?
 
-The controls frameworks that ElectricEye supports is always being updated as newer versions and mappings are available, as of 1 FEB 2024 the following frameworks and legal requirements are supported.
+The controls frameworks that ElectricEye supports is always being updated as newer versions and mappings are available, as of 5 FEB 2024 the following frameworks and legal requirements are supported.
 
 - NIST Cybersecurity Framework Version 1.1
 - NIST Special Publication 800-53 Revision 4
@@ -78,3 +78,7 @@ The controls frameworks that ElectricEye supports is always being updated as new
 - European Central Bank (ECB) Cyber Resilience Oversight Expectations (CROEs)
 - Equifax Security Controls Framework Version 1.0
 - Payment Card Industry (PCI) Data Security Standard (DSS) Version 4.0
+- MITRE ATT&CK Enterprise Framework
+- CIS AWS Database Services Benchmark V1.0
+- CIS Amazon Web Services Foundations Benchmark V1.5
+- CIS Amazon Web Services Foundations Benchmark V2.0

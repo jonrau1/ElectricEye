@@ -53,7 +53,10 @@ SUPPORTED_FRAMEWORKS = [
     "ECB CROE",
     "Equifax SCF V1.0",
     "FBI CJIS Security Policy V5.9",
-    "CIS Amazon Web Services Foundations Benchmark V1.5"
+    "CIS Amazon Web Services Foundations Benchmark V1.5",
+    "CIS Amazon Web Services Foundations Benchmark V2.0",
+    "MITRE ATT&CK",
+    "CIS AWS Database Services Benchmark V1.0"
 ]
 
 class AsffOcsfNormalizedMapping(NamedTuple):

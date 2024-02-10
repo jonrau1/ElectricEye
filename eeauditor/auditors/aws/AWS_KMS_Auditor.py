@@ -133,7 +133,9 @@ def kms_key_rotation_check(cache: dict, session, awsAccountId: str, awsRegion: s
                         "ISO 27001:2013 A.9.3.1",
                         "ISO 27001:2013 A.9.4.2",
                         "ISO 27001:2013 A.9.4.3",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.9"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.8",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 3.8",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 3.6",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -210,7 +212,9 @@ def kms_key_rotation_check(cache: dict, session, awsAccountId: str, awsRegion: s
                         "ISO 27001:2013 A.9.3.1",
                         "ISO 27001:2013 A.9.4.2",
                         "ISO 27001:2013 A.9.4.3",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.9"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.8",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 3.8",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 3.6",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},

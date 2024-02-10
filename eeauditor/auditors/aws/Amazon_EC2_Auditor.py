@@ -342,7 +342,9 @@ def ec2_imdsv2_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                             "ISO 27001:2013 A.13.2.3",
                             "ISO 27001:2013 A.13.2.4",
                             "ISO 27001:2013 A.14.1.2",
-                            "ISO 27001:2013 A.14.1.3"
+                            "ISO 27001:2013 A.14.1.3",
+                            "CIS Amazon Web Services Foundations Benchmark V2.0 5.6",
+                            "CIS Amazon Web Services Foundations Benchmark V3.0 5.6"
                         ]
                     },
                     "Workflow": {"Status": "NEW"},
@@ -456,7 +458,9 @@ def ec2_imdsv2_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                             "ISO 27001:2013 A.13.2.3",
                             "ISO 27001:2013 A.13.2.4",
                             "ISO 27001:2013 A.14.1.2",
-                            "ISO 27001:2013 A.14.1.3"
+                            "ISO 27001:2013 A.14.1.3",
+                            "CIS Amazon Web Services Foundations Benchmark V2.0 5.6",
+                            "CIS Amazon Web Services Foundations Benchmark V3.0 5.6"
                         ]
                     },
                     "Workflow": {"Status": "RESOLVED"},

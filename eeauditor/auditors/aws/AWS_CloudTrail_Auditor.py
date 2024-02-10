@@ -157,7 +157,9 @@ def cloudtrail_multi_region_check(cache: dict, session, awsAccountId: str, awsRe
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.1"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.1",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 3.1",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 3.1",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -249,7 +251,9 @@ def cloudtrail_multi_region_check(cache: dict, session, awsAccountId: str, awsRe
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.1"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.1",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 3.1",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 3.1",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -354,7 +358,9 @@ def cloudtrail_cloudwatch_logging_check(cache: dict, session, awsAccountId: str,
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.4"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.4",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 3.4",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 3.4",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -446,7 +452,9 @@ def cloudtrail_cloudwatch_logging_check(cache: dict, session, awsAccountId: str,
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.4"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.4",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 3.4",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 3.4",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -518,7 +526,9 @@ def cloudtrail_logs_kms_cmk_encryption_check(cache: dict, session, awsAccountId:
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.7"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.7",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 3.7",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 3.5",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -577,7 +587,9 @@ def cloudtrail_logs_kms_cmk_encryption_check(cache: dict, session, awsAccountId:
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.7"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.7",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 3.7",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 3.5",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -844,7 +856,9 @@ def cloudtrail_log_file_validation_check(cache: dict, session, awsAccountId: str
                         "ISO 27001:2013 A.14.1.2",
                         "ISO 27001:2013 A.14.1.3",
                         "ISO 27001:2013 A.14.2.4",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.2"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.2",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 3.2",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 3.2",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -903,7 +917,9 @@ def cloudtrail_log_file_validation_check(cache: dict, session, awsAccountId: str
                         "ISO 27001:2013 A.14.1.2",
                         "ISO 27001:2013 A.14.1.3",
                         "ISO 27001:2013 A.14.2.4",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.2"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.2",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 3.2",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 3.2",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -994,7 +1010,8 @@ def cloudtrail_bucket_public_check(cache: dict, session, awsAccountId: str, awsR
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
                         "ISO 27001:2013 A.13.2.1",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.3"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.3",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 3.3"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -1056,7 +1073,8 @@ def cloudtrail_bucket_public_check(cache: dict, session, awsAccountId: str, awsR
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
                         "ISO 27001:2013 A.13.2.1",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.3"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.3",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 3.3"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -1177,7 +1195,9 @@ def cloudtrail_bucket_server_access_logging_check(cache: dict, session, awsAccou
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.6"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.6",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 3.6",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 3.4",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -1269,7 +1289,9 @@ def cloudtrail_bucket_server_access_logging_check(cache: dict, session, awsAccou
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.6"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.6",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 3.6",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 3.4",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -1406,7 +1428,11 @@ def cloudtrail_s3_read_and_write_data_events_check(cache: dict, session, awsAcco
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 3.10",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.11"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.11",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 3.10",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 3.11",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 3.8",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 3.9"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -1499,7 +1525,11 @@ def cloudtrail_s3_read_and_write_data_events_check(cache: dict, session, awsAcco
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 3.10",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.11"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 3.11",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 3.10",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 3.11",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 3.8",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 3.9"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -1649,7 +1679,9 @@ def cloudtrail_cloudwatch_metric_alarm_unauth_api_calls_check(cache: dict, sessi
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.1"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.1",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.1",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.1",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -1741,7 +1773,9 @@ def cloudtrail_cloudwatch_metric_alarm_unauth_api_calls_check(cache: dict, sessi
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.1"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.1",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.1",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.1",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -1891,7 +1925,9 @@ def cloudtrail_cloudwatch_metric_alarm_console_login_no_mfa_check(cache: dict, s
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.2"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.2",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.2",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.2",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -1984,6 +2020,8 @@ def cloudtrail_cloudwatch_metric_alarm_console_login_no_mfa_check(cache: dict, s
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 4.2"
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.2",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.2",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -2133,7 +2171,9 @@ def cloudtrail_cloudwatch_metric_alarm_root_user_usage_check(cache: dict, sessio
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.3"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.3",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.3",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.3",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -2225,7 +2265,9 @@ def cloudtrail_cloudwatch_metric_alarm_root_user_usage_check(cache: dict, sessio
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.3"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.3",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.3",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.3",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -2375,7 +2417,9 @@ def cloudtrail_cloudwatch_metric_alarm_iam_policy_changes_check(cache: dict, ses
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.4"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.4",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.4",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.4",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -2467,7 +2511,9 @@ def cloudtrail_cloudwatch_metric_alarm_iam_policy_changes_check(cache: dict, ses
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.4"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.4",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.4",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.4",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -2617,7 +2663,9 @@ def cloudtrail_cloudwatch_metric_alarm_cloudtrail_config_changes_check(cache: di
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.5"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.5",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.5",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.5",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -2709,7 +2757,9 @@ def cloudtrail_cloudwatch_metric_alarm_cloudtrail_config_changes_check(cache: di
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.5"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.5",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.5",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.5",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -2859,7 +2909,9 @@ def cloudtrail_cloudwatch_metric_alarm_console_authentication_failures_check(cac
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.6"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.6",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.6",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.6",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -2951,7 +3003,9 @@ def cloudtrail_cloudwatch_metric_alarm_console_authentication_failures_check(cac
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.6"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.6",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.6",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.6",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -3101,7 +3155,9 @@ def cloudtrail_cloudwatch_metric_alarm_disable_or_delete_aws_kms_cmks_check(cach
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.7"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.7",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.7",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.7",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -3193,7 +3249,9 @@ def cloudtrail_cloudwatch_metric_alarm_disable_or_delete_aws_kms_cmks_check(cach
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.7"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.7",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.7",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.7",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -3343,7 +3401,9 @@ def cloudtrail_cloudwatch_metric_alarm_s3_bucket_policy_change_check(cache: dict
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.8"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.8",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.8",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.8",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -3435,7 +3495,9 @@ def cloudtrail_cloudwatch_metric_alarm_s3_bucket_policy_change_check(cache: dict
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.8"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.8",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.8",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.8",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -3585,7 +3647,9 @@ def cloudtrail_cloudwatch_metric_alarm_aws_config_configuration_changes_check(ca
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.9"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.9",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.9",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.9",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -3677,7 +3741,9 @@ def cloudtrail_cloudwatch_metric_alarm_aws_config_configuration_changes_check(ca
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.9"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.9",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.9",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.9",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -3827,7 +3893,9 @@ def cloudtrail_cloudwatch_metric_alarm_security_group_changes_check(cache: dict,
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.10"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.10",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.10",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.10",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -3919,7 +3987,9 @@ def cloudtrail_cloudwatch_metric_alarm_security_group_changes_check(cache: dict,
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.10"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.10",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.10",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.10",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -4069,7 +4139,9 @@ def cloudtrail_cloudwatch_metric_alarm_nacl_changes_check(cache: dict, session, 
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.11"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.11",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.11",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.11",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -4161,7 +4233,9 @@ def cloudtrail_cloudwatch_metric_alarm_nacl_changes_check(cache: dict, session, 
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.11"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.11",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.11",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.11",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -4311,7 +4385,9 @@ def cloudtrail_cloudwatch_metric_alarm_network_gateway_changes_check(cache: dict
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.12"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.12",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.12",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.12",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -4403,7 +4479,9 @@ def cloudtrail_cloudwatch_metric_alarm_network_gateway_changes_check(cache: dict
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.12"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.12",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.12",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.12",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -4553,7 +4631,9 @@ def cloudtrail_cloudwatch_metric_alarm_vpc_route_table_changes_check(cache: dict
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.13"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.13",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.13",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.13",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -4645,7 +4725,9 @@ def cloudtrail_cloudwatch_metric_alarm_vpc_route_table_changes_check(cache: dict
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.13"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.13",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.13",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.13",
                     ]
                 },
                 "Workflow": {"Status": "PASSED"},
@@ -4795,7 +4877,9 @@ def cloudtrail_cloudwatch_metric_alarm_vpc_changes_check(cache: dict, session, a
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.14"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.14",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.14",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.14",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -4887,7 +4971,9 @@ def cloudtrail_cloudwatch_metric_alarm_vpc_changes_check(cache: dict, session, a
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.14"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.14",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.14",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.14",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -5037,7 +5123,9 @@ def cloudtrail_cloudwatch_metric_alarm_aws_organizations_changes_check(cache: di
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.15"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.15",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.15",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.15",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -5129,7 +5217,9 @@ def cloudtrail_cloudwatch_metric_alarm_aws_organizations_changes_check(cache: di
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.15"
+                        "CIS Amazon Web Services Foundations Benchmark V1.5 4.15",
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 4.15",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.15",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},

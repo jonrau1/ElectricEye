@@ -184,7 +184,10 @@ def docdb_public_instance_check(cache: dict, session, awsAccountId: str, awsRegi
                         "ISO 27001:2013 A.13.2.3",
                         "ISO 27001:2013 A.13.2.4",
                         "ISO 27001:2013 A.14.1.2",
-                        "ISO 27001:2013 A.14.1.3"
+                        "ISO 27001:2013 A.14.1.3",
+                        "CIS AWS Database Services Benchmark V1.0 7.2",
+                        "CIS AWS Database Services Benchmark V1.0 7.5",
+                        "CIS AWS Database Services Benchmark V1.0 7.11"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -303,7 +306,10 @@ def docdb_public_instance_check(cache: dict, session, awsAccountId: str, awsRegi
                         "ISO 27001:2013 A.13.2.3",
                         "ISO 27001:2013 A.13.2.4",
                         "ISO 27001:2013 A.14.1.2",
-                        "ISO 27001:2013 A.14.1.3"
+                        "ISO 27001:2013 A.14.1.3",
+                        "CIS AWS Database Services Benchmark V1.0 7.2",
+                        "CIS AWS Database Services Benchmark V1.0 7.5",
+                        "CIS AWS Database Services Benchmark V1.0 7.11"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -388,7 +394,9 @@ def docdb_instance_encryption_check(cache: dict, session, awsAccountId: str, aws
                         "NIST SP 800-53 Rev. 4 SC-12",
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3"
+                        "ISO 27001:2013 A.8.2.3",
+                        "CIS AWS Database Services Benchmark V1.0 7.3",
+                        "CIS AWS Database Services Benchmark V1.0 7.11"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -460,7 +468,9 @@ def docdb_instance_encryption_check(cache: dict, session, awsAccountId: str, aws
                         "NIST SP 800-53 Rev. 4 SC-12",
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3"
+                        "ISO 27001:2013 A.8.2.3",
+                        "CIS AWS Database Services Benchmark V1.0 7.3",
+                        "CIS AWS Database Services Benchmark V1.0 7.11"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -548,10 +558,12 @@ def docdb_instance_audit_logging_check(cache: dict, session, awsAccountId: str, 
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
                         "ISO 27001:2013 A.16.1.7",
-                    ],
+                        "CIS AWS Database Services Benchmark V1.0 7.6",
+                        "CIS AWS Database Services Benchmark V1.0 7.11"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
         # this is a failing check
@@ -620,7 +632,9 @@ def docdb_instance_audit_logging_check(cache: dict, session, awsAccountId: str, 
                         "NIST SP 800-53 Rev. 4 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
-                        "ISO 27001:2013 A.16.1.7"
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS AWS Database Services Benchmark V1.0 7.6",
+                        "CIS AWS Database Services Benchmark V1.0 7.11"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -718,7 +732,8 @@ def docdb_cluster_multiaz_check(cache: dict, session, awsAccountId: str, awsRegi
                         "ISO 27001:2013 A.12.3.1",
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1"
+                        "ISO 27001:2013 A.17.2.1",
+                        "CIS AWS Database Services Benchmark V1.0 7.1"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -803,7 +818,8 @@ def docdb_cluster_multiaz_check(cache: dict, session, awsAccountId: str, awsRegi
                         "ISO 27001:2013 A.12.3.1",
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1"
+                        "ISO 27001:2013 A.17.2.1",
+                        "CIS AWS Database Services Benchmark V1.0 7.1"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -1109,8 +1125,10 @@ def documentdb_parameter_group_audit_log_check(cache: dict, session, awsAccountI
                                     "ISO 27001:2013 A.13.2.2",
                                     "ISO 27001:2013 A.14.2.7",
                                     "ISO 27001:2013 A.15.2.1",
-                                    "ISO 27001:2013 A.16.1.7"
-                        ]
+                                    "ISO 27001:2013 A.16.1.7",
+                                    "CIS AWS Database Services Benchmark V1.0 7.6",
+                                    "CIS AWS Database Services Benchmark V1.0 7.11"
+                                ]
                             },
                             "Workflow": {"Status": "NEW"},
                             "RecordState": "ACTIVE"
@@ -1205,7 +1223,9 @@ def documentdb_parameter_group_audit_log_check(cache: dict, session, awsAccountI
                                     "ISO 27001:2013 A.13.2.2",
                                     "ISO 27001:2013 A.14.2.7",
                                     "ISO 27001:2013 A.15.2.1",
-                                    "ISO 27001:2013 A.16.1.7"
+                                    "ISO 27001:2013 A.16.1.7",
+                                    "CIS AWS Database Services Benchmark V1.0 7.6",
+                                    "CIS AWS Database Services Benchmark V1.0 7.11"
                                 ]
                             },
                             "Workflow": {"Status": "RESOLVED"},
@@ -1296,7 +1316,9 @@ def documentdb_parameter_group_tls_enforcement_check(cache: dict, session, awsAc
                                     "ISO 27001:2013 A.13.2.1",
                                     "ISO 27001:2013 A.13.2.3",
                                     "ISO 27001:2013 A.14.1.2",
-                                    "ISO 27001:2013 A.14.1.3"
+                                    "ISO 27001:2013 A.14.1.3",
+                                    "CIS AWS Database Services Benchmark V1.0 7.4",
+                                    "CIS AWS Database Services Benchmark V1.0 7.11"
                                 ]
                             },
                             "Workflow": {"Status": "NEW"},
@@ -1362,7 +1384,9 @@ def documentdb_parameter_group_tls_enforcement_check(cache: dict, session, awsAc
                                     "ISO 27001:2013 A.13.2.1",
                                     "ISO 27001:2013 A.13.2.3",
                                     "ISO 27001:2013 A.14.1.2",
-                                    "ISO 27001:2013 A.14.1.3"
+                                    "ISO 27001:2013 A.14.1.3",
+                                    "CIS AWS Database Services Benchmark V1.0 7.4",
+                                    "CIS AWS Database Services Benchmark V1.0 7.11"
                                 ]
                             },
                             "Workflow": {"Status": "RESOLVED"},
@@ -1445,7 +1469,9 @@ def documentdb_cluster_snapshot_encryption_check(cache: dict, session, awsAccoun
                             "NIST SP 800-53 Rev. 4 SC-12",
                             "NIST SP 800-53 Rev. 4 SC-28",
                             "AICPA TSC CC6.1",
-                            "ISO 27001:2013 A.8.2.3"
+                            "ISO 27001:2013 A.8.2.3",
+                            "CIS AWS Database Services Benchmark V1.0 7.3",
+                            "CIS AWS Database Services Benchmark V1.0 7.11"
                         ]
                     },
                     "Workflow": {"Status": "NEW"},
@@ -1505,7 +1531,9 @@ def documentdb_cluster_snapshot_encryption_check(cache: dict, session, awsAccoun
                             "NIST SP 800-53 Rev. 4 SC-12",
                             "NIST SP 800-53 Rev. 4 SC-28",
                             "AICPA TSC CC6.1",
-                            "ISO 27001:2013 A.8.2.3"
+                            "ISO 27001:2013 A.8.2.3",
+                            "CIS AWS Database Services Benchmark V1.0 7.3",
+                            "CIS AWS Database Services Benchmark V1.0 7.11"
                         ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
@@ -1632,7 +1660,9 @@ def documentdb_cluster_snapshot_public_share_check(cache: dict, session, awsAcco
                                     "ISO 27001:2013 A.13.2.3",
                                     "ISO 27001:2013 A.13.2.4",
                                     "ISO 27001:2013 A.14.1.2",
-                                    "ISO 27001:2013 A.14.1.3"
+                                    "ISO 27001:2013 A.14.1.3",
+                                    "CIS AWS Database Services Benchmark V1.0 7.5",
+                                    "CIS AWS Database Services Benchmark V1.0 7.11"
                                 ]
                             },
                             "Workflow": {"Status": "NEW"},
@@ -1739,7 +1769,9 @@ def documentdb_cluster_snapshot_public_share_check(cache: dict, session, awsAcco
                                     "ISO 27001:2013 A.13.2.3",
                                     "ISO 27001:2013 A.13.2.4",
                                     "ISO 27001:2013 A.14.1.2",
-                                    "ISO 27001:2013 A.14.1.3"
+                                    "ISO 27001:2013 A.14.1.3",
+                                    "CIS AWS Database Services Benchmark V1.0 7.5",
+                                    "CIS AWS Database Services Benchmark V1.0 7.11"
                                 ]
                             },
                             "Workflow": {"Status": "RESOLVED"},

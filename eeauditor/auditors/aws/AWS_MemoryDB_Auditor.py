@@ -51,7 +51,7 @@ def memorydb_cluster_tls_encryption_check(cache: dict, session, awsAccountId: st
         memDbSnetGrpName = str(c["SubnetGroupName"])
 
         # This is a failing check
-        if str(c["TLSEnabled"]) != "True":
+        if c["TLSEnabled"] is not True:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": memDbArn + "/memorydb-cluster-tls-check",
@@ -120,6 +120,8 @@ def memorydb_cluster_tls_encryption_check(cache: dict, session, awsAccountId: st
                         "ISO 27001:2013 A.13.2.3",
                         "ISO 27001:2013 A.14.1.2",
                         "ISO 27001:2013 A.14.1.3",
+                        "CIS AWS Database Services Benchmark V1.0 6.2",
+                        "CIS AWS Database Services Benchmark V1.0 6.5"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -195,6 +197,8 @@ def memorydb_cluster_tls_encryption_check(cache: dict, session, awsAccountId: st
                         "ISO 27001:2013 A.13.2.3",
                         "ISO 27001:2013 A.14.1.2",
                         "ISO 27001:2013 A.14.1.3",
+                        "CIS AWS Database Services Benchmark V1.0 6.2",
+                        "CIS AWS Database Services Benchmark V1.0 6.5"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -290,6 +294,8 @@ def memorydb_cluster_kms_cmk_encryption_check(cache: dict, session, awsAccountId
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3",
+                        "CIS AWS Database Services Benchmark V1.0 6.2",
+                        "CIS AWS Database Services Benchmark V1.0 6.5"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -361,6 +367,8 @@ def memorydb_cluster_kms_cmk_encryption_check(cache: dict, session, awsAccountId
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3",
+                        "CIS AWS Database Services Benchmark V1.0 6.2",
+                        "CIS AWS Database Services Benchmark V1.0 6.5"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -617,6 +625,8 @@ def memorydb_sns_notification_tracking_check(cache: dict, session, awsAccountId:
                         "ISO 27001:2013 A.11.2.4",
                         "ISO 27001:2013 A.11.2.5",
                         "ISO 27001:2013 A.11.2.6",
+                        "CIS AWS Database Services Benchmark V1.0 6.4",
+                        "CIS AWS Database Services Benchmark V1.0 6.5"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -688,6 +698,8 @@ def memorydb_sns_notification_tracking_check(cache: dict, session, awsAccountId:
                         "ISO 27001:2013 A.11.2.4",
                         "ISO 27001:2013 A.11.2.5",
                         "ISO 27001:2013 A.11.2.6",
+                        "CIS AWS Database Services Benchmark V1.0 6.4",
+                        "CIS AWS Database Services Benchmark V1.0 6.5"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -805,6 +817,7 @@ def memorydb_user_admin_check(cache: dict, session, awsAccountId: str, awsRegion
                                 "ISO 27001:2013 A.9.3.1",
                                 "ISO 27001:2013 A.9.4.2",
                                 "ISO 27001:2013 A.9.4.3",
+                                "CIS AWS Database Services Benchmark V1.0 6.5"
                             ]
                         },
                         "Workflow": {"Status": "NEW"},
@@ -894,6 +907,7 @@ def memorydb_user_admin_check(cache: dict, session, awsAccountId: str, awsRegion
                                 "ISO 27001:2013 A.9.3.1",
                                 "ISO 27001:2013 A.9.4.2",
                                 "ISO 27001:2013 A.9.4.3",
+                                "CIS AWS Database Services Benchmark V1.0 6.5"
                             ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
@@ -1011,6 +1025,7 @@ def memorydb_user_password_check(cache: dict, session, awsAccountId: str, awsReg
                                 "ISO 27001:2013 A.9.3.1",
                                 "ISO 27001:2013 A.9.4.2",
                                 "ISO 27001:2013 A.9.4.3",
+                                "CIS AWS Database Services Benchmark V1.0 6.5"
                             ]
                         },
                         "Workflow": {"Status": "NEW"},
@@ -1100,6 +1115,7 @@ def memorydb_user_password_check(cache: dict, session, awsAccountId: str, awsReg
                                 "ISO 27001:2013 A.9.3.1",
                                 "ISO 27001:2013 A.9.4.2",
                                 "ISO 27001:2013 A.9.4.3",
+                                "CIS AWS Database Services Benchmark V1.0 6.5"
                             ]
                         },
                         "Workflow": {"Status": "RESOLVED"},

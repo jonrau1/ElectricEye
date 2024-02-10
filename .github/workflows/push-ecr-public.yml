@@ -27,7 +27,7 @@ jobs:
       # ECR Login to ECR-Public
       - name: Amazon ECR Public Login
         id: login-ecr-public
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
         with:
           registry-type: public
 

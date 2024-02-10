@@ -315,7 +315,8 @@ def neptune_instance_storage_encryption_check(cache: dict, session, awsAccountId
                         "NIST SP 800-53 Rev. 4 SC-12",
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3"
+                        "ISO 27001:2013 A.8.2.3",
+                        "CIS AWS Database Services Benchmark V1.0 9.2"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -389,7 +390,8 @@ def neptune_instance_storage_encryption_check(cache: dict, session, awsAccountId
                         "NIST SP 800-53 Rev. 4 SC-12",
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3"
+                        "ISO 27001:2013 A.8.2.3",
+                        "CIS AWS Database Services Benchmark V1.0 9.2"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -487,7 +489,8 @@ def neptune_instance_iam_authentication_check(cache: dict, session, awsAccountId
                         "NIST SP 800-53 Rev. 4 PS-3",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.7.1.1",
-                        "ISO 27001:2013 A.9.2.1"
+                        "ISO 27001:2013 A.9.2.1",
+                        "CIS AWS Database Services Benchmark V1.0 9.4"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -572,7 +575,8 @@ def neptune_instance_iam_authentication_check(cache: dict, session, awsAccountId
                         "NIST SP 800-53 Rev. 4 PS-3",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.7.1.1",
-                        "ISO 27001:2013 A.9.2.1"
+                        "ISO 27001:2013 A.9.2.1",
+                        "CIS AWS Database Services Benchmark V1.0 9.4"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -652,7 +656,8 @@ def neptune_cluster_parameter_ssl_enforcement_check(cache: dict, session, awsAcc
                                 "ISO 27001:2013 A.13.2.1",
                                 "ISO 27001:2013 A.13.2.3",
                                 "ISO 27001:2013 A.14.1.2",
-                                "ISO 27001:2013 A.14.1.3"
+                                "ISO 27001:2013 A.14.1.3",
+                                "CIS AWS Database Services Benchmark V1.0 9.3"
                             ]
                         },
                         "Workflow": {"Status": "NEW"},
@@ -714,7 +719,8 @@ def neptune_cluster_parameter_ssl_enforcement_check(cache: dict, session, awsAcc
                                 "ISO 27001:2013 A.13.2.1",
                                 "ISO 27001:2013 A.13.2.3",
                                 "ISO 27001:2013 A.14.1.2",
-                                "ISO 27001:2013 A.14.1.3"
+                                "ISO 27001:2013 A.14.1.3",
+                                "CIS AWS Database Services Benchmark V1.0 9.3"
                             ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
@@ -838,7 +844,9 @@ def neptune_instance_audit_logging_check(cache: dict, session, awsAccountId: str
                         "ISO 27001:2013 A.13.2.2",
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
-                        "ISO 27001:2013 A.16.1.7"
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS AWS Database Services Benchmark V1.0 9.5",
+                        "CIS AWS Database Services Benchmark V1.0 9.7"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -945,7 +953,9 @@ def neptune_instance_audit_logging_check(cache: dict, session, awsAccountId: str
                         "ISO 27001:2013 A.13.2.2",
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
-                        "ISO 27001:2013 A.16.1.7"
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS AWS Database Services Benchmark V1.0 9.5",
+                        "CIS AWS Database Services Benchmark V1.0 9.7"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},

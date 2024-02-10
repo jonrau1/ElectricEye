@@ -280,10 +280,12 @@ def qldb_export_export_encryption_check(cache: dict, session, awsAccountId: str,
                             "NIST SP 800-53 Rev. 4 SC-28",
                             "AICPA TSC CC6.1",
                             "ISO 27001:2013 A.8.2.3",
-                        ],
+                            "CIS AWS Database Services Benchmark V1.0 11.3",
+                            "CIS AWS Database Services Benchmark V1.0 11.7"
+                        ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
             else:
@@ -337,9 +339,11 @@ def qldb_export_export_encryption_check(cache: dict, session, awsAccountId: str,
                             "NIST SP 800-53 Rev. 4 SC-28",
                             "AICPA TSC CC6.1",
                             "ISO 27001:2013 A.8.2.3",
-                        ],
+                            "CIS AWS Database Services Benchmark V1.0 11.3",
+                            "CIS AWS Database Services Benchmark V1.0 11.7"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
+                    "RecordState": "ACTIVE"
                 }
                 yield finding

@@ -2,6 +2,10 @@
 .pycache
 .xml
 .json.gz
+*.parquet
+*.parquet*
 .git
 .aws
 *.pyc
+eeauditor/processor/outputs/*.svg
+eeauditor/processor/outputs/*.html

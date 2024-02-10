@@ -119,6 +119,7 @@ Resources:
                 - ecs:ListClusters
                 - firehose:DescribeDeliveryStream
                 - firehose:ListDeliveryStreams
+                - firehose:Put*
                 - fis:GetExperimentTemplate
                 - fis:ListExperimentTemplates
                 - fsx:DescribeBackups
