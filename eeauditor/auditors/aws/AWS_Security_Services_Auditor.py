@@ -271,7 +271,8 @@ def macie_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
                     "ISO 27001:2013 A.16.1.1",
                     "ISO 27001:2013 A.16.1.4",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.4",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 2.1.3"
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 2.1.3",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 2.1.3"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -368,7 +369,8 @@ def macie_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
                     "ISO 27001:2013 A.16.1.1",
                     "ISO 27001:2013 A.16.1.4",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 2.1.4",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 2.1.3"
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 2.1.3",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 2.1.3"
                 ]
             },
             "Workflow": {"Status": "NEW"},

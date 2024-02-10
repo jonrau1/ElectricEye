@@ -485,7 +485,8 @@ def rds_instance_public_access_check(cache: dict, session, awsAccountId: str, aw
                         "ISO 27001:2013 A.14.1.2",
                         "ISO 27001:2013 A.14.1.3",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.3",
-                        "CIS Amazon Web Services Foundations Benchmark V2.0 2.3.3"
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 2.3.3",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 2.3.2",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -602,7 +603,8 @@ def rds_instance_public_access_check(cache: dict, session, awsAccountId: str, aw
                         "ISO 27001:2013 A.14.1.2",
                         "ISO 27001:2013 A.14.1.3",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.3",
-                        "CIS Amazon Web Services Foundations Benchmark V2.0 2.3.3"
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 2.3.3",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 2.3.2",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -692,6 +694,7 @@ def rds_instance_storage_encryption_check(cache: dict, session, awsAccountId: st
                         "ISO 27001:2013 A.8.2.3",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.1",
                         "CIS Amazon Web Services Foundations Benchmark V2.0 2.3.1",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 2.3.1",
                         "CIS AWS Database Services Benchmark V1.0 3.5",
                         "CIS AWS Database Services Benchmark V1.0 3.11"
                     ]
@@ -764,6 +767,7 @@ def rds_instance_storage_encryption_check(cache: dict, session, awsAccountId: st
                         "ISO 27001:2013 A.8.2.3",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.1",
                         "CIS Amazon Web Services Foundations Benchmark V2.0 2.3.1",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 2.3.1",
                         "CIS AWS Database Services Benchmark V1.0 3.5",
                         "CIS AWS Database Services Benchmark V1.0 3.11"
                     ],
@@ -2205,7 +2209,8 @@ def rds_snapshot_public_share_check(cache: dict, session, awsAccountId: str, aws
                                 "ISO 27001:2013 A.14.1.2",
                                 "ISO 27001:2013 A.14.1.3",
                                 "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.3",
-                                "CIS Amazon Web Services Foundations Benchmark V2.0 2.3.3"
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 2.3.3",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 2.3.2",
                             ]
                         },
                         "Workflow": {"Status": "NEW"},
@@ -2314,7 +2319,8 @@ def rds_snapshot_public_share_check(cache: dict, session, awsAccountId: str, aws
                                 "ISO 27001:2013 A.14.1.2",
                                 "ISO 27001:2013 A.14.1.3",
                                 "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.3",
-                                "CIS Amazon Web Services Foundations Benchmark V2.0 2.3.3"
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 2.3.3",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 2.3.2",
                             ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
@@ -2573,6 +2579,7 @@ def rds_aurora_cluster_encryption_check(cache: dict, session, awsAccountId: str,
                         "ISO 27001:2013 A.8.2.3",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.1",
                         "CIS Amazon Web Services Foundations Benchmark V2.0 2.3.1",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 2.3.1",
                         "CIS AWS Database Services Benchmark V1.0 2.3"
                     ]
                 },
@@ -2646,6 +2653,7 @@ def rds_aurora_cluster_encryption_check(cache: dict, session, awsAccountId: str,
                         "ISO 27001:2013 A.8.2.3",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.1",
                         "CIS Amazon Web Services Foundations Benchmark V2.0 2.3.1",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 2.3.1",
                         "CIS AWS Database Services Benchmark V1.0 2.3",
                     ]
                 },
@@ -4364,6 +4372,7 @@ def rds_instance_minor_version_upgrade_check(cache: dict, session, awsAccountId:
                         "ISO 27001:2013 A.11.2.6",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.2",
                         "CIS Amazon Web Services Foundations Benchmark V2.0 2.3.2",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 2.3.2",
                         "CIS AWS Database Services Benchmark V1.0 3.8",
                         "CIS AWS Database Services Benchmark V1.0 3.11"
                     ]
@@ -4436,6 +4445,7 @@ def rds_instance_minor_version_upgrade_check(cache: dict, session, awsAccountId:
                         "ISO 27001:2013 A.11.2.6",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 2.3.2",
                         "CIS Amazon Web Services Foundations Benchmark V2.0 2.3.2",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 2.3.2",
                         "CIS AWS Database Services Benchmark V1.0 3.8",
                         "CIS AWS Database Services Benchmark V1.0 3.11"
                     ]
