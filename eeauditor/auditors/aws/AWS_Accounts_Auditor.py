@@ -137,7 +137,8 @@ def aws_accounts_billing_dedicated_contact_check(cache: dict, session, awsAccoun
                     "ISO 27001:2013 A.16.1.3",
                     "ISO 27001:2013 A.16.1.4",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.1",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.1"
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.1",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.1"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -203,7 +204,8 @@ def aws_accounts_billing_dedicated_contact_check(cache: dict, session, awsAccoun
                     "ISO 27001:2013 A.16.1.3",
                     "ISO 27001:2013 A.16.1.4",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.1",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.1"
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.1",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.1"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -282,7 +284,8 @@ def aws_accounts_operations_dedicated_contact_check(cache: dict, session, awsAcc
                     "ISO 27001:2013 A.16.1.3",
                     "ISO 27001:2013 A.16.1.4",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.1",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.1"
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.1",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.1"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -348,7 +351,8 @@ def aws_accounts_operations_dedicated_contact_check(cache: dict, session, awsAcc
                     "ISO 27001:2013 A.16.1.3",
                     "ISO 27001:2013 A.16.1.4",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.1",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.1"
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.1",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.1"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -429,7 +433,9 @@ def aws_accounts_security_dedicated_contact_check(cache: dict, session, awsAccou
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.1",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.2",
                     "CIS Amazon Web Services Foundations Benchmark V2.0 1.1",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.2"
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.1",
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.2",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.2"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -497,7 +503,9 @@ def aws_accounts_security_dedicated_contact_check(cache: dict, session, awsAccou
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.1",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.2",
                     "CIS Amazon Web Services Foundations Benchmark V2.0 1.1",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.2"
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.1",
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.2",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.2"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},

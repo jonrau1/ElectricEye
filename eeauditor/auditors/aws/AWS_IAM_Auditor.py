@@ -224,7 +224,8 @@ def iam_access_key_age_check(cache: dict, session, awsAccountId: str, awsRegion:
                                 "MITRE ATT&CK T1589",
                                 "MITRE ATT&CK T1586",
                                 "CIS Amazon Web Services Foundations Benchmark V1.5 1.14",
-                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.14"
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.14",
+                                "CIS Amazon Web Services Foundations Benchmark V3.0 1.14"
                             ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
@@ -309,7 +310,8 @@ def iam_access_key_age_check(cache: dict, session, awsAccountId: str, awsRegion:
                                 "MITRE ATT&CK T1589",
                                 "MITRE ATT&CK T1586",
                                 "CIS Amazon Web Services Foundations Benchmark V1.5 1.14",
-                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.14"
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.14",
+                                "CIS Amazon Web Services Foundations Benchmark V3.0 1.14"
                             ]
                         },
                         "Workflow": {"Status": "NEW"},
@@ -567,7 +569,8 @@ def user_mfa_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
                         "ISO 27001:2013 A.9.4.2",
                         "ISO 27001:2013 A.9.4.3",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 1.10",
-                        "CIS Amazon Web Services Foundations Benchmark V2.0 1.10"
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 1.10",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 1.10"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -647,7 +650,8 @@ def user_mfa_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
                         "ISO 27001:2013 A.9.4.2",
                         "ISO 27001:2013 A.9.4.3",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 1.10",
-                        "CIS Amazon Web Services Foundations Benchmark V2.0 1.10"
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 1.10",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 1.10"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -914,7 +918,8 @@ def user_direct_attached_policy_check(cache: dict, session, awsAccountId: str, a
                         "ISO 27001:2013 A.9.4.2",
                         "ISO 27001:2013 A.9.4.3",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 1.15",
-                        "CIS Amazon Web Services Foundations Benchmark V2.0 1.15"
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 1.15",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 1.15"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -995,7 +1000,8 @@ def user_direct_attached_policy_check(cache: dict, session, awsAccountId: str, a
                         "ISO 27001:2013 A.9.4.2",
                         "ISO 27001:2013 A.9.4.3",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 1.15",
-                        "CIS Amazon Web Services Foundations Benchmark V2.0 1.15"
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 1.15",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 1.15"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -1122,7 +1128,9 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccoun
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.8",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.9",
                     "CIS Amazon Web Services Foundations Benchmark V2.0 1.8",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.9"
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.8",
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.9",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.9"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -1197,7 +1205,11 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccoun
                     "ISO 27001:2013 A.9.4.2",
                     "ISO 27001:2013 A.9.4.3",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.8",
-                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.9"
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.9",
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.8",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.8",
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.9",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.9"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -1285,7 +1297,8 @@ def aws_iam_server_certifcates_check(cache: dict, session, awsAccountId: str, aw
                     "ISO 27001:2013 A.9.4.2",
                     "ISO 27001:2013 A.9.4.3",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.19",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.19"
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.19",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.19"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -1363,7 +1376,8 @@ def aws_iam_server_certifcates_check(cache: dict, session, awsAccountId: str, aw
                     "ISO 27001:2013 A.9.4.2",
                     "ISO 27001:2013 A.9.4.3",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.19",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.19"
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.19",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.19"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -1481,7 +1495,8 @@ def iam_created_managed_policy_least_priv_check(cache: dict, session, awsAccount
                             "ISO 27001:2013 A.13.1.1",
                             "ISO 27001:2013 A.13.2.1",
                             "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
-                            "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
+                            "CIS Amazon Web Services Foundations Benchmark V2.0 1.16",
+                            "CIS Amazon Web Services Foundations Benchmark V3.0 1.16"
                         ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
@@ -1549,7 +1564,8 @@ def iam_created_managed_policy_least_priv_check(cache: dict, session, awsAccount
                             "ISO 27001:2013 A.13.1.1",
                             "ISO 27001:2013 A.13.2.1",
                             "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
-                            "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
+                            "CIS Amazon Web Services Foundations Benchmark V2.0 1.16",
+                            "CIS Amazon Web Services Foundations Benchmark V3.0 1.16"
                         ],
                     },
                     "Workflow": {"Status": "NEW"},
@@ -1617,7 +1633,8 @@ def iam_created_managed_policy_least_priv_check(cache: dict, session, awsAccount
                             "ISO 27001:2013 A.13.1.1",
                             "ISO 27001:2013 A.13.2.1",
                             "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
-                            "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
+                            "CIS Amazon Web Services Foundations Benchmark V2.0 1.16",
+                            "CIS Amazon Web Services Foundations Benchmark V3.0 1.16"
                         ],
                     },
                     "Workflow": {"Status": "NEW"},
@@ -1744,7 +1761,8 @@ def iam_user_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "ISO 27001:2013 A.9.4.1",
                                 "ISO 27001:2013 A.9.4.4",
                                 "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
-                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16",
+                                "CIS Amazon Web Services Foundations Benchmark V3.0 1.16"
                             ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
@@ -1817,7 +1835,8 @@ def iam_user_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "ISO 27001:2013 A.9.4.1",
                                 "ISO 27001:2013 A.9.4.4",
                                 "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
-                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16",
+                                "CIS Amazon Web Services Foundations Benchmark V3.0 1.16"
                             ]
                         },
                         "Workflow": {"Status": "NEW"},
@@ -1890,7 +1909,8 @@ def iam_user_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "ISO 27001:2013 A.9.4.1",
                                 "ISO 27001:2013 A.9.4.4",
                                 "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
-                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16",
+                                "CIS Amazon Web Services Foundations Benchmark V3.0 1.16"
                             ]
                         },
                         "Workflow": {"Status": "NEW"},
@@ -2017,7 +2037,8 @@ def iam_group_policy_least_priv_check(cache: dict, session, awsAccountId: str, a
                                 "ISO 27001:2013 A.9.4.1",
                                 "ISO 27001:2013 A.9.4.4",
                                 "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
-                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16",
+                                "CIS Amazon Web Services Foundations Benchmark V3.0 1.16"
                             ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
@@ -2090,7 +2111,8 @@ def iam_group_policy_least_priv_check(cache: dict, session, awsAccountId: str, a
                                 "ISO 27001:2013 A.9.4.1",
                                 "ISO 27001:2013 A.9.4.4",
                                 "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
-                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16",
+                                "CIS Amazon Web Services Foundations Benchmark V3.0 1.16"
                             ]
                         },
                         "Workflow": {"Status": "NEW"},
@@ -2163,7 +2185,8 @@ def iam_group_policy_least_priv_check(cache: dict, session, awsAccountId: str, a
                                 "ISO 27001:2013 A.9.4.1",
                                 "ISO 27001:2013 A.9.4.4",
                                 "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
-                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16",
+                                "CIS Amazon Web Services Foundations Benchmark V3.0 1.16"
                             ]
                         },
                         "Workflow": {"Status": "NEW"},
@@ -2290,7 +2313,8 @@ def iam_role_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "ISO 27001:2013 A.13.1.1",
                                 "ISO 27001:2013 A.13.2.1",
                                 "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
-                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16",
+                                "CIS Amazon Web Services Foundations Benchmark V3.0 1.16"
                             ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
@@ -2363,7 +2387,8 @@ def iam_role_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "ISO 27001:2013 A.13.1.1",
                                 "ISO 27001:2013 A.13.2.1",
                                 "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
-                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16",
+                                "CIS Amazon Web Services Foundations Benchmark V3.0 1.16"
                             ]
                         },
                         "Workflow": {"Status": "NEW"},
@@ -2436,7 +2461,8 @@ def iam_role_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "ISO 27001:2013 A.9.4.1",
                                 "ISO 27001:2013 A.9.4.4",
                                 "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
-                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16"
+                                "CIS Amazon Web Services Foundations Benchmark V2.0 1.16",
+                                "CIS Amazon Web Services Foundations Benchmark V3.0 1.16"
                             ]
                         },
                         "Workflow": {"Status": "NEW"},
@@ -2528,7 +2554,8 @@ def aws_iam_root_user_access_keys_check(cache: dict, session, awsAccountId: str,
                     "MITRE ATT&CK T1589",
                     "MITRE ATT&CK T1586",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.4",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.4"
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.4",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.4"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -2610,7 +2637,8 @@ def aws_iam_root_user_access_keys_check(cache: dict, session, awsAccountId: str,
                     "MITRE ATT&CK T1589",
                     "MITRE ATT&CK T1586",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.4",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.4"
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.4",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.4"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -2699,7 +2727,8 @@ def aws_iam_root_user_mfa_check(cache: dict, session, awsAccountId: str, awsRegi
                     "MITRE ATT&CK T1589",
                     "MITRE ATT&CK T1586",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.5",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.5"
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.5",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.5"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -2781,7 +2810,8 @@ def aws_iam_root_user_mfa_check(cache: dict, session, awsAccountId: str, awsRegi
                     "MITRE ATT&CK T1589",
                     "MITRE ATT&CK T1586",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.5",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.5"
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.5",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.5"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -2880,7 +2910,8 @@ def aws_iam_root_user_hardware_mfa_check(cache: dict, session, awsAccountId: str
                     "MITRE ATT&CK T1589",
                     "MITRE ATT&CK T1586",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.6",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.6"
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.6",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.6"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -2961,7 +2992,9 @@ def aws_iam_root_user_hardware_mfa_check(cache: dict, session, awsAccountId: str
                     "ISO 27001:2013 A.9.4.3",
                     "MITRE ATT&CK T1589",
                     "MITRE ATT&CK T1586",
-                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.6"
+                    "CIS Amazon Web Services Foundations Benchmark V1.5 1.6",
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.6",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.6"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -3065,7 +3098,8 @@ def iam_access_key_unused_fortyfive_days_check(cache: dict, session, awsAccountI
                             "MITRE ATT&CK T1589",
                             "MITRE ATT&CK T1586",
                             "CIS Amazon Web Services Foundations Benchmark V1.5 1.12",
-                            "CIS Amazon Web Services Foundations Benchmark V2.0 1.12"
+                            "CIS Amazon Web Services Foundations Benchmark V2.0 1.12",
+                            "CIS Amazon Web Services Foundations Benchmark V3.0 1.12"
                         ]
                     },
                     "Workflow": {"Status": "NEW"},
@@ -3148,7 +3182,8 @@ def iam_access_key_unused_fortyfive_days_check(cache: dict, session, awsAccountI
                             "MITRE ATT&CK T1589",
                             "MITRE ATT&CK T1586",
                             "CIS Amazon Web Services Foundations Benchmark V1.5 1.12",
-                            "CIS Amazon Web Services Foundations Benchmark V2.0 1.12"
+                            "CIS Amazon Web Services Foundations Benchmark V2.0 1.12",
+                            "CIS Amazon Web Services Foundations Benchmark V3.0 1.12"
                         ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
@@ -3272,7 +3307,8 @@ def aws_iam_root_user_usage_check(cache: dict, session, awsAccountId: str, awsRe
                     "ISO 27001:2013 A.15.2.1",
                     "ISO 27001:2013 A.16.1.7",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.7",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.7"
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.7",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.7"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -3370,7 +3406,8 @@ def aws_iam_root_user_usage_check(cache: dict, session, awsAccountId: str, awsRe
                     "ISO 27001:2013 A.15.2.1",
                     "ISO 27001:2013 A.16.1.7",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.7",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.7"
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.7",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.7"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -3442,7 +3479,8 @@ def aws_iam_access_analyzer_enabled_check(cache: dict, session, awsAccountId: st
                     "ISO 27001:2013 A.16.1.1",
                     "ISO 27001:2013 A.16.1.4",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.20",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.20"
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.20",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.20"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -3503,7 +3541,8 @@ def aws_iam_access_analyzer_enabled_check(cache: dict, session, awsAccountId: st
                     "ISO 27001:2013 A.16.1.1",
                     "ISO 27001:2013 A.16.1.4",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.20",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.20"
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.20",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.20"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -3602,7 +3641,8 @@ def iam_user_multiple_access_key_check(cache: dict, session, awsAccountId: str, 
                         "MITRE ATT&CK T1589",
                         "MITRE ATT&CK T1586",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 1.13",
-                        "CIS Amazon Web Services Foundations Benchmark V2.0 1.13"
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 1.13",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 1.13"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -3684,7 +3724,8 @@ def iam_user_multiple_access_key_check(cache: dict, session, awsAccountId: str, 
                         "MITRE ATT&CK T1589",
                         "MITRE ATT&CK T1586",
                         "CIS Amazon Web Services Foundations Benchmark V1.5 1.13",
-                        "CIS Amazon Web Services Foundations Benchmark V2.0 1.13"
+                        "CIS Amazon Web Services Foundations Benchmark V2.0 1.13",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 1.13"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -3775,7 +3816,8 @@ def aws_support_iam_role_in_use_check(cache: dict, session, awsAccountId: str, a
                     "ISO 27001:2013 A.7.1.1",
                     "ISO 27001:2013 A.9.2.1",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.17",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.17"
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.17",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.17"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -3843,7 +3885,8 @@ def aws_support_iam_role_in_use_check(cache: dict, session, awsAccountId: str, a
                     "ISO 27001:2013 A.7.1.1",
                     "ISO 27001:2013 A.9.2.1",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.17",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.17"
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.17",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.17"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -3934,7 +3977,9 @@ def cloud_shell_iam_role_in_use_check(cache: dict, session, awsAccountId: str, a
                     "MITRE ATT&CK T1567",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
                     "CIS Amazon Web Services Foundations Benchmark V2.0 1.16",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.22"
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.16",
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.22",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.22"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -4004,7 +4049,9 @@ def cloud_shell_iam_role_in_use_check(cache: dict, session, awsAccountId: str, a
                     "MITRE ATT&CK T1567",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 1.16",
                     "CIS Amazon Web Services Foundations Benchmark V2.0 1.16",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.22"
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.16",
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 1.22",
+                    "CIS Amazon Web Services Foundations Benchmark V3.0 1.22"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
