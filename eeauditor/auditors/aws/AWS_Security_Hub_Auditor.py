@@ -91,7 +91,8 @@ def high_critical_findings(cache: dict, session, awsAccountId: str, awsRegion: s
                     "ISO 27001:2013 A.16.1.1",
                     "ISO 27001:2013 A.16.1.4",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 4.16",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 4.16"
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 4.16",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.16",
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -153,7 +154,8 @@ def high_critical_findings(cache: dict, session, awsAccountId: str, awsRegion: s
                     "CIS Amazon Web Services Foundations Benchmark V1.5 3.5",
                     "CIS Amazon Web Services Foundations Benchmark V2.0 3.5",
                     "CIS Amazon Web Services Foundations Benchmark V1.5 4.16",
-                    "CIS Amazon Web Services Foundations Benchmark V2.0 4.16"
+                    "CIS Amazon Web Services Foundations Benchmark V2.0 4.16",
+                        "CIS Amazon Web Services Foundations Benchmark V3.0 4.16",
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
