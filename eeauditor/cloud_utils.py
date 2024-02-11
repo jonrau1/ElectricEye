@@ -219,6 +219,8 @@ class CloudConfig(object):
             azureTenantId = azureValues["azure_ent_app_tenant_id_value"]
             azureSubscriptions = data["regions_and_accounts"]["azure"]["azure_subscription_ids"]
 
+            del azureValues
+
             if any(
                 # Check to make sure none of the variables pulled from TOML are emtpy
                 not var for var in [
@@ -265,20 +267,23 @@ class CloudConfig(object):
                 )
 
             # Create Azure Identity credentials from Client ID/Secret Value/Tenant ID
-            try:
-                azureCredentials = ClientSecretCredential(client_id=azureClientId,client_secret=azureSecretId,tenant_id=azureTenantId)
-            except Exception as e:
-                logger.error(
-                    "Error encountered attempting to create Azure Identity credentials from client secret: %s", e
-                )
+            azureCredentials = self.create_azure_identity_credentials_from_client_secret(
+                clientId=azureClientId,
+                clientSecret=azureSecretId,
+                tenantId=azureTenantId
+            )
 
             # If subscriptions aren't supplied, attempt to find which ones you have access to
             if not azureSubscriptions:
                 logger.warning(
                     "No values provided for [regions_and_accounts.azure.azure_subscription_ids] - attempting to retrieve subscription IDs your Service Principal has access to..."
                 )
+                azureSubscriptionsIds = self.retrieve_azure_subscriptions_for_service_principal(
+                    azureCredentials=azureCredentials
+                )
+                del azureSubscriptions
             # pass list of subscriptions and the creds off
-            self.azureSubscriptions = azureSubscriptions
+            self.azureSubscriptions = azureSubscriptionsIds
             self.azureCredentials = azureCredentials
 
         # Alibaba Cloud
@@ -729,8 +734,39 @@ class CloudConfig(object):
         logger.info("%s saved to environment variable", credentials_file_path)
         environ["OCI_PEM_FILE_PATH"] = credentials_file_path
 
-    def retrieve_azure_subscriptions_for_service_principal(self, clientId: str, clientSecret: str, tenantId: str):
+    def create_azure_identity_credentials_from_client_secret(self, clientId: str, clientSecret: str, tenantId: str) -> ClientSecretCredential:
+        """
+        Attempts to create and return Azure Identity Credentials built from Client Secret creds within an App Registration
+        """
+        # Create Azure Identity credentials from Client ID/Secret Value/Tenant ID
+        try:
+            azureCredentials = ClientSecretCredential(client_id=clientId,client_secret=clientSecret,tenant_id=tenantId)
+        except Exception as e:
+            logger.error(
+                "Error encountered attempting to create Azure Identity credentials from client secret: %s", e
+            )
+            sys.exit(2)
+
+        return azureCredentials
+
+    def retrieve_azure_subscriptions_for_service_principal(self, azureCredentials: ClientSecretCredential) -> list:
         """
         """
+        azureSubscriptionsClient = SubscriptionClient(azureCredentials)
+
+        try:
+            azureSubscriptionIds = [sub.subscription_id for sub in azureSubscriptionsClient.subscriptions.list()]
+            if not azureSubscriptionIds:
+                logger.error(
+                    "No Subscription IDs are available for your current Service Principal, please review your credentials and Access Control (IAM) settings in Azure Entra ID and Azure Subscriptions, respectively"
+                )
+                sys.exit(2)
+        except Exception as e:
+            logger.error(
+                "Error encountered attempting to list Azure Subscriptions for Service Principal: %s", e
+            )
+            sys.exit(2)
+
+        return azureSubscriptionIds
         
 ## EOF
