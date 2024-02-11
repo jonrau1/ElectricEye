@@ -26,6 +26,8 @@ from os import environ, path, chmod
 from re import compile
 import json
 from botocore.exceptions import ClientError
+from azure.identity import ClientSecretCredential
+from azure.mgmt.resource.subscriptions import SubscriptionClient
 
 logger = logging.getLogger("CloudUtils")
 
@@ -220,54 +222,64 @@ class CloudConfig(object):
             if any(
                 # Check to make sure none of the variables pulled from TOML are emtpy
                 not var for var in [
-                    azureClientId, azureSecretId, azureTenantId, azureSubscriptions
+                    azureClientId, azureSecretId, azureTenantId
                     ]
                 ):
-                logger.error(f"One of your azure TOML entries in [credentials.azure] is empty!")
+                logger.error("One of your azure TOML entries in [credentials.azure] is empty!")
                 sys.exit(2)
 
-            # This value (subscription IDs) will always be in plaintext
-            self.azureSubscriptions = azureSubscriptions
-
             # Retrieve the values for the azure Enterprise Application Client ID, Secret Value & Tenant ID
-            if self.credentialsLocation == "CONFIG_FILE":
-                self.azureClientId = azureClientId
-                self.azureSecretId = azureSecretId
-                self.azureTenantId = azureTenantId
             # SSM
-            elif self.credentialsLocation == "AWS_SSM":
+            if self.credentialsLocation == "AWS_SSM":
                 # Client ID
-                self.azureClientId = self.get_credential_from_aws_ssm(
+                azureClientId = self.get_credential_from_aws_ssm(
                     azureClientId,
                     "azure_ent_app_client_id_value"
                 )
                 # Secret Value
-                self.azureSecretId = self.get_credential_from_aws_ssm(
+                azureSecretId = self.get_credential_from_aws_ssm(
                     azureSecretId,
                     "azure_ent_app_client_secret_id_value"
                 )
                 # Tenant ID
-                self.azureTenantId = self.get_credential_from_aws_ssm(
+                azureTenantId = self.get_credential_from_aws_ssm(
                     azureTenantId,
                     "azure_ent_app_tenant_id_value"
                 )
             # AWS Secrets Manager
             elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
                 # Client ID
-                self.azureClientId = self.get_credential_from_aws_secrets_manager(
+                azureClientId = self.get_credential_from_aws_secrets_manager(
                     azureClientId,
                     "azure_ent_app_client_id_value"
                 )
                 # Secret Value
-                self.azureSecretId = self.get_credential_from_aws_secrets_manager(
+                azureSecretId = self.get_credential_from_aws_secrets_manager(
                     azureSecretId,
                     "azure_ent_app_client_secret_id_value"
                 )
                 # Tenant ID
-                self.azureTenantId = self.get_credential_from_aws_secrets_manager(
+                azureTenantId = self.get_credential_from_aws_secrets_manager(
                     azureTenantId,
                     "azure_ent_app_tenant_id_value"
                 )
+
+            # Create Azure Identity credentials from Client ID/Secret Value/Tenant ID
+            try:
+                azureCredentials = ClientSecretCredential(client_id=azureClientId,client_secret=azureSecretId,tenant_id=azureTenantId)
+            except Exception as e:
+                logger.error(
+                    "Error encountered attempting to create Azure Identity credentials from client secret: %s", e
+                )
+
+            # If subscriptions aren't supplied, attempt to find which ones you have access to
+            if not azureSubscriptions:
+                logger.warning(
+                    "No values provided for [regions_and_accounts.azure.azure_subscription_ids] - attempting to retrieve subscription IDs your Service Principal has access to..."
+                )
+            # pass list of subscriptions and the creds off
+            self.azureSubscriptions = azureSubscriptions
+            self.azureCredentials = azureCredentials
 
         # Alibaba Cloud
         elif assessmentTarget == "Alibaba":
@@ -716,5 +728,9 @@ class CloudConfig(object):
 
         logger.info("%s saved to environment variable", credentials_file_path)
         environ["OCI_PEM_FILE_PATH"] = credentials_file_path
+
+    def retrieve_azure_subscriptions_for_service_principal(self, clientId: str, clientSecret: str, tenantId: str):
+        """
+        """
         
 ## EOF
