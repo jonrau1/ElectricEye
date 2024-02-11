@@ -195,7 +195,7 @@ def get_identity_protection_risky_users(token):
         return json.loads(r.text)["value"]
     
 @registry.register_check("m365.aadusers")
-def m365_aad_user_mfa_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_aad_user_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, ) -> dict:
     """
     [M365.AadUser.1] Azure Active Directory users should have at least one Multi-factor Authentication (MFA) device registered
     """
@@ -376,7 +376,7 @@ def m365_aad_user_mfa_check(cache, awsAccountId, awsRegion, awsPartition, tenant
             yield finding
 
 @registry.register_check("m365.aadusers")
-def m365_aad_user_phishing_resistant_mfa_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_aad_user_phishing_resistant_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, ) -> dict:
     """
     [M365.AadUser.2] Azure Active Directory users should have a phishing-resistant Multi-factor Authentication (MFA) device registered
     """
@@ -575,7 +575,7 @@ def m365_aad_user_phishing_resistant_mfa_check(cache, awsAccountId, awsRegion, a
             yield finding
 
 @registry.register_check("m365.aadusers")
-def m365_aad_user_active_identity_protection_risk_detection_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_aad_user_active_identity_protection_risk_detection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, ) -> dict:
     """
     [M365.AadUser.3] Azure Active Directory users with active Medium or High Identity Protection Risk Detections should be investigated
     """
@@ -747,7 +747,7 @@ def m365_aad_user_active_identity_protection_risk_detection_check(cache, awsAcco
             yield finding
 
 @registry.register_check("m365.aadusers")
-def m365_aad_user_active_identity_protection_risky_user_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_aad_user_active_identity_protection_risky_user_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, ) -> dict:
     """
     [M365.AadUser.4] Azure Active Directory users that are active Risky Users in Identity Protection should be investigated
     """
