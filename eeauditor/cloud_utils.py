@@ -209,7 +209,65 @@ class CloudConfig(object):
 
         # Azure
         elif assessmentTarget == "Azure":
-            logger.info("Coming soon!")
+            # Process data["credentials"]["azure"] - values need to be assigned to self
+            azureValues = data["credentials"]["azure"]
+
+            azureClientId = azureValues["azure_ent_app_client_id_value"]
+            azureSecretId = azureValues["azure_ent_app_client_secret_id_value"]
+            azureTenantId = azureValues["azure_ent_app_tenant_id_value"]
+            azureSubscriptions = data["regions_and_accounts"]["azure"]["azure_subscription_ids"]
+
+            if any(
+                # Check to make sure none of the variables pulled from TOML are emtpy
+                not var for var in [
+                    azureClientId, azureSecretId, azureTenantId, azureSubscriptions
+                    ]
+                ):
+                logger.error(f"One of your azure TOML entries in [credentials.azure] is empty!")
+                sys.exit(2)
+
+            # This value (subscription IDs) will always be in plaintext
+            self.azureSubscriptions = azureSubscriptions
+
+            # Retrieve the values for the azure Enterprise Application Client ID, Secret Value & Tenant ID
+            if self.credentialsLocation == "CONFIG_FILE":
+                self.azureClientId = azureClientId
+                self.azureSecretId = azureSecretId
+                self.azureTenantId = azureTenantId
+            # SSM
+            elif self.credentialsLocation == "AWS_SSM":
+                # Client ID
+                self.azureClientId = self.get_credential_from_aws_ssm(
+                    azureClientId,
+                    "azure_ent_app_client_id_value"
+                )
+                # Secret Value
+                self.azureSecretId = self.get_credential_from_aws_ssm(
+                    azureSecretId,
+                    "azure_ent_app_client_secret_id_value"
+                )
+                # Tenant ID
+                self.azureTenantId = self.get_credential_from_aws_ssm(
+                    azureTenantId,
+                    "azure_ent_app_tenant_id_value"
+                )
+            # AWS Secrets Manager
+            elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
+                # Client ID
+                self.azureClientId = self.get_credential_from_aws_secrets_manager(
+                    azureClientId,
+                    "azure_ent_app_client_id_value"
+                )
+                # Secret Value
+                self.azureSecretId = self.get_credential_from_aws_secrets_manager(
+                    azureSecretId,
+                    "azure_ent_app_client_secret_id_value"
+                )
+                # Tenant ID
+                self.azureTenantId = self.get_credential_from_aws_secrets_manager(
+                    azureTenantId,
+                    "azure_ent_app_tenant_id_value"
+                )
 
         # Alibaba Cloud
         elif assessmentTarget == "Alibaba":
