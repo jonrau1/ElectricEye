@@ -79,6 +79,9 @@ class EEAuditor(object):
         elif assessmentTarget == "Azure":
             searchPath = "./auditors/azure"
             utils = CloudConfig(assessmentTarget, tomlPath)
+            # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
+            self.azureSubscriptionsIds = utils.azureSubscriptionsIds
+            self.azureCredentials = utils.azureCredentials
         # Alibaba
         elif assessmentTarget == "Alibaba":
             searchPath = "./auditors/alibabacloud"
@@ -424,6 +427,55 @@ class EEAuditor(object):
                             "Failed to execute check %s with traceback %s",
                             checkName, format_exc()
                         )
+            # optional sleep if specified - defaults to 0 seconds
+            sleep(delay)
+
+    # Called from eeauditor/controller.py run_auditor()
+    def run_azure_checks(self, pluginName=None, delay=0):
+        """
+        Runs Azure Auditors using Client Secret credentials from an Application Registration
+        """
+
+        # These details are needed for the ASFF...
+        import boto3
+
+        sts = boto3.client("sts")
+
+        region = boto3.Session().region_name
+        account = sts.get_caller_identity()["Account"]
+        # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
+        partition = CloudConfig.check_aws_partition(region)
+
+        for azSubId in self.azureSubscriptionsIds:
+            for serviceName, checkList in self.registry.checks.items():
+                # Pass the Cache at the "serviceName" level aka Plugin
+                auditorCache = {}
+                for checkName, check in checkList.items():
+                    # if a specific check is requested, only run that one check
+                    if (
+                        not pluginName
+                        or pluginName
+                        and pluginName == checkName
+                    ):
+                        try:
+                            logger.info(
+                                "Executing Check %s for Azure Subscription %s",
+                                checkName, self.m365TenantId
+                            )
+                            for finding in check(
+                                cache=auditorCache,
+                                awsAccountId=account,
+                                awsRegion=region,
+                                awsPartition=partition,
+                                azureCredentials=self.azureCredentials,
+                                azureSubscriptionId=azSubId
+                            ):
+                                yield finding
+                        except Exception:
+                            logger.warn(
+                                "Failed to execute check %s with traceback %s",
+                                checkName, format_exc()
+                            )
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
 

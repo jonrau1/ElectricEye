@@ -283,7 +283,7 @@ class CloudConfig(object):
                 )
                 del azureSubscriptions
             # pass list of subscriptions and the creds off
-            self.azureSubscriptions = azureSubscriptionsIds
+            self.azureSubscriptionsIds = azureSubscriptionsIds
             self.azureCredentials = azureCredentials
 
         # Alibaba Cloud
