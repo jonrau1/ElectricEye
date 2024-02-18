@@ -93,7 +93,7 @@ def process_resource_group_name(id: str):
 @registry.register_check("azure.virtual_machines")
 def azure_vm_bastion_host_exists_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
     """
-    [Azure.VirtualMachines.1] An Azure Bastion Host should be deployed to provide secure RDP and SSH access to Azure Virtual Machines
+    [Azure.VirtualMachines.1] Azure Bastion Hosts should be deployed to Virtual Networks to provide secure RDP and SSH access to Azure Virtual Machines
     """
     azNetworkClient = NetworkManagementClient(azureCredential,azSubId)
     # ISO Time
@@ -128,7 +128,7 @@ def azure_vm_bastion_host_exists_check(cache: dict, awsAccountId: str, awsRegion
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.1] An Azure Bastion Host should be deployed to provide secure RDP and SSH access to Azure Virtual Machines",
+                "Title": "[Azure.VirtualMachines.1] Azure Bastion Hosts should be deployed to Virtual Networks to provide secure RDP and SSH access to Azure Virtual Machines",
                 "Description": f"Virtual Network {vnetName} in Subscription {azSubId} in {azRegion} does not have an Azure Bastion Host deployed. Azure Bastion is a fully managed PaaS service that provides secure and seamless RDP and SSH access to your virtual machines directly through the Azure Portal. Azure Bastion is provisioned directly in your Virtual Network (VNet) and supports all VMs in your Virtual Network using SSL without any exposure through public IP addresses. Azure Bastion is provisioned directly in your Virtual Network (VNet) and supports all VMs in your Virtual Network using SSL without any exposure through public IP addresses. Azure Bastion is provisioned directly in your Virtual Network (VNet) and supports all VMs in your Virtual Network using SSL without any exposure through public IP addresses. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -196,7 +196,7 @@ def azure_vm_bastion_host_exists_check(cache: dict, awsAccountId: str, awsRegion
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.1] An Azure Bastion Host should be deployed to provide secure RDP and SSH access to Azure Virtual Machines",
+                "Title": "[Azure.VirtualMachines.1] Azure Bastion Hosts should be deployed to Virtual Networks to provide secure RDP and SSH access to Azure Virtual Machines",
                 "Description": f"Virtual Network {vnetName} in Subscription {azSubId} in {azRegion} does have an Azure Bastion Host deployed.",
                 "Remediation": {
                     "Recommendation": {

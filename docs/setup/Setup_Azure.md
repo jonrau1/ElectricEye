@@ -188,7 +188,18 @@ Todo...
 
 ## Azure Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **z Checks** across **z Auditors** that support the secure configuration of **z services/components**
+These are the following services and checks perform by each Auditor, there are currently **8 Checks** across **2 Auditors** that support the secure configuration of **3 services/components**
+
+| Auditor File Name | Scanned Resource Name | Auditor Scan Description |
+|---|---|---|
+| Azure_StorageAccounts_Auditor | Azure Storage Account | Storage Accts should require secure transfer (HTTPS) |
+| Azure_StorageAccounts_Auditor | Azure Storage Account | Storage Accts should enable infrastructure encryption (AES256) |
+| Azure_VirtualMachine_Auditor | Azure Virtual Network | VNETs should have Azure Bastion deployed in them |
+| Azure_VirtualMachine_Auditor | Azure Virtual Machine | Azure VMs should use Managed Disks (not VHDs) |
+| Azure_VirtualMachine_Auditor | Azure Virtual Machine | Azure VMs should encrypted OS and Data disks with CMKs |
+| Azure_VirtualMachine_Auditor | Azure Disk Storage Disks | Unattached storage disks should be encrypted with CMKs |
+| Azure_VirtualMachine_Auditor | Azure Virtual Machine | Azure VMs should have the Azure Monitor agent installed |
+| Azure_VirtualMachine_Auditor | Azure Virtual Machine | Azure VMs should be covered by Azure Vault backups |
 
 Continue to check this section for information on active, retired, and renamed checks or using the `--list-checks` command in the CLI!
 
