@@ -272,9 +272,9 @@ For more information on ElectricEye's CAM concept of operations and schema, refe
 
 In total there are:
 
-- **3** Supported Public CSPs: `AWS`, `GCP`, `OCI`
-- **3** Supported SaaS Providers: `ServiceNow`, `M365`, `Salesforce`
-- **1060** ElectricEye Checks
+- **4** Supported Public CSPs: `AWS`, `GCP`, `OCI`, and `Azure`
+- **3** Supported SaaS Providers: `ServiceNow`, `M365`, and `Salesforce`
+- **1057** ElectricEye Checks
 - **161** Supported CSP & SaaS Asset Components across all Services
 - **120** ElectricEye Auditors
 

@@ -239,7 +239,7 @@ The ASM Module uses NMAP at its core and will be expanded to include ZAP and Sho
 
 ## AWS Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **638 Checks** across **85 Auditors** that support the secure configuration of **121 services/components**
+These are the following services and checks perform by each Auditor, there are currently **635 Checks** across **85 Auditors** that support the secure configuration of **121 services/components**
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service**: AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
@@ -528,9 +528,9 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_Route53_Resolver_Auditor | VPC | Do VPCs have DNS Firewalls associated |
 | Amazon_Route53_Resolver_Auditor | VPC | Do VPCs enabled DNSSEC resolution |
 | Amazon_Route53_Resolver_Auditor | VPC | Do VPCs with DNS Firewall fail open |
-| Amazon_S3_Auditor | S3 Bucket | Is bucket encryption enabled |
-| Amazon_S3_Auditor | S3 Bucket | Is a bucket lifecycle enabled |
-| Amazon_S3_Auditor | S3 Bucket | Is bucket versioning enabled |
+| ~~Amazon_S3_Auditor~~ | ~~S3 Bucket~~ | ~~Is bucket encryption enabled~~ **THIS FINDING HAS BEEN RETIRED** |
+| ~~Amazon_S3_Auditor~~ | ~~S3 Bucket~~ | ~~Is a bucket lifecycle enabled~~ **THIS FINDING HAS BEEN RETIRED** |
+| ~~Amazon_S3_Auditor~~ | ~~S3 Bucket~~ | ~~Is bucket versioning enabled~~ **THIS FINDING HAS BEEN RETIRED** |
 | Amazon_S3_Auditor | S3 Bucket | Does the bucket policy allow public access |
 | Amazon_S3_Auditor | S3 Bucket | Does the bucket have a policy |
 | Amazon_S3_Auditor | S3 Bucket | Is server access logging enabled |
