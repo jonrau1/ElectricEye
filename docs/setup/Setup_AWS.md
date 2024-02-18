@@ -239,7 +239,7 @@ The ASM Module uses NMAP at its core and will be expanded to include ZAP and Sho
 
 ## AWS Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **635 Checks** across **85 Auditors** that support the secure configuration of **121 services/components**
+These are the following services and checks perform by each Auditor, there are currently **633 Checks** across **85 Auditors** that support the secure configuration of **121 services/components**
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service**: AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
@@ -551,7 +551,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_Shield_Advanced_Auditor | Account (Shield subscription) | Is Shield Adv subscription on auto renew |
 | Amazon_Shield_Advanced_Auditor | Global Accelerator Accelerator | Are GA Accelerators protected by Shield Adv |
 | Amazon_Shield_Advanced_Auditor | Account | Has Shield Adv mitigated any attacks in the last 7 days |
-| Amazon_SNS_Auditor | SNS Topic | Is the topic encrypted |
+| ~~Amazon_SNS_Auditor~~ | ~~SNS Topic~~ | ~~Is the topic encrypted~~ **THIS FINDING HAS BEEN RETIRED** |
 | Amazon_SNS_Auditor | SNS Topic | Does the topic have plaintext (HTTP) subscriptions |
 | Amazon_SNS_Auditor | SNS Topic | Does the topic allow public access |
 | Amazon_SNS_Auditor | SNS Topic | Does the topic allow cross-account access |
@@ -597,7 +597,7 @@ These are the following services and checks perform by each Auditor, there are c
 | AWS_Backup_Auditor | DocumentDB cluster | Are DocumentDB clusters backed up |
 | AWS_Cloud9_Auditor | Cloud9 Environment | Are Cloud9 Envs using SSM for access |
 | AWS_CloudFormation_Auditor | CloudFormation Stack | Is drift detection enabled |
-| AWS_CloudFormation_Auditor | CloudFormation Stack | Are stacks monitored |
+| ~~AWS_CloudFormation_Auditor~~ | ~~CloudFormation Stack~~ | ~~Are stacks monitored~~ **THIS FINDING HAS BEEN RETIRED** |
 | AWS_CloudHSM_Auditor | CloudHSM Cluster | Is the CloudHSM Cluster in a degraded state |
 | AWS_CloudHSM_Auditor | CloudHSM HSM Module | Is the CloudHSM hardware security module in a degraded state |
 | AWS_CloudHSM_Auditor | CloudHSM Backups | Is there at least one backup in a READY state |
