@@ -21,6 +21,8 @@
 from azure.mgmt.compute import ComputeManagementClient
 from azure.mgmt.network import NetworkManagementClient
 from azure.mgmt.resource import ResourceManagementClient
+from azure.mgmt.recoveryservices import RecoveryServicesClient
+from azure.mgmt.recoveryservicesbackup import RecoveryServicesBackupClient
 import datetime
 import base64
 import json
@@ -576,7 +578,6 @@ def azure_vm_unattached_disks_cmk_encryption_check(cache: dict, awsAccountId: st
     """
     [Azure.VirtualMachines.4] Ensure that unattached disks are encrypted with a Customer Managed Key (CMK)
     """
-    resourceClient = ResourceManagementClient(azureCredential, azSubId)
     azComputeClient = ComputeManagementClient(azureCredential, azSubId)
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -588,7 +589,7 @@ def azure_vm_unattached_disks_cmk_encryption_check(cache: dict, awsAccountId: st
             # B64 encode all of the details for the Asset
             assetJson = json.dumps(disk,default=str).encode("utf-8")
             assetB64 = base64.b64encode(assetJson)
-            rgName = disk.id.split("/")[4]
+            rgName = rg.name
             azRegion = disk.location
             diskName = disk.name
             if disk.managed_by is None:
@@ -626,7 +627,7 @@ def azure_vm_unattached_disks_cmk_encryption_check(cache: dict, awsAccountId: st
                     "AssetRegion": azRegion,
                     "AssetDetails": assetB64,
                     "AssetClass": "Storage",
-                    "AssetService": "Azure Disk",
+                    "AssetService": "Azure Disk Storage",
                     "AssetComponent": "Disk"
                 },
                 "Resources": [
@@ -692,7 +693,7 @@ def azure_vm_unattached_disks_cmk_encryption_check(cache: dict, awsAccountId: st
                     "AssetRegion": azRegion,
                     "AssetDetails": assetB64,
                     "AssetClass": "Storage",
-                    "AssetService": "Azure Disk",
+                    "AssetService": "Azure Disk Storage",
                     "AssetComponent": "Disk"
                 },
                 "Resources": [
@@ -723,6 +724,372 @@ def azure_vm_unattached_disks_cmk_encryption_check(cache: dict, awsAccountId: st
                         "ISO 27001:2013 A.8.2.3",
                         "CIS Microsoft Azure Foundations Benchmark V2.0.0 7.4",
                         "MITRE ATT&CK T1530"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("azure.virtual_machines")
+def azure_vm_monitoring_agent_installed_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
+    """
+    [Azure.VirtualMachines.5] Azure Virtual Machines should have the Azure Monitor Agent installed
+    """
+    azComputeClient = ComputeManagementClient(azureCredential, azSubId)
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for vm in get_all_azure_vms(cache, azureCredential, azSubId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(vm,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        rgName = process_resource_group_name(vm.id)
+        azRegion = vm.location
+        vmName = vm.name
+
+        # Check if the VM has the Azure Monitor Agent installed
+        monitoringAgentInstalled = False
+        extensions = azComputeClient.virtual_machine_extensions.list(rgName, vmName)
+        if hasattr(extensions, 'value'):  # Checking if 'value' attribute exists
+            for ext in extensions.value:
+                if "MicrosoftMonitoringAgent" in ext.name:
+                    monitoringAgentInstalled = True
+                    break
+
+        # this is a failing check
+        if monitoringAgentInstalled is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azSubId}/{azRegion}/{vm.id}/az-vm-monitoring-agent-installed-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azSubId}/{azRegion}/{vm.id}/az-vm-monitoring-agent-installed-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[Azure.VirtualMachines.5] Azure Virtual Machines should have the Azure Monitor Agent installed",
+                "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does not have the Azure Monitor Agent installed. The Azure Monitor Agent collects monitoring data from Azure Virtual Machines and sends it to the Azure Monitor service. The agent collects monitoring data from the guest operating system and workloads of Azure Virtual Machines. The agent is designed to be used with the Azure Monitor service and other monitoring solutions to provide insights into the performance and operation of the applications and workloads running on the virtual machines. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To install the Azure Monitor Agent on your Azure Virtual Machine instance refer to the Azure Monitor Agent documentation.",
+                        "Url": "https://docs.microsoft.com/en-us/azure/azure-monitor/agents/agents-overview"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Azure Virtual Machine",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureVirtualMachineInstance",
+                        "Id": vm.id,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": vmName,
+                                "Id": vm.id
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.IP-10",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "NIST SP 800-53 Rev. 4 SI-5",
+                        "NIST SP 800-53 Rev. 4 SI-6",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.12.4.1",
+                        "CIS Microsoft Azure Foundations Benchmark V2.0.0 7.5",
+                        "MITRE ATT&CK T1553"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azSubId}/{azRegion}/{vm.id}/az-vm-monitoring-agent-installed-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azSubId}/{azRegion}/{vm.id}/az-vm-monitoring-agent-installed-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Azure.VirtualMachines.5] Azure Virtual Machines should have the Azure Monitor Agent installed",
+                "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does have the Azure Monitor Agent installed.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To install the Azure Monitor Agent on your Azure Virtual Machine instance refer to the Azure Monitor Agent documentation.",
+                        "Url": "https://docs.microsoft.com/en-us/azure/azure-monitor/agents/agents-overview"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Azure Virtual Machine",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureVirtualMachineInstance",
+                        "Id": vm.id,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": vmName,
+                                "Id": vm.id
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.IP-10",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "NIST SP 800-53 Rev. 4 SI-5",
+                        "NIST SP 800-53 Rev. 4 SI-6",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.12.4.1",
+                        "CIS Microsoft Azure Foundations Benchmark V2.0.0 7.5",
+                        "MITRE ATT&CK T1553"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+            
+@registry.register_check("azure.virtual_machines")
+def azure_vm_azure_backup_coverage_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
+    """
+    [Azure.VirtualMachines.6] Azure Virtual Machines should have Azure Backup coverage
+    """
+    azBackupClient = RecoveryServicesBackupClient(azureCredential, azSubId)
+    azRecoverySvcClient = RecoveryServicesClient(azureCredential, azSubId)
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for vm in get_all_azure_vms(cache, azureCredential, azSubId):
+        # B64 encode all of the details for the asset
+        assetJson = json.dumps(vm,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        rgName = process_resource_group_name(vm.id)
+        azRegion = vm.location
+        vmName = vm.name
+        vmId = vm.id
+
+        backupCoverage = False
+        vaultFound = False
+
+        for vault in azRecoverySvcClient.vaults.list_by_subscription_id():
+            vaultFound = True
+            vaultName = vault.name
+            resourceGroupName = vault.id.split("/")[4]  # Extracting resource group name from vault ID
+            
+            # List backup items (protected items) in the vault
+            backupItems = azBackupClient.backup_protected_items.list(
+                vault_name=vaultName,
+                resource_group_name=resourceGroupName,
+                filter="backupManagementType eq 'AzureIaasVM' and itemType eq 'VM'"
+            )
+            
+            for item in backupItems:
+                if vmId in item.properties.virtual_machine_id:
+                    backupCoverage = True
+                    break
+            
+            if backupCoverage:
+                break
+
+        # this is a failing check
+        if not vaultFound or not backupCoverage:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azSubId}/{azRegion}/{vm.id}/az-vm-azure-backup-coverage-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azSubId}/{azRegion}/{vm.id}/az-vm-azure-backup-coverage-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[Azure.VirtualMachines.6] Azure Virtual Machines should have Azure Backup coverage",
+                "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does not have Azure Backup coverage. Azure Backup is a scalable solution with zero-infrastructure maintenance that protects your data from security threats and data loss. Azure Backup provides independent and isolated backups to guard against accidental destruction of original data. Azure Backup also provides the ability to restore VMs to a previous state, which is essential for disaster recovery. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To enable Azure Backup coverage for your Azure Virtual Machine instance refer to the Back up an Azure VM from the VM settings section of the Azure Backup documentation.",
+                        "Url": "https://docs.microsoft.com/en-us/azure/backup/backup-azure-vms-first-look-arm"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Azure Virtual Machine",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureVirtualMachineInstance",
+                        "Id": vm.id,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": vmName,
+                                "Id": vm.id
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.IP-4",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-4",
+                        "NIST SP 800-53 Rev. 4 CP-6",
+                        "NIST SP 800-53 Rev. 4 CP-7",
+                        "NIST SP 800-53 Rev. 4 CP-8",
+                        "NIST SP 800-53 Rev. 4 CP-9",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 CP-13",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "NIST SP 800-53 Rev. 4 SC-6",
+                        "AICPA TSC A1.2",
+                        "AICPA TSC A1.3",
+                        "AICPA TSC CC3.1",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.12.3.1",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.1.3",
+                        "ISO 27001:2013 A.17.2.1",
+                        "ISO 27001:2013 A.18.1.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azSubId}/{azRegion}/{vm.id}/az-vm-azure-backup-coverage-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azSubId}/{azRegion}/{vm.id}/az-vm-azure-backup-coverage-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Azure.VirtualMachines.6] Azure Virtual Machines should have Azure Backup coverage",
+                "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does have Azure Backup coverage.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To enable Azure Backup coverage for your Azure Virtual Machine instance refer to the Back up an Azure VM from the VM settings section of the Azure Backup documentation.",
+                        "Url": "https://docs.microsoft.com/en-us/azure/backup/backup-azure-vms-first-look-arm"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Azure Virtual Machine",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureVirtualMachineInstance",
+                        "Id": vm.id,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": vmName,
+                                "Id": vm.id
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.BE-5",
+                        "NIST CSF V1.1 PR.IP-4",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-4",
+                        "NIST SP 800-53 Rev. 4 CP-6",
+                        "NIST SP 800-53 Rev. 4 CP-7",
+                        "NIST SP 800-53 Rev. 4 CP-8",
+                        "NIST SP 800-53 Rev. 4 CP-9",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 CP-13",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "NIST SP 800-53 Rev. 4 SC-6",
+                        "AICPA TSC A1.2",
+                        "AICPA TSC A1.3",
+                        "AICPA TSC CC3.1",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.12.3.1",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.1.3",
+                        "ISO 27001:2013 A.17.2.1",
+                        "ISO 27001:2013 A.18.1.3"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
