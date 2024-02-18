@@ -194,6 +194,9 @@ These are the following services and checks perform by each Auditor, there are c
 |---|---|---|
 | Azure_StorageAccounts_Auditor | Azure Storage Account | Storage Accts should require secure transfer (HTTPS) |
 | Azure_StorageAccounts_Auditor | Azure Storage Account | Storage Accts should enable infrastructure encryption (AES256) |
+| Azure_StorageAccounts_Auditor | Azure Storage Account | Storage Accts with SAS Policies should be reviewed to ensure hourly rotation |
+| Azure_StorageAccounts_Auditor | Azure Storage Account | Storage Accts with blob containers should disable public access |
+| Azure_StorageAccounts_Auditor | Azure Storage Account | Storage Accts should have network access set to deny |
 | Azure_VirtualMachine_Auditor | Azure Virtual Network | VNETs should have Azure Bastion deployed in them |
 | Azure_VirtualMachine_Auditor | Azure Virtual Machine | Azure VMs should use Managed Disks (not VHDs) |
 | Azure_VirtualMachine_Auditor | Azure Virtual Machine | Azure VMs should encrypted OS and Data disks with CMKs |
