@@ -206,7 +206,6 @@ def azure_storage_acct_infrastructure_encryption_enabled_check(cache: dict, awsA
     """
     [Azure.StorageAccount.2] Azure Storage Accounts should have infrastructure encryption enabled
     """
-    azStorageClient = StorageManagementClient(azureCredential,azSubId)
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for sa in get_all_storage_accounts(cache, azureCredential, azSubId):
