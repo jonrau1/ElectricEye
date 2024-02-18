@@ -188,7 +188,7 @@ Todo...
 
 ## Azure Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **8 Checks** across **2 Auditors** that support the secure configuration of **3 services/components**
+These are the following services and checks perform by each Auditor, there are currently **11 Checks** across **2 Auditors** that support the secure configuration of **3 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
@@ -197,6 +197,9 @@ These are the following services and checks perform by each Auditor, there are c
 | Azure_StorageAccounts_Auditor | Azure Storage Account | Storage Accts with SAS Policies should be reviewed to ensure hourly rotation |
 | Azure_StorageAccounts_Auditor | Azure Storage Account | Storage Accts with blob containers should disable public access |
 | Azure_StorageAccounts_Auditor | Azure Storage Account | Storage Accts should have network access set to deny |
+| Azure_StorageAccounts_Auditor | Azure Storage Account | Storage Accts allowed access to Azure services on trusted list |
+| Azure_StorageAccounts_Auditor | Azure Storage Account | Storage Accts should use private VNET endpoints for access |
+| Azure_StorageAccounts_Auditor | Azure Storage Account | Storage Accts should enable soft delete for blob services |
 | Azure_VirtualMachine_Auditor | Azure Virtual Network | VNETs should have Azure Bastion deployed in them |
 | Azure_VirtualMachine_Auditor | Azure Virtual Machine | Azure VMs should use Managed Disks (not VHDs) |
 | Azure_VirtualMachine_Auditor | Azure Virtual Machine | Azure VMs should encrypted OS and Data disks with CMKs |

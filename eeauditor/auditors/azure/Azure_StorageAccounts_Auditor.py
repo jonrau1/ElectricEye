@@ -19,6 +19,7 @@
 #under the License.
 
 from azure.mgmt.storage import StorageManagementClient
+from azure.mgmt.network import NetworkManagementClient
 import datetime
 import base64
 import json
@@ -1008,5 +1009,612 @@ def azure_storage_acct_default_network_access_rule_set_to_deny_check(cache: dict
                 "RecordState": "ARCHIVED"
             }
             yield finding
+
+@registry.register_check("azure.storage_accounts")
+def azure_storage_acct_trusted_azure_service_access_enabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
+    """
+    [Azure.StorageAccount.6] Azure Storage Accounts should enable Azure services on the trusted services list to access the storage account
+    """
+    azStorageClient = StorageManagementClient(azureCredential,azSubId)
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for sa in get_all_storage_accounts(cache, azureCredential, azSubId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(sa,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        saName = sa.name
+        saId = sa.id
+        azRegion = sa.location
+        rgName = saId.split("/")[4]
+        # check the properties of the storage account to see if trusted Azure services are allowed
+        saAcctProperties = azStorageClient.storage_accounts.get_properties(rgName,saName)
+        networkRules = saAcctProperties.network_rule_set
+        print(networkRules)
+        if networkRules and "AzureServices" not in networkRules.bypass:
+            # this is a failing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-trusted-azure-service-access-enabled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-trusted-azure-service-access-enabled-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[Azure.StorageAccount.6] Azure Storage Accounts should enable Azure services on the trusted services list to access the storage account",
+                "Description": f"Azure Storage Account {saName} in Subscription {azSubId} in {azRegion} does not have trusted Azure services enabled. Trusted Azure services are a set of services that are allowed to access the storage account. By default, all trusted Azure services are allowed to access the storage account. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on trusted Azure services refer to the Azure Storage documentation.",
+                        "Url": "https://docs.microsoft.com/en-us/azure/storage/common/storage-network-security"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Azure Storage Account",
+                    "AssetComponent": "Storage Account",
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureStorageAccount",
+                        "Id": saId,
+                        "Partition": awsPartition,
+                        "Region": azRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": saName,
+                                "Id": saId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST CSF V1.1 PR.AC-4",
+                        "NIST CSF V1.1 PR.DS-5",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AC-5",
+                        "NIST SP 800-53 Rev. 4 AC-6",
+                        "NIST SP 800-53 Rev. 4 AC-14",
+                        "NIST SP 800-53 Rev. 4 AC-16",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 AC-24",
+                        "NIST SP 800-53 Rev. 4 PE-19",
+                        "NIST SP 800-53 Rev. 4 PS-3",
+                        "NIST SP 800-53 Rev. 4 PS-6",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SC-8",
+                        "NIST SP 800-53 Rev. 4 SC-13",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "NIST SP 800-53 Rev. 4 SC-31",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC6.3",
+                        "AICPA TSC CC6.6",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.6.1.2",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.7.1.1",
+                        "ISO 27001:2013 A.7.1.2",
+                        "ISO 27001:2013 A.7.3.1",
+                        "ISO 27001:2013 A.8.2.2",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.9.1.1",
+                        "ISO 27001:2013 A.9.1.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.4.1",
+                        "ISO 27001:2013 A.9.4.4",
+                        "ISO 27001:2013 A.9.4.5",
+                        "ISO 27001:2013 A.10.1.1",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.11.1.5",
+                        "ISO 27001:2013 A.11.2.1",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.1.3",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.13.2.4",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
+                        "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.9",
+                        "MITRE ATT&CK T1530"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-trusted-azure-service-access-enabled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-trusted-azure-service-access-enabled-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Azure.StorageAccount.6] Azure Storage Accounts should enable Azure services on the trusted services list to access the storage account",
+                "Description": f"Azure Storage Account {saName} in Subscription {azSubId} in {azRegion} has trusted Azure services enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on trusted Azure services refer to the Azure Storage documentation.",
+                        "Url": "https://docs.microsoft.com/en-us/azure/storage/common/storage-network-security"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Azure Storage Account",
+                    "AssetComponent": "Storage Account",
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureStorageAccount",
+                        "Id": saId,
+                        "Partition": awsPartition,
+                        "Region": azRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": saName,
+                                "Id": saId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST CSF V1.1 PR.AC-4",
+                        "NIST CSF V1.1 PR.DS-5",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AC-5",
+                        "NIST SP 800-53 Rev. 4 AC-6",
+                        "NIST SP 800-53 Rev. 4 AC-14",
+                        "NIST SP 800-53 Rev. 4 AC-16",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 AC-24",
+                        "NIST SP 800-53 Rev. 4 PE-19",
+                        "NIST SP 800-53 Rev. 4 PS-3",
+                        "NIST SP 800-53 Rev. 4 PS-6",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SC-8",
+                        "NIST SP 800-53 Rev. 4 SC-13",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "NIST SP 800-53 Rev. 4 SC-31",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC6.3",
+                        "AICPA TSC CC6.6",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.6.1.2",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.7.1.1",
+                        "ISO 27001:2013 A.7.1.2",
+                        "ISO 27001:2013 A.7.3.1",
+                        "ISO 27001:2013 A.8.2.2",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.9.1.1",
+                        "ISO 27001:2013 A.9.1.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.4.1",
+                        "ISO 27001:2013 A.9.4.4",
+                        "ISO 27001:2013 A.9.4.5",
+                        "ISO 27001:2013 A.10.1.1",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.11.1.5",
+                        "ISO 27001:2013 A.11.2.1",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.1.3",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.13.2.4",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
+                        "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.9",
+                        "MITRE ATT&CK T1530"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("azure.storage_accounts")
+def azure_storage_acct_private_endpoints_use_for_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
+    """
+    [Azure.StorageAccount.7] Azure Virtual Network private endpoints should be used for accessing Azure Storage Accounts
+    """
+    azNetworkClient = NetworkManagementClient(azureCredential,azSubId)
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for sa in get_all_storage_accounts(cache, azureCredential, azSubId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(sa,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        saName = sa.name
+        saId = sa.id
+        azRegion = sa.location
+        rgName = saId.split("/")[4]
+        privateEndpoint = False
+        # list all private endpoints in the resource group
+        for endpoint in azNetworkClient.private_endpoints.list(rgName):
+            for conn in endpoint.private_link_service_connections:
+                if conn.private_link_service_id == saId:
+                    privateEndpoint = True
+        
+        if not privateEndpoint:
+            # this is a failing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-private-endpoints-use-for-access-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-private-endpoints-use-for-access-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[Azure.StorageAccount.7] Azure Virtual Network private endpoints should be used for accessing Azure Storage Accounts",
+                "Description": f"Azure Storage Account {saName} in Subscription {azSubId} in {azRegion} does not have a private endpoint used for accessing the storage account. Private endpoints allow you to securely connect to a storage account over a private endpoint in your virtual network. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on private endpoints refer to the Azure Storage documentation.",
+                        "Url": "https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Azure Storage Account",
+                    "AssetComponent": "Storage Account",
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureStorageAccount",
+                        "Id": saId,
+                        "Partition": awsPartition,
+                        "Region": azRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": saName,
+                                "Id": saId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.10",
+                        "MITRE ATT&CK T1537"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-private-endpoints-use-for-access-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-private-endpoints-use-for-access-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Azure.StorageAccount.7] Azure Virtual Network private endpoints should be used for accessing Azure Storage Accounts",
+                "Description": f"Azure Storage Account {saName} in Subscription {azSubId} in {azRegion} has a private endpoint used for accessing the storage account.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on private endpoints refer to the Azure Storage documentation.",
+                        "Url": "https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Azure Storage Account",
+                    "AssetComponent": "Storage Account",
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureStorageAccount",
+                        "Id": saId,
+                        "Partition": awsPartition,
+                        "Region": azRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": saName,
+                                "Id": saId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.10",
+                        "MITRE ATT&CK T1537"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("azure.storage_accounts")
+def azure_storage_acct_soft_delete_enabled_for_blob_storage_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
+    """
+    [Azure.StorageAccount.8] Azure Storage Accounts should have soft delete enabled for blob storage
+    """
+    azStorageClient = StorageManagementClient(azureCredential,azSubId)
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for sa in get_all_storage_accounts(cache, azureCredential, azSubId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(sa,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        saName = sa.name
+        saId = sa.id
+        azRegion = sa.location
+        rgName = saId.split("/")[4]
+        blobProps = azStorageClient.blob_services.get_service_properties(rgName, saName)
+        # Check if soft delete for blobs is enabled
+        if blobProps.delete_retention_policy.enabled and blobProps.delete_retention_policy.days is not None:
+            # this is a passing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-soft-delete-enabled-for-blob-storage-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-soft-delete-enabled-for-blob-storage-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Azure.StorageAccount.8] Azure Storage Accounts should have soft delete enabled for blob storage",
+                "Description": f"Azure Storage Account {saName} in Subscription {azSubId} in {azRegion} has soft delete enabled for blob storage.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on soft delete for blob storage refer to the Azure Storage documentation.",
+                        "Url": "https://docs.microsoft.com/en-us/azure/storage/blobs/soft-delete-blob-overview"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Azure Storage Account",
+                    "AssetComponent": "Storage Account",
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureStorageAccount",
+                        "Id": saId,
+                        "Partition": awsPartition,
+                        "Region": azRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": saName,
+                                "Id": saId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.IP-3",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 AU-4",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-4",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-7",
+                        "NIST SP 800-53 Rev. 4 CP-8",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 CP-13",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SA-10",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-6",
+                        "AICPA TSC CC8.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.12.6.2",
+                        "ISO 27001:2013 A.14.2.2",
+                        "ISO 27001:2013 A.14.2.3",
+                        "ISO 27001:2013 A.14.2.4",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1",
+                        "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.11",
+                        "MITRE ATT&CK T1485"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-soft-delete-enabled-for-blob-storage-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-soft-delete-enabled-for-blob-storage-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[Azure.StorageAccount.8] Azure Storage Accounts should have soft delete enabled for blob storage",
+                "Description": f"Azure Storage Account {saName} in Subscription {azSubId} in {azRegion} does not have soft delete enabled for blob storage. Soft delete for blob storage allows you to recover your data when it is inadvertently modified or deleted by an application or other storage account user. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on soft delete for blob storage refer to the Azure Storage documentation.",
+                        "Url": "https://docs.microsoft.com/en-us/azure/storage/blobs/soft-delete-blob-overview"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Azure Storage Account",
+                    "AssetComponent": "Storage Account",
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureStorageAccount",
+                        "Id": saId,
+                        "Partition": awsPartition,
+                        "Region": azRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": saName,
+                                "Id": saId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.IP-3",
+                        "NIST CSF V1.1 PR.PT-5",
+                        "NIST SP 800-53 Rev. 4 AU-4",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-4",
+                        "NIST SP 800-53 Rev. 4 CP-2",
+                        "NIST SP 800-53 Rev. 4 CP-7",
+                        "NIST SP 800-53 Rev. 4 CP-8",
+                        "NIST SP 800-53 Rev. 4 CP-11",
+                        "NIST SP 800-53 Rev. 4 CP-13",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SA-10",
+                        "NIST SP 800-53 Rev. 4 SA-14",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-6",
+                        "AICPA TSC CC8.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.12.6.2",
+                        "ISO 27001:2013 A.14.2.2",
+                        "ISO 27001:2013 A.14.2.3",
+                        "ISO 27001:2013 A.14.2.4",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1",
+                        "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.11",
+                        "MITRE ATT&CK T1485"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding            
 
 ## END ??
