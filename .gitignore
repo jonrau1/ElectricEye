@@ -9,3 +9,4 @@
 *.pyc
 eeauditor/processor/outputs/*.svg
 eeauditor/processor/outputs/*.html
+LOCAL_external_providers.toml

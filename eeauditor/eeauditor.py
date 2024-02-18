@@ -80,7 +80,7 @@ class EEAuditor(object):
             searchPath = "./auditors/azure"
             utils = CloudConfig(assessmentTarget, tomlPath)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
-            self.azureSubscriptionsIds = utils.azureSubscriptionsIds
+            self.azureSubscriptions = utils.azureSubscriptions
             self.azureCredentials = utils.azureCredentials
         # Alibaba
         elif assessmentTarget == "Alibaba":
@@ -322,7 +322,8 @@ class EEAuditor(object):
                                     awsRegion=region,
                                     awsPartition=partition,
                                 ):
-                                    yield finding
+                                    if finding is not None:
+                                        yield finding
                             except Exception:
                                 logger.warn(
                                     "Failed to execute check %s with traceback %s",
@@ -371,7 +372,8 @@ class EEAuditor(object):
                                 awsPartition=partition,
                                 gcpProjectId=project
                             ):
-                                yield finding
+                                if finding is not None:
+                                    yield finding
                         except Exception:
                             logger.warn(
                                 "Failed to execute check %s with traceback %s",
@@ -421,7 +423,8 @@ class EEAuditor(object):
                             ociCompartments=self.ociCompartments,
                             ociUserApiKeyFingerprint=self.ociUserApiKeyFingerprint
                         ):
-                            yield finding
+                            if finding is not None:
+                                yield finding
                     except Exception:
                         logger.warn(
                             "Failed to execute check %s with traceback %s",
@@ -446,7 +449,7 @@ class EEAuditor(object):
         # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
         partition = CloudConfig.check_aws_partition(region)
 
-        for azSubId in self.azureSubscriptionsIds:
+        for azSubId in self.azureSubscriptions:
             for serviceName, checkList in self.registry.checks.items():
                 # Pass the Cache at the "serviceName" level aka Plugin
                 auditorCache = {}
@@ -460,17 +463,18 @@ class EEAuditor(object):
                         try:
                             logger.info(
                                 "Executing Check %s for Azure Subscription %s",
-                                checkName, self.m365TenantId
+                                checkName, azSubId
                             )
                             for finding in check(
                                 cache=auditorCache,
                                 awsAccountId=account,
                                 awsRegion=region,
                                 awsPartition=partition,
-                                azureCredentials=self.azureCredentials,
-                                azureSubscriptionId=azSubId
+                                azureCredential=self.azureCredentials,
+                                azSubId=azSubId
                             ):
-                                yield finding
+                                if finding is not None:
+                                    yield finding
                         except Exception:
                             logger.warn(
                                 "Failed to execute check %s with traceback %s",
@@ -520,7 +524,8 @@ class EEAuditor(object):
                             clientSecret=self.m365SecretId,
                             tenantLocation=self.m365TenantLocation,
                         ):
-                            yield finding
+                            if finding is not None:
+                                yield finding
                     except Exception:
                         logger.warn(
                             "Failed to execute check %s with traceback %s",
@@ -573,7 +578,8 @@ class EEAuditor(object):
                             salesforceUserSecurityToken = self.salesforceUserSecurityToken,
                             salesforceInstanceLocation = self.salesforceInstanceLocation
                         ):
-                            yield finding
+                            if finding is not None:
+                                yield finding
                     except Exception:
                         logger.warn(
                             "Failed to execute check %s with traceback %s",
@@ -618,8 +624,9 @@ class EEAuditor(object):
                             awsRegion=region,
                             awsPartition=partition
                         ):
-                            yield finding
-                    except Exception as e:
+                            if finding is not None:
+                                yield finding
+                    except Exception:
                         logger.warn(
                             "Failed to execute check %s with traceback %s",
                             checkName, format_exc()

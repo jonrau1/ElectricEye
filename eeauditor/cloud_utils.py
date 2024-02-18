@@ -278,12 +278,11 @@ class CloudConfig(object):
                 logger.warning(
                     "No values provided for [regions_and_accounts.azure.azure_subscription_ids] - attempting to retrieve subscription IDs your Service Principal has access to..."
                 )
-                azureSubscriptionsIds = self.retrieve_azure_subscriptions_for_service_principal(
+                azureSubscriptions = self.retrieve_azure_subscriptions_for_service_principal(
                     azureCredentials=azureCredentials
                 )
-                del azureSubscriptions
             # pass list of subscriptions and the creds off
-            self.azureSubscriptionsIds = azureSubscriptionsIds
+            self.azureSubscriptions = azureSubscriptions
             self.azureCredentials = azureCredentials
 
         # Alibaba Cloud

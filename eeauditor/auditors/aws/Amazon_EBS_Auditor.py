@@ -343,7 +343,7 @@ def ebs_volume_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
         volumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:volume/{volumeId}"
         ebsEncryptionCheck = volumes["Encrypted"]
         # this is a failing check
-        if ebsEncryptionCheck == False:
+        if ebsEncryptionCheck is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{volumeArn}/ebs-volume-encryption-check",
