@@ -100,7 +100,7 @@ def azure_vm_bastion_host_exists_check(cache: dict, awsAccountId: str, awsRegion
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for vnet in get_all_azure_vnets(cache, azureCredential, azSubId):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(vnet,default=str).encode("utf-8")
+        assetJson = json.dumps(vnet.as_dict(),default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         rgName = process_resource_group_name(vnet.id)
         azRegion = vnet.location
@@ -261,7 +261,7 @@ def azure_vm_utilizing_managed_disks_check(cache: dict, awsAccountId: str, awsRe
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for vm in get_all_azure_vms(cache, azureCredential, azSubId):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(vm,default=str).encode("utf-8")
+        assetJson = json.dumps(vm.as_dict(),default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         rgName = process_resource_group_name(vm.id)
         azRegion = vm.location
@@ -416,7 +416,7 @@ def azure_vm_encrypt_os_and_data_disk_with_cmk_check(cache: dict, awsAccountId: 
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for vm in get_all_azure_vms(cache, azureCredential, azSubId):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(vm,default=str).encode("utf-8")
+        assetJson = json.dumps(vm.as_dict(),default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         rgName = process_resource_group_name(vm.id)
         azRegion = vm.location
@@ -587,7 +587,7 @@ def azure_vm_unattached_disks_cmk_encryption_check(cache: dict, awsAccountId: st
         for disk in disks:
             unattachedDisksEncryptedWithCmk = True
             # B64 encode all of the details for the Asset
-            assetJson = json.dumps(disk,default=str).encode("utf-8")
+            assetJson = json.dumps(disk.as_dict(),default=str).encode("utf-8")
             assetB64 = base64.b64encode(assetJson)
             rgName = rg.name
             azRegion = disk.location
@@ -741,7 +741,7 @@ def azure_vm_monitoring_agent_installed_check(cache: dict, awsAccountId: str, aw
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for vm in get_all_azure_vms(cache, azureCredential, azSubId):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(vm,default=str).encode("utf-8")
+        assetJson = json.dumps(vm.as_dict(),default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         rgName = process_resource_group_name(vm.id)
         azRegion = vm.location
@@ -973,7 +973,7 @@ def azure_vm_azure_backup_coverage_check(cache: dict, awsAccountId: str, awsRegi
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for vm in get_all_azure_vms(cache, azureCredential, azSubId):
         # B64 encode all of the details for the asset
-        assetJson = json.dumps(vm,default=str).encode("utf-8")
+        assetJson = json.dumps(vm.as_dict(),default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         rgName = process_resource_group_name(vm.id)
         azRegion = vm.location

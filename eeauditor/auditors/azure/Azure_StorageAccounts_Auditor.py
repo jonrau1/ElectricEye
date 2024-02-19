@@ -53,7 +53,7 @@ def azure_storage_acct_secure_transfer_required_enabled_check(cache: dict, awsAc
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for sa in get_all_storage_accounts(cache, azureCredential, azSubId):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(sa,default=str).encode("utf-8")
+        assetJson = json.dumps(sa.as_dict(),default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         saName = sa.name
         saId = sa.id
@@ -210,7 +210,7 @@ def azure_storage_acct_infrastructure_encryption_enabled_check(cache: dict, awsA
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for sa in get_all_storage_accounts(cache, azureCredential, azSubId):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(sa,default=str).encode("utf-8")
+        assetJson = json.dumps(sa.as_dict(),default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         saName = sa.name
         saId = sa.id
@@ -357,7 +357,7 @@ def azure_storage_acct_sas_policy_exists_check(cache: dict, awsAccountId: str, a
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for sa in get_all_storage_accounts(cache, azureCredential, azSubId):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(sa,default=str).encode("utf-8")
+        assetJson = json.dumps(sa.as_dict(),default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         saName = sa.name
         saId = sa.id
@@ -600,7 +600,7 @@ def azure_storage_acct_public_acess_disabled_for_sa_with_blob_containers_check(c
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for sa in get_all_storage_accounts(cache, azureCredential, azSubId):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(sa,default=str).encode("utf-8")
+        assetJson = json.dumps(sa.as_dict(),default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         saName = sa.name
         saId = sa.id
@@ -855,7 +855,7 @@ def azure_storage_acct_default_network_access_rule_set_to_deny_check(cache: dict
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for sa in get_all_storage_accounts(cache, azureCredential, azSubId):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(sa,default=str).encode("utf-8")
+        assetJson = json.dumps(sa.as_dict(),default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         saName = sa.name
         saId = sa.id
@@ -1020,7 +1020,7 @@ def azure_storage_acct_trusted_azure_service_access_enabled_check(cache: dict, a
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for sa in get_all_storage_accounts(cache, azureCredential, azSubId):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(sa,default=str).encode("utf-8")
+        assetJson = json.dumps(sa.as_dict(),default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         saName = sa.name
         saId = sa.id
@@ -1267,7 +1267,7 @@ def azure_storage_acct_private_endpoints_use_for_access_check(cache: dict, awsAc
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for sa in get_all_storage_accounts(cache, azureCredential, azSubId):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(sa,default=str).encode("utf-8")
+        assetJson = json.dumps(sa.as_dict(),default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         saName = sa.name
         saId = sa.id
@@ -1436,7 +1436,7 @@ def azure_storage_acct_soft_delete_enabled_for_blob_storage_check(cache: dict, a
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for sa in get_all_storage_accounts(cache, azureCredential, azSubId):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(sa,default=str).encode("utf-8")
+        assetJson = json.dumps(sa.as_dict(),default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         saName = sa.name
         saId = sa.id
@@ -1626,7 +1626,7 @@ def azure_storage_acct_use_tls12_for_https_minimum_version_check(cache: dict, aw
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for sa in get_all_storage_accounts(cache, azureCredential, azSubId):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(sa,default=str).encode("utf-8")
+        assetJson = json.dumps(sa.as_dict(),default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         saName = sa.name
         saId = sa.id
@@ -1786,7 +1786,7 @@ def azure_storage_acct_90_day_key_rotation_check(cache: dict, awsAccountId: str,
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for sa in get_all_storage_accounts(cache, azureCredential, azSubId):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(sa,default=str).encode("utf-8")
+        assetJson = json.dumps(sa.as_dict(),default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         saName = sa.name
         saId = sa.id
