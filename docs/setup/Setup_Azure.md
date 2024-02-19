@@ -188,7 +188,7 @@ Todo...
 
 ## Azure Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **22 Checks** across **3 Auditors** that support the secure configuration of **6 services/components**
+These are the following services and checks perform by each Auditor, there are currently **28 Checks** across **3 Auditors** that support the secure configuration of **6 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
@@ -213,7 +213,13 @@ These are the following services and checks perform by each Auditor, there are c
 | Azure_SQLServer_Auditor | Azure SQL Server | Azure SQL Servers should use CMKs for Transparent Data Encryption (TDE) |
 | Azure_SQLServer_Auditor | Azure SQL Server | Azure SQL Servers should enabled Entra ID/AAD admin authentication |
 | Azure_SQLServer_Auditor | Azure SQL Database | Azure SQL Databases should enable Transparent Data Encryption (TDE) |
-| Azure_SQLServer_Auditor | Azure SQL Database | Azure SQL Servers should consider enabling Read Scale Out |
+| Azure_SQLServer_Auditor | Azure SQL Database | Azure SQL Databases should consider enabling Read Scale Out |
+| Azure_SQLServer_Auditor | Azure SQL Database | Azure SQL Databases with regulated workloads should consider using double encryption |
+| Azure_SQLServer_Auditor | Azure SQL Database | Azure SQL Databases with regulated workloads should consider using Azure SQL Ledger |
+| Azure_SQLServer_Auditor | Azure SQL Server | Azure SQL Servers should enabled log retention and retain them for at least 90 days |
+| Azure_SQLServer_Auditor | Azure SQL Server | Azure SQL Servers should enforce a minimum TLS version of TLS_v1.2 |
+| Azure_SQLServer_Auditor | Azure SQL Server | Azure SQL Servers should not have public internet access enabled |
+| Azure_SQLServer_Auditor | Azure SQL Server | Azure SQL Servers should not have outbound network access enabled |
 
 Continue to check this section for information on active, retired, and renamed checks or using the `--list-checks` command in the CLI!
 
