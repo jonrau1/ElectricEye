@@ -256,3 +256,18 @@
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Res_Security-Identity-Compliance/Res_AWS-Identity-Access-Management_Data-Encryption-Key_48.svg">
 - AssetService: Salesforce Single Sign-On
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Res_General-Icons/Res_48_Light/Res_SAML-token_48_Light.svg">
+#########
+# AZURE #
+#########
+- AssetService: Azure Virtual Network
+  ImageTag: <img src="https://code.benco.io/icon-collection/azure-icons/Virtual-Networks.svg">
+- AssetService: Azure Virtual Machine
+  ImageTag: <img src="https://code.benco.io/icon-collection/azure-icons/Virtual-Machine.svg">
+- AssetService: Azure Disk Storage
+  ImageTag: <img src="https://code.benco.io/icon-collection/azure-icons/Disks.svg">
+- AssetService: Azure Storage Account
+  ImageTag: <img src="https://code.benco.io/icon-collection/azure-icons/Storage-Accounts.svg">
+- AssetService: Azure SQL Server
+  ImageTag: <img src="https://code.benco.io/icon-collection/azure-icons/SQL-Server.svg">
+- AssetService: Azure Database for MySQL Server
+  ImageTag: <img src="https://code.benco.io/icon-collection/azure-icons/Azure-Database-MySQL-Server.svg">
