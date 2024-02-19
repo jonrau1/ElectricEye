@@ -1617,4 +1617,358 @@ def azure_storage_acct_soft_delete_enabled_for_blob_storage_check(cache: dict, a
             }
             yield finding            
 
+@registry.register_check("azure.storage_accounts")
+def azure_storage_acct_use_tls12_for_https_minimum_version_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
+    """
+    [Azure.StorageAccount.9] Azure Storage Accounts should ensure that TLS 1.2 is the minimum TLS version for HTTPS connectivity
+    """
+    azStorageClient = StorageManagementClient(azureCredential,azSubId)
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for sa in get_all_storage_accounts(cache, azureCredential, azSubId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(sa,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        saName = sa.name
+        saId = sa.id
+        azRegion = sa.location
+        rgName = saId.split("/")[4]
+        # check the properties of the storage account to see if TLS 1.2 is enabled
+        saAcctProperties = azStorageClient.storage_accounts.get_properties(rgName,saName)
+        minTlsVersion = saAcctProperties.minimum_tls_version
+        if minTlsVersion != "TLS1_2":
+            # this is a failing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-use-tls12-for-https-minimum-version-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-use-tls12-for-https-minimum-version-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[Azure.StorageAccount.9] Azure Storage Accounts should ensure that TLS 1.2 is the minimum TLS version for HTTPS connectivity",
+                "Description": f"Azure Storage Account {saName} in Subscription {azSubId} in {azRegion} does not enforce TLS 1.2 as the minimum version for HTTPS connectivity. TLS 1.2 is the minimum version of the TLS protocol that should be used for secure connections to the storage account. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on TLS 1.2 refer to the Azure Storage documentation.",
+                        "Url": "https://docs.microsoft.com/en-us/azure/storage/common/secure-transfer-azure-storage"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Azure Storage Account",
+                    "AssetComponent": "Storage Account",
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureStorageAccount",
+                        "Id": saId,
+                        "Partition": awsPartition,
+                        "Region": azRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": saName,
+                                "Id": saId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-2",
+                        "NIST SP 800-53 Rev. 4 SC-8",
+                        "NIST SP 800-53 Rev. 4 SC-11",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
+                        "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.15"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-use-tls12-for-https-minimum-version-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-use-tls12-for-https-minimum-version-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Azure.StorageAccount.9] Azure Storage Accounts should ensure that TLS 1.2 is the minimum TLS version for HTTPS connectivity",
+                "Description": f"Azure Storage Account {saName} in Subscription {azSubId} in {azRegion} does enforce TLS 1.2 as the minimum version for HTTPS connectivity.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on TLS 1.2 refer to the Azure Storage documentation.",
+                        "Url": "https://docs.microsoft.com/en-us/azure/storage/common/secure-transfer-azure-storage"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Azure Storage Account",
+                    "AssetComponent": "Storage Account",
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureStorageAccount",
+                        "Id": saId,
+                        "Partition": awsPartition,
+                        "Region": azRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": saName,
+                                "Id": saId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-2",
+                        "NIST SP 800-53 Rev. 4 SC-8",
+                        "NIST SP 800-53 Rev. 4 SC-11",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
+                        "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.15"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("azure.storage_accounts")
+def azure_storage_acct_90_day_key_rotation_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
+    """
+    [Azure.StorageAccount.10] Azure Storage Accounts should rotate their access keys every 90 days
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for sa in get_all_storage_accounts(cache, azureCredential, azSubId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(sa,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        saName = sa.name
+        saId = sa.id
+        azRegion = sa.location
+        rgName = saId.split("/")[4]
+        # check that both key rotation days have been in the last 90 days
+        keyOneRotation = sa.key_creation_time.key1
+        keyTwoRotation = sa.key_creation_time.key2
+        # check if the keys have been rotated in the last 90 days
+        if keyOneRotation > datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=90) and keyTwoRotation > datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=90):
+            # this is a passing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-90-day-key-rotation-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-90-day-key-rotation-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Azure.StorageAccount.10] Azure Storage Accounts should rotate their access keys every 90 days",
+                "Description": f"Azure Storage Account {saName} in Subscription {azSubId} in {azRegion} has rotated both access keys within the last 90 days.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on key rotation refer to the Azure Storage documentation.",
+                        "Url": "https://docs.microsoft.com/en-us/azure/storage/common/storage-security-guide"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Azure Storage Account",
+                    "AssetComponent": "Storage Account",
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureStorageAccount",
+                        "Id": saId,
+                        "Partition": awsPartition,
+                        "Region": azRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": saName,
+                                "Id": saId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-3",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-6",
+                        "NIST SP 800-53 Rev. 4 IA-7",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 IA-9",
+                        "NIST SP 800-53 Rev. 4 IA-10",
+                        "NIST SP 800-53 Rev. 4 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3",
+                        "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.4",
+                        "MITRE ATT&CK T1589",
+                        "MITRE ATT&CK T1586",
+                        "MITRE ATT&CK T1098"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-90-day-key-rotation-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-90-day-key-rotation-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[Azure.StorageAccount.10] Azure Storage Accounts should rotate their access keys every 90 days",
+                "Description": f"Azure Storage Account {saName} in Subscription {azSubId} in {azRegion} has not rotated both access keys within the last 90 days. When a storage account is created, Azure generates two 512-bit storage access keys which are used for authentication when the storage account is accessed. Rotating these keys periodically ensures that any inadvertent access or exposure does not result from the compromise of these keys. Access keys should be rotated every 90 days to ensure the security of the storage account. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on key rotation refer to the Azure Storage documentation.",
+                        "Url": "https://docs.microsoft.com/en-us/azure/storage/common/storage-security-guide"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Azure Storage Account",
+                    "AssetComponent": "Storage Account",
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureStorageAccount",
+                        "Id": saId,
+                        "Partition": awsPartition,
+                        "Region": azRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": saName,
+                                "Id": saId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-3",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-6",
+                        "NIST SP 800-53 Rev. 4 IA-7",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 IA-9",
+                        "NIST SP 800-53 Rev. 4 IA-10",
+                        "NIST SP 800-53 Rev. 4 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3",
+                        "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.4",
+                        "MITRE ATT&CK T1589",
+                        "MITRE ATT&CK T1586",
+                        "MITRE ATT&CK T1098"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+
 ## END ??

@@ -121,7 +121,7 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
     "-o",
     "--outputs",
     multiple=True,
-    default=(["stdout"]),
+    default=(["ocsf_stdout"]),
     show_default=True,
     help="A list of Outputs (files, APIs, databases, ChatOps) to send ElectricEye Findings, specify multiple with additional arguments: -o csv -o postgresql -o slack",
 )
