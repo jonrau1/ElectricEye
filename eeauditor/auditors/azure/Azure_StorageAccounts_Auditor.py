@@ -1029,7 +1029,6 @@ def azure_storage_acct_trusted_azure_service_access_enabled_check(cache: dict, a
         # check the properties of the storage account to see if trusted Azure services are allowed
         saAcctProperties = azStorageClient.storage_accounts.get_properties(rgName,saName)
         networkRules = saAcctProperties.network_rule_set
-        print(networkRules)
         if networkRules and "AzureServices" not in networkRules.bypass:
             # this is a failing check
             finding = {

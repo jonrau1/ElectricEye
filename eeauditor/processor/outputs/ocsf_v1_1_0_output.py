@@ -236,6 +236,11 @@ class OcsfV110Output(object):
                 cloudProvider=finding["ProductFields"]["Provider"],
                 complianceStatusLabel=finding["Compliance"]["Status"]
             )
+
+            if finding["ProductFields"]["Provider"] == "AWS":
+                partition = finding["Resources"][0]["Partition"]
+            else:
+                partition = None
             
             ocsf = {
                 # Base Event data
@@ -270,7 +275,6 @@ class OcsfV110Output(object):
                 },
                 "cloud": {
                     "provider": finding["ProductFields"]["Provider"],
-                    "project_uid": finding["ProductFields"]["ProviderAccountId"],
                     "region": finding["ProductFields"]["AssetRegion"],
                     "account": {
                         "uid": finding["ProductFields"]["ProviderAccountId"],
@@ -282,7 +286,7 @@ class OcsfV110Output(object):
                 "observables": [
                     # Cloud Account (Project) UID
                     {
-                        "name": "cloud.project_uid",
+                        "name": "cloud.account.uid",
                         "type": "Resource UID",
                         "type_id": 10,
                         "value": finding["ProductFields"]["ProviderAccountId"]
@@ -297,9 +301,9 @@ class OcsfV110Output(object):
                 ],
                 # Compliance Finding Class Info
                 "compliance": {
-                    "requirements": requirements,
+                    "requirements": sorted(requirements),
                     "control": str(finding["Title"]).split("] ")[0].replace("[",""),
-                    "standards": standard,
+                    "standards": sorted(standard),
                     "status": asffToOcsf[5],
                     "status_id": asffToOcsf[4]
                 },
@@ -319,7 +323,7 @@ class OcsfV110Output(object):
                 },
                 "resource": {
                     "data": finding["ProductFields"]["AssetDetails"],
-                    "cloud_partition": finding["Resources"][0]["Partition"],
+                    "cloud_partition": partition,
                     "region": finding["ProductFields"]["AssetRegion"],
                     "type": finding["ProductFields"]["AssetService"],
                     "uid": finding["Resources"][0]["Id"]
@@ -327,7 +331,6 @@ class OcsfV110Output(object):
                 "unmapped": {
                     "provide_type": finding["ProductFields"]["ProviderType"],
                     "asset_class": finding["ProductFields"]["AssetClass"],
-                    "asset_service": finding["ProductFields"]["AssetService"],
                     "asset_component": finding["ProductFields"]["AssetComponent"],
                     "workflow_status": finding["Workflow"]["Status"],
                     "record_state": finding["RecordState"]
