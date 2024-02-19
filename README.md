@@ -33,11 +33,11 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 - [Workflow](#workflow)
 - [Quick Run Down](#quick-run-down-running-running)
 - [Configuring ElectricEye](#configuring-electriceye)
-- [ElectricEye on Docker](#electriceye-on-docker)
 - [Cloud Asset Management](#cloud-asset-management-cam)
+- [Supported Services and Checks](#supported-services-and-checks)
+- [ElectricEye on Docker](#electriceye-on-docker)
 - [Outputs](./docs/outputs/OUTPUTS.md)
 - [FAQ](./docs/faq/FAQ.md)
-- [Supported Services and Checks](#supported-services-and-checks)
 - [Contributing](#contributing)
 - [Developer & Testing Guide](./docs/new_checks/DEVELOPER_GUIDE.md)
 - [Repository Security](#repository-security)
@@ -140,6 +140,22 @@ The following SaaS Providers are on the Roadmap
 
 - [For Google Workspaces (*Coming Soon*)](./docs/setup/Setup_Google_Workspaces.md)
 - [For Snowflake (*Coming Soon*)](./docs/setup/Setup_Snowflake.md)
+
+## Cloud Asset Management (CAM)
+
+For more information on ElectricEye's CAM concept of operations and schema, refer to [the Asset Management documentation](./docs/asset_management/ASSET_MANAGEMENT.md).
+
+## Supported Services and Checks
+
+In total there are:
+
+- **4** Supported Public CSPs: `AWS`, `GCP`, `OCI`, and `Azure`
+- **3** Supported SaaS Providers: `ServiceNow`, `M365`, and `Salesforce`
+- **1080** ElectricEye Checks
+- **166** Supported CSP & SaaS Asset Components across all Services
+- **123** ElectricEye Auditors
+
+The tables of supported Services and Checks have been migrated to the respective per-Provider setup documentation linked above in [Configuring ElectricEye](#configuring-electriceye).
 
 ## ElectricEye on Docker
 
@@ -261,22 +277,6 @@ sudo docker run \
 ```
 
 For more configuration information ensure you refer back to the per-Provider setup instructions.
-
-## Cloud Asset Management (CAM)
-
-For more information on ElectricEye's CAM concept of operations and schema, refer to [the Asset Management documentation](./docs/asset_management/ASSET_MANAGEMENT.md).
-
-## Supported Services and Checks
-
-In total there are:
-
-- **4** Supported Public CSPs: `AWS`, `GCP`, `OCI`, and `Azure`
-- **3** Supported SaaS Providers: `ServiceNow`, `M365`, and `Salesforce`
-- **1078** ElectricEye Checks
-- **165** Supported CSP & SaaS Asset Components across all Services
-- **123** ElectricEye Auditors
-
-The tables of supported Services and Checks have been migrated to the respective per-Provider setup documentation linked above in [Configuring ElectricEye](#configuring-electriceye).
 
 ## Contributing
 

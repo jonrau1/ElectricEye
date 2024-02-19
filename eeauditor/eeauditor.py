@@ -60,13 +60,13 @@ class EEAuditor(object):
             self.awsRegionsSelection = utils.awsRegionsSelection
             self.electricEyeRoleName = utils.electricEyeRoleName
         # GCP
-        elif assessmentTarget == "GCP":
+        if assessmentTarget == "GCP":
             searchPath = "./auditors/gcp"
             utils = CloudConfig(assessmentTarget, tomlPath)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.gcpProjectIds = utils.gcp_project_ids
         # OCI
-        elif assessmentTarget == "OCI":
+        if assessmentTarget == "OCI":
             searchPath = "./auditors/oci"
             utils = CloudConfig(assessmentTarget, tomlPath)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
@@ -76,14 +76,14 @@ class EEAuditor(object):
             self.ociCompartments = utils.ociCompartments
             self.ociUserApiKeyFingerprint = utils.ociUserApiKeyFingerprint
         # Azure
-        elif assessmentTarget == "Azure":
+        if assessmentTarget == "Azure":
             searchPath = "./auditors/azure"
             utils = CloudConfig(assessmentTarget, tomlPath)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.azureSubscriptions = utils.azureSubscriptions
             self.azureCredentials = utils.azureCredentials
         # Alibaba
-        elif assessmentTarget == "Alibaba":
+        if assessmentTarget == "Alibaba":
             searchPath = "./auditors/alibabacloud"
             utils = CloudConfig(assessmentTarget, tomlPath)
         
@@ -91,11 +91,11 @@ class EEAuditor(object):
         # SOFTWARE-AS-A-SERVICE PROVIDERS #
         ###################################
         # Servicenow
-        elif assessmentTarget == "Servicenow":
+        if assessmentTarget == "Servicenow":
             searchPath = "./auditors/servicenow"
             utils = CloudConfig(assessmentTarget, tomlPath)
         # M365
-        elif assessmentTarget == "M365":
+        if assessmentTarget == "M365":
             searchPath = "./auditors/m365"
             utils = CloudConfig(assessmentTarget, tomlPath)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
@@ -104,7 +104,7 @@ class EEAuditor(object):
             self.m365SecretId = utils.m365SecretId
             self.m365TenantId = utils.m365TenantId
         # Salesforce
-        elif assessmentTarget == "Salesforce":
+        if assessmentTarget == "Salesforce":
             searchPath = "./auditors/salesforce"
             utils = CloudConfig(assessmentTarget, tomlPath)
             self.salesforceAppClientId = utils.salesforceAppClientId
@@ -114,11 +114,11 @@ class EEAuditor(object):
             self.salesforceUserSecurityToken = utils.salesforceUserSecurityToken
             self.salesforceInstanceLocation = utils.salesforceInstanceLocation
         # Snowflake
-        elif assessmentTarget == "Snowflake":
+        if assessmentTarget == "Snowflake":
             searchPath = "./auditors/snowflake"
             utils = CloudConfig(assessmentTarget, tomlPath)
         # Google Workspaces
-        elif assessmentTarget == "GoogleWorkspaces":
+        if assessmentTarget == "GoogleWorkspaces":
             searchPath = "./auditors/google_workspaces"
             utils = CloudConfig(assessmentTarget, tomlPath)
 
@@ -192,7 +192,7 @@ class EEAuditor(object):
                     try:
                         # ecr, sagemaker, and a few other services have "api." on their names
                         # which is not consistent with the service at all
-                        serviceName = serviceName.split("api.")[1]
+                        serviceName = str(serviceName).split("api.")[1]
                     except IndexError:
                         serviceName = serviceName
                     
@@ -454,7 +454,7 @@ class EEAuditor(object):
                     ):
                         try:
                             logger.info(
-                                "Executing Check %s for Azure Subscription %s",
+                                "Executing Check %s for Azure Sub %s",
                                 checkName, azSubId
                             )
                             for finding in check(
@@ -503,7 +503,7 @@ class EEAuditor(object):
                 ):
                     try:
                         logger.info(
-                            "Executing Check %s for M365 Tenant %s",
+                            "Executing Check %s for M365",
                             checkName, self.m365TenantId
                         )
                         for finding in check(
@@ -636,9 +636,9 @@ class EEAuditor(object):
             for checkName, check in checkList.items():
                 doc = check.__doc__
                 if doc:
-                    description = (check.__doc__).replace("\n", "").replace("    ", "")
+                    description = str(check.__doc__).replace("\n", "").replace("    ", "")
                 else:
-                    description = "TELL_THE_MAINTAINER_TO_FIX_ME_PLZ"
+                    description = "This shit is fucked!"
 
                 auditorFile = getfile(check).rpartition("/")[2]
                 auditorName = auditorFile.split(".py")[0]
@@ -657,9 +657,9 @@ class EEAuditor(object):
             for checkName, check in checkList.items():
                 doc = check.__doc__
                 if doc:
-                    description = (check.__doc__).replace("\n", "").replace("    ", "")
+                    description = str(check.__doc__).replace("\n", "").replace("    ", "")
                 else:
-                    description = "TELL_THE_MAINTAINER_TO_FIX_ME_PLZ"
+                    description = "This shit is fucked!"
                 
                 controlPrinter.append(description)
 

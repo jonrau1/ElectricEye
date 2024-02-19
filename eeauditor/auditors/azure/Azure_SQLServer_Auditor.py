@@ -29,7 +29,7 @@ registry = CheckRegister()
 
 def get_all_sql_servers(cache: dict, azureCredential, azSubId: str):
     """
-    Returns a list of all Azure VMs in a Subscription
+    Returns a list of all Azure SQL Servers in a Subscription
     """
     azSqlClient = SqlManagementClient(azureCredential, azSubId)
 
@@ -44,6 +44,28 @@ def get_all_sql_servers(cache: dict, azureCredential, azSubId: str):
     cache["get_all_sql_servers"] = sqlList
     return cache["get_all_sql_servers"]
 
+def get_all_sql_databases(cache: dict, azureCredential, azSubId: str):
+    """
+    Returns a list of all Azure SQL Databases by Server in a Subscription
+    """
+    azSqlClient = SqlManagementClient(azureCredential, azSubId)
+
+    response = cache.get("get_all_sql_databases")
+    if response:
+        return response
+    
+    dbList = []
+    sqlList = [sql for sql in get_all_sql_servers(cache,azureCredential,azSubId)]
+    if sqlList or sqlList is not None:
+        for sql in sqlList:
+            rgName = sql.id.split("/")[4]
+            sqlservName = sql.name
+            for db in azSqlClient.databases.list_by_server(rgName,sqlservName):
+                dbList.append(db)
+
+    cache["get_all_sql_databases"] = dbList
+    return cache["get_all_sql_databases"]
+
 @registry.register_check("azure.sql_server")
 def azure_sql_server_server_level_auditing_enabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
     """
@@ -54,7 +76,7 @@ def azure_sql_server_server_level_auditing_enabled_check(cache: dict, awsAccount
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for sqlserv in get_all_sql_servers(cache, azureCredential, azSubId):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(sqlserv,default=str).encode("utf-8")
+        assetJson = json.dumps(sqlserv.as_dict(),default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         sqlservName = sqlserv.name
         sqlservId = str(sqlserv.id)
@@ -282,7 +304,7 @@ def azure_sql_server_no_ingress_from_internet_check(cache: dict, awsAccountId: s
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for sqlserv in get_all_sql_servers(cache, azureCredential, azSubId):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(sqlserv,default=str).encode("utf-8")
+        assetJson = json.dumps(sqlserv.as_dict(),default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         sqlservName = sqlserv.name
         sqlservId = str(sqlserv.id)
@@ -451,7 +473,7 @@ def azure_sql_server_tde_with_cmk_check(cache: dict, awsAccountId: str, awsRegio
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for sqlserv in get_all_sql_servers(cache, azureCredential, azSubId):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(sqlserv,default=str).encode("utf-8")
+        assetJson = json.dumps(sqlserv.as_dict(),default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         sqlservName = sqlserv.name
         sqlservId = str(sqlserv.id)
@@ -604,7 +626,7 @@ def azure_sql_server_entra_id_admin_authentication_configured_check(cache: dict,
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for sqlserv in get_all_sql_servers(cache, azureCredential, azSubId):
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(sqlserv,default=str).encode("utf-8")
+        assetJson = json.dumps(sqlserv.as_dict(),default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         sqlservName = sqlserv.name
         sqlservId = str(sqlserv.id)
@@ -772,5 +794,343 @@ def azure_sql_server_entra_id_admin_authentication_configured_check(cache: dict,
                 "RecordState": "ARCHIVED"
             }
             yield finding
+
+@registry.register_check("azure.sql_server")
+def azure_sql_database_tde_enabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
+    """
+    [Azure.SQLServer.5] Azure SQL Databases should have Transparent Data Encryption (TDE) enabled
+    """
+    azSqlClient = SqlManagementClient(azureCredential, azSubId)
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for sqlserv in get_all_sql_servers(cache, azureCredential, azSubId):
+        sqlservName = sqlserv.name
+        sqlservId = str(sqlserv.id)
+        azRegion = sqlserv.location
+        rgName = sqlservId.split("/")[4]
+        for db in get_all_sql_databases(cache,azureCredential,azSubId):
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(db.as_dict(),default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
+            dbTdeEnabled = False
+            dbId = str(db.id)
+            dbName = db.name
+            tde = azSqlClient.transparent_data_encryptions.get(rgName,sqlservName,dbName,"current")
+            if f"databases/{dbName}" in str(tde.id) and str(tde.status) == "Enabled":
+                dbTdeEnabled = True
+
+            if dbTdeEnabled is False:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-tde-enabled-on-database-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-tde-enabled-on-database-check",
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "MEDIUM"},
+                    "Confidence": 99,
+                    "Title": "[Azure.SQLServer.5] Azure SQL Databases should have Transparent Data Encryption (TDE) enabled",
+                    "Description": f"Azure SQL Database {dbName} on Azure SQL Server {sqlservName} in Subscription {azSubId} in {azRegion} does not have Transparent Data Encryption (TDE) enabled. Transparent Data Encryption (TDE) helps protect Azure SQL Database and Azure SQL Managed Instance against the threat of malicious activity by performing real-time encryption and decryption of the database, associated backups, and transaction log files at rest without requiring changes to the application. Refer to the remediation instructions if this configuration is not intended.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on Azure SQL Server Transparent Data Encryption, refer to the Azure documentation",
+                            "Url": "https://docs.microsoft.com/en-us/azure/azure-sql/database/transparent-data-encryption-byok-overview"
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "Azure",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": azSubId,
+                        "AssetRegion": azRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Database",
+                        "AssetService": "Azure SQL Server",
+                        "AssetComponent": "Database",
+                    },
+                    "Resources": [
+                        {
+                            "Type": "AzureSqlDatabase",
+                            "Id": dbId,
+                            "Partition": awsPartition,
+                            "Region": azRegion,
+                            "Details": {
+                                "Other": {
+                                    "SubscriptionId": azSubId,
+                                    "ResourceGroupName": rgName,
+                                    "Region": azRegion,
+                                    "Name": dbName,
+                                    "Id": dbId
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 PR.DS-1",
+                            "NIST SP 800-53 Rev. 4 MP-8",
+                            "NIST SP 800-53 Rev. 4 SC-12",
+                            "NIST SP 800-53 Rev. 4 SC-28",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.8.2.3",
+                            "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.1.5",
+                            "MITRE ATT&CK T1530"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
+            else:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-tde-enabled-on-database-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-tde-enabled-on-database-check",
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[Azure.SQLServer.5] Azure SQL Databases should have Transparent Data Encryption (TDE) enabled",
+                    "Description": f"Azure SQL Database {dbName} on Azure SQL Server {sqlservName} in Subscription {azSubId} in {azRegion} has Transparent Data Encryption (TDE) enabled.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on Azure SQL Server Transparent Data Encryption, refer to the Azure documentation",
+                            "Url": "https://docs.microsoft.com/en-us/azure/azure-sql/database/transparent-data-encryption-byok-overview"
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "Azure",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": azSubId,
+                        "AssetRegion": azRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Database",
+                        "AssetService": "Azure SQL Server",
+                        "AssetComponent": "Database",
+                    },
+                    "Resources": [
+                        {
+                            "Type": "AzureSqlDatabase",
+                            "Id": dbId,
+                            "Partition": awsPartition,
+                            "Region": azRegion,
+                            "Details": {
+                                "Other": {
+                                    "SubscriptionId": azSubId,
+                                    "ResourceGroupName": rgName,
+                                    "Region": azRegion,
+                                    "Name": dbName,
+                                    "Id": dbId
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 PR.DS-1",
+                            "NIST SP 800-53 Rev. 4 MP-8",
+                            "NIST SP 800-53 Rev. 4 SC-12",
+                            "NIST SP 800-53 Rev. 4 SC-28",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.8.2.3",
+                            "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.1.5",
+                            "MITRE ATT&CK T1530"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
+
+@registry.register_check("azure.sql_server")
+def azure_sql_database_read_scale_out_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
+    """
+    [Azure.SQLServer.6] Azure SQL Databases should have read scale-out enabled
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for sqlserv in get_all_sql_servers(cache, azureCredential, azSubId):
+        sqlservName = sqlserv.name
+        sqlservId = str(sqlserv.id)
+        azRegion = sqlserv.location
+        rgName = sqlservId.split("/")[4]
+        for db in get_all_sql_databases(cache,azureCredential,azSubId):
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(db.as_dict(),default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
+            dbReadScaleOut = False
+            dbId = str(db.id)
+            dbName = db.name
+            if db.read_scale != "Disabled":
+                dbReadScaleOut = True
+
+            if dbReadScaleOut is False:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-read-scale-out-enabled-on-database-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-read-scale-out-enabled-on-database-check",
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[Azure.SQLServer.6] Azure SQL Databases should have read scale-out enabled",
+                    "Description": f"Azure SQL Database {dbName} on Azure SQL Server {sqlservName} in Subscription {azSubId} in {azRegion} does not have read scale-out enabled. Read scale-out allows you to distribute the read-only query load across multiple databases. This feature is useful for offloading read-only query workloads from the primary database. Refer to the remediation instructions if this configuration is not intended.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on Azure SQL Server read scale-out, refer to the Azure documentation",
+                            "Url": "https://docs.microsoft.com/en-us/azure/azure-sql/database/read-scale-out"
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "Azure",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": azSubId,
+                        "AssetRegion": azRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Database",
+                        "AssetService": "Azure SQL Server",
+                        "AssetComponent": "Database",
+                    },
+                    "Resources": [
+                        {
+                            "Type": "AzureSqlDatabase",
+                            "Id": dbId,
+                            "Partition": awsPartition,
+                            "Region": azRegion,
+                            "Details": {
+                                "Other": {
+                                    "SubscriptionId": azSubId,
+                                    "ResourceGroupName": rgName,
+                                    "Region": azRegion,
+                                    "Name": dbName,
+                                    "Id": dbId
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 ID.BE-5",
+                            "NIST CSF V1.1 PR.DS-4",
+                            "NIST CSF V1.1 PR.PT-5",
+                            "NIST SP 800-53 Rev. 4 AU-4",
+                            "NIST SP 800-53 Rev. 4 CP-2",
+                            "NIST SP 800-53 Rev. 4 CP-7",
+                            "NIST SP 800-53 Rev. 4 CP-8",
+                            "NIST SP 800-53 Rev. 4 CP-11",
+                            "NIST SP 800-53 Rev. 4 CP-13",
+                            "NIST SP 800-53 Rev. 4 PL-8",
+                            "NIST SP 800-53 Rev. 4 SA-14",
+                            "NIST SP 800-53 Rev. 4 SC-5",
+                            "NIST SP 800-53 Rev. 4 SC-6",
+                            "AICPA TSC CC3.1",
+                            "AICPA TSC A1.1",
+                            "AICPA TSC A1.2",
+                            "ISO 27001:2013 A.11.1.4",
+                            "ISO 27001:2013 A.12.3.1",
+                            "ISO 27001:2013 A.17.1.1",
+                            "ISO 27001:2013 A.17.1.2",
+                            "ISO 27001:2013 A.17.2.1"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
+            else:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-read-scale-out-enabled-on-database-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-read-scale-out-enabled-on-database-check",
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[Azure.SQLServer.6] Azure SQL Databases should have read scale-out enabled",
+                    "Description": f"Azure SQL Database {dbName} on Azure SQL Server {sqlservName} in Subscription {azSubId} in {azRegion} has read scale-out enabled.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on Azure SQL Server read scale-out, refer to the Azure documentation",
+                            "Url": "https://docs.microsoft.com/en-us/azure/azure-sql/database/read-scale-out"
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "Azure",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": azSubId,
+                        "AssetRegion": azRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Database",
+                        "AssetService": "Azure SQL Server",
+                        "AssetComponent": "Database",
+                    },
+                    "Resources": [
+                        {
+                            "Type": "AzureSqlDatabase",
+                            "Id": dbId,
+                            "Partition": awsPartition,
+                            "Region": azRegion,
+                            "Details": {
+                                "Other": {
+                                    "SubscriptionId": azSubId,
+                                    "ResourceGroupName": rgName,
+                                    "Region": azRegion,
+                                    "Name": dbName,
+                                    "Id": dbId
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 ID.BE-5",
+                            "NIST CSF V1.1 PR.DS-4",
+                            "NIST CSF V1.1 PR.PT-5",
+                            "NIST SP 800-53 Rev. 4 AU-4",
+                            "NIST SP 800-53 Rev. 4 CP-2",
+                            "NIST SP 800-53 Rev. 4 CP-7",
+                            "NIST SP 800-53 Rev. 4 CP-8",
+                            "NIST SP 800-53 Rev. 4 CP-11",
+                            "NIST SP 800-53 Rev. 4 CP-13",
+                            "NIST SP 800-53 Rev. 4 PL-8",
+                            "NIST SP 800-53 Rev. 4 SA-14",
+                            "NIST SP 800-53 Rev. 4 SC-5",
+                            "NIST SP 800-53 Rev. 4 SC-6",
+                            "AICPA TSC CC3.1",
+                            "AICPA TSC A1.1",
+                            "AICPA TSC A1.2",
+                            "ISO 27001:2013 A.11.1.4",
+                            "ISO 27001:2013 A.12.3.1",
+                            "ISO 27001:2013 A.17.1.1",
+                            "ISO 27001:2013 A.17.1.2",
+                            "ISO 27001:2013 A.17.2.1"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
 
 ## END ??
