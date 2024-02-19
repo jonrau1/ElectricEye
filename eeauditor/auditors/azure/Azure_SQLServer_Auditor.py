@@ -19,7 +19,6 @@
 #under the License.
 
 from azure.mgmt.sql import SqlManagementClient
-from azure.mgmt.network import NetworkManagementClient
 import datetime
 import base64
 import json

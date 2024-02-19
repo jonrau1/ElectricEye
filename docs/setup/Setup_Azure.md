@@ -188,7 +188,7 @@ Todo...
 
 ## Azure Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **28 Checks** across **3 Auditors** that support the secure configuration of **6 services/components**
+These are the following services and checks perform by each Auditor, there are currently **32 Checks** across **4 Auditors** that support the secure configuration of **7 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
@@ -220,6 +220,10 @@ These are the following services and checks perform by each Auditor, there are c
 | Azure_SQLServer_Auditor | Azure SQL Server | Azure SQL Servers should enforce a minimum TLS version of TLS_v1.2 |
 | Azure_SQLServer_Auditor | Azure SQL Server | Azure SQL Servers should not have public internet access enabled |
 | Azure_SQLServer_Auditor | Azure SQL Server | Azure SQL Servers should not have outbound network access enabled |
+| Azure_Database_MySQL_Auditor | Azure Database for MySQL Server | Azure MySQL Flexible Servers should enforce SSL/TLS connectivity |
+| Azure_Database_MySQL_Auditor | Azure Database for MySQL Server | Azure MySQL Flexible Servers should enforce TLS 1.2 minimum ciphersuiters for TLS connectivity |
+| Azure_Database_MySQL_Auditor | Azure Database for MySQL Server | Azure MySQL Flexible Servers should enforce TLS 1.2 minimum ciphersuiters for TLS connectivity for admins |
+| Azure_Database_MySQL_Auditor | Azure Database for MySQL Server | Azure MySQL Flexible Servers should enable audit logging |
 
 Continue to check this section for information on active, retired, and renamed checks or using the `--list-checks` command in the CLI!
 
