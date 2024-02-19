@@ -60,13 +60,13 @@ class EEAuditor(object):
             self.awsRegionsSelection = utils.awsRegionsSelection
             self.electricEyeRoleName = utils.electricEyeRoleName
         # GCP
-        elif assessmentTarget == "GCP":
+        if assessmentTarget == "GCP":
             searchPath = "./auditors/gcp"
             utils = CloudConfig(assessmentTarget, tomlPath)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.gcpProjectIds = utils.gcp_project_ids
         # OCI
-        elif assessmentTarget == "OCI":
+        if assessmentTarget == "OCI":
             searchPath = "./auditors/oci"
             utils = CloudConfig(assessmentTarget, tomlPath)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
@@ -76,27 +76,26 @@ class EEAuditor(object):
             self.ociCompartments = utils.ociCompartments
             self.ociUserApiKeyFingerprint = utils.ociUserApiKeyFingerprint
         # Azure
-        elif assessmentTarget == "Azure":
+        if assessmentTarget == "Azure":
             searchPath = "./auditors/azure"
             utils = CloudConfig(assessmentTarget, tomlPath)
+            # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
+            self.azureSubscriptions = utils.azureSubscriptions
+            self.azureCredentials = utils.azureCredentials
         # Alibaba
-        elif assessmentTarget == "Alibaba":
+        if assessmentTarget == "Alibaba":
             searchPath = "./auditors/alibabacloud"
-            utils = CloudConfig(assessmentTarget, tomlPath)
-        # VMWare Cloud on AWS
-        elif assessmentTarget == "VMC":
-            searchPath = "./auditors/vmwarecloud"
             utils = CloudConfig(assessmentTarget, tomlPath)
         
         ###################################
         # SOFTWARE-AS-A-SERVICE PROVIDERS #
         ###################################
         # Servicenow
-        elif assessmentTarget == "Servicenow":
+        if assessmentTarget == "Servicenow":
             searchPath = "./auditors/servicenow"
             utils = CloudConfig(assessmentTarget, tomlPath)
         # M365
-        elif assessmentTarget == "M365":
+        if assessmentTarget == "M365":
             searchPath = "./auditors/m365"
             utils = CloudConfig(assessmentTarget, tomlPath)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
@@ -105,7 +104,7 @@ class EEAuditor(object):
             self.m365SecretId = utils.m365SecretId
             self.m365TenantId = utils.m365TenantId
         # Salesforce
-        elif assessmentTarget == "Salesforce":
+        if assessmentTarget == "Salesforce":
             searchPath = "./auditors/salesforce"
             utils = CloudConfig(assessmentTarget, tomlPath)
             self.salesforceAppClientId = utils.salesforceAppClientId
@@ -114,17 +113,13 @@ class EEAuditor(object):
             self.salesforceApiPassword = utils.salesforceApiPassword
             self.salesforceUserSecurityToken = utils.salesforceUserSecurityToken
             self.salesforceInstanceLocation = utils.salesforceInstanceLocation
-        # GitHub
-        elif assessmentTarget == "GitHub":
-            searchPath = "./auditors/github"
+        # Snowflake
+        if assessmentTarget == "Snowflake":
+            searchPath = "./auditors/snowflake"
             utils = CloudConfig(assessmentTarget, tomlPath)
         # Google Workspaces
-        elif assessmentTarget == "GoogleWorkspaces":
+        if assessmentTarget == "GoogleWorkspaces":
             searchPath = "./auditors/google_workspaces"
-            utils = CloudConfig(assessmentTarget, tomlPath)
-        # Workday ERP
-        elif assessmentTarget == "Workday":
-            searchPath = "./auditors/workday_erp"
             utils = CloudConfig(assessmentTarget, tomlPath)
 
         # Search path for Auditors
@@ -197,7 +192,7 @@ class EEAuditor(object):
                     try:
                         # ecr, sagemaker, and a few other services have "api." on their names
                         # which is not consistent with the service at all
-                        serviceName = serviceName.split("api.")[1]
+                        serviceName = str(serviceName).split("api.")[1]
                     except IndexError:
                         serviceName = serviceName
                     
@@ -319,7 +314,8 @@ class EEAuditor(object):
                                     awsRegion=region,
                                     awsPartition=partition,
                                 ):
-                                    yield finding
+                                    if finding is not None:
+                                        yield finding
                             except Exception:
                                 logger.warn(
                                     "Failed to execute check %s with traceback %s",
@@ -368,7 +364,8 @@ class EEAuditor(object):
                                 awsPartition=partition,
                                 gcpProjectId=project
                             ):
-                                yield finding
+                                if finding is not None:
+                                    yield finding
                         except Exception:
                             logger.warn(
                                 "Failed to execute check %s with traceback %s",
@@ -418,12 +415,63 @@ class EEAuditor(object):
                             ociCompartments=self.ociCompartments,
                             ociUserApiKeyFingerprint=self.ociUserApiKeyFingerprint
                         ):
-                            yield finding
+                            if finding is not None:
+                                yield finding
                     except Exception:
                         logger.warn(
                             "Failed to execute check %s with traceback %s",
                             checkName, format_exc()
                         )
+            # optional sleep if specified - defaults to 0 seconds
+            sleep(delay)
+
+    # Called from eeauditor/controller.py run_auditor()
+    def run_azure_checks(self, pluginName=None, delay=0):
+        """
+        Runs Azure Auditors using Client Secret credentials from an Application Registration
+        """
+
+        # These details are needed for the ASFF...
+        import boto3
+
+        sts = boto3.client("sts")
+
+        region = boto3.Session().region_name
+        account = sts.get_caller_identity()["Account"]
+        # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
+        partition = CloudConfig.check_aws_partition(region)
+
+        for azSubId in self.azureSubscriptions:
+            for serviceName, checkList in self.registry.checks.items():
+                # Pass the Cache at the "serviceName" level aka Plugin
+                auditorCache = {}
+                for checkName, check in checkList.items():
+                    # if a specific check is requested, only run that one check
+                    if (
+                        not pluginName
+                        or pluginName
+                        and pluginName == checkName
+                    ):
+                        try:
+                            logger.info(
+                                "Executing Check %s for Azure Sub %s",
+                                checkName, azSubId
+                            )
+                            for finding in check(
+                                cache=auditorCache,
+                                awsAccountId=account,
+                                awsRegion=region,
+                                awsPartition=partition,
+                                azureCredential=self.azureCredentials,
+                                azSubId=azSubId
+                            ):
+                                if finding is not None:
+                                    yield finding
+                        except Exception:
+                            logger.warn(
+                                "Failed to execute check %s with traceback %s",
+                                checkName, format_exc()
+                            )
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
 
@@ -455,7 +503,7 @@ class EEAuditor(object):
                 ):
                     try:
                         logger.info(
-                            "Executing Check %s for M365 Tenant %s",
+                            "Executing Check %s for M365",
                             checkName, self.m365TenantId
                         )
                         for finding in check(
@@ -468,7 +516,8 @@ class EEAuditor(object):
                             clientSecret=self.m365SecretId,
                             tenantLocation=self.m365TenantLocation,
                         ):
-                            yield finding
+                            if finding is not None:
+                                yield finding
                     except Exception:
                         logger.warn(
                             "Failed to execute check %s with traceback %s",
@@ -521,7 +570,8 @@ class EEAuditor(object):
                             salesforceUserSecurityToken = self.salesforceUserSecurityToken,
                             salesforceInstanceLocation = self.salesforceInstanceLocation
                         ):
-                            yield finding
+                            if finding is not None:
+                                yield finding
                     except Exception:
                         logger.warn(
                             "Failed to execute check %s with traceback %s",
@@ -566,8 +616,9 @@ class EEAuditor(object):
                             awsRegion=region,
                             awsPartition=partition
                         ):
-                            yield finding
-                    except Exception as e:
+                            if finding is not None:
+                                yield finding
+                    except Exception:
                         logger.warn(
                             "Failed to execute check %s with traceback %s",
                             checkName, format_exc()
@@ -585,9 +636,9 @@ class EEAuditor(object):
             for checkName, check in checkList.items():
                 doc = check.__doc__
                 if doc:
-                    description = (check.__doc__).replace("\n", "").replace("    ", "")
+                    description = str(check.__doc__).replace("\n", "").replace("    ", "")
                 else:
-                    description = "TELL_THE_MAINTAINER_TO_FIX_ME_PLZ"
+                    description = "This shit is fucked!"
 
                 auditorFile = getfile(check).rpartition("/")[2]
                 auditorName = auditorFile.split(".py")[0]
@@ -606,9 +657,9 @@ class EEAuditor(object):
             for checkName, check in checkList.items():
                 doc = check.__doc__
                 if doc:
-                    description = (check.__doc__).replace("\n", "").replace("    ", "")
+                    description = str(check.__doc__).replace("\n", "").replace("    ", "")
                 else:
-                    description = "TELL_THE_MAINTAINER_TO_FIX_ME_PLZ"
+                    description = "This shit is fucked!"
                 
                 controlPrinter.append(description)
 

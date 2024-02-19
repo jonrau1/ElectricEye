@@ -104,7 +104,7 @@ To configure the TOML file, you need to modify the values of the variables in th
 
 ## Use ElectricEye for Salesforce
 
-1. With >=Python 3.8 installed, install and upgrade `pip3` and setup `virtualenv`.
+1. With >=Python 3.9 installed, install and upgrade `pip3` and setup `virtualenv`.
 
 ```bash
 sudo apt install -y python3-pip

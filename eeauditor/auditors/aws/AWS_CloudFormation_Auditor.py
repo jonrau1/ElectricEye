@@ -167,6 +167,7 @@ def cfn_drift_check(cache: dict, session, awsAccountId: str, awsRegion: str, aws
             }
             yield finding
 
+'''
 @registry.register_check("cloudformation")
 def cfn_monitoring_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFormation.2] CloudFormation stacks should be monitored for changes"""
@@ -299,3 +300,4 @@ def cfn_monitoring_check(cache: dict, session, awsAccountId: str, awsRegion: str
                 "RecordState": "ARCHIVED"
             }
             yield finding
+'''

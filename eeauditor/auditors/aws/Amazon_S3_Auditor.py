@@ -55,7 +55,7 @@ def list_buckets(cache, session):
     cache["list_buckets"] = s3.list_buckets()["Buckets"]
     return cache["list_buckets"]
 
-@registry.register_check("s3")
+'''@registry.register_check("s3")
 def aws_s3_bucket_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[S3.1] Amazon S3 buckets should be encrypted"""
     s3 = session.client("s3")
@@ -202,9 +202,9 @@ def aws_s3_bucket_encryption_check(cache: dict, session, awsAccountId: str, awsR
                 }
                 yield finding
             else:
-                print(e)
+                print(e)'''
 
-@registry.register_check("s3")
+'''@registry.register_check("s3")
 def aws_s3_bucket_lifecycle_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[S3.2] Amazon S3 buckets should implement lifecycle policies for data archival and recovery operations"""
     s3 = session.client("s3")
@@ -347,9 +347,9 @@ def aws_s3_bucket_lifecycle_check(cache: dict, session, awsAccountId: str, awsRe
                 "Workflow": {"Status": "NEW"},
                 "RecordState": "ACTIVE",
             }
-            yield finding
+            yield finding'''
 
-@registry.register_check("s3")
+'''@registry.register_check("s3")
 def aws_s3_bucket_versioning_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[S3.3] Amazon S3 buckets should have versioning enabled"""
     s3 = session.client("s3")
@@ -526,7 +526,7 @@ def aws_s3_bucket_versioning_check(cache: dict, session, awsAccountId: str, awsR
                 "Workflow": {"Status": "NEW"},
                 "RecordState": "ACTIVE",
             }
-            yield finding
+            yield finding'''
 
 @registry.register_check("s3")
 def aws_s3_bucket_policy_allows_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:

@@ -361,7 +361,7 @@ def rds_instance_ha_check(cache: dict, session, awsAccountId: str, awsRegion: st
 
 @registry.register_check("rds")
 def rds_instance_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[RDS.2] Amazon Relational Database Service (RDS) instances should not be publicly accessible"""
+    """[RDS.2] Amazon Relational Database Service (RDS) instances should not be configured for public access"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for dbinstances in describe_db_instances(cache, session):
@@ -389,9 +389,9 @@ def rds_instance_public_access_check(cache: dict, session, awsAccountId: str, aw
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "HIGH"},
+                "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[RDS.2] Amazon Relational Database Service (RDS) instances should not be publicly accessible",
+                "Title": "[RDS.2] Amazon Relational Database Service (RDS) instances should not be configured for public access",
                 "Description": f"Amazon Relational Database Service (RDS) DB instance {instanceId} is publicly accessible. Configuring your RDS / Aurora database to be publicly accessible allows your endpoint to receive traffic from the public internet, however, it does not remove other security controls you may have in place such as using IAM-based authentication, strong passwords, Kerberos authentication, network security (EC2 Security Groups, AWS Network Firewall, AWS Route 53 Resolver DNS Firewall), etc. Adversaries and other unauthorized personnel may still attempt to make connections with and consume the resources of your database instances. It is a best practice to only route requests to your RDS / Aurora instances within the boundaries of an Amazon Virtual Private Cloud (VPC). You can attach Amazon Site-to-Site VPNs, AWS ClientVPNs (OpenVPN), and Amazon Direct Connection Virtual Gateways to support hybrid and/or secure remote connectivity while preventing your database from being indexed on the internet. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -509,7 +509,7 @@ def rds_instance_public_access_check(cache: dict, session, awsAccountId: str, aw
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[RDS.2] Amazon Relational Database Service (RDS) instances should not be publicly accessible",
+                "Title": "[RDS.2] Amazon Relational Database Service (RDS) instances should not be configured for public access",
                 "Description": f"Amazon Relational Database Service (RDS) DB instance {instanceId} is not publicly accessible. Refer to the remediation instructions if this configuration is not intended",
                 "Remediation": {
                     "Recommendation": {
@@ -2527,7 +2527,7 @@ def rds_aurora_cluster_encryption_check(cache: dict, session, awsAccountId: str,
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "HIGH"},
+                "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[RDS.12] Amazon Relational Database Service (RDS) Aurora Clusters should be encrypted",
                 "Description": "RDS Aurora Cluster "
