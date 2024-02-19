@@ -2527,7 +2527,7 @@ def rds_aurora_cluster_encryption_check(cache: dict, session, awsAccountId: str,
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "HIGH"},
+                "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[RDS.12] Amazon Relational Database Service (RDS) Aurora Clusters should be encrypted",
                 "Description": "RDS Aurora Cluster "

@@ -440,3 +440,337 @@ def azure_sql_server_no_ingress_from_internet_check(cache: dict, awsAccountId: s
                 "RecordState": "ARCHIVED"
             }
             yield finding
+
+@registry.register_check("azure.sql_server")
+def azure_sql_server_tde_with_cmk_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
+    """
+    [Azure.SQLServer.3] Azure SQL Servers should use Transparent Data Encryption (TDE) with Customer Managed Keys (CMK)
+    """
+    azSqlClient = SqlManagementClient(azureCredential, azSubId)
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for sqlserv in get_all_sql_servers(cache, azureCredential, azSubId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(sqlserv,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        sqlservName = sqlserv.name
+        sqlservId = str(sqlserv.id)
+        azRegion = sqlserv.location
+        rgName = sqlservId.split("/")[4]
+        tdeProtector = azSqlClient.encryption_protectors.get(rgName,sqlservName,"current")
+        tdeWithCmk = False
+        if tdeProtector.server_key_type != "ServiceManaged":
+            tdeWithCmk = True
+
+        # this is a failing check
+        if tdeWithCmk is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-tde-with-cmk-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-tde-with-cmk-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[Azure.SQLServer.3] Azure SQL Servers should use Transparent Data Encryption (TDE) with Customer Managed Keys (CMK)",
+                "Description": f"Azure SQL Server {sqlservName} in Subscription {azSubId} in {azRegion} does not use Transparent Data Encryption (TDE) with Customer Managed Keys (CMK). Transparent Data Encryption (TDE) helps protect Azure SQL Database and Azure SQL Managed Instance against the threat of malicious activity by performing real-time encryption and decryption of the database, associated backups, and transaction log files at rest without requiring changes to the application. TDE with Customer Managed Keys (CMK) allows you to bring your own key to encrypt the database. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Azure SQL Server Transparent Data Encryption, refer to the Azure documentation",
+                        "Url": "https://docs.microsoft.com/en-us/azure/azure-sql/database/transparent-data-encryption-byok-overview"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Azure SQL Server",
+                    "AssetComponent": "Server",
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureSqlServer",
+                        "Id": sqlservId,
+                        "Partition": awsPartition,
+                        "Region": azRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": sqlservName,
+                                "Id": sqlservId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                        "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.1.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-tde-with-cmk-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-tde-with-cmk-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Azure.SQLServer.3] Azure SQL Servers should use Transparent Data Encryption (TDE) with Customer Managed Keys (CMK)",
+                "Description": f"Azure SQL Server {sqlservName} in Subscription {azSubId} in {azRegion} uses Transparent Data Encryption (TDE) with Customer Managed Keys (CMK).",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Azure SQL Server Transparent Data Encryption, refer to the Azure documentation",
+                        "Url": "https://docs.microsoft.com/en-us/azure/azure-sql/database/transparent-data-encryption-byok-overview"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Azure SQL Server",
+                    "AssetComponent": "Server",
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureSqlServer",
+                        "Id": sqlservId,
+                        "Partition": awsPartition,
+                        "Region": azRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": sqlservName,
+                                "Id": sqlservId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                        "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.1.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("azure.sql_server")
+def azure_sql_server_entra_id_admin_authentication_configured_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
+    """
+    [Azure.SQLServer.4] Azure SQL Server should have Microsoft Entra ID authentication configured for server admin
+    """
+    azSqlClient = SqlManagementClient(azureCredential, azSubId)
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for sqlserv in get_all_sql_servers(cache, azureCredential, azSubId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(sqlserv,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        sqlservName = sqlserv.name
+        sqlservId = str(sqlserv.id)
+        azRegion = sqlserv.location
+        rgName = sqlservId.split("/")[4]
+        serverAdmin = azSqlClient.server_azure_ad_administrators.list_by_server(rgName,sqlservName)
+        aadAdminConfigured = False
+        for admin in serverAdmin:
+            if admin.administrator_type == "ActiveDirectory":
+                aadAdminConfigured = True
+                break
+
+        # this is a failing check
+        if aadAdminConfigured is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-entra-id-admin-authentication-configured-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-entra-id-admin-authentication-configured-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[Azure.SQLServer.4] Azure SQL Server should have Microsoft Entra ID authentication configured for server admin",
+                "Description": f"Azure SQL Server {sqlservName} in Subscription {azSubId} in {azRegion} does not have Microsoft Entra ID authentication configured for the server admin. Azure SQL Database and Azure SQL Managed Instance support the ability to use Azure Active Directory (AAD) to authenticate the server admin. This provides a more secure and manageable way to authenticate to your SQL Server. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Azure SQL Server Azure Active Directory authentication, refer to the Azure documentation",
+                        "Url": "https://docs.microsoft.com/en-us/azure/azure-sql/database/authentication-aad-overview"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Azure SQL Server",
+                    "AssetComponent": "Server",
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureSqlServer",
+                        "Id": sqlservId,
+                        "Partition": awsPartition,
+                        "Region": azRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": sqlservName,
+                                "Id": sqlservId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-6",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-16",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-24",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 PE-2",
+                        "NIST SP 800-53 Rev. 4 PS-3",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.7.1.1",
+                        "ISO 27001:2013 A.9.2.1",
+                        "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.1.4",
+                        "MITRE ATT&CK T1078.004"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-entra-id-admin-authentication-configured-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-entra-id-admin-authentication-configured-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Azure.SQLServer.4] Azure SQL Server should have Microsoft Entra ID authentication configured for server admin",
+                "Description": f"Azure SQL Server {sqlservName} in Subscription {azSubId} in {azRegion} has Microsoft Entra ID authentication configured for the server admin.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Azure SQL Server Azure Active Directory authentication, refer to the Azure documentation",
+                        "Url": "https://docs.microsoft.com/en-us/azure/azure-sql/database/authentication-aad-overview"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",   
+                    "AssetService": "Azure SQL Server",
+                    "AssetComponent": "Server",
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureSqlServer",
+                        "Id": sqlservId,
+                        "Partition": awsPartition,
+                        "Region": azRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": sqlservName,
+                                "Id": sqlservId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-6",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-16",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-24",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 PE-2",
+                        "NIST SP 800-53 Rev. 4 PS-3",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.7.1.1",
+                        "ISO 27001:2013 A.9.2.1",
+                        "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.1.4",
+                        "MITRE ATT&CK T1078.004"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+## END ??
