@@ -6,6 +6,7 @@ This documentation is all about Outputs supported by ElectricEye and how to conf
 
 - [Key Considerations](#key-considerations)
 - [`stdout` Output](#stdout-output)
+- [OCSF `stdout` Output](#ocsf-stdout-output)
 - [JSON Output](#json-output)
 - [HTML Output](#html-output)
 - [HTML Compliance Output](#html-compliance-output)
@@ -33,7 +34,7 @@ To review the list of possible Output providers, use the following ElectricEye c
 
 ```bash
 $ python3 eeauditor/controller.py --list-options
-['amazon_sqs', 'cam_json', 'cam_mongodb', 'cam_postgresql', 'csv', 'firemon_cloud_defense', 'html', 'html_compliance', 'json', 'json_normalized', 'mongodb', 'ocsf_kdf', 'ocsf_v1_1_0', 'postgresql', 'sechub', 'slack', 'stdout']
+['amazon_sqs', 'cam_json', 'cam_mongodb', 'cam_postgresql', 'csv', 'firemon_cloud_defense', 'html', 'html_compliance', 'json', 'json_normalized', 'mongodb', 'ocsf_kdf', 'ocsf_stdout', 'ocsf_v1_1_0', 'postgresql', 'sechub', 'slack', 'stdout']
 ```
 
 #### IMPORTANT NOTE!! You can specify multiple Outputs by providing the `-o` or `--outputs` argument multiple times, for instance: `python3 eeauditor/controller.py -t AWS -o json -o csv -o postgresql`

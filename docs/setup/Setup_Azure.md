@@ -188,7 +188,7 @@ Todo...
 
 ## Azure Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **16 Checks** across **2 Auditors** that support the secure configuration of **3 services/components**
+These are the following services and checks perform by each Auditor, there are currently **18 Checks** across **3 Auditors** that support the secure configuration of **5 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
@@ -208,6 +208,8 @@ These are the following services and checks perform by each Auditor, there are c
 | Azure_VirtualMachine_Auditor | Azure Disk Storage Disks | Unattached storage disks should be encrypted with CMKs |
 | Azure_VirtualMachine_Auditor | Azure Virtual Machine | Azure VMs should have the Azure Monitor agent installed |
 | Azure_VirtualMachine_Auditor | Azure Virtual Machine | Azure VMs should be covered by Azure Vault backups |
+| Azure_SQLServer_Auditor | Azure SQL Server | Azure SQL Servers should have auditing enabled |
+| Azure_SQLServer_Auditor | Azure SQL Server | Azure SQL Servers should not allow access from the internet |
 
 Continue to check this section for information on active, retired, and renamed checks or using the `--list-checks` command in the CLI!
 
