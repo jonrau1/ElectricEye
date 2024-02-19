@@ -129,7 +129,6 @@ Refer to sub-headings for per-CSP or per-SaaS setup instructions. Go to [Outputs
 The following Cloud Service Providers are on the Roadmap
 
 - [For Alibaba Cloud (*Coming Soon*)](./docs/setup/Setup_AlibabaCloud.md)
-- [For VMWare Cloud on AWS (*Coming Soon*)](./docs/setup/Setup_VMC.md)
 
 ### Software-as-a-Service (SaaS) Providers
 
@@ -139,9 +138,8 @@ The following Cloud Service Providers are on the Roadmap
 
 The following SaaS Providers are on the Roadmap
 
-- [For Workday ERP (*Coming Soon*)](./docs/setup/Setup_WorkDay.md)
-- [For GitHub (*Coming Soon*)](./docs/setup/Setup_GitHub.md)
 - [For Google Workspaces (*Coming Soon*)](./docs/setup/Setup_Google_Workspaces.md)
+- [For Snowflake (*Coming Soon*)](./docs/setup/Setup_Snowflake.md)
 
 ## ElectricEye on Docker
 

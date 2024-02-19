@@ -86,10 +86,6 @@ class EEAuditor(object):
         elif assessmentTarget == "Alibaba":
             searchPath = "./auditors/alibabacloud"
             utils = CloudConfig(assessmentTarget, tomlPath)
-        # VMWare Cloud on AWS
-        elif assessmentTarget == "VMC":
-            searchPath = "./auditors/vmwarecloud"
-            utils = CloudConfig(assessmentTarget, tomlPath)
         
         ###################################
         # SOFTWARE-AS-A-SERVICE PROVIDERS #
@@ -117,17 +113,13 @@ class EEAuditor(object):
             self.salesforceApiPassword = utils.salesforceApiPassword
             self.salesforceUserSecurityToken = utils.salesforceUserSecurityToken
             self.salesforceInstanceLocation = utils.salesforceInstanceLocation
-        # GitHub
-        elif assessmentTarget == "GitHub":
-            searchPath = "./auditors/github"
+        # Snowflake
+        elif assessmentTarget == "Snowflake":
+            searchPath = "./auditors/snowflake"
             utils = CloudConfig(assessmentTarget, tomlPath)
         # Google Workspaces
         elif assessmentTarget == "GoogleWorkspaces":
             searchPath = "./auditors/google_workspaces"
-            utils = CloudConfig(assessmentTarget, tomlPath)
-        # Workday ERP
-        elif assessmentTarget == "Workday":
-            searchPath = "./auditors/workday_erp"
             utils = CloudConfig(assessmentTarget, tomlPath)
 
         # Search path for Auditors
