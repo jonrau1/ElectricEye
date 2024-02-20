@@ -1508,7 +1508,7 @@ def azure_db_for_mysql_flexible_server_public_network_access_disabled_check(cach
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "LOW"},
+                "Severity": {"Label": "MEDUIM"},
                 "Confidence": 99,
                 "Title": "[Azure.MySQLDatabase.9] Azure Database for MySQL flexible servers should have public network access disabled",
                 "Description": f"Azure Database for MySQL Server {mysqlservName} in Subscription {azSubId} in {azRegion} has public network access enabled. Configuring public access on your Azure Database for MySQL flexible server instance allows the server access through a public endpoint. That is, the server is accessible through the internet. The public endpoint is a publicly resolvable DNS address. The phrase allowed IP addresses refers to a range of IPs you choose to permit access to your server. These permissions are called firewall rules. Only the IP addresses you allow have permission to access your Azure Database for MySQL flexible server instance. By default, no IP addresses are allowed. You can add IP addresses when initially setting up your server or after your server has been created. Refer to the remediation instructions if this configuration is not intended.",

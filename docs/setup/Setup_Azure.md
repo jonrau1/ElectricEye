@@ -188,7 +188,7 @@ Todo...
 
 ## Azure Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **37 Checks** across **4 Auditors** that support the secure configuration of **7 services/components**
+These are the following services and checks perform by each Auditor, there are currently **47 Checks** across **5 Auditors** that support the secure configuration of **8 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
@@ -220,7 +220,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Azure_SQLServer_Auditor | Azure SQL Server | Azure SQL Servers should enforce a minimum TLS version of TLS_v1.2 |
 | Azure_SQLServer_Auditor | Azure SQL Server | Azure SQL Servers should not have public internet access enabled |
 | Azure_SQLServer_Auditor | Azure SQL Server | Azure SQL Servers should not have outbound network access enabled |
-| Azure_Database_MySQL_Auditor | Azure Database for MySQL Server | Azure MySQL Flexible Servers should enforce SSL/TLS connectivity |
+| Azure_Database_MySQL_Auditor | Azure Database for MySQL Server | Azure MySQL Flexible Servers should enforce secure connectivity (SSL/TLS-only) |
 | Azure_Database_MySQL_Auditor | Azure Database for MySQL Server | Azure MySQL Flexible Servers should enforce TLS 1.2 minimum ciphersuiters for TLS connectivity |
 | Azure_Database_MySQL_Auditor | Azure Database for MySQL Server | Azure MySQL Flexible Servers should enforce TLS 1.2 minimum ciphersuiters for TLS connectivity for admins |
 | Azure_Database_MySQL_Auditor | Azure Database for MySQL Server | Azure MySQL Flexible Servers should enable audit logging |
@@ -229,9 +229,15 @@ These are the following services and checks perform by each Auditor, there are c
 | Azure_Database_MySQL_Auditor | Azure Database for MySQL Server | Azure MySQL Flexible Servers have storage auto-growth enabled |
 | Azure_Database_MySQL_Auditor | Azure Database for MySQL Server | Azure MySQL Flexible Servers have server high availability configured |
 | Azure_Database_MySQL_Auditor | Azure Database for MySQL Server | Azure MySQL Flexible Servers should not allow public network access |
+| Azure_Database_PostgreSQL_Auditor | Azure Database for PostgreSQL Server | Azure PostgreSQL Flexible Servers should enforce secure connectivity (SSL/TLS-only) |
+| Azure_Database_PostgreSQL_Auditor | Azure Database for PostgreSQL Server | Azure PostgreSQL Flexible Servers should enforce TLS 1.2 minimum ciphersuiters for TLS connectivity |
+| Azure_Database_PostgreSQL_Auditor | Azure Database for PostgreSQL Server | Azure PostgreSQL Flexible Servers should enable checkpoint logging |
+| Azure_Database_PostgreSQL_Auditor | Azure Database for PostgreSQL Server | Azure PostgreSQL Flexible Servers should enable connection logging |
+| Azure_Database_PostgreSQL_Auditor | Azure Database for PostgreSQL Server | Azure PostgreSQL Flexible Servers should disconnection logging |
+| Azure_Database_PostgreSQL_Auditor | Azure Database for PostgreSQL Server | Azure PostgreSQL Flexible Servers should enable connection throttling |
+| Azure_Database_PostgreSQL_Auditor | Azure Database for PostgreSQL Server | Azure PostgreSQL Flexible Servers should retain logs for at least 3 days |
+| Azure_Database_PostgreSQL_Auditor | Azure Database for PostgreSQL Server | Azure PostgreSQL Flexible Servers should not allow access to all Azure services |
+| Azure_Database_PostgreSQL_Auditor | Azure Database for PostgreSQL Server | Azure PostgreSQL Flexible Servers should not allow public network access |
+| Azure_Database_PostgreSQL_Auditor | Azure Database for PostgreSQL Server | Azure PostgreSQL Flexible Servers running regulated workloads should consider using double encryption |
 
 Continue to check this section for information on active, retired, and renamed checks or using the `--list-checks` command in the CLI!
-
-## Iconography Reminder
-
-http://code.benco.io/icon-collection/azure-icons/
