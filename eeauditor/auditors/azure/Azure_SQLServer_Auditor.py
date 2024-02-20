@@ -18,7 +18,7 @@
 #specific language governing permissions and limitations
 #under the License.
 
-from azure.mgmt.sql import SqlManagementClient
+from azure.mgmt.sql import SqlManagementClient, models
 import datetime
 import base64
 import json
@@ -26,7 +26,7 @@ from check_register import CheckRegister
 
 registry = CheckRegister()
 
-def get_all_sql_servers(cache: dict, azureCredential, azSubId: str):
+def get_all_sql_servers(cache: dict, azureCredential, azSubId: str) -> list[models.Server]:
     """
     Returns a list of all Azure SQL Servers in a Subscription
     """
@@ -43,7 +43,7 @@ def get_all_sql_servers(cache: dict, azureCredential, azSubId: str):
     cache["get_all_sql_servers"] = sqlList
     return cache["get_all_sql_servers"]
 
-def get_all_sql_databases(cache: dict, azureCredential, azSubId: str):
+def get_all_sql_databases(cache: dict, azureCredential, azSubId: str) -> list[models.Database]:
     """
     Returns a list of all Azure SQL Databases by Server in a Subscription
     """
