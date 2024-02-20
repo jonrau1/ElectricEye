@@ -36,7 +36,7 @@ except Exception as e:
 
 def get_all_azure_nsgs(cache: dict, azureCredential, azSubId: str) -> list[models._models.NetworkSecurityGroup]:
     """
-    Returns a list of all Azure Network Security Groups in a Subscription
+    Returns a list of all NSGs in a Subscription
     """
     azNetworkClient = NetworkManagementClient(azureCredential,azSubId)
 
@@ -106,7 +106,7 @@ def azure_network_security_group_all_open_check(cache: dict, awsAccountId: str, 
                     "AssetRegion": azRegion,
                     "AssetDetails": assetB64,
                     "AssetClass": "Networking",
-                    "AssetService": "Azure Network Security Groups",
+                    "AssetService": "Azure Network Security Group",
                     "AssetComponent": "Network Security Group"
                 },
                 "Resources": [
@@ -184,7 +184,7 @@ def azure_network_security_group_all_open_check(cache: dict, awsAccountId: str, 
                     "AssetRegion": azRegion,
                     "AssetDetails": assetB64,
                     "AssetClass": "Networking",
-                    "AssetService": "Azure Network Security Groups",
+                    "AssetService": "Azure Network Security Group",
                     "AssetComponent": "Network Security Group"
                 },
                 "Resources": [
@@ -316,7 +316,7 @@ def azure_network_security_group_master_auditor_check(cache: dict, awsAccountId:
                                 "AssetRegion": azRegion,
                                 "AssetDetails": assetB64,
                                 "AssetClass": "Networking",
-                                "AssetService": "Azure Network Security Groups",
+                                "AssetService": "Azure Network Security Group",
                                 "AssetComponent": "Network Security Group"
                             },
                             "Resources": [
@@ -376,7 +376,7 @@ def azure_network_security_group_master_auditor_check(cache: dict, awsAccountId:
                                 "AssetRegion": azRegion,
                                 "AssetDetails": assetB64,
                                 "AssetClass": "Networking",
-                                "AssetService": "Azure Network Security Groups",
+                                "AssetService": "Azure Network Security Group",
                                 "AssetComponent": "Network Security Group"
                             },
                             "Resources": [
