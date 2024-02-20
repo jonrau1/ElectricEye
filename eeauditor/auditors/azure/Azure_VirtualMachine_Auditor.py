@@ -595,141 +595,141 @@ def azure_vm_unattached_disks_cmk_encryption_check(cache: dict, awsAccountId: st
             if disk.managed_by is None:
                 if not (disk.encryption and disk.encryption.type == "EncryptionAtRestWithCustomerKey"):
                     unattachedDisksEncryptedWithCmk = False
-                    break  # break as one unencrypted disk is enough to require action for CIS check
+                    break
 
-        # this is a failing check
-        if unattachedDisksEncryptedWithCmk is False:
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{disk.id}/az-vm-unattached-disks-cmk-encryption-check",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{disk.id}/az-vm-unattached-disks-cmk-encryption-check",
-                "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks"],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "LOW"},
-                "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.4] Ensure that unattached disks are encrypted with a Customer Managed Key (CMK)",
-                "Description": f"Unattached disk {diskName} in Resource Group {rgName} in Subscription {azSubId} in {azRegion} is not encrypted with a CMK. Encrypting the IaaS VM's unattached disks (non-boot volume) ensures that the entire content is fully unrecoverable without a key, thus protecting the volume from unwanted reads. PMK (Platform Managed Keys) are enabled by default in Azure-managed disks and allow encryption at rest. CMK is recommended because it gives the customer the option to control which specific keys are used for the encryption and decryption of the disk. The customer can then change keys and increase security by disabling them instead of relying on the PMK key that remains unchanging. There is also the option to increase security further by using automatically rotating keys so that access to disk is ensured to be limited. Organizations should evaluate what their security requirements are, however, for the data stored on the disk. For high-risk data using CMK is a must, as it provides extra steps of security. If the data is low risk, PMK is enabled by default and provides sufficient data security. Refer to the remediation instructions if this configuration is not intended.",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "To encrypt your unattached disks with a CMK refer to the Azure data security and encryption best practices section of the Azure Security Fundamentals guide.",
-                        "Url": "https://learn.microsoft.com/en-us/azure/security/fundamentals/data-encryption-best-practices"
-                    }
-                },
-                "ProductFields": {
-                    "ProductName": "ElectricEye",
-                    "Provider": "Azure",
-                    "ProviderType": "CSP",
-                    "ProviderAccountId": azSubId,
-                    "AssetRegion": azRegion,
-                    "AssetDetails": assetB64,
-                    "AssetClass": "Storage",
-                    "AssetService": "Azure Disk Storage",
-                    "AssetComponent": "Disk"
-                },
-                "Resources": [
-                    {
-                        "Type": "AzureDisk",
-                        "Id": disk.id,
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                        "Details": {
-                            "Other": {
-                                "SubscriptionId": azSubId,
-                                "ResourceGroupName": rgName,
-                                "Region": azRegion,
-                                "Name": diskName,
-                                "Id": disk.id
+            # this is a failing check
+            if unattachedDisksEncryptedWithCmk is False:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{azSubId}/{azRegion}/{disk.id}/az-vm-unattached-disks-cmk-encryption-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": f"{azSubId}/{azRegion}/{disk.id}/az-vm-unattached-disks-cmk-encryption-check",
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "LOW"},
+                    "Confidence": 99,
+                    "Title": "[Azure.VirtualMachines.4] Ensure that unattached disks are encrypted with a Customer Managed Key (CMK)",
+                    "Description": f"Unattached disk {diskName} in Resource Group {rgName} in Subscription {azSubId} in {azRegion} is not encrypted with a CMK. Encrypting the IaaS VM's unattached disks (non-boot volume) ensures that the entire content is fully unrecoverable without a key, thus protecting the volume from unwanted reads. PMK (Platform Managed Keys) are enabled by default in Azure-managed disks and allow encryption at rest. CMK is recommended because it gives the customer the option to control which specific keys are used for the encryption and decryption of the disk. The customer can then change keys and increase security by disabling them instead of relying on the PMK key that remains unchanging. There is also the option to increase security further by using automatically rotating keys so that access to disk is ensured to be limited. Organizations should evaluate what their security requirements are, however, for the data stored on the disk. For high-risk data using CMK is a must, as it provides extra steps of security. If the data is low risk, PMK is enabled by default and provides sufficient data security. Refer to the remediation instructions if this configuration is not intended.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "To encrypt your unattached disks with a CMK refer to the Azure data security and encryption best practices section of the Azure Security Fundamentals guide.",
+                            "Url": "https://learn.microsoft.com/en-us/azure/security/fundamentals/data-encryption-best-practices"
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "Azure",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": azSubId,
+                        "AssetRegion": azRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Storage",
+                        "AssetService": "Azure Disk Storage",
+                        "AssetComponent": "Disk"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "AzureDisk",
+                            "Id": disk.id,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "Other": {
+                                    "SubscriptionId": azSubId,
+                                    "ResourceGroupName": rgName,
+                                    "Region": azRegion,
+                                    "Name": diskName,
+                                    "Id": disk.id
+                                }
                             }
                         }
-                    }
-                ],
-                "Compliance": {
-                    "Status": "FAILED",
-                    "RelatedRequirements": [
-                        "NIST CSF V1.1 PR.DS-1",
-                        "NIST SP 800-53 Rev. 4 MP-8",
-                        "NIST SP 800-53 Rev. 4 SC-12",
-                        "NIST SP 800-53 Rev. 4 SC-28",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3",
-                        "CIS Microsoft Azure Foundations Benchmark V2.0.0 7.4",
-                        "MITRE ATT&CK T1530"
-                    ]
-                },
-                "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE"
-            }
-            yield finding
-        else:
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{disk.id}/az-vm-unattached-disks-cmk-encryption-check",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{disk.id}/az-vm-unattached-disks-cmk-encryption-check",
-                "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks"],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "INFORMATIONAL"},
-                "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.4] Ensure that unattached disks are encrypted with a Customer Managed Key (CMK)",
-                "Description": f"Unattached disk {diskName} in Resource Group {rgName} in Subscription {azSubId} in {azRegion} is encrypted with a CMK.",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "To encrypt your unattached disks with a CMK refer to the Azure data security and encryption best practices section of the Azure Security Fundamentals guide.",
-                        "Url": "https://learn.microsoft.com/en-us/azure/security/fundamentals/data-encryption-best-practices"
-                    }
-                },
-                "ProductFields": {
-                    "ProductName": "ElectricEye",
-                    "Provider": "Azure",
-                    "ProviderType": "CSP",
-                    "ProviderAccountId": azSubId,
-                    "AssetRegion": azRegion,
-                    "AssetDetails": assetB64,
-                    "AssetClass": "Storage",
-                    "AssetService": "Azure Disk Storage",
-                    "AssetComponent": "Disk"
-                },
-                "Resources": [
-                    {
-                        "Type": "AzureDisk",
-                        "Id": disk.id,
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                        "Details": {
-                            "Other": {
-                                "SubscriptionId": azSubId,
-                                "ResourceGroupName": rgName,
-                                "Region": azRegion,
-                                "Name": diskName,
-                                "Id": disk.id
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 PR.DS-1",
+                            "NIST SP 800-53 Rev. 4 MP-8",
+                            "NIST SP 800-53 Rev. 4 SC-12",
+                            "NIST SP 800-53 Rev. 4 SC-28",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.8.2.3",
+                            "CIS Microsoft Azure Foundations Benchmark V2.0.0 7.4",
+                            "MITRE ATT&CK T1530"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
+            else:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{azSubId}/{azRegion}/{disk.id}/az-vm-unattached-disks-cmk-encryption-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": f"{azSubId}/{azRegion}/{disk.id}/az-vm-unattached-disks-cmk-encryption-check",
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[Azure.VirtualMachines.4] Ensure that unattached disks are encrypted with a Customer Managed Key (CMK)",
+                    "Description": f"Unattached disk {diskName} in Resource Group {rgName} in Subscription {azSubId} in {azRegion} is encrypted with a CMK.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "To encrypt your unattached disks with a CMK refer to the Azure data security and encryption best practices section of the Azure Security Fundamentals guide.",
+                            "Url": "https://learn.microsoft.com/en-us/azure/security/fundamentals/data-encryption-best-practices"
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "Azure",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": azSubId,
+                        "AssetRegion": azRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Storage",
+                        "AssetService": "Azure Disk Storage",
+                        "AssetComponent": "Disk"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "AzureDisk",
+                            "Id": disk.id,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "Other": {
+                                    "SubscriptionId": azSubId,
+                                    "ResourceGroupName": rgName,
+                                    "Region": azRegion,
+                                    "Name": diskName,
+                                    "Id": disk.id
+                                }
                             }
                         }
-                    }
-                ],
-                "Compliance": {
-                    "Status": "PASSED",
-                    "RelatedRequirements": [
-                        "NIST CSF V1.1 PR.DS-1",
-                        "NIST SP 800-53 Rev. 4 MP-8",
-                        "NIST SP 800-53 Rev. 4 SC-12",
-                        "NIST SP 800-53 Rev. 4 SC-28",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3",
-                        "CIS Microsoft Azure Foundations Benchmark V2.0.0 7.4",
-                        "MITRE ATT&CK T1530"
-                    ]
-                },
-                "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED"
-            }
-            yield finding
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 PR.DS-1",
+                            "NIST SP 800-53 Rev. 4 MP-8",
+                            "NIST SP 800-53 Rev. 4 SC-12",
+                            "NIST SP 800-53 Rev. 4 SC-28",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.8.2.3",
+                            "CIS Microsoft Azure Foundations Benchmark V2.0.0 7.4",
+                            "MITRE ATT&CK T1530"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
 
 @registry.register_check("azure.virtual_machines")
 def azure_vm_monitoring_agent_installed_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:

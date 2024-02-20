@@ -1062,7 +1062,7 @@ def azure_db_for_postgresql_connection_throttling_enabled_check(cache: dict, aws
         rgName = postgresqlservId.split("/")[4]
         connectionThrottlingEnabled = False
         connectionthrottlingParameter = [
-            param.as_dict() for param in azPostgresqlClient.configurations.list_by_server(rgName, postgresqlservName) if str(param.name) == "connection_throttling"
+            param.as_dict() for param in azPostgresqlClient.configurations.list_by_server(rgName, postgresqlservName) if str(param.name) == "connection_throttle.enable"
         ][0]
         if str(connectionthrottlingParameter["value"]).lower() == "on":
             connectionThrottlingEnabled = True

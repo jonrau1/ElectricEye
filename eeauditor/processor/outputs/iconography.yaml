@@ -271,3 +271,5 @@
   ImageTag: <img src="https://code.benco.io/icon-collection/azure-icons/SQL-Server.svg">
 - AssetService: Azure Database for MySQL Server
   ImageTag: <img src="https://code.benco.io/icon-collection/azure-icons/Azure-Database-MySQL-Server.svg">
+- AssetService: Azure Database for PostgreSQL Server
+  ImageTag: <img src="https://code.benco.io/icon-collection/azure-icons/Azure-Database-PostgreSQL-Server.svg">
