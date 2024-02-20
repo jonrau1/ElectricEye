@@ -188,7 +188,7 @@ Todo...
 
 ## Azure Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **47 Checks** across **5 Auditors** that support the secure configuration of **8 services/components**
+These are the following services and checks perform by each Auditor, there are currently **81 Checks** across **6 Auditors** that support the secure configuration of **9 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
@@ -239,5 +239,39 @@ These are the following services and checks perform by each Auditor, there are c
 | Azure_Database_PostgreSQL_Auditor | Azure Database for PostgreSQL Server | Azure PostgreSQL Flexible Servers should not allow access to all Azure services |
 | Azure_Database_PostgreSQL_Auditor | Azure Database for PostgreSQL Server | Azure PostgreSQL Flexible Servers should not allow public network access |
 | Azure_Database_PostgreSQL_Auditor | Azure Database for PostgreSQL Server | Azure PostgreSQL Flexible Servers running regulated workloads should consider using double encryption |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Are all ports (-1) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is FTP (tcp20-21) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is TelNet (tcp23) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is WSDCOM-RPC (tcp135) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is SMB (tcp445) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is MSSQL (tcp1433) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is OracleDB (tcp1521) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is MySQL/MariaDB (tcp3306) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is RDP (tcp3389) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is PostgreSQL (tcp5432) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is Kibana (tcp5601) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is Redis (tcp6379) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is Splunkd (tcp8089) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is Elasticsearch (tcp9200) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is Elasticsearch (tcp9300) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is Memcached (udp11211) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is Redshift (tcp5439) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is DocDB (tcp27017) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is Cassandra (tcp9142) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is Kafka (tcp9092) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is NFS (tcp2049) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is Rsync (tcp873) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is TFTP (udp69) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is Docker API (tcp2375) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is K8s API (tcp10250) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is SMTP (tcp25) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is NetBioas (tcp137-139) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is OpenVPN (udp1194) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is RabbitMQ (tcp5672) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is Spark WebUI (tcp4040) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is POP3 (tcp110) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is VMWare ESXi (tcp8182) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is HTTPS (tcp443) open to the internet for all destinations |
+| Azure_NetworkSecurityGroup_Auditor | Azure Network Security Group | Is SSH (tcp22) open to the internet for all destinations |
 
 Continue to check this section for information on active, retired, and renamed checks or using the `--list-checks` command in the CLI!
