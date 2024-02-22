@@ -89,26 +89,6 @@ class HtmlProvider(object):
             elif complianceStatus == "FAILED":
                 complianceStatus = f'<p class="compliance failed">{complianceStatus}</p>'
 
-            # process compliance findings
-            relatedControls = ""
-            complianceRelatedRequirements = list(row["ComplianceRequirements"])
-            newControls = []
-            nistCsfControls = [control for control in complianceRelatedRequirements if str(control).startswith("NIST CSF V1.1")]
-            for control in nistCsfControls:
-                crosswalkedControls = self.nist_csf_v_1_1_controls_crosswalk(control)
-                # Not every single NIST CSF Control maps across to other frameworks
-                if crosswalkedControls:
-                    for crosswalk in crosswalkedControls:
-                        if crosswalk not in newControls:
-                            newControls.append(crosswalk)
-                else:
-                    continue
-
-            complianceRelatedRequirements.extend(newControls)
-            
-            for control in complianceRelatedRequirements:
-                relatedControls += f"`{control}` \n "
-
             newTd = f'''
                 <tr>
                     <td>{findingId}</td>
@@ -125,7 +105,6 @@ class HtmlProvider(object):
                     <td>{resourceId}</td>
                     <td>{recordState}</td>
                     <td>{complianceStatus}</td>
-                    <td>{relatedControls}</td>
                 </tr>
                 '''
             mainTable += newTd
@@ -185,8 +164,7 @@ class HtmlProvider(object):
                         "AssetComponent": finding["ProductFields"]["AssetComponent"],
                         "ResourceId": finding["Resources"][0]["Id"],
                         "RecordState": finding["RecordState"],
-                        "ComplianceStatus": finding["Compliance"]["Status"],
-                        "ComplianceRequirements": finding["Compliance"]["RelatedRequirements"]
+                        "ComplianceStatus": finding["Compliance"]["Status"]
                     }
                 )
             except KeyError:
@@ -320,26 +298,6 @@ class HtmlProvider(object):
             border-bottom: 2px solid #dddddd;
         }
 
-        /* Target the <th> of "Related Controls" */
-        th:nth-child(15) {
-            width: 1500px;
-        }
-
-        /* Target each <td> in the "Related Controls" column */
-        td:nth-child(15) {
-            width: 1500px;
-        }
-
-        /* Target the <th> of "Resource ID" */
-        th:nth-child(15) {
-            width: 450px;
-        }
-
-        /* Target each <td> in the "Resource ID" column */
-        td:nth-child(15) {
-            width: 450px;
-        }
-
         tbody tr:nth-child(even) {
             background-color: #0000000b;
         }
@@ -429,7 +387,6 @@ class HtmlProvider(object):
                                 <th>Resource ID</th>
                                 <th>Finding State</th>
                                 <th>Compliance Status</th>
-                                <th>Related Controls</th>
                             </tr>
                         </thead>
                     <tbody>
@@ -499,17 +456,5 @@ class HtmlProvider(object):
             Asset Components. It is recommended to work backwards from resources with the highest amount of failed findings and Assets with important business- or mission-criticality.'
         
         return executiveReport
-    
-    def nist_csf_v_1_1_controls_crosswalk(self, nistCsfSubcategory):
-        """
-        This function returns a list of additional control framework control IDs that mapped into a provided
-        NIST CSF V1.1 Subcategory (control)
-        """
-
-        # Not every single NIST CSF Control maps across to other frameworks
-        try:
-            return CONTROLS_CROSSWALK[nistCsfSubcategory]
-        except KeyError:
-            return []
 
 # EOF
