@@ -63,9 +63,9 @@ def azure_storage_acct_secure_transfer_required_enabled_check(cache: dict, awsAc
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-secure-transfer-required-enabled-check",
+                "Id": f"{azRegion}/{saId}/azure-sa-secure-transfer-required-enabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-secure-transfer-required-enabled-check",
+                "GeneratorId": f"{azRegion}/{saId}/azure-sa-secure-transfer-required-enabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -133,9 +133,9 @@ def azure_storage_acct_secure_transfer_required_enabled_check(cache: dict, awsAc
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-secure-transfer-required-enabled-check",
+                "Id": f"{azRegion}/{saId}/azure-sa-secure-transfer-required-enabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-secure-transfer-required-enabled-check",
+                "GeneratorId": f"{azRegion}/{saId}/azure-sa-secure-transfer-required-enabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -220,9 +220,9 @@ def azure_storage_acct_infrastructure_encryption_enabled_check(cache: dict, awsA
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-infrastructure-encryption-enabled-check",
+                "Id": f"{azRegion}/{saId}/azure-sa-infrastructure-encryption-enabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-infrastructure-encryption-enabled-check",
+                "GeneratorId": f"{azRegion}/{saId}/azure-sa-infrastructure-encryption-enabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -285,9 +285,9 @@ def azure_storage_acct_infrastructure_encryption_enabled_check(cache: dict, awsA
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-infrastructure-encryption-enabled-check",
+                "Id": f"{azRegion}/{saId}/azure-sa-infrastructure-encryption-enabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-infrastructure-encryption-enabled-check",
+                "GeneratorId": f"{azRegion}/{saId}/azure-sa-infrastructure-encryption-enabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -368,9 +368,9 @@ def azure_storage_acct_sas_policy_exists_check(cache: dict, awsAccountId: str, a
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-sas-policy-expire-within-an-hour-check",
+                "Id": f"{azRegion}/{saId}/azure-sa-sas-policy-expire-within-an-hour-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-sas-policy-expire-within-an-hour-check",
+                "GeneratorId": f"{azRegion}/{saId}/azure-sa-sas-policy-expire-within-an-hour-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -480,9 +480,9 @@ def azure_storage_acct_sas_policy_exists_check(cache: dict, awsAccountId: str, a
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-sas-policy-expire-within-an-hour-check",
+                "Id": f"{azRegion}/{saId}/azure-sa-sas-policy-expire-within-an-hour-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-sas-policy-expire-within-an-hour-check",
+                "GeneratorId": f"{azRegion}/{saId}/azure-sa-sas-policy-expire-within-an-hour-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -621,9 +621,9 @@ def azure_storage_acct_public_acess_disabled_for_sa_with_blob_containers_check(c
         if hasBlobs and allowsPublicAccess:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-public-access-disabled-for-sa-with-blob-containers-check",
+                "Id": f"{azRegion}/{saId}/azure-sa-public-access-disabled-for-sa-with-blob-containers-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-public-access-disabled-for-sa-with-blob-containers-check",
+                "GeneratorId": f"{azRegion}/{saId}/azure-sa-public-access-disabled-for-sa-with-blob-containers-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -734,9 +734,9 @@ def azure_storage_acct_public_acess_disabled_for_sa_with_blob_containers_check(c
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-public-access-disabled-for-sa-with-blob-containers-check",
+                "Id": f"{azRegion}/{saId}/azure-sa-public-access-disabled-for-sa-with-blob-containers-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-public-access-disabled-for-sa-with-blob-containers-check",
+                "GeneratorId": f"{azRegion}/{saId}/azure-sa-public-access-disabled-for-sa-with-blob-containers-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -868,9 +868,9 @@ def azure_storage_acct_default_network_access_rule_set_to_deny_check(cache: dict
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-default-network-access-rule-set-to-deny-check",
+                "Id": f"{azRegion}/{saId}/azure-sa-default-network-access-rule-set-to-deny-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-default-network-access-rule-set-to-deny-check",
+                "GeneratorId": f"{azRegion}/{saId}/azure-sa-default-network-access-rule-set-to-deny-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -940,9 +940,9 @@ def azure_storage_acct_default_network_access_rule_set_to_deny_check(cache: dict
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-default-network-access-rule-set-to-deny-check",
+                "Id": f"{azRegion}/{saId}/azure-sa-default-network-access-rule-set-to-deny-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-default-network-access-rule-set-to-deny-check",
+                "GeneratorId": f"{azRegion}/{saId}/azure-sa-default-network-access-rule-set-to-deny-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1033,9 +1033,9 @@ def azure_storage_acct_trusted_azure_service_access_enabled_check(cache: dict, a
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-trusted-azure-service-access-enabled-check",
+                "Id": f"{azRegion}/{saId}/azure-sa-trusted-azure-service-access-enabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-trusted-azure-service-access-enabled-check",
+                "GeneratorId": f"{azRegion}/{saId}/azure-sa-trusted-azure-service-access-enabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1146,9 +1146,9 @@ def azure_storage_acct_trusted_azure_service_access_enabled_check(cache: dict, a
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-trusted-azure-service-access-enabled-check",
+                "Id": f"{azRegion}/{saId}/azure-sa-trusted-azure-service-access-enabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-trusted-azure-service-access-enabled-check",
+                "GeneratorId": f"{azRegion}/{saId}/azure-sa-trusted-azure-service-access-enabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1284,9 +1284,9 @@ def azure_storage_acct_private_endpoints_use_for_access_check(cache: dict, awsAc
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-private-endpoints-use-for-access-check",
+                "Id": f"{azRegion}/{saId}/azure-sa-private-endpoints-use-for-access-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-private-endpoints-use-for-access-check",
+                "GeneratorId": f"{azRegion}/{saId}/azure-sa-private-endpoints-use-for-access-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1356,9 +1356,9 @@ def azure_storage_acct_private_endpoints_use_for_access_check(cache: dict, awsAc
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-private-endpoints-use-for-access-check",
+                "Id": f"{azRegion}/{saId}/azure-sa-private-endpoints-use-for-access-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-private-endpoints-use-for-access-check",
+                "GeneratorId": f"{azRegion}/{saId}/azure-sa-private-endpoints-use-for-access-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1448,9 +1448,9 @@ def azure_storage_acct_soft_delete_enabled_for_blob_storage_check(cache: dict, a
             # this is a passing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-soft-delete-enabled-for-blob-storage-check",
+                "Id": f"{azRegion}/{saId}/azure-sa-soft-delete-enabled-for-blob-storage-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-soft-delete-enabled-for-blob-storage-check",
+                "GeneratorId": f"{azRegion}/{saId}/azure-sa-soft-delete-enabled-for-blob-storage-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1533,9 +1533,9 @@ def azure_storage_acct_soft_delete_enabled_for_blob_storage_check(cache: dict, a
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-soft-delete-enabled-for-blob-storage-check",
+                "Id": f"{azRegion}/{saId}/azure-sa-soft-delete-enabled-for-blob-storage-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-soft-delete-enabled-for-blob-storage-check",
+                "GeneratorId": f"{azRegion}/{saId}/azure-sa-soft-delete-enabled-for-blob-storage-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1639,9 +1639,9 @@ def azure_storage_acct_use_tls12_for_https_minimum_version_check(cache: dict, aw
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-use-tls12-for-https-minimum-version-check",
+                "Id": f"{azRegion}/{saId}/azure-sa-use-tls12-for-https-minimum-version-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-use-tls12-for-https-minimum-version-check",
+                "GeneratorId": f"{azRegion}/{saId}/azure-sa-use-tls12-for-https-minimum-version-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1709,9 +1709,9 @@ def azure_storage_acct_use_tls12_for_https_minimum_version_check(cache: dict, aw
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-use-tls12-for-https-minimum-version-check",
+                "Id": f"{azRegion}/{saId}/azure-sa-use-tls12-for-https-minimum-version-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-use-tls12-for-https-minimum-version-check",
+                "GeneratorId": f"{azRegion}/{saId}/azure-sa-use-tls12-for-https-minimum-version-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1800,9 +1800,9 @@ def azure_storage_acct_90_day_key_rotation_check(cache: dict, awsAccountId: str,
             # this is a passing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-90-day-key-rotation-check",
+                "Id": f"{azRegion}/{saId}/azure-sa-90-day-key-rotation-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-90-day-key-rotation-check",
+                "GeneratorId": f"{azRegion}/{saId}/azure-sa-90-day-key-rotation-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1886,9 +1886,9 @@ def azure_storage_acct_90_day_key_rotation_check(cache: dict, awsAccountId: str,
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{saId}/azure-sa-90-day-key-rotation-check",
+                "Id": f"{azRegion}/{saId}/azure-sa-90-day-key-rotation-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{saId}/azure-sa-90-day-key-rotation-check",
+                "GeneratorId": f"{azRegion}/{saId}/azure-sa-90-day-key-rotation-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,

@@ -18,7 +18,7 @@
 #specific language governing permissions and limitations
 #under the License.
 
-from azure.mgmt.compute import ComputeManagementClient
+from azure.mgmt.compute import ComputeManagementClient, models
 from azure.mgmt.network import NetworkManagementClient
 from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.recoveryservices import RecoveryServicesClient
@@ -26,11 +26,12 @@ from azure.mgmt.recoveryservicesbackup import RecoveryServicesBackupClient
 import datetime
 import base64
 import json
+import re
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-def get_all_azure_vms(cache: dict, azureCredential, azSubId: str):
+def get_all_azure_vms(cache: dict, azureCredential, azSubId: str) -> list[models.VirtualMachine]:
     """
     Returns a list of all Azure VMs in a Subscription
     """
@@ -118,9 +119,9 @@ def azure_vm_bastion_host_exists_check(cache: dict, awsAccountId: str, awsRegion
         if bastionHostExists is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{vnet.id}/az-vm-bastion-host-exists-check",
+                "Id": f"{azRegion}/{vnet.id}/az-vm-bastion-host-exists-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{vnet.id}/az-vm-bastion-host-exists-check",
+                "GeneratorId": f"{azRegion}/{vnet.id}/az-vm-bastion-host-exists-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -186,9 +187,9 @@ def azure_vm_bastion_host_exists_check(cache: dict, awsAccountId: str, awsRegion
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{vnet.id}/az-vm-bastion-host-exists-check",
+                "Id": f"{azRegion}/{vnet.id}/az-vm-bastion-host-exists-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{vnet.id}/az-vm-bastion-host-exists-check",
+                "GeneratorId": f"{azRegion}/{vnet.id}/az-vm-bastion-host-exists-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -276,9 +277,9 @@ def azure_vm_utilizing_managed_disks_check(cache: dict, awsAccountId: str, awsRe
         if usingManagedDisks is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{vm.id}/az-vm-utilizing-managed-disks-check",
+                "Id": f"{azRegion}/{vm.id}/az-vm-utilizing-managed-disks-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{vm.id}/az-vm-utilizing-managed-disks-check",
+                "GeneratorId": f"{azRegion}/{vm.id}/az-vm-utilizing-managed-disks-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -342,9 +343,9 @@ def azure_vm_utilizing_managed_disks_check(cache: dict, awsAccountId: str, awsRe
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{vm.id}/az-vm-utilizing-managed-disks-check",
+                "Id": f"{azRegion}/{vm.id}/az-vm-utilizing-managed-disks-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{vm.id}/az-vm-utilizing-managed-disks-check",
+                "GeneratorId": f"{azRegion}/{vm.id}/az-vm-utilizing-managed-disks-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -443,9 +444,9 @@ def azure_vm_encrypt_os_and_data_disk_with_cmk_check(cache: dict, awsAccountId: 
         if bothEncryptedWithCMK is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{vm.id}/az-vm-os-and-disk-cmk-encryption-check",
+                "Id": f"{azRegion}/{vm.id}/az-vm-os-and-disk-cmk-encryption-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{vm.id}/az-vm-os-and-disk-cmk-encryption-check",
+                "GeneratorId": f"{azRegion}/{vm.id}/az-vm-os-and-disk-cmk-encryption-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -509,9 +510,9 @@ def azure_vm_encrypt_os_and_data_disk_with_cmk_check(cache: dict, awsAccountId: 
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{vm.id}/az-vm-os-and-disk-cmk-encryption-check",
+                "Id": f"{azRegion}/{vm.id}/az-vm-os-and-disk-cmk-encryption-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{vm.id}/az-vm-os-and-disk-cmk-encryption-check",
+                "GeneratorId": f"{azRegion}/{vm.id}/az-vm-os-and-disk-cmk-encryption-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -601,9 +602,9 @@ def azure_vm_unattached_disks_cmk_encryption_check(cache: dict, awsAccountId: st
             if unattachedDisksEncryptedWithCmk is False:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{azSubId}/{azRegion}/{disk.id}/az-vm-unattached-disks-cmk-encryption-check",
+                    "Id": f"{azRegion}/{disk.id}/az-vm-unattached-disks-cmk-encryption-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": f"{azSubId}/{azRegion}/{disk.id}/az-vm-unattached-disks-cmk-encryption-check",
+                    "GeneratorId": f"{azRegion}/{disk.id}/az-vm-unattached-disks-cmk-encryption-check",
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks"],
                     "FirstObservedAt": iso8601Time,
@@ -667,9 +668,9 @@ def azure_vm_unattached_disks_cmk_encryption_check(cache: dict, awsAccountId: st
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{azSubId}/{azRegion}/{disk.id}/az-vm-unattached-disks-cmk-encryption-check",
+                    "Id": f"{azRegion}/{disk.id}/az-vm-unattached-disks-cmk-encryption-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": f"{azSubId}/{azRegion}/{disk.id}/az-vm-unattached-disks-cmk-encryption-check",
+                    "GeneratorId": f"{azRegion}/{disk.id}/az-vm-unattached-disks-cmk-encryption-check",
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks"],
                     "FirstObservedAt": iso8601Time,
@@ -750,7 +751,7 @@ def azure_vm_monitoring_agent_installed_check(cache: dict, awsAccountId: str, aw
         # Check if the VM has the Azure Monitor Agent installed
         monitoringAgentInstalled = False
         extensions = azComputeClient.virtual_machine_extensions.list(rgName, vmName)
-        if hasattr(extensions, 'value'):  # Checking if 'value' attribute exists
+        if hasattr(extensions, "value"):
             for ext in extensions.value:
                 if "MicrosoftMonitoringAgent" in ext.name:
                     monitoringAgentInstalled = True
@@ -760,9 +761,9 @@ def azure_vm_monitoring_agent_installed_check(cache: dict, awsAccountId: str, aw
         if monitoringAgentInstalled is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{vm.id}/az-vm-monitoring-agent-installed-check",
+                "Id": f"{azRegion}/{vm.id}/az-vm-monitoring-agent-installed-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{vm.id}/az-vm-monitoring-agent-installed-check",
+                "GeneratorId": f"{azRegion}/{vm.id}/az-vm-monitoring-agent-installed-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -862,9 +863,9 @@ def azure_vm_monitoring_agent_installed_check(cache: dict, awsAccountId: str, aw
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{vm.id}/az-vm-monitoring-agent-installed-check",
+                "Id": f"{azRegion}/{vm.id}/az-vm-monitoring-agent-installed-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{vm.id}/az-vm-monitoring-agent-installed-check",
+                "GeneratorId": f"{azRegion}/{vm.id}/az-vm-monitoring-agent-installed-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1007,9 +1008,9 @@ def azure_vm_azure_backup_coverage_check(cache: dict, awsAccountId: str, awsRegi
         if not vaultFound or not backupCoverage:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{vm.id}/az-vm-azure-backup-coverage-check",
+                "Id": f"{azRegion}/{vm.id}/az-vm-azure-backup-coverage-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{vm.id}/az-vm-azure-backup-coverage-check",
+                "GeneratorId": f"{azRegion}/{vm.id}/az-vm-azure-backup-coverage-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1089,9 +1090,9 @@ def azure_vm_azure_backup_coverage_check(cache: dict, awsAccountId: str, awsRegi
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{vm.id}/az-vm-azure-backup-coverage-check",
+                "Id": f"{azRegion}/{vm.id}/az-vm-azure-backup-coverage-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{vm.id}/az-vm-azure-backup-coverage-check",
+                "GeneratorId": f"{azRegion}/{vm.id}/az-vm-azure-backup-coverage-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1169,5 +1170,571 @@ def azure_vm_azure_backup_coverage_check(cache: dict, awsAccountId: str, awsRegi
             }
             yield finding
 
+@registry.register_check("azure.virtual_machines")
+def azure_vm_default_and_guessable_admin_username_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
+    """
+    [Azure.VirtualMachines.7] Azure Virtual Machines should not have default or easily guessable administrative usernames
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for vm in get_all_azure_vms(cache, azureCredential, azSubId):
+        # B64 encode all of the details for the asset
+        assetJson = json.dumps(vm.as_dict(),default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        rgName = process_resource_group_name(vm.id)
+        azRegion = vm.location
+        vmName = vm.name
+        vmId = vm.id
+
+        # use regex to compare admin username with commonUserNames list
+        adminUsername = vm.os_profile.admin_username
+        if re.search(r"admin|administrator|sa|root|dbmanager|loginmanager|dbo|guest|public|user", adminUsername, re.IGNORECASE):
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azRegion}/{vmId}/az-vm-default-and-guessable-admin-username-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azRegion}/{vmId}/az-vm-default-and-guessable-admin-username-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[Azure.VirtualMachines.7] Azure Virtual Machines should not have default or easily guessable administrative usernames",
+                "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} has a default or easily guessable administrative username. The administrative username for the VM is {adminUsername}. Default and easily guessable administrative usernames are a security risk and should be avoided. Attackers can easily guess the username and use it to attempt to gain unauthorized access to the VM. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "You cannot change the username of a Virtual Machine, and ideally should not user password-based authentication, consider migrating to SSH keys or logging in via Microsoft Entra ID password as detailed in the Log in to a Windows virtual machine in Azure by using Microsoft Entra ID including passwordless section of the Microsoft Entra ID documentation.",
+                        "Url": "https://learn.microsoft.com/en-us/entra/identity/devices/howto-vm-sign-in-azure-ad-windows"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Azure Virtual Machine",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureVirtualMachineInstance",
+                        "Id": vmId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": vmName,
+                                "Id": vmId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-3",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-6",
+                        "NIST SP 800-53 Rev. 4 IA-7",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 IA-9",
+                        "NIST SP 800-53 Rev. 4 IA-10",
+                        "NIST SP 800-53 Rev. 4 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azRegion}/{vmId}/az-vm-default-and-guessable-admin-username-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azRegion}/{vmId}/az-vm-default-and-guessable-admin-username-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Azure.VirtualMachines.7] Azure Virtual Machines should not have default or easily guessable administrative usernames",
+                "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does not have a default or easily guessable administrative username. The administrative username for the VM is {adminUsername}.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "You cannot change the username of a Virtual Machine, and ideally should not user password-based authentication, consider migrating to SSH keys or logging in via Microsoft Entra ID password as detailed in the Log in to a Windows virtual machine in Azure by using Microsoft Entra ID including passwordless section of the Microsoft Entra ID documentation.",
+                        "Url": "https://learn.microsoft.com/en-us/entra/identity/devices/howto-vm-sign-in-azure-ad-windows"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Azure Virtual Machine",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureVirtualMachineInstance",
+                        "Id": vmId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": vmName,
+                                "Id": vmId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-3",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-6",
+                        "NIST SP 800-53 Rev. 4 IA-7",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 IA-9",
+                        "NIST SP 800-53 Rev. 4 IA-10",
+                        "NIST SP 800-53 Rev. 4 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("azure.virtual_machines")
+def azure_vm_linux_disable_password_authentication_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
+    """
+    [Azure.VirtualMachines.8] Azure Virtual Machines with Linux operating systems should have password-based authentication disabled
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for vm in get_all_azure_vms(cache, azureCredential, azSubId):
+        # B64 encode all of the details for the asset
+        assetJson = json.dumps(vm.as_dict(),default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        rgName = process_resource_group_name(vm.id)
+        azRegion = vm.location
+        vmName = vm.name
+        vmId = vm.id
+
+        disablePasswordAuth = True
+        try:
+            if vm.os_profile.linux_configuration.disable_password_authentication is False:
+                disablePasswordAuth = False
+        except AttributeError or KeyError:
+            disablePasswordAuth = False
+
+        # this is a failing check
+        if disablePasswordAuth is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azRegion}/{vmId}/az-vm-linux-disable-password-authentication-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azRegion}/{vmId}/az-vm-linux-disable-password-authentication-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[Azure.VirtualMachines.8] Azure Virtual Machines with Linux operating systems should have password-based authentication disabled",
+                "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} has password-based authentication enabled. Password-based authentication should be disabled for Linux Virtual Machines. Disabling password-based authentication is a security best practice and helps to protect your Virtual Machine from unauthorized access. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more issue on Linux Azure Virtual Machine instance connectivity refer to the Connect to a Linux VM section of the Azure Virtual Machines documentation.",
+                        "Url": "https://learn.microsoft.com/en-us/azure/virtual-machines/linux-vm-connect?tabs=Linux"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Azure Virtual Machine",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureVirtualMachineInstance",
+                        "Id": vmId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": vmName,
+                                "Id": vmId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-3",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-6",
+                        "NIST SP 800-53 Rev. 4 IA-7",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 IA-9",
+                        "NIST SP 800-53 Rev. 4 IA-10",
+                        "NIST SP 800-53 Rev. 4 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azRegion}/{vmId}/az-vm-linux-disable-password-authentication-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azRegion}/{vmId}/az-vm-linux-disable-password-authentication-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Azure.VirtualMachines.8] Azure Virtual Machines with Linux operating systems should have password-based authentication disabled",
+                "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does have password-based authentication disabled or is a Windows machine.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more issue on Linux Azure Virtual Machine instance connectivity refer to the Connect to a Linux VM section of the Azure Virtual Machines documentation.",
+                        "Url": "https://learn.microsoft.com/en-us/azure/virtual-machines/linux-vm-connect?tabs=Linux"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Azure Virtual Machine",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureVirtualMachineInstance",
+                        "Id": vmId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": vmName,
+                                "Id": vmId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-3",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-6",
+                        "NIST SP 800-53 Rev. 4 IA-7",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 IA-9",
+                        "NIST SP 800-53 Rev. 4 IA-10",
+                        "NIST SP 800-53 Rev. 4 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("azure.virtual_machines")
+def azure_vm_auto_patching_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
+    """
+    [Azure.VirtualMachines.9] Azure Virtual Machines should be configured to automatically apply OS patches
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for vm in get_all_azure_vms(cache, azureCredential, azSubId):
+        # B64 encode all of the details for the asset
+        assetJson = json.dumps(vm.as_dict(),default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        rgName = process_resource_group_name(vm.id)
+        azRegion = vm.location
+        vmName = vm.name
+        vmId = vm.id
+
+        autoPatching = False
+        try:
+            # Check for Windows Configuration
+            if hasattr(vm.os_profile, "windows_configuration"):
+                if vm.os_profile.windows_configuration is not None and \
+                hasattr(vm.os_profile.windows_configuration, "patch_settings") and \
+                vm.os_profile.windows_configuration.patch_settings.patch_mode == "Automatic":
+                    autoPatching = True
+            
+            # Check for Linux Configuration
+            if hasattr(vm.os_profile, "linux_configuration"):
+                if vm.os_profile.linux_configuration is not None and \
+                hasattr(vm.os_profile.linux_configuration, "patch_settings") and \
+                vm.os_profile.linux_configuration.patch_settings.patch_mode == "Automatic":
+                    autoPatching = True
+
+        except AttributeError or KeyError:
+            pass
+
+        # this is a failing check
+        if autoPatching is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azRegion}/{vmId}/az-vm-auto-patching-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azRegion}/{vmId}/az-vm-auto-patching-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[Azure.VirtualMachines.9] Azure Virtual Machines should have automatic OS patching enabled",
+                "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does not have automatic OS patching enabled. Automatic OS patching is a security best practice and helps to protect your Virtual Machine from known vulnerabilities. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To enable automatic OS patching for your Azure Virtual Machine instance refer to the Automatic VM guest patching for Azure VMs section of the Azure Virtual Machines documentation.",
+                        "Url": "https://learn.microsoft.com/en-us/azure/virtual-machines/automatic-vm-guest-patching"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Azure Virtual Machine",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureVirtualMachineInstance",
+                        "Id": vmId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": vmName,
+                                "Id": vmId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST CSF V1.1 ID.RA-1",
+                        "NIST SP 800-53 Rev. 4 CA-2",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-8",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "NIST SP 800-53 Rev. 4 RA-3",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "NIST SP 800-53 Rev. 4 SA-5",
+                        "NIST SP 800-53 Rev. 4 SA-11",
+                        "NIST SP 800-53 Rev. 4 SI-2",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "NIST SP 800-53 Rev. 4 SI-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.12.6.1",
+                        "ISO 27001:2013 A.18.2.3",
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azRegion}/{vmId}/az-vm-auto-patching-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azRegion}/{vmId}/az-vm-auto-patching-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Azure.VirtualMachines.9] Azure Virtual Machines should have automatic OS patching enabled",
+                "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does have automatic OS patching enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To enable automatic OS patching for your Azure Virtual Machine instance refer to the Automatic VM guest patching for Azure VMs section of the Azure Virtual Machines documentation.",
+                        "Url": "https://learn.microsoft.com/en-us/azure/virtual-machines/automatic-vm-guest-patching"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Azure Virtual Machine",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureVirtualMachineInstance",
+                        "Id": vmId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": vmName,
+                                "Id": vmId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST CSF V1.1 ID.RA-1",
+                        "NIST SP 800-53 Rev. 4 CA-2",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-8",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "NIST SP 800-53 Rev. 4 RA-3",
+                        "NIST SP 800-53 Rev. 4 RA-5",
+                        "NIST SP 800-53 Rev. 4 SA-5",
+                        "NIST SP 800-53 Rev. 4 SA-11",
+                        "NIST SP 800-53 Rev. 4 SI-2",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "NIST SP 800-53 Rev. 4 SI-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.12.6.1",
+                        "ISO 27001:2013 A.18.2.3",
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 # EOF ??
