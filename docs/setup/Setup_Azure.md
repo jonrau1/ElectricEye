@@ -188,7 +188,7 @@ Todo...
 
 ## Azure Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **81 Checks** across **6 Auditors** that support the secure configuration of **9 services/components**
+These are the following services and checks perform by each Auditor, there are currently **87 Checks** across **6 Auditors** that support the secure configuration of **9 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
@@ -198,6 +198,12 @@ These are the following services and checks perform by each Auditor, there are c
 | Azure_VirtualMachine_Auditor | Azure Disk Storage Disks | Unattached storage disks should be encrypted with CMKs |
 | Azure_VirtualMachine_Auditor | Azure Virtual Machine | Azure VMs should have the Azure Monitor agent installed |
 | Azure_VirtualMachine_Auditor | Azure Virtual Machine | Azure VMs should be covered by Azure Vault backups |
+| Azure_VirtualMachine_Auditor | Azure Virtual Machine | Azure VMs should not have a default or easily guessable admin username |
+| Azure_VirtualMachine_Auditor | Azure Virtual Machine | Azure VMs (Linux only) should disable password-based authentication for SSH |
+| Azure_VirtualMachine_Auditor | Azure Virtual Machine | Azure VMs should configure auto-patching by platform or OS |
+| Azure_VirtualMachine_Auditor | Azure Virtual Machine | Azure VMs should auto-updated the Azure VM Agent |
+| Azure_VirtualMachine_Auditor | Azure Virtual Machine | Azure VMs should enable Secure Boot if possible |
+| Azure_VirtualMachine_Auditor | Azure Virtual Machine | Azure VMs should enable the vTPM if possible |
 | Azure_StorageAccounts_Auditor | Azure Storage Account | Storage Accts should require secure transfer (HTTPS) |
 | Azure_StorageAccounts_Auditor | Azure Storage Account | Storage Accts should enable infrastructure encryption (AES256) |
 | Azure_StorageAccounts_Auditor | Azure Storage Account | Storage Accts with SAS Policies should be reviewed to ensure hourly rotation |

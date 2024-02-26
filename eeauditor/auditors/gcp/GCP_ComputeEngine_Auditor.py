@@ -637,7 +637,7 @@ def gce_instance_secure_boot_check(cache: dict, awsAccountId: str, awsRegion: st
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "HIGH"},
+                "Severity": {"Label": "LOW"},
                 "Confidence": 99,
                 "Title": "[GCP.GCE.4] Google Compute Engine VM instances should have Secure Boot enabled",
                 "Description": f"Google Compute Engine instance {name} in {zone} does not have Secure Boot enabled. Secure Boot is a feature that ensures the integrity of the boot process by verifying the digital signature of the boot loader and the kernel. If Secure Boot is not enabled, the boot process may be susceptible to malware or unauthorized modifications that could compromise the security of the instance. Without Secure Boot malware may modify the boot loader or kernel to gain unauthorized access or otherwise interfere with the instance. Refer to the remediation instructions if this configuration is not intended.",
@@ -690,7 +690,7 @@ def gce_instance_secure_boot_check(cache: dict, awsAccountId: str, awsRegion: st
                         "ISO 27001:2013 A.12.5.1",
                         "ISO 27001:2013 A.14.1.2",
                         "ISO 27001:2013 A.14.1.3",
-                        "ISO 27001:2013 A.14.2.4",
+                        "ISO 27001:2013 A.14.2.4"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -761,7 +761,7 @@ def gce_instance_secure_boot_check(cache: dict, awsAccountId: str, awsRegion: st
                         "ISO 27001:2013 A.12.5.1",
                         "ISO 27001:2013 A.14.1.2",
                         "ISO 27001:2013 A.14.1.3",
-                        "ISO 27001:2013 A.14.2.4",
+                        "ISO 27001:2013 A.14.2.4"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -799,7 +799,7 @@ def gce_instance_vtpm_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "HIGH"},
+                "Severity": {"Label": "LOW"},
                 "Confidence": 99,
                 "Title": "[GCP.GCE.5] Google Compute Engine VM instances should have Virtual Trusted Platform Module enabled",
                 "Description": f"Google Compute Engine instance {name} in {zone} does not have Virtual Trusted Platform Module (vTPM) enabled. VTPM is a feature that provides hardware-level security by emulating a hardware TPM in a virtualized environment. If vTPM is not enabled, cryptographic keys and other sensitive data may be vulnerable to attacks that could compromise the security of the instance. Refer to the remediation instructions if this configuration is not intended.",
@@ -961,7 +961,7 @@ def gce_instance_integrity_mon_check(cache: dict, awsAccountId: str, awsRegion: 
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "HIGH"},
+                "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[GCP.GCE.6] Google Compute Engine VM instances should have Integrity Monitoring enabled",
                 "Description": f"Google Compute Engine instance {name} in {zone} does not have Integrity Monitoring enabled. Integrity Monitoring is a feature that provides continuous monitoring and detection of changes to the system and application files on the instance. If Integrity Monitoring is not enabled, changes to critical system files or applications may go undetected, allowing attackers to compromise the security of the instance. Without it, changes to critical system files or applications may go undetected, allowing attackers to install malware or tamper with the system. Refer to the remediation instructions if this configuration is not intended.",
@@ -1014,7 +1014,7 @@ def gce_instance_integrity_mon_check(cache: dict, awsAccountId: str, awsRegion: 
                         "ISO 27001:2013 A.12.5.1",
                         "ISO 27001:2013 A.14.1.2",
                         "ISO 27001:2013 A.14.1.3",
-                        "ISO 27001:2013 A.14.2.4",
+                        "ISO 27001:2013 A.14.2.4"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -1085,7 +1085,7 @@ def gce_instance_integrity_mon_check(cache: dict, awsAccountId: str, awsRegion: 
                         "ISO 27001:2013 A.12.5.1",
                         "ISO 27001:2013 A.14.1.2",
                         "ISO 27001:2013 A.14.1.3",
-                        "ISO 27001:2013 A.14.2.4",
+                        "ISO 27001:2013 A.14.2.4"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},

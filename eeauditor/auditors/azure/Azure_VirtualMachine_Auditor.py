@@ -1908,4 +1908,314 @@ def azure_vm_auto_update_vm_agent_check(cache: dict, awsAccountId: str, awsRegio
             }
             yield finding
 
+@registry.register_check("azure.virtual_machines")
+def azure_vm_secure_boot_enabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
+    """
+    [Azure.VirtualMachines.11] Azure Virtual Machines that support Trusted Launch should have Secure Boot enabled
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for vm in get_all_azure_vms(cache, azureCredential, azSubId):
+        # B64 encode all of the details for the asset
+        assetJson = json.dumps(vm.as_dict(),default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        rgName = process_resource_group_name(vm.id)
+        azRegion = vm.location
+        vmName = vm.name
+        vmId = vm.id
+
+        # this is a failing check
+        if (
+            vm.security_profile.uefi_settings.secure_boot_enabled is False 
+            or vm.security_profile.uefi_settings.secure_boot_enabled is None
+        ):
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azRegion}/{vmId}/az-vm-secure-boot-enabled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azRegion}/{vmId}/az-vm-secure-boot-enabled-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[Azure.VirtualMachines.11] Azure Virtual Machines should have Secure Boot enabled",
+                "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does not have Secure Boot enabled. At the root of trusted launch is Secure Boot for your VM. Secure Boot, which is implemented in platform firmware, protects against the installation of malware-based rootkits and boot kits. Secure Boot works to ensure that only signed operating systems and drivers can boot. It establishes a 'root of trust' for the software stack on your VM. With Secure Boot enabled, all OS boot components (boot loader, kernel, kernel drivers) require trusted publishers signing. Both Windows and select Linux distributions support Secure Boot. If Secure Boot fails to authenticate that the image is signed by a trusted publisher, the VM fails to boot. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Secure Boot and to enable Secure Boot for your Azure Virtual Machine instance (or check if it's supported) refer to the Trusted launch for Azure virtual machines section of the Azure Virtual Machines documentation.",
+                        "Url": "https://learn.microsoft.com/en-us/azure/virtual-machines/trusted-launch"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Azure Virtual Machine",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureVirtualMachineInstance",
+                        "Id": vmId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": vmName,
+                                "Id": vmId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-6",
+                        "NIST SP 800-53 Rev. 4 SC-16",
+                        "NIST SP 800-53 Rev. 4 SI-7",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.2.1",
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
+                        "ISO 27001:2013 A.14.2.4"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azRegion}/{vmId}/az-vm-secure-boot-enabled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azRegion}/{vmId}/az-vm-secure-boot-enabled-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Azure.VirtualMachines.11] Azure Virtual Machines should have Secure Boot enabled",
+                "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does have Secure Boot enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Secure Boot and to enable Secure Boot for your Azure Virtual Machine instance (or check if it's supported) refer to the Trusted launch for Azure virtual machines section of the Azure Virtual Machines documentation.",
+                        "Url": "https://learn.microsoft.com/en-us/azure/virtual-machines/trusted-launch"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Azure Virtual Machine",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureVirtualMachineInstance",
+                        "Id": vmId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": vmName,
+                                "Id": vmId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-6",
+                        "NIST SP 800-53 Rev. 4 SC-16",
+                        "NIST SP 800-53 Rev. 4 SI-7",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.2.1",
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
+                        "ISO 27001:2013 A.14.2.4"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("azure.virtual_machines")
+def azure_vm_vtpm_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
+    """
+    [Azure.VirtualMachines.12] Azure Virtual Machines that support Trusted Launch should have Virtual Trusted Platform Module (vTPM) enabled
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for vm in get_all_azure_vms(cache, azureCredential, azSubId):
+        # B64 encode all of the details for the asset
+        assetJson = json.dumps(vm.as_dict(),default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        rgName = process_resource_group_name(vm.id)
+        azRegion = vm.location
+        vmName = vm.name
+        vmId = vm.id
+
+        # this is a failing check
+        if (
+            vm.security_profile.uefi_settings.v_tpm_enabled is False 
+            or vm.security_profile.uefi_settings.v_tpm_enabled is None
+        ):
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azRegion}/{vmId}/az-vm-vtpm-enabled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azRegion}/{vmId}/az-vm-vtpm-enabled-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[Azure.VirtualMachines.12] Azure Virtual Machines should have Virtual Trusted Platform Module (vTPM) enabled",
+                "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does not have Virtual Trusted Platform Module (vTPM) enabled. vTPM is a virtualized version of a hardware Trusted Platform Module, compliant with the TPM2.0 spec. It serves as a dedicated secure vault for keys and measurements. Trusted launch provides your VM with its own dedicated TPM instance, running in a secure environment outside the reach of any VM. The vTPM enables attestation by measuring the entire boot chain of your VM (UEFI, OS, system, and drivers). Trusted launch uses the vTPM to perform remote attestation through the cloud. Attestations enable platform health checks and for making trust-based decisions. As a health check, trusted launch can cryptographically certify that your VM booted correctly. If the process fails, possibly because your VM is running an unauthorized component, Microsoft Defender for Cloud issues integrity alerts. The alerts include details on which components failed to pass integrity checks. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on vTPM and to enable vTPM for your Azure Virtual Machine instance (or check if it's supported) refer to the Trusted launch for Azure virtual machines section of the Azure Virtual Machines documentation.",
+                        "Url": "https://learn.microsoft.com/en-us/azure/virtual-machines/trusted-launch"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Azure Virtual Machine",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureVirtualMachineInstance",
+                        "Id": vmId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": vmName,
+                                "Id": vmId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-6",
+                        "NIST SP 800-53 Rev. 4 SC-16",
+                        "NIST SP 800-53 Rev. 4 SI-7",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.2.1",
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
+                        "ISO 27001:2013 A.14.2.4"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azRegion}/{vmId}/az-vm-vtpm-enabled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azRegion}/{vmId}/az-vm-vtpm-enabled-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Azure.VirtualMachines.12] Azure Virtual Machines should have Virtual Trusted Platform Module (vTPM) enabled",
+                "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does have Virtual Trusted Platform Module (vTPM) enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on vTPM and to enable vTPM for your Azure Virtual Machine instance (or check if it's supported) refer to the Trusted launch for Azure virtual machines section of the Azure Virtual Machines documentation.",
+                        "Url": "https://learn.microsoft.com/en-us/azure/virtual-machines/trusted-launch"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Azure Virtual Machine",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureVirtualMachineInstance",
+                        "Id": vmId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": vmName,
+                                "Id": vmId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-6",
+                        "NIST SP 800-53 Rev. 4 SC-16",
+                        "NIST SP 800-53 Rev. 4 SI-7",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.2.1",
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
+                        "ISO 27001:2013 A.14.2.4"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
 # EOF ??
