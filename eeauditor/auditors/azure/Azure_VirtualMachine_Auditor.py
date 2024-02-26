@@ -1562,18 +1562,21 @@ def azure_vm_auto_patching_check(cache: dict, awsAccountId: str, awsRegion: str,
         try:
             # Check for Windows Configuration
             if hasattr(vm.os_profile, "windows_configuration"):
-                if vm.os_profile.windows_configuration is not None and \
-                hasattr(vm.os_profile.windows_configuration, "patch_settings") and \
-                vm.os_profile.windows_configuration.patch_settings.patch_mode == "Automatic":
+                if (
+                    vm.os_profile.windows_configuration is not None 
+                    and hasattr(vm.os_profile.windows_configuration, "patch_settings") 
+                    and "automatic" in vm.os_profile.windows_configuration.patch_settings.patch_mode.lower()
+                ):
                     autoPatching = True
             
             # Check for Linux Configuration
             if hasattr(vm.os_profile, "linux_configuration"):
-                if vm.os_profile.linux_configuration is not None and \
-                hasattr(vm.os_profile.linux_configuration, "patch_settings") and \
-                vm.os_profile.linux_configuration.patch_settings.patch_mode == "Automatic":
+                if (
+                    vm.os_profile.linux_configuration is not None 
+                    and hasattr(vm.os_profile.linux_configuration, "patch_settings") 
+                    and "automatic" in vm.os_profile.linux_configuration.patch_settings.patch_mode.lower()
+                ):
                     autoPatching = True
-
         except AttributeError or KeyError:
             pass
 
@@ -1730,6 +1733,174 @@ def azure_vm_auto_patching_check(cache: dict, awsAccountId: str, awsRegion: str,
                         "ISO 27001:2013 A.12.5.1",
                         "ISO 27001:2013 A.12.6.1",
                         "ISO 27001:2013 A.18.2.3",
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("azure.virtual_machines")
+def azure_vm_auto_update_vm_agent_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
+    """
+    [Azure.VirtualMachines.10] Azure Virtual Machines should be configured to automatically update the Azure Virtual Machine (VM) Agent
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for vm in get_all_azure_vms(cache, azureCredential, azSubId):
+        # B64 encode all of the details for the asset
+        assetJson = json.dumps(vm.as_dict(),default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        rgName = process_resource_group_name(vm.id)
+        azRegion = vm.location
+        vmName = vm.name
+        vmId = vm.id
+
+        autoUpdateVmAgent = False
+        try:
+            # Check for Windows Configuration
+            if hasattr(vm.os_profile, "windows_configuration"):
+                remediationText = "To enable automatic VM agent updates for your Windows-based Azure Virtual Machine instance refer to the Azure Windows VM Agent overview section of the Azure Virtual Machines documentation."
+                remediationUrl = "https://learn.microsoft.com/en-us/azure/virtual-machines/extensions/agent-windows"
+                if vm.os_profile.windows_configuration.enable_vm_agent_platform_updates is True:
+                    autoUpdateVmAgent = True
+            
+            # Check for Linux Configuration
+            if hasattr(vm.os_profile, "linux_configuration"):
+                remediationText = "To enable automatic VM agent updates for your Linux-based Azure Virtual Machine instance refer to the Azure Linux VM Agent overview section of the Azure Virtual Machines documentation."
+                remediationUrl = "https://learn.microsoft.com/en-us/azure/virtual-machines/extensions/agent-linux"
+                if vm.os_profile.linux_configuration.enable_vm_agent_platform_updates is True:
+                    autoUpdateVmAgent = True
+        except AttributeError or KeyError:
+            pass
+
+        # this is a failing check
+        if autoUpdateVmAgent is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azRegion}/{vmId}/az-vm-auto-update-vm-agent-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azRegion}/{vmId}/az-vm-auto-update-vm-agent-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[Azure.VirtualMachines.10] Azure Virtual Machines should have automatic VM agent updates enabled",
+                "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does not have automatic VM agent updates enabled. Automatic VM agent updates are a security best practice and help to protect your Virtual Machine from known vulnerabilities in the agent as well as expanding capabilities and ensuring they are up to date. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": remediationText,
+                        "Url": remediationUrl
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Azure Virtual Machine",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureVirtualMachineInstance",
+                        "Id": vmId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": vmName,
+                                "Id": vmId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azRegion}/{vmId}/az-vm-auto-update-vm-agent-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azRegion}/{vmId}/az-vm-auto-update-vm-agent-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Azure.VirtualMachines.10] Azure Virtual Machines should have automatic VM agent updates enabled",
+                "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does have automatic VM agent updates enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": remediationText,
+                        "Url": remediationUrl
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Azure Virtual Machine",
+                    "AssetComponent": "Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureVirtualMachineInstance",
+                        "Id": vmId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": vmName,
+                                "Id": vmId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
