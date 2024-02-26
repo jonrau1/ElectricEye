@@ -50,9 +50,9 @@ def azure_db_for_postgresql_flexible_server_enforce_ssl_connection_check(cache: 
         if enforceTls is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-ssl-connectivity-check",
+                "Id": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-ssl-connectivity-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-ssl-connectivity-check",
+                "GeneratorId": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-ssl-connectivity-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -121,9 +121,9 @@ def azure_db_for_postgresql_flexible_server_enforce_ssl_connection_check(cache: 
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-ssl-connectivity-check",
+                "Id": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-ssl-connectivity-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-ssl-connectivity-check",
+                "GeneratorId": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-ssl-connectivity-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -217,9 +217,9 @@ def azure_db_for_postgresql_tls_12_minimum_version_check(cache: dict, awsAccount
         if enforceTls12 is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-tls-12-minimum-version-check",
+                "Id": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-tls-12-minimum-version-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-tls-12-minimum-version-check",
+                "GeneratorId": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-tls-12-minimum-version-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -288,9 +288,9 @@ def azure_db_for_postgresql_tls_12_minimum_version_check(cache: dict, awsAccount
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-tls-12-minimum-version-check",
+                "Id": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-tls-12-minimum-version-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-tls-12-minimum-version-check",
+                "GeneratorId": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-tls-12-minimum-version-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -384,9 +384,9 @@ def azure_db_for_postgresql_log_checkpoints_enabled_check(cache: dict, awsAccoun
         if logCheckpointEnabled is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-checkpoints-enabled-check",
+                "Id": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-checkpoints-enabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-checkpoints-enabled-check",
+                "GeneratorId": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-checkpoints-enabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -486,9 +486,9 @@ def azure_db_for_postgresql_log_checkpoints_enabled_check(cache: dict, awsAccoun
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-checkpoints-enabled-check",
+                "Id": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-checkpoints-enabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-checkpoints-enabled-check",
+                "GeneratorId": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-checkpoints-enabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -613,9 +613,9 @@ def azure_db_for_postgresql_log_connections_enabled_check(cache: dict, awsAccoun
         if logConnectionsEnabled is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-connections-enabled-check",
+                "Id": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-connections-enabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-connections-enabled-check",
+                "GeneratorId": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-connections-enabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -715,9 +715,9 @@ def azure_db_for_postgresql_log_connections_enabled_check(cache: dict, awsAccoun
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-connections-enabled-check",
+                "Id": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-connections-enabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-connections-enabled-check",
+                "GeneratorId": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-connections-enabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -842,9 +842,9 @@ def azure_db_for_postgresql_log_disconnections_enabled_check(cache: dict, awsAcc
         if logDisconnectionsEnabled is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-disconnections-enabled-check",
+                "Id": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-disconnections-enabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-disconnections-enabled-check",
+                "GeneratorId": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-disconnections-enabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -944,9 +944,9 @@ def azure_db_for_postgresql_log_disconnections_enabled_check(cache: dict, awsAcc
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-disconnections-enabled-check",
+                "Id": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-disconnections-enabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-disconnections-enabled-check",
+                "GeneratorId": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-log-disconnections-enabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1071,9 +1071,9 @@ def azure_db_for_postgresql_connection_throttling_enabled_check(cache: dict, aws
         if connectionThrottlingEnabled is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-connection-throttling-enabled-check",
+                "Id": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-connection-throttling-enabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-connection-throttling-enabled-check",
+                "GeneratorId": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-connection-throttling-enabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1173,9 +1173,9 @@ def azure_db_for_postgresql_connection_throttling_enabled_check(cache: dict, aws
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-connection-throttling-enabled-check",
+                "Id": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-connection-throttling-enabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-connection-throttling-enabled-check",
+                "GeneratorId": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-connection-throttling-enabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1301,9 +1301,9 @@ def azure_db_for_postgresql_retain_logs_for_at_least_3_days_check(cache: dict, a
         if logRetentionDaysGreaterThanThree is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-retain-logs-for-at-least-3-days-check",
+                "Id": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-retain-logs-for-at-least-3-days-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-retain-logs-for-at-least-3-days-check",
+                "GeneratorId": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-retain-logs-for-at-least-3-days-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1403,9 +1403,9 @@ def azure_db_for_postgresql_retain_logs_for_at_least_3_days_check(cache: dict, a
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-retain-logs-for-at-least-3-days-check",
+                "Id": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-retain-logs-for-at-least-3-days-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-retain-logs-for-at-least-3-days-check",
+                "GeneratorId": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-retain-logs-for-at-least-3-days-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1530,9 +1530,9 @@ def azure_db_for_postgresql_access_to_azure_services_disabled_check(cache: dict,
         if azureServicesAccessEnabled is True:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-access-to-azure-services-disabled-check",
+                "Id": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-access-to-azure-services-disabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-access-to-azure-services-disabled-check",
+                "GeneratorId": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-access-to-azure-services-disabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1643,9 +1643,9 @@ def azure_db_for_postgresql_access_to_azure_services_disabled_check(cache: dict,
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-access-to-azure-services-disabled-check",
+                "Id": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-access-to-azure-services-disabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-access-to-azure-services-disabled-check",
+                "GeneratorId": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-access-to-azure-services-disabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1773,9 +1773,9 @@ def azure_db_for_postgresql_public_network_access_disabled_check(cache: dict, aw
         if serv.network.public_network_access == "Enabled":
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-public-network-access-disabled-check",
+                "Id": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-public-network-access-disabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-public-network-access-disabled-check",
+                "GeneratorId": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-public-network-access-disabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1884,9 +1884,9 @@ def azure_db_for_postgresql_public_network_access_disabled_check(cache: dict, aw
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-public-network-access-disabled-check",
+                "Id": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-public-network-access-disabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-public-network-access-disabled-check",
+                "GeneratorId": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-public-network-access-disabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -2022,9 +2022,9 @@ def azure_db_for_postgresql_double_encryption_check(cache: dict, awsAccountId: s
         if doubleEncryptionEnabled is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-double-encryption-check",
+                "Id": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-double-encryption-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-double-encryption-check",
+                "GeneratorId": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-double-encryption-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -2087,9 +2087,9 @@ def azure_db_for_postgresql_double_encryption_check(cache: dict, awsAccountId: s
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-double-encryption-check",
+                "Id": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-double-encryption-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-double-encryption-check",
+                "GeneratorId": f"{azRegion}/{postgresqlservId}/azure-database-for-postgresql-server-double-encryption-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,

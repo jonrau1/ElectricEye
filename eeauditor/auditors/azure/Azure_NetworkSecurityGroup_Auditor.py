@@ -80,9 +80,9 @@ def azure_network_security_group_all_open_check(cache: dict, awsAccountId: str, 
         if allowAll is True:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{nsgId}/azure-network-security-group-all-open-check",
+                "Id": f"{azRegion}/{nsgId}/azure-network-security-group-all-open-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{nsgId}/azure-network-security-group-all-open-check",
+                "GeneratorId": f"{azRegion}/{nsgId}/azure-network-security-group-all-open-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -158,9 +158,9 @@ def azure_network_security_group_all_open_check(cache: dict, awsAccountId: str, 
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{nsgId}/azure-network-security-group-all-open-check",
+                "Id": f"{azRegion}/{nsgId}/azure-network-security-group-all-open-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{nsgId}/azure-network-security-group-all-open-check",
+                "GeneratorId": f"{azRegion}/{nsgId}/azure-network-security-group-all-open-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -287,9 +287,9 @@ def azure_network_security_group_master_auditor_check(cache: dict, awsAccountId:
                     ):
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": f"{azSubId}/{azRegion}/{nsgId}/{targetProtocol}/{checkId}",
+                            "Id": f"{azRegion}/{nsgId}/{targetProtocol}/{checkId}",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                            "GeneratorId": f"{azSubId}/{azRegion}/{nsgId}/{checkId}",
+                            "GeneratorId": f"{azRegion}/{nsgId}/{checkId}",
                             "AwsAccountId": awsAccountId,
                             "Types": [
                                 "Software and Configuration Checks/AWS Security Best Practices",
@@ -347,9 +347,9 @@ def azure_network_security_group_master_auditor_check(cache: dict, awsAccountId:
                     else:
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": f"{azSubId}/{azRegion}/{nsgId}/{targetProtocol}/{checkId}",
+                            "Id": f"{azRegion}/{nsgId}/{targetProtocol}/{checkId}",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                            "GeneratorId": f"{azSubId}/{azRegion}/{nsgId}/{checkId}",
+                            "GeneratorId": f"{azRegion}/{nsgId}/{checkId}",
                             "AwsAccountId": awsAccountId,
                             "Types": [
                                 "Software and Configuration Checks/AWS Security Best Practices",

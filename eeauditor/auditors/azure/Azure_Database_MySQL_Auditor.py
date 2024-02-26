@@ -50,9 +50,9 @@ def azure_db_for_mysql_flexible_server_enforce_ssl_connection_check(cache: dict,
         if enforceTls is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-ssl-connectivity-check",
+                "Id": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-ssl-connectivity-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-ssl-connectivity-check",
+                "GeneratorId": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-ssl-connectivity-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -121,9 +121,9 @@ def azure_db_for_mysql_flexible_server_enforce_ssl_connection_check(cache: dict,
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-ssl-connectivity-check",
+                "Id": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-ssl-connectivity-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-ssl-connectivity-check",
+                "GeneratorId": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-ssl-connectivity-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -217,9 +217,9 @@ def azure_db_for_mysql_flexible_server_tls12_minimum_version_check(cache: dict, 
         if tls12Enforcement is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-tls12-minimum-version-check",
+                "Id": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-tls12-minimum-version-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-tls12-minimum-version-check",
+                "GeneratorId": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-tls12-minimum-version-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -288,9 +288,9 @@ def azure_db_for_mysql_flexible_server_tls12_minimum_version_check(cache: dict, 
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-tls12-minimum-version-check",
+                "Id": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-tls12-minimum-version-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-tls12-minimum-version-check",
+                "GeneratorId": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-tls12-minimum-version-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -384,9 +384,9 @@ def azure_db_for_mysql_flexible_server_tls12_minimum_version_for_admin_connectio
         if adminTls12Enforcement is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-tls12-minimum-version-for-admin-connections-check",
+                "Id": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-tls12-minimum-version-for-admin-connections-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-tls12-minimum-version-for-admin-connections-check",
+                "GeneratorId": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-tls12-minimum-version-for-admin-connections-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -455,9 +455,9 @@ def azure_db_for_mysql_flexible_server_tls12_minimum_version_for_admin_connectio
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-tls12-minimum-version-for-admin-connections-check",
+                "Id": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-tls12-minimum-version-for-admin-connections-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-tls12-minimum-version-for-admin-connections-check",
+                "GeneratorId": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-tls12-minimum-version-for-admin-connections-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -551,9 +551,9 @@ def azure_db_for_mysql_flexible_server_audit_logging_enabled_check(cache: dict, 
         if auditLogEnabled is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-audit-logging-enabled-check",
+                "Id": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-audit-logging-enabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-audit-logging-enabled-check",
+                "GeneratorId": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-audit-logging-enabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -652,9 +652,9 @@ def azure_db_for_mysql_flexible_server_audit_logging_enabled_check(cache: dict, 
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-audit-logging-enabled-check",
+                "Id": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-audit-logging-enabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-audit-logging-enabled-check",
+                "GeneratorId": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-audit-logging-enabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -778,9 +778,9 @@ def azure_db_for_mysql_flexible_server_audit_log_connection_events_check(cache: 
         if connectionEventsCollected is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-audit-log-connection-events-check",
+                "Id": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-audit-log-connection-events-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-audit-log-connection-events-check",
+                "GeneratorId": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-audit-log-connection-events-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -879,9 +879,9 @@ def azure_db_for_mysql_flexible_server_audit_log_connection_events_check(cache: 
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-audit-log-connection-events-check",
+                "Id": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-audit-log-connection-events-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-audit-log-connection-events-check",
+                "GeneratorId": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-audit-log-connection-events-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1005,9 +1005,9 @@ def azure_db_for_mysql_flexible_server_aes_256_block_encryption_check(cache: dic
         if strongBlockEncryption is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-aes-256-block-encryption-check",
+                "Id": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-aes-256-block-encryption-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-aes-256-block-encryption-check",
+                "GeneratorId": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-aes-256-block-encryption-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1069,9 +1069,9 @@ def azure_db_for_mysql_flexible_server_aes_256_block_encryption_check(cache: dic
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-aes-256-block-encryption-check",
+                "Id": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-aes-256-block-encryption-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-aes-256-block-encryption-check",
+                "GeneratorId": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-aes-256-block-encryption-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1150,9 +1150,9 @@ def azure_db_for_mysql_flexible_server_auto_grow_storage_check(cache: dict, awsA
         if serv.storage.auto_grow != "Enabled":
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-auto-grow-storage-check",
+                "Id": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-auto-grow-storage-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-auto-grow-storage-check",
+                "GeneratorId": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-auto-grow-storage-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1229,9 +1229,9 @@ def azure_db_for_mysql_flexible_server_auto_grow_storage_check(cache: dict, awsA
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-auto-grow-storage-check",
+                "Id": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-auto-grow-storage-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-auto-grow-storage-check",
+                "GeneratorId": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-auto-grow-storage-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1325,9 +1325,9 @@ def azure_db_for_mysql_flexible_server_high_availability_check(cache: dict, awsA
         if serv.high_availability.mode == "Disabled" or serv.high_availability.state == "NotEnabled":
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-high-availability-check",
+                "Id": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-high-availability-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-high-availability-check",
+                "GeneratorId": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-high-availability-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1404,9 +1404,9 @@ def azure_db_for_mysql_flexible_server_high_availability_check(cache: dict, awsA
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-high-availability-check",
+                "Id": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-high-availability-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-high-availability-check",
+                "GeneratorId": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-high-availability-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1500,9 +1500,9 @@ def azure_db_for_mysql_flexible_server_public_network_access_disabled_check(cach
         if serv.network.public_network_access == "Enabled":
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-public-network-access-disabled-check",
+                "Id": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-public-network-access-disabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-public-network-access-disabled-check",
+                "GeneratorId": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-public-network-access-disabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1611,9 +1611,9 @@ def azure_db_for_mysql_flexible_server_public_network_access_disabled_check(cach
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-public-network-access-disabled-check",
+                "Id": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-public-network-access-disabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{mysqlservId}/azure-database-for-mysql-server-public-network-access-disabled-check",
+                "GeneratorId": f"{azRegion}/{mysqlservId}/azure-database-for-mysql-server-public-network-access-disabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,

@@ -91,9 +91,9 @@ def azure_sql_server_server_level_auditing_enabled_check(cache: dict, awsAccount
         if serverAuditEnabled is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-auditing-enabled-check",
+                "Id": f"{azRegion}/{sqlservId}/azure-sqlserver-auditing-enabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-auditing-enabled-check",
+                "GeneratorId": f"{azRegion}/{sqlservId}/azure-sqlserver-auditing-enabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -193,9 +193,9 @@ def azure_sql_server_server_level_auditing_enabled_check(cache: dict, awsAccount
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-auditing-enabled-check",
+                "Id": f"{azRegion}/{sqlservId}/azure-sqlserver-auditing-enabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-auditing-enabled-check",
+                "GeneratorId": f"{azRegion}/{sqlservId}/azure-sqlserver-auditing-enabled-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -320,9 +320,9 @@ def azure_sql_server_no_ingress_from_internet_check(cache: dict, awsAccountId: s
         if allowInternetIngress is True:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-no-internet-ingress-check",
+                "Id": f"{azRegion}/{sqlservId}/azure-sqlserver-no-internet-ingress-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-no-internet-ingress-check",
+                "GeneratorId": f"{azRegion}/{sqlservId}/azure-sqlserver-no-internet-ingress-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -392,9 +392,9 @@ def azure_sql_server_no_ingress_from_internet_check(cache: dict, awsAccountId: s
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-no-internet-ingress-check",
+                "Id": f"{azRegion}/{sqlservId}/azure-sqlserver-no-internet-ingress-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-no-internet-ingress-check",
+                "GeneratorId": f"{azRegion}/{sqlservId}/azure-sqlserver-no-internet-ingress-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -487,9 +487,9 @@ def azure_sql_server_tde_with_cmk_check(cache: dict, awsAccountId: str, awsRegio
         if tdeWithCmk is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-tde-with-cmk-check",
+                "Id": f"{azRegion}/{sqlservId}/azure-sqlserver-tde-with-cmk-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-tde-with-cmk-check",
+                "GeneratorId": f"{azRegion}/{sqlservId}/azure-sqlserver-tde-with-cmk-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -552,9 +552,9 @@ def azure_sql_server_tde_with_cmk_check(cache: dict, awsAccountId: str, awsRegio
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-tde-with-cmk-check",
+                "Id": f"{azRegion}/{sqlservId}/azure-sqlserver-tde-with-cmk-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-tde-with-cmk-check",
+                "GeneratorId": f"{azRegion}/{sqlservId}/azure-sqlserver-tde-with-cmk-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -642,9 +642,9 @@ def azure_sql_server_entra_id_admin_authentication_configured_check(cache: dict,
         if aadAdminConfigured is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-entra-id-admin-authentication-configured-check",
+                "Id": f"{azRegion}/{sqlservId}/azure-sqlserver-entra-id-admin-authentication-configured-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-entra-id-admin-authentication-configured-check",
+                "GeneratorId": f"{azRegion}/{sqlservId}/azure-sqlserver-entra-id-admin-authentication-configured-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -719,9 +719,9 @@ def azure_sql_server_entra_id_admin_authentication_configured_check(cache: dict,
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-entra-id-admin-authentication-configured-check",
+                "Id": f"{azRegion}/{sqlservId}/azure-sqlserver-entra-id-admin-authentication-configured-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-entra-id-admin-authentication-configured-check",
+                "GeneratorId": f"{azRegion}/{sqlservId}/azure-sqlserver-entra-id-admin-authentication-configured-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -821,9 +821,9 @@ def azure_sql_database_tde_enabled_check(cache: dict, awsAccountId: str, awsRegi
             if dbTdeEnabled is False:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-tde-enabled-on-database-check",
+                    "Id": f"{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-tde-enabled-on-database-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-tde-enabled-on-database-check",
+                    "GeneratorId": f"{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-tde-enabled-on-database-check",
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks"],
                     "FirstObservedAt": iso8601Time,
@@ -887,9 +887,9 @@ def azure_sql_database_tde_enabled_check(cache: dict, awsAccountId: str, awsRegi
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-tde-enabled-on-database-check",
+                    "Id": f"{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-tde-enabled-on-database-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-tde-enabled-on-database-check",
+                    "GeneratorId": f"{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-tde-enabled-on-database-check",
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks"],
                     "FirstObservedAt": iso8601Time,
@@ -976,9 +976,9 @@ def azure_sql_database_read_scale_out_check(cache: dict, awsAccountId: str, awsR
             if dbReadScaleOut is False:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-read-scale-out-enabled-on-database-check",
+                    "Id": f"{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-read-scale-out-enabled-on-database-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-read-scale-out-enabled-on-database-check",
+                    "GeneratorId": f"{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-read-scale-out-enabled-on-database-check",
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks"],
                     "FirstObservedAt": iso8601Time,
@@ -1055,9 +1055,9 @@ def azure_sql_database_read_scale_out_check(cache: dict, awsAccountId: str, awsR
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-read-scale-out-enabled-on-database-check",
+                    "Id": f"{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-read-scale-out-enabled-on-database-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-read-scale-out-enabled-on-database-check",
+                    "GeneratorId": f"{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-read-scale-out-enabled-on-database-check",
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks"],
                     "FirstObservedAt": iso8601Time,
@@ -1163,9 +1163,9 @@ def azure_sql_database_regulated_workloads_use_double_encryption_check(cache: di
             if dbDoubleEncryption is False:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-double-encryption-on-database-check",
+                    "Id": f"{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-double-encryption-on-database-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-double-encryption-on-database-check",
+                    "GeneratorId": f"{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-double-encryption-on-database-check",
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks"],
                     "FirstObservedAt": iso8601Time,
@@ -1227,9 +1227,9 @@ def azure_sql_database_regulated_workloads_use_double_encryption_check(cache: di
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-double-encryption-on-database-check",
+                    "Id": f"{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-double-encryption-on-database-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-double-encryption-on-database-check",
+                    "GeneratorId": f"{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-double-encryption-on-database-check",
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks"],
                     "FirstObservedAt": iso8601Time,
@@ -1311,9 +1311,9 @@ def azure_sql_database_regulated_workloads_cryptographic_ledger_check(cache: dic
             if db.is_infra_encryption_enabled is False:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-cryptographic-ledger-on-database-check",
+                    "Id": f"{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-cryptographic-ledger-on-database-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-cryptographic-ledger-on-database-check",
+                    "GeneratorId": f"{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-cryptographic-ledger-on-database-check",
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks"],
                     "FirstObservedAt": iso8601Time,
@@ -1386,9 +1386,9 @@ def azure_sql_database_regulated_workloads_cryptographic_ledger_check(cache: dic
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-cryptographic-ledger-on-database-check",
+                    "Id": f"{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-cryptographic-ledger-on-database-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-cryptographic-ledger-on-database-check",
+                    "GeneratorId": f"{azRegion}/{sqlservId}/{dbId}/azure-sqlserver-cryptographic-ledger-on-database-check",
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks"],
                     "FirstObservedAt": iso8601Time,
@@ -1489,9 +1489,9 @@ def azure_sql_server_auditing_retention_greater_than_90_days_check(cache: dict, 
         if hasPolicy is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-auditing-retention-greater-than-90-days-check",
+                "Id": f"{azRegion}/{sqlservId}/azure-sqlserver-auditing-retention-greater-than-90-days-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-auditing-retention-greater-than-90-days-check",
+                "GeneratorId": f"{azRegion}/{sqlservId}/azure-sqlserver-auditing-retention-greater-than-90-days-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1590,9 +1590,9 @@ def azure_sql_server_auditing_retention_greater_than_90_days_check(cache: dict, 
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-auditing-retention-greater-than-90-days-check",
+                "Id": f"{azRegion}/{sqlservId}/azure-sqlserver-auditing-retention-greater-than-90-days-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-auditing-retention-greater-than-90-days-check",
+                "GeneratorId": f"{azRegion}/{sqlservId}/azure-sqlserver-auditing-retention-greater-than-90-days-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1708,9 +1708,9 @@ def azure_sql_server_tls_minimum_version_tls12_check(cache: dict, awsAccountId: 
         if sqlserv.minimal_tls_version != "1.2":
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-tls-minimum-version-tls12-check",
+                "Id": f"{azRegion}/{sqlservId}/azure-sqlserver-tls-minimum-version-tls12-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-tls-minimum-version-tls12-check",
+                "GeneratorId": f"{azRegion}/{sqlservId}/azure-sqlserver-tls-minimum-version-tls12-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1777,9 +1777,9 @@ def azure_sql_server_tls_minimum_version_tls12_check(cache: dict, awsAccountId: 
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-tls-minimum-version-tls12-check",
+                "Id": f"{azRegion}/{sqlservId}/azure-sqlserver-tls-minimum-version-tls12-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-tls-minimum-version-tls12-check",
+                "GeneratorId": f"{azRegion}/{sqlservId}/azure-sqlserver-tls-minimum-version-tls12-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1863,9 +1863,9 @@ def azure_sql_server_disable_public_network_access_check(cache: dict, awsAccount
         if sqlserv.public_network_access == "Enabled":
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-disable-public-network-access-check",
+                "Id": f"{azRegion}/{sqlservId}/azure-sqlserver-disable-public-network-access-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-disable-public-network-access-check",
+                "GeneratorId": f"{azRegion}/{sqlservId}/azure-sqlserver-disable-public-network-access-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -1974,9 +1974,9 @@ def azure_sql_server_disable_public_network_access_check(cache: dict, awsAccount
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-disable-public-network-access-check",
+                "Id": f"{azRegion}/{sqlservId}/azure-sqlserver-disable-public-network-access-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-disable-public-network-access-check",
+                "GeneratorId": f"{azRegion}/{sqlservId}/azure-sqlserver-disable-public-network-access-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -2102,9 +2102,9 @@ def azure_sql_server_restrict_outbound_network_access_check(cache: dict, awsAcco
         if sqlserv.public_network_access == "Enabled":
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-restrict-outbound-network-access-check",
+                "Id": f"{azRegion}/{sqlservId}/azure-sqlserver-restrict-outbound-network-access-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-restrict-outbound-network-access-check",
+                "GeneratorId": f"{azRegion}/{sqlservId}/azure-sqlserver-restrict-outbound-network-access-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -2213,9 +2213,9 @@ def azure_sql_server_restrict_outbound_network_access_check(cache: dict, awsAcco
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-restrict-outbound-network-access-check",
+                "Id": f"{azRegion}/{sqlservId}/azure-sqlserver-restrict-outbound-network-access-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azSubId}/{azRegion}/{sqlservId}/azure-sqlserver-restrict-outbound-network-access-check",
+                "GeneratorId": f"{azRegion}/{sqlservId}/azure-sqlserver-restrict-outbound-network-access-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
