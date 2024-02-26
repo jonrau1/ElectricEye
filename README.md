@@ -153,7 +153,7 @@ In total there are:
 - **3** Supported SaaS Providers: `ServiceNow`, `M365`, and `Salesforce`
 - **1145** ElectricEye Checks
 - **169** Supported CSP & SaaS Asset Components across all Services
-- **126** ElectricEye Auditors
+- **127** ElectricEye Auditors
 
 The tables of supported Services and Checks have been migrated to the respective per-Provider setup documentation linked above in [Configuring ElectricEye](#configuring-electriceye).
 

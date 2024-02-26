@@ -48,23 +48,6 @@ def get_all_azure_vms(cache: dict, azureCredential, azSubId: str) -> list[models
     cache["get_all_azure_vms"] = vmList
     return cache["get_all_azure_vms"]
 
-def get_all_azure_vnets(cache: dict, azureCredential, azSubId: str):
-    """
-    Returns a list of all Azure Virtual Networks in a Subscription
-    """
-    azNetworkClient = NetworkManagementClient(azureCredential,azSubId)
-
-    response = cache.get("get_all_azure_vnets")
-    if response:
-        return response
-    
-    vnetList = [vnet for vnet in azNetworkClient.virtual_networks.list_all()]
-    if not vnetList or vnetList is None:
-        vnetList = []
-
-    cache["get_all_azure_vnets"] = vnetList
-    return cache["get_all_azure_vnets"]
-
 def get_all_azure_rgs(cache: dict, azureCredential, azSubId: str):
     """
     Returns a list of all Azure Resource Groups in a Subscription
@@ -92,171 +75,9 @@ def process_resource_group_name(id: str):
     return parts[rgIndex]
 
 @registry.register_check("azure.virtual_machines")
-def azure_vm_bastion_host_exists_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
-    """
-    [Azure.VirtualMachines.1] Azure Bastion Hosts should be deployed to Virtual Networks to provide secure RDP and SSH access to Azure Virtual Machines
-    """
-    azNetworkClient = NetworkManagementClient(azureCredential,azSubId)
-    # ISO Time
-    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for vnet in get_all_azure_vnets(cache, azureCredential, azSubId):
-        # B64 encode all of the details for the Asset
-        assetJson = json.dumps(vnet.as_dict(),default=str).encode("utf-8")
-        assetB64 = base64.b64encode(assetJson)
-        rgName = process_resource_group_name(vnet.id)
-        azRegion = vnet.location
-        vnetName = vnet.name
-
-        # Check if a Bastion Host exists in the Virtual Network
-        bastionHostExists = False
-        for bastionHost in azNetworkClient.bastion_hosts.list():
-            for ipConfig in bastionHost.ip_configurations:
-                if vnet.id in ipConfig.subnet.id:
-                    bastionHostExists = True
-                    break
-        
-        # this is a failing check
-        if bastionHostExists is False:
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": f"{azRegion}/{vnet.id}/az-vm-bastion-host-exists-check",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azRegion}/{vnet.id}/az-vm-bastion-host-exists-check",
-                "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks"],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "LOW"},
-                "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.1] Azure Bastion Hosts should be deployed to Virtual Networks to provide secure RDP and SSH access to Azure Virtual Machines",
-                "Description": f"Virtual Network {vnetName} in Subscription {azSubId} in {azRegion} does not have an Azure Bastion Host deployed. Azure Bastion is a fully managed PaaS service that provides secure and seamless RDP and SSH access to your virtual machines directly through the Azure Portal. Azure Bastion is provisioned directly in your Virtual Network (VNet) and supports all VMs in your Virtual Network using SSL without any exposure through public IP addresses. Azure Bastion is provisioned directly in your Virtual Network (VNet) and supports all VMs in your Virtual Network using SSL without any exposure through public IP addresses. Azure Bastion is provisioned directly in your Virtual Network (VNet) and supports all VMs in your Virtual Network using SSL without any exposure through public IP addresses. Refer to the remediation instructions if this configuration is not intended.",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "To deploy an Azure Bastion Host refer to the Azure Bastion documentation.",
-                        "Url": "https://docs.microsoft.com/en-us/azure/bastion/bastion-create-host-portal"
-                    }
-                },
-                "ProductFields": {
-                    "ProductName": "ElectricEye",
-                    "Provider": "Azure",
-                    "ProviderType": "CSP",
-                    "ProviderAccountId": azSubId,
-                    "AssetRegion": azRegion,
-                    "AssetDetails": assetB64,
-                    "AssetClass": "Network",
-                    "AssetService": "Azure Virtual Network",
-                    "AssetComponent": "Virtual Network"
-                },
-                "Resources": [
-                    {
-                        "Type": "AzureVirtualNetwork",
-                        "Id": vnet.id,
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                        "Details": {
-                            "Other": {
-                                "SubscriptionId": azSubId,
-                                "ResourceGroupName": rgName,
-                                "Region": azRegion,
-                                "Name": vnetName,
-                                "Id": vnet.id
-                            }
-                        }
-                    }
-                ],
-                "Compliance": {
-                    "Status": "FAILED",
-                    "RelatedRequirements": [
-                        "NIST CSF V1.1 PR.AC-4",
-                        "NIST SP 800-53 Rev. 4 AC-17",
-                        "NIST SP 800-53 Rev. 4 AC-20",
-                        "NIST SP 800-53 Rev. 4 AC-21",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.9.1.2",
-                        "CIS Microsoft Azure Foundations Benchmark V2.0.0 7.1",
-                        "MITRE ATT&CK T1590",
-                        "MITRE ATT&CK T1592",
-                        "MITRE ATT&CK T1595"
-                    ]
-                },
-                "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE"
-            }
-            yield finding
-        else:
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": f"{azRegion}/{vnet.id}/az-vm-bastion-host-exists-check",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{azRegion}/{vnet.id}/az-vm-bastion-host-exists-check",
-                "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks"],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "INFORMATIONAL"},
-                "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.1] Azure Bastion Hosts should be deployed to Virtual Networks to provide secure RDP and SSH access to Azure Virtual Machines",
-                "Description": f"Virtual Network {vnetName} in Subscription {azSubId} in {azRegion} does have an Azure Bastion Host deployed.",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "To deploy an Azure Bastion Host refer to the Azure Bastion documentation.",
-                        "Url": "https://docs.microsoft.com/en-us/azure/bastion/bastion-create-host-portal"
-                    }
-                },
-                "ProductFields": {
-                    "ProductName": "ElectricEye",
-                    "Provider": "Azure",
-                    "ProviderType": "CSP",
-                    "ProviderAccountId": azSubId,
-                    "AssetRegion": azRegion,
-                    "AssetDetails": assetB64,
-                    "AssetClass": "Network",
-                    "AssetService": "Azure Virtual Network",
-                    "AssetComponent": "Virtual Network"
-                },
-                "Resources": [
-                    {
-                        "Type": "AzureVirtualNetwork",
-                        "Id": vnet.id,
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                        "Details": {
-                            "Other": {
-                                "SubscriptionId": azSubId,
-                                "ResourceGroupName": rgName,
-                                "Region": azRegion,
-                                "Name": vnetName,
-                                "Id": vnet.id
-                            }
-                        }
-                    }
-                ],
-                "Compliance": {
-                    "Status": "PASSED",
-                    "RelatedRequirements": [
-                        "NIST CSF V1.1 PR.AC-4",
-                        "NIST SP 800-53 Rev. 4 AC-17",
-                        "NIST SP 800-53 Rev. 4 AC-20",
-                        "NIST SP 800-53 Rev. 4 AC-21",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.9.1.2",
-                        "CIS Microsoft Azure Foundations Benchmark V2.0.0 7.1",
-                        "MITRE ATT&CK T1590",
-                        "MITRE ATT&CK T1592",
-                        "MITRE ATT&CK T1595"
-                    ]
-                },
-                "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED"
-            }
-            yield finding
-
-@registry.register_check("azure.virtual_machines")
 def azure_vm_utilizing_managed_disks_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
     """
-    [Azure.VirtualMachines.2] Azure Virtual Machines should utilize Managed Disks for storage
+    [Azure.VirtualMachines.1] Azure Virtual Machines should utilize Managed Disks for storage
     """
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -287,7 +108,7 @@ def azure_vm_utilizing_managed_disks_check(cache: dict, awsAccountId: str, awsRe
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.2] Azure Virtual Machines should utilize Managed Disks for storage",
+                "Title": "[Azure.VirtualMachines.1] Azure Virtual Machines should utilize Managed Disks for storage",
                 "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does not utilize Managed Disks for storage. Managed Disks are the new and recommended disk storage offering for use with Azure Virtual Machines for better reliability, availability, and security. Managed Disks provide better reliability for Availability Sets by ensuring that the disks of VMs in an Availability Set are sufficiently isolated from each other to avoid single points of failure. Managed Disks also provide better security by encrypting the disks by default. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -353,7 +174,7 @@ def azure_vm_utilizing_managed_disks_check(cache: dict, awsAccountId: str, awsRe
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.2] Azure Virtual Machines should utilize Managed Disks for storage",
+                "Title": "[Azure.VirtualMachines.1] Azure Virtual Machines should utilize Managed Disks for storage",
                 "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does utilize Managed Disks for storage.",
                 "Remediation": {
                     "Recommendation": {
@@ -410,7 +231,7 @@ def azure_vm_utilizing_managed_disks_check(cache: dict, awsAccountId: str, awsRe
 @registry.register_check("azure.virtual_machines")
 def azure_vm_encrypt_os_and_data_disk_with_cmk_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
     """
-    [Azure.VirtualMachines.3] Azure Virtual Machines should encrypt both the OS and Data disks with a Customer Managed Key (CMK)
+    [Azure.VirtualMachines.2] Azure Virtual Machines should encrypt both the OS and Data disks with a Customer Managed Key (CMK)
     """
     azComputeClient = ComputeManagementClient(azureCredential,azSubId)
     # ISO Time
@@ -454,7 +275,7 @@ def azure_vm_encrypt_os_and_data_disk_with_cmk_check(cache: dict, awsAccountId: 
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.3] Azure Virtual Machines should encrypt both the OS and Data disks with a Customer Managed Key (CMK)",
+                "Title": "[Azure.VirtualMachines.2] Azure Virtual Machines should encrypt both the OS and Data disks with a Customer Managed Key (CMK)",
                 "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does not use a CMK for both OS and Data disks. Encrypting the IaaS VM's OS disk (boot volume) and Data disks (non-boot volume) ensures that the entire content is fully unrecoverable without a key, thus protecting the volume from unwanted reads. PMK (Platform Managed Keys) are enabled by default in Azure-managed disks and allow encryption at rest. CMK is recommended because it gives the customer the option to control which specific keys are used for the encryption and decryption of the disk. The customer can then change keys and increase security by disabling them instead of relying on the PMK key that remains unchanging. There is also the option to increase security further by using automatically rotating keys so that access to disk is ensured to be limited. Organizations should evaluate what their security requirements are, however, for the data stored on the disk. For high-risk data using CMK is a must, as it provides extra steps of security. If the data is low risk, PMK is enabled by default and provides sufficient data security. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -520,7 +341,7 @@ def azure_vm_encrypt_os_and_data_disk_with_cmk_check(cache: dict, awsAccountId: 
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.3] Azure Virtual Machines should encrypt both the OS and Data disks with a Customer Managed Key (CMK)",
+                "Title": "[Azure.VirtualMachines.2] Azure Virtual Machines should encrypt both the OS and Data disks with a Customer Managed Key (CMK)",
                 "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does use a CMK for both OS and Data disks.",
                 "Remediation": {
                     "Recommendation": {
@@ -577,7 +398,7 @@ def azure_vm_encrypt_os_and_data_disk_with_cmk_check(cache: dict, awsAccountId: 
 @registry.register_check("azure.virtual_machines")
 def azure_vm_unattached_disks_cmk_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
     """
-    [Azure.VirtualMachines.4] Ensure that unattached disks are encrypted with a Customer Managed Key (CMK)
+    [Azure.VirtualMachines.3] Ensure that unattached disks are encrypted with a Customer Managed Key (CMK)
     """
     azComputeClient = ComputeManagementClient(azureCredential, azSubId)
     # ISO Time
@@ -612,7 +433,7 @@ def azure_vm_unattached_disks_cmk_encryption_check(cache: dict, awsAccountId: st
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
-                    "Title": "[Azure.VirtualMachines.4] Ensure that unattached disks are encrypted with a Customer Managed Key (CMK)",
+                    "Title": "[Azure.VirtualMachines.3] Ensure that unattached disks are encrypted with a Customer Managed Key (CMK)",
                     "Description": f"Unattached disk {diskName} in Resource Group {rgName} in Subscription {azSubId} in {azRegion} is not encrypted with a CMK. Encrypting the IaaS VM's unattached disks (non-boot volume) ensures that the entire content is fully unrecoverable without a key, thus protecting the volume from unwanted reads. PMK (Platform Managed Keys) are enabled by default in Azure-managed disks and allow encryption at rest. CMK is recommended because it gives the customer the option to control which specific keys are used for the encryption and decryption of the disk. The customer can then change keys and increase security by disabling them instead of relying on the PMK key that remains unchanging. There is also the option to increase security further by using automatically rotating keys so that access to disk is ensured to be limited. Organizations should evaluate what their security requirements are, however, for the data stored on the disk. For high-risk data using CMK is a must, as it provides extra steps of security. If the data is low risk, PMK is enabled by default and provides sufficient data security. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
@@ -678,7 +499,7 @@ def azure_vm_unattached_disks_cmk_encryption_check(cache: dict, awsAccountId: st
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
-                    "Title": "[Azure.VirtualMachines.4] Ensure that unattached disks are encrypted with a Customer Managed Key (CMK)",
+                    "Title": "[Azure.VirtualMachines.3] Ensure that unattached disks are encrypted with a Customer Managed Key (CMK)",
                     "Description": f"Unattached disk {diskName} in Resource Group {rgName} in Subscription {azSubId} in {azRegion} is encrypted with a CMK.",
                     "Remediation": {
                         "Recommendation": {
@@ -735,7 +556,7 @@ def azure_vm_unattached_disks_cmk_encryption_check(cache: dict, awsAccountId: st
 @registry.register_check("azure.virtual_machines")
 def azure_vm_monitoring_agent_installed_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
     """
-    [Azure.VirtualMachines.5] Azure Virtual Machines should have the Azure Monitor Agent installed
+    [Azure.VirtualMachines.4] Azure Virtual Machines should have the Azure Monitor Agent installed
     """
     azComputeClient = ComputeManagementClient(azureCredential, azSubId)
     # ISO Time
@@ -771,7 +592,7 @@ def azure_vm_monitoring_agent_installed_check(cache: dict, awsAccountId: str, aw
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.5] Azure Virtual Machines should have the Azure Monitor Agent installed",
+                "Title": "[Azure.VirtualMachines.4] Azure Virtual Machines should have the Azure Monitor Agent installed",
                 "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does not have the Azure Monitor Agent installed. The Azure Monitor Agent collects monitoring data from Azure Virtual Machines and sends it to the Azure Monitor service. The agent collects monitoring data from the guest operating system and workloads of Azure Virtual Machines. The agent is designed to be used with the Azure Monitor service and other monitoring solutions to provide insights into the performance and operation of the applications and workloads running on the virtual machines. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -873,7 +694,7 @@ def azure_vm_monitoring_agent_installed_check(cache: dict, awsAccountId: str, aw
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.5] Azure Virtual Machines should have the Azure Monitor Agent installed",
+                "Title": "[Azure.VirtualMachines.4] Azure Virtual Machines should have the Azure Monitor Agent installed",
                 "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does have the Azure Monitor Agent installed.",
                 "Remediation": {
                     "Recommendation": {
@@ -966,7 +787,7 @@ def azure_vm_monitoring_agent_installed_check(cache: dict, awsAccountId: str, aw
 @registry.register_check("azure.virtual_machines")
 def azure_vm_azure_backup_coverage_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
     """
-    [Azure.VirtualMachines.6] Azure Virtual Machines should have Azure Backup coverage
+    [Azure.VirtualMachines.5] Azure Virtual Machines should have Azure Backup coverage
     """
     azBackupClient = RecoveryServicesBackupClient(azureCredential, azSubId)
     azRecoverySvcClient = RecoveryServicesClient(azureCredential, azSubId)
@@ -1018,7 +839,7 @@ def azure_vm_azure_backup_coverage_check(cache: dict, awsAccountId: str, awsRegi
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.6] Azure Virtual Machines should have Azure Backup coverage",
+                "Title": "[Azure.VirtualMachines.5] Azure Virtual Machines should have Azure Backup coverage",
                 "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does not have Azure Backup coverage. Azure Backup is a scalable solution with zero-infrastructure maintenance that protects your data from security threats and data loss. Azure Backup provides independent and isolated backups to guard against accidental destruction of original data. Azure Backup also provides the ability to restore VMs to a previous state, which is essential for disaster recovery. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -1100,7 +921,7 @@ def azure_vm_azure_backup_coverage_check(cache: dict, awsAccountId: str, awsRegi
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.6] Azure Virtual Machines should have Azure Backup coverage",
+                "Title": "[Azure.VirtualMachines.5] Azure Virtual Machines should have Azure Backup coverage",
                 "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does have Azure Backup coverage.",
                 "Remediation": {
                     "Recommendation": {
@@ -1173,7 +994,7 @@ def azure_vm_azure_backup_coverage_check(cache: dict, awsAccountId: str, awsRegi
 @registry.register_check("azure.virtual_machines")
 def azure_vm_default_and_guessable_admin_username_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
     """
-    [Azure.VirtualMachines.7] Azure Virtual Machines should not have default or easily guessable administrative usernames
+    [Azure.VirtualMachines.6] Azure Virtual Machines should not have default or easily guessable administrative usernames
     """
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -1201,7 +1022,7 @@ def azure_vm_default_and_guessable_admin_username_check(cache: dict, awsAccountI
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.7] Azure Virtual Machines should not have default or easily guessable administrative usernames",
+                "Title": "[Azure.VirtualMachines.6] Azure Virtual Machines should not have default or easily guessable administrative usernames",
                 "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} has a default or easily guessable administrative username. The administrative username for the VM is {adminUsername}. Default and easily guessable administrative usernames are a security risk and should be avoided. Attackers can easily guess the username and use it to attempt to gain unauthorized access to the VM. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -1283,7 +1104,7 @@ def azure_vm_default_and_guessable_admin_username_check(cache: dict, awsAccountI
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.7] Azure Virtual Machines should not have default or easily guessable administrative usernames",
+                "Title": "[Azure.VirtualMachines.6] Azure Virtual Machines should not have default or easily guessable administrative usernames",
                 "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does not have a default or easily guessable administrative username. The administrative username for the VM is {adminUsername}.",
                 "Remediation": {
                     "Recommendation": {
@@ -1356,7 +1177,7 @@ def azure_vm_default_and_guessable_admin_username_check(cache: dict, awsAccountI
 @registry.register_check("azure.virtual_machines")
 def azure_vm_linux_disable_password_authentication_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
     """
-    [Azure.VirtualMachines.8] Azure Virtual Machines with Linux operating systems should have password-based authentication disabled
+    [Azure.VirtualMachines.7] Azure Virtual Machines with Linux operating systems should have password-based authentication disabled
     """
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -1390,7 +1211,7 @@ def azure_vm_linux_disable_password_authentication_check(cache: dict, awsAccount
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.8] Azure Virtual Machines with Linux operating systems should have password-based authentication disabled",
+                "Title": "[Azure.VirtualMachines.7] Azure Virtual Machines with Linux operating systems should have password-based authentication disabled",
                 "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} has password-based authentication enabled. Password-based authentication should be disabled for Linux Virtual Machines. Disabling password-based authentication is a security best practice and helps to protect your Virtual Machine from unauthorized access. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -1472,7 +1293,7 @@ def azure_vm_linux_disable_password_authentication_check(cache: dict, awsAccount
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.8] Azure Virtual Machines with Linux operating systems should have password-based authentication disabled",
+                "Title": "[Azure.VirtualMachines.7] Azure Virtual Machines with Linux operating systems should have password-based authentication disabled",
                 "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does have password-based authentication disabled or is a Windows machine.",
                 "Remediation": {
                     "Recommendation": {
@@ -1545,7 +1366,7 @@ def azure_vm_linux_disable_password_authentication_check(cache: dict, awsAccount
 @registry.register_check("azure.virtual_machines")
 def azure_vm_auto_patching_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
     """
-    [Azure.VirtualMachines.9] Azure Virtual Machines should be configured to automatically apply OS patches
+    [Azure.VirtualMachines.8] Azure Virtual Machines should be configured to automatically apply OS patches
     """
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -1594,7 +1415,7 @@ def azure_vm_auto_patching_check(cache: dict, awsAccountId: str, awsRegion: str,
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.9] Azure Virtual Machines should have automatic OS patching enabled",
+                "Title": "[Azure.VirtualMachines.8] Azure Virtual Machines should have automatic OS patching enabled",
                 "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does not have automatic OS patching enabled. Automatic OS patching is a security best practice and helps to protect your Virtual Machine from known vulnerabilities. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -1673,7 +1494,7 @@ def azure_vm_auto_patching_check(cache: dict, awsAccountId: str, awsRegion: str,
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.9] Azure Virtual Machines should have automatic OS patching enabled",
+                "Title": "[Azure.VirtualMachines.8] Azure Virtual Machines should have automatic OS patching enabled",
                 "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does have automatic OS patching enabled.",
                 "Remediation": {
                     "Recommendation": {
@@ -1743,7 +1564,7 @@ def azure_vm_auto_patching_check(cache: dict, awsAccountId: str, awsRegion: str,
 @registry.register_check("azure.virtual_machines")
 def azure_vm_auto_update_vm_agent_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
     """
-    [Azure.VirtualMachines.10] Azure Virtual Machines should be configured to automatically update the Azure Virtual Machine (VM) Agent
+    [Azure.VirtualMachines.9] Azure Virtual Machines should be configured to automatically update the Azure Virtual Machine (VM) Agent
     """
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -1788,7 +1609,7 @@ def azure_vm_auto_update_vm_agent_check(cache: dict, awsAccountId: str, awsRegio
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.10] Azure Virtual Machines should have automatic VM agent updates enabled",
+                "Title": "[Azure.VirtualMachines.9] Azure Virtual Machines should have automatic VM agent updates enabled",
                 "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does not have automatic VM agent updates enabled. Automatic VM agent updates are a security best practice and help to protect your Virtual Machine from known vulnerabilities in the agent as well as expanding capabilities and ensuring they are up to date. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -1854,7 +1675,7 @@ def azure_vm_auto_update_vm_agent_check(cache: dict, awsAccountId: str, awsRegio
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.10] Azure Virtual Machines should have automatic VM agent updates enabled",
+                "Title": "[Azure.VirtualMachines.9] Azure Virtual Machines should have automatic VM agent updates enabled",
                 "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does have automatic VM agent updates enabled.",
                 "Remediation": {
                     "Recommendation": {
@@ -1911,7 +1732,7 @@ def azure_vm_auto_update_vm_agent_check(cache: dict, awsAccountId: str, awsRegio
 @registry.register_check("azure.virtual_machines")
 def azure_vm_secure_boot_enabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
     """
-    [Azure.VirtualMachines.11] Azure Virtual Machines that support Trusted Launch should have Secure Boot enabled
+    [Azure.VirtualMachines.10] Azure Virtual Machines that support Trusted Launch should have Secure Boot enabled
     """
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -1941,7 +1762,7 @@ def azure_vm_secure_boot_enabled_check(cache: dict, awsAccountId: str, awsRegion
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.11] Azure Virtual Machines should have Secure Boot enabled",
+                "Title": "[Azure.VirtualMachines.10] Azure Virtual Machines should have Secure Boot enabled",
                 "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does not have Secure Boot enabled. At the root of trusted launch is Secure Boot for your VM. Secure Boot, which is implemented in platform firmware, protects against the installation of malware-based rootkits and boot kits. Secure Boot works to ensure that only signed operating systems and drivers can boot. It establishes a 'root of trust' for the software stack on your VM. With Secure Boot enabled, all OS boot components (boot loader, kernel, kernel drivers) require trusted publishers signing. Both Windows and select Linux distributions support Secure Boot. If Secure Boot fails to authenticate that the image is signed by a trusted publisher, the VM fails to boot. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -2008,7 +1829,7 @@ def azure_vm_secure_boot_enabled_check(cache: dict, awsAccountId: str, awsRegion
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.11] Azure Virtual Machines should have Secure Boot enabled",
+                "Title": "[Azure.VirtualMachines.10] Azure Virtual Machines should have Secure Boot enabled",
                 "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does have Secure Boot enabled.",
                 "Remediation": {
                     "Recommendation": {
@@ -2066,7 +1887,7 @@ def azure_vm_secure_boot_enabled_check(cache: dict, awsAccountId: str, awsRegion
 @registry.register_check("azure.virtual_machines")
 def azure_vm_vtpm_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
     """
-    [Azure.VirtualMachines.12] Azure Virtual Machines that support Trusted Launch should have Virtual Trusted Platform Module (vTPM) enabled
+    [Azure.VirtualMachines.11] Azure Virtual Machines that support Trusted Launch should have Virtual Trusted Platform Module (vTPM) enabled
     """
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -2096,7 +1917,7 @@ def azure_vm_vtpm_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.12] Azure Virtual Machines should have Virtual Trusted Platform Module (vTPM) enabled",
+                "Title": "[Azure.VirtualMachines.11] Azure Virtual Machines should have Virtual Trusted Platform Module (vTPM) enabled",
                 "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does not have Virtual Trusted Platform Module (vTPM) enabled. vTPM is a virtualized version of a hardware Trusted Platform Module, compliant with the TPM2.0 spec. It serves as a dedicated secure vault for keys and measurements. Trusted launch provides your VM with its own dedicated TPM instance, running in a secure environment outside the reach of any VM. The vTPM enables attestation by measuring the entire boot chain of your VM (UEFI, OS, system, and drivers). Trusted launch uses the vTPM to perform remote attestation through the cloud. Attestations enable platform health checks and for making trust-based decisions. As a health check, trusted launch can cryptographically certify that your VM booted correctly. If the process fails, possibly because your VM is running an unauthorized component, Microsoft Defender for Cloud issues integrity alerts. The alerts include details on which components failed to pass integrity checks. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -2163,7 +1984,7 @@ def azure_vm_vtpm_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Azure.VirtualMachines.12] Azure Virtual Machines should have Virtual Trusted Platform Module (vTPM) enabled",
+                "Title": "[Azure.VirtualMachines.11] Azure Virtual Machines should have Virtual Trusted Platform Module (vTPM) enabled",
                 "Description": f"Azure Virtual Machine instance {vmName} in Subscription {azSubId} in {azRegion} does have Virtual Trusted Platform Module (vTPM) enabled.",
                 "Remediation": {
                     "Recommendation": {
