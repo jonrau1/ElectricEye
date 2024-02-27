@@ -188,10 +188,12 @@ Todo...
 
 ## Azure Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **91 Checks** across **7 Auditors** that support the secure configuration of **9 services/components**
+These are the following services and checks perform by each Auditor, there are currently **93 Checks** across **8 Auditors** that support the secure configuration of **10 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
+| Azure_DefenderForCloud_Auditor | Microsoft Defender for Cloud (Plan) | Azure Subscriptions should have Defender for Servers plan enabled |
+| Azure_DefenderForCloud_Auditor | Microsoft Defender for Cloud (Plan) | Azure Subscriptions should have Defender for App Services plan enabled |
 | Azure_VNET_Auditor | Azure Virtual Network | VNETs should have Azure Bastion deployed in them |
 | Azure_VNET_Auditor | Azure Virtual Network | VNETs should have DDOS Protection enabled |
 | Azure_VNET_Auditor | Azure Virtual Network | VNETs should have Azure Network Watchers deployed in the same Region as they are |
