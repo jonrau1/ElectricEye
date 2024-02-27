@@ -912,4 +912,178 @@ def azure_vnet_nsg_flow_logs_laws_check(cache: dict, awsAccountId: str, awsRegio
             }
             yield finding
 
+@registry.register_check("azure.vnet")
+def azure_vnet_nsg_flow_logs_90_day_retention_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
+    """
+    [Azure.VNET.5] Azure Network Security Group (NSG) flow logs should have a retention period of at least 90 days
+    """
+    azNetworkClient = NetworkManagementClient(azureCredential,azSubId)
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    nsgsLogged = []
+    
+    for netWatcher in get_all_azure_network_watchers(cache, azureCredential, azSubId):
+        rgName = process_resource_group_name(netWatcher.id)
+        for flowlog in azNetworkClient.flow_logs.list(rgName,netWatcher.name):
+            # ensure the flow log is enabled, retention is enabled, and retention is 90 days or more
+            if (
+                flowlog.enabled is True
+                and flowlog.retention_policy.enabled is True
+                and flowlog.retention_policy.days >= 90
+            ):
+                nsgsLogged.append(flowlog.target_resource_id)
+
+    for secgroup in get_all_azure_nsgs(cache, azureCredential, azSubId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(secgroup.as_dict(),default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        nsgName = secgroup.name
+        nsgId = str(secgroup.id)
+        azRegion = secgroup.location
+        rgName = nsgId.split("/")[4]
+        # this is a failing check
+        if nsgId not in nsgsLogged:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azRegion}/{nsgId}/az-vnet-nsg-flow-logs-90-day-retention-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azRegion}/{nsgId}/az-vnet-nsg-flow-logs-90-day-retention-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[Azure.VNET.5] Azure Network Security Group (NSG) flow logs should have a retention period of at least 90 days",
+                "Description": f"Network Security Group (NSG) flow logs for {nsgName} in Subscription {azSubId} in {azRegion} either does not enable retention or has retention set for less than 90 days. Network Security Group (NSG) flow logs provide information that can be used to understand ingress and egress IP traffic on network interfaces. Flow logs are written to an Azure Storage Account as well as an Azure Log Analytics Workspace. Flow logs are not enabled by default and must be configured to send logs to an Azure Log Analytics Workspace. Flow logs should have a retention period of at least 90 days. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To learn more about Network Security Group (NSG) flow logs and how to enable them refer to the Quickstart: Configure Azure Network Watcher NSG flow logs using an Azure Resource Manager (ARM) template section of the Azure Networking for Network Watcher documentation.",
+                        "Url": "https://learn.microsoft.com/en-us/azure/network-watcher/quickstart-configure-network-security-group-flow-logs-from-arm-template"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Azure Network Security Group",
+                    "AssetComponent": "Network Security Group"
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureNetworkSecurityGroup",
+                        "Id": nsgId,
+                        "Partition": awsPartition,
+                        "Region": azRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": nsgName,
+                                "Id": nsgId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 MP-6",
+                        "NIST SP 800-53 Rev. 4 PE-16",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.5",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.8.3.1",
+                        "ISO 27001:2013 A.8.3.2",
+                        "ISO 27001:2013 A.8.3.3",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.7",
+                        "CIS Microsoft Azure Foundations Benchmark V2.0.0 6.5"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azRegion}/{nsgId}/az-vnet-nsg-flow-logs-90-day-retention-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azRegion}/{nsgId}/az-vnet-nsg-flow-logs-90-day-retention-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Azure.VNET.5] Azure Network Security Group (NSG) flow logs should have a retention period of at least 90 days",
+                "Description": f"Network Security Group (NSG) flow logs for {nsgName} in Subscription {azSubId} in {azRegion} retains logs for at least 90 days.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To learn more about Network Security Group (NSG) flow logs and how to enable them refer to the Quickstart: Configure Azure Network Watcher NSG flow logs using an Azure Resource Manager (ARM) template section of the Azure Networking for Network Watcher documentation.",
+                        "Url": "https://learn.microsoft.com/en-us/azure/network-watcher/quickstart-configure-network-security-group-flow-logs-from-arm-template"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Azure Network Security Group",
+                    "AssetComponent": "Network Security Group"
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureNetworkSecurityGroup",
+                        "Id": nsgId,
+                        "Partition": awsPartition,
+                        "Region": azRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": nsgName,
+                                "Id": nsgId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 MP-6",
+                        "NIST SP 800-53 Rev. 4 PE-16",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.5",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.8.3.1",
+                        "ISO 27001:2013 A.8.3.2",
+                        "ISO 27001:2013 A.8.3.3",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.7",
+                        "CIS Microsoft Azure Foundations Benchmark V2.0.0 6.5"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
 ## END ??

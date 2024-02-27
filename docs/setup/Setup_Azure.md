@@ -188,14 +188,15 @@ Todo...
 
 ## Azure Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **90 Checks** across **7 Auditors** that support the secure configuration of **9 services/components**
+These are the following services and checks perform by each Auditor, there are currently **91 Checks** across **7 Auditors** that support the secure configuration of **9 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
 | Azure_VNET_Auditor | Azure Virtual Network | VNETs should have Azure Bastion deployed in them |
 | Azure_VNET_Auditor | Azure Virtual Network | VNETs should have DDOS Protection enabled |
 | Azure_VNET_Auditor | Azure Virtual Network | VNETs should have Azure Network Watchers deployed in the same Region as they are |
-| Azure_VNET_Auditor | Azure Network Security Group | NSGs should have flow logs enabled and sending analytics to Azure Log Analytics Workspace |
+| Azure_VNET_Auditor | Azure Network Security Group | NSGs should have flow logs enabled and send analytics to Azure Log Analytics Workspace |
+| Azure_VNET_Auditor | Azure Network Security Group | NSGs flow logs should configure retention for *at least* 90 days |
 | Azure_VirtualMachine_Auditor | Azure Virtual Machine | Azure VMs should use Managed Disks (not VHDs) |
 | Azure_VirtualMachine_Auditor | Azure Virtual Machine | Azure VMs should encrypted OS and Data disks with CMKs |
 | Azure_VirtualMachine_Auditor | Azure Disk Storage Disks | Unattached storage disks should be encrypted with CMKs |
