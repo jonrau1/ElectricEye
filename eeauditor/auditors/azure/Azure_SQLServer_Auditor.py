@@ -125,7 +125,7 @@ def azure_sql_server_server_level_auditing_enabled_check(cache: dict, awsAccount
                         "Type": "AzureSqlServer",
                         "Id": sqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -227,7 +227,7 @@ def azure_sql_server_server_level_auditing_enabled_check(cache: dict, awsAccount
                         "Type": "AzureSqlServer",
                         "Id": sqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -354,7 +354,7 @@ def azure_sql_server_no_ingress_from_internet_check(cache: dict, awsAccountId: s
                         "Type": "AzureSqlServer",
                         "Id": sqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -426,7 +426,7 @@ def azure_sql_server_no_ingress_from_internet_check(cache: dict, awsAccountId: s
                         "Type": "AzureSqlServer",
                         "Id": sqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -521,7 +521,7 @@ def azure_sql_server_tde_with_cmk_check(cache: dict, awsAccountId: str, awsRegio
                         "Type": "AzureSqlServer",
                         "Id": sqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -586,7 +586,7 @@ def azure_sql_server_tde_with_cmk_check(cache: dict, awsAccountId: str, awsRegio
                         "Type": "AzureSqlServer",
                         "Id": sqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -676,7 +676,7 @@ def azure_sql_server_entra_id_admin_authentication_configured_check(cache: dict,
                         "Type": "AzureSqlServer",
                         "Id": sqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -753,7 +753,7 @@ def azure_sql_server_entra_id_admin_authentication_configured_check(cache: dict,
                         "Type": "AzureSqlServer",
                         "Id": sqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1523,7 +1523,7 @@ def azure_sql_server_auditing_retention_greater_than_90_days_check(cache: dict, 
                         "Type": "AzureSqlServer",
                         "Id": sqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1624,7 +1624,7 @@ def azure_sql_server_auditing_retention_greater_than_90_days_check(cache: dict, 
                         "Type": "AzureSqlServer",
                         "Id": sqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1742,7 +1742,7 @@ def azure_sql_server_tls_minimum_version_tls12_check(cache: dict, awsAccountId: 
                         "Type": "AzureSqlServer",
                         "Id": sqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1811,7 +1811,7 @@ def azure_sql_server_tls_minimum_version_tls12_check(cache: dict, awsAccountId: 
                         "Type": "AzureSqlServer",
                         "Id": sqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1897,7 +1897,7 @@ def azure_sql_server_disable_public_network_access_check(cache: dict, awsAccount
                         "Type": "AzureSqlServer",
                         "Id": sqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -2008,7 +2008,7 @@ def azure_sql_server_disable_public_network_access_check(cache: dict, awsAccount
                         "Type": "AzureSqlServer",
                         "Id": sqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -2136,7 +2136,7 @@ def azure_sql_server_restrict_outbound_network_access_check(cache: dict, awsAcco
                         "Type": "AzureSqlServer",
                         "Id": sqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -2247,7 +2247,7 @@ def azure_sql_server_restrict_outbound_network_access_check(cache: dict, awsAcco
                         "Type": "AzureSqlServer",
                         "Id": sqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,

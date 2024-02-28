@@ -97,7 +97,7 @@ def azure_storage_acct_secure_transfer_required_enabled_check(cache: dict, awsAc
                         "Type": "AzureStorageAccount",
                         "Id": saId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -167,7 +167,7 @@ def azure_storage_acct_secure_transfer_required_enabled_check(cache: dict, awsAc
                         "Type": "AzureStorageAccount",
                         "Id": saId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -254,7 +254,7 @@ def azure_storage_acct_infrastructure_encryption_enabled_check(cache: dict, awsA
                         "Type": "AzureStorageAccount",
                         "Id": saId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -319,7 +319,7 @@ def azure_storage_acct_infrastructure_encryption_enabled_check(cache: dict, awsA
                         "Type": "AzureStorageAccount",
                         "Id": saId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -402,7 +402,7 @@ def azure_storage_acct_sas_policy_exists_check(cache: dict, awsAccountId: str, a
                         "Type": "AzureStorageAccount",
                         "Id": saId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -514,7 +514,7 @@ def azure_storage_acct_sas_policy_exists_check(cache: dict, awsAccountId: str, a
                         "Type": "AzureStorageAccount",
                         "Id": saId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -655,7 +655,7 @@ def azure_storage_acct_public_acess_disabled_for_sa_with_blob_containers_check(c
                         "Type": "AzureStorageAccount",
                         "Id": saId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -768,7 +768,7 @@ def azure_storage_acct_public_acess_disabled_for_sa_with_blob_containers_check(c
                         "Type": "AzureStorageAccount",
                         "Id": saId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -902,7 +902,7 @@ def azure_storage_acct_default_network_access_rule_set_to_deny_check(cache: dict
                         "Type": "AzureStorageAccount",
                         "Id": saId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -974,7 +974,7 @@ def azure_storage_acct_default_network_access_rule_set_to_deny_check(cache: dict
                         "Type": "AzureStorageAccount",
                         "Id": saId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1067,7 +1067,7 @@ def azure_storage_acct_trusted_azure_service_access_enabled_check(cache: dict, a
                         "Type": "AzureStorageAccount",
                         "Id": saId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1180,7 +1180,7 @@ def azure_storage_acct_trusted_azure_service_access_enabled_check(cache: dict, a
                         "Type": "AzureStorageAccount",
                         "Id": saId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1318,7 +1318,7 @@ def azure_storage_acct_private_endpoints_use_for_access_check(cache: dict, awsAc
                         "Type": "AzureStorageAccount",
                         "Id": saId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1390,7 +1390,7 @@ def azure_storage_acct_private_endpoints_use_for_access_check(cache: dict, awsAc
                         "Type": "AzureStorageAccount",
                         "Id": saId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1482,7 +1482,7 @@ def azure_storage_acct_soft_delete_enabled_for_blob_storage_check(cache: dict, a
                         "Type": "AzureStorageAccount",
                         "Id": saId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1567,7 +1567,7 @@ def azure_storage_acct_soft_delete_enabled_for_blob_storage_check(cache: dict, a
                         "Type": "AzureStorageAccount",
                         "Id": saId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1673,7 +1673,7 @@ def azure_storage_acct_use_tls12_for_https_minimum_version_check(cache: dict, aw
                         "Type": "AzureStorageAccount",
                         "Id": saId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1743,7 +1743,7 @@ def azure_storage_acct_use_tls12_for_https_minimum_version_check(cache: dict, aw
                         "Type": "AzureStorageAccount",
                         "Id": saId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1834,7 +1834,7 @@ def azure_storage_acct_90_day_key_rotation_check(cache: dict, awsAccountId: str,
                         "Type": "AzureStorageAccount",
                         "Id": saId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1920,7 +1920,7 @@ def azure_storage_acct_90_day_key_rotation_check(cache: dict, awsAccountId: str,
                         "Type": "AzureStorageAccount",
                         "Id": saId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,

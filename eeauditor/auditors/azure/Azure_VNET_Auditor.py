@@ -746,7 +746,7 @@ def azure_vnet_nsg_flow_logs_laws_check(cache: dict, awsAccountId: str, awsRegio
                         "Type": "AzureNetworkSecurityGroup",
                         "Id": nsgId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -847,7 +847,7 @@ def azure_vnet_nsg_flow_logs_laws_check(cache: dict, awsAccountId: str, awsRegio
                         "Type": "AzureNetworkSecurityGroup",
                         "Id": nsgId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -980,7 +980,7 @@ def azure_vnet_nsg_flow_logs_90_day_retention_check(cache: dict, awsAccountId: s
                         "Type": "AzureNetworkSecurityGroup",
                         "Id": nsgId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1051,7 +1051,7 @@ def azure_vnet_nsg_flow_logs_90_day_retention_check(cache: dict, awsAccountId: s
                         "Type": "AzureNetworkSecurityGroup",
                         "Id": nsgId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,

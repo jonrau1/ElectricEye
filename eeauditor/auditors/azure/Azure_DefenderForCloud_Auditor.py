@@ -1149,7 +1149,7 @@ def azure_defender_for_cloud_storage_check(cache: dict, awsAccountId: str, awsRe
         yield finding
 
 @registry.register_check("azure.defender_for_cloud")
-def azure_defender_for_cloud_container_service_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
+def azure_defender_for_cloud_container_registry_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
     """
     [Azure.DefenderForCloud.8] Microsoft Defender for Container Registry plan should be enabled on your subscription
     """

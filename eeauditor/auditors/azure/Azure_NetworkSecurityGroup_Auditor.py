@@ -114,7 +114,7 @@ def azure_network_security_group_all_open_check(cache: dict, awsAccountId: str, 
                         "Type": "AzureNetworkSecurityGroup",
                         "Id": nsgId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -192,7 +192,7 @@ def azure_network_security_group_all_open_check(cache: dict, awsAccountId: str, 
                         "Type": "AzureNetworkSecurityGroup",
                         "Id": nsgId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,

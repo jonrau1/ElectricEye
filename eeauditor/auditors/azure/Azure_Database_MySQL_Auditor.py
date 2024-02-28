@@ -84,7 +84,7 @@ def azure_db_for_mysql_flexible_server_enforce_ssl_connection_check(cache: dict,
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": mysqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -155,7 +155,7 @@ def azure_db_for_mysql_flexible_server_enforce_ssl_connection_check(cache: dict,
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": mysqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -251,7 +251,7 @@ def azure_db_for_mysql_flexible_server_tls12_minimum_version_check(cache: dict, 
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": mysqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -322,7 +322,7 @@ def azure_db_for_mysql_flexible_server_tls12_minimum_version_check(cache: dict, 
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": mysqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -418,7 +418,7 @@ def azure_db_for_mysql_flexible_server_tls12_minimum_version_for_admin_connectio
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": mysqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -489,7 +489,7 @@ def azure_db_for_mysql_flexible_server_tls12_minimum_version_for_admin_connectio
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": mysqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -585,7 +585,7 @@ def azure_db_for_mysql_flexible_server_audit_logging_enabled_check(cache: dict, 
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": mysqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -686,7 +686,7 @@ def azure_db_for_mysql_flexible_server_audit_logging_enabled_check(cache: dict, 
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": mysqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -812,7 +812,7 @@ def azure_db_for_mysql_flexible_server_audit_log_connection_events_check(cache: 
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": mysqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -913,7 +913,7 @@ def azure_db_for_mysql_flexible_server_audit_log_connection_events_check(cache: 
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": mysqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1039,7 +1039,7 @@ def azure_db_for_mysql_flexible_server_aes_256_block_encryption_check(cache: dic
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": mysqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1103,7 +1103,7 @@ def azure_db_for_mysql_flexible_server_aes_256_block_encryption_check(cache: dic
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": mysqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1184,7 +1184,7 @@ def azure_db_for_mysql_flexible_server_auto_grow_storage_check(cache: dict, awsA
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": mysqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1263,7 +1263,7 @@ def azure_db_for_mysql_flexible_server_auto_grow_storage_check(cache: dict, awsA
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": mysqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1359,7 +1359,7 @@ def azure_db_for_mysql_flexible_server_high_availability_check(cache: dict, awsA
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": mysqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1438,7 +1438,7 @@ def azure_db_for_mysql_flexible_server_high_availability_check(cache: dict, awsA
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": mysqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1534,7 +1534,7 @@ def azure_db_for_mysql_flexible_server_public_network_access_disabled_check(cach
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": mysqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1645,7 +1645,7 @@ def azure_db_for_mysql_flexible_server_public_network_access_disabled_check(cach
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": mysqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,

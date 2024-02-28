@@ -84,7 +84,7 @@ def azure_db_for_postgresql_flexible_server_enforce_ssl_connection_check(cache: 
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": postgresqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -155,7 +155,7 @@ def azure_db_for_postgresql_flexible_server_enforce_ssl_connection_check(cache: 
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": postgresqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -251,7 +251,7 @@ def azure_db_for_postgresql_tls_12_minimum_version_check(cache: dict, awsAccount
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": postgresqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -322,7 +322,7 @@ def azure_db_for_postgresql_tls_12_minimum_version_check(cache: dict, awsAccount
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": postgresqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -418,7 +418,7 @@ def azure_db_for_postgresql_log_checkpoints_enabled_check(cache: dict, awsAccoun
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": postgresqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -520,7 +520,7 @@ def azure_db_for_postgresql_log_checkpoints_enabled_check(cache: dict, awsAccoun
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": postgresqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -647,7 +647,7 @@ def azure_db_for_postgresql_log_connections_enabled_check(cache: dict, awsAccoun
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": postgresqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -749,7 +749,7 @@ def azure_db_for_postgresql_log_connections_enabled_check(cache: dict, awsAccoun
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": postgresqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -876,7 +876,7 @@ def azure_db_for_postgresql_log_disconnections_enabled_check(cache: dict, awsAcc
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": postgresqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -978,7 +978,7 @@ def azure_db_for_postgresql_log_disconnections_enabled_check(cache: dict, awsAcc
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": postgresqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1105,7 +1105,7 @@ def azure_db_for_postgresql_connection_throttling_enabled_check(cache: dict, aws
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": postgresqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1207,7 +1207,7 @@ def azure_db_for_postgresql_connection_throttling_enabled_check(cache: dict, aws
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": postgresqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1335,7 +1335,7 @@ def azure_db_for_postgresql_retain_logs_for_at_least_3_days_check(cache: dict, a
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": postgresqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1437,7 +1437,7 @@ def azure_db_for_postgresql_retain_logs_for_at_least_3_days_check(cache: dict, a
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": postgresqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1564,7 +1564,7 @@ def azure_db_for_postgresql_access_to_azure_services_disabled_check(cache: dict,
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": postgresqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1677,7 +1677,7 @@ def azure_db_for_postgresql_access_to_azure_services_disabled_check(cache: dict,
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": postgresqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1807,7 +1807,7 @@ def azure_db_for_postgresql_public_network_access_disabled_check(cache: dict, aw
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": postgresqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -1918,7 +1918,7 @@ def azure_db_for_postgresql_public_network_access_disabled_check(cache: dict, aw
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": postgresqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -2056,7 +2056,7 @@ def azure_db_for_postgresql_double_encryption_check(cache: dict, awsAccountId: s
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": postgresqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
@@ -2121,7 +2121,7 @@ def azure_db_for_postgresql_double_encryption_check(cache: dict, awsAccountId: s
                         "Type": "AzureDatabaseForMySqlServer",
                         "Id": postgresqlservId,
                         "Partition": awsPartition,
-                        "Region": azRegion,
+                        "Region": awsRegion,
                         "Details": {
                             "Other": {
                                 "SubscriptionId": azSubId,
