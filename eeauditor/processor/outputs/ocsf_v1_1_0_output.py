@@ -329,7 +329,7 @@ class OcsfV110Output(object):
                     "uid": finding["Resources"][0]["Id"]
                 },
                 "unmapped": {
-                    "provide_type": finding["ProductFields"]["ProviderType"],
+                    "provider_type": finding["ProductFields"]["ProviderType"],
                     "asset_class": finding["ProductFields"]["AssetClass"],
                     "asset_component": finding["ProductFields"]["AssetComponent"],
                     "workflow_status": finding["Workflow"]["Status"],

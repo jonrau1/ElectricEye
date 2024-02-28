@@ -277,3 +277,5 @@
   ImageTag: <img src="https://code.benco.io/icon-collection/azure-icons/Network-Security-Groups.svg">
 - AssetService: Microsoft Defender for Cloud
   ImageTag: <img src="https://raw.githubusercontent.com/Azure/Azure-Security-Center/master/.github/images/asc.png">
+- AssetService: Azure Application Insights
+  ImageTag: <img src="https://code.benco.io/icon-collection/azure-icons/Application-Insights.svg">

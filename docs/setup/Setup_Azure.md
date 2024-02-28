@@ -188,10 +188,14 @@ Todo...
 
 ## Azure Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **105 Checks** across **8 Auditors** that support the secure configuration of **10 services/components**
+These are the following services and checks perform by each Auditor, there are currently **109 Checks** across **9 Auditors** that support the secure configuration of **11 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
+| Azure_ApplicationInsights_Auditor | Azure (Monitor) Application Insights | Azure Applicaiton Insights should be enabled in the Subscription |
+| Azure_ApplicationInsights_Auditor | Azure (Monitor) Application Insights | Azure Applicaiton Insights should send telemetry to LAWS |
+| Azure_ApplicationInsights_Auditor | Azure (Monitor) Application Insights | Azure Applicaiton Insights should disable local authentication |
+| Azure_ApplicationInsights_Auditor | Azure (Monitor) Application Insights | Azure Applicaiton Insights should disable IP masking |
 | Azure_DefenderForCloud_Auditor | Microsoft Defender for Cloud (Plan) | Azure Subscriptions should have Defender for Servers plan enabled |
 | Azure_DefenderForCloud_Auditor | Microsoft Defender for Cloud (Plan) | Azure Subscriptions should have Defender for App Services plan enabled |
 | Azure_DefenderForCloud_Auditor | Microsoft Defender for Cloud (Plan) | Azure Subscriptions should have Defender for Databases plan enabled |
