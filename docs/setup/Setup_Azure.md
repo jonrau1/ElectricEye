@@ -188,12 +188,24 @@ Todo...
 
 ## Azure Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **93 Checks** across **8 Auditors** that support the secure configuration of **10 services/components**
+These are the following services and checks perform by each Auditor, there are currently **105 Checks** across **8 Auditors** that support the secure configuration of **10 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
 | Azure_DefenderForCloud_Auditor | Microsoft Defender for Cloud (Plan) | Azure Subscriptions should have Defender for Servers plan enabled |
 | Azure_DefenderForCloud_Auditor | Microsoft Defender for Cloud (Plan) | Azure Subscriptions should have Defender for App Services plan enabled |
+| Azure_DefenderForCloud_Auditor | Microsoft Defender for Cloud (Plan) | Azure Subscriptions should have Defender for Databases plan enabled |
+| Azure_DefenderForCloud_Auditor | Microsoft Defender for Cloud (Plan) | Azure Subscriptions should have Defender for Azure SQL plan enabled |
+| Azure_DefenderForCloud_Auditor | Microsoft Defender for Cloud (Plan) | Azure Subscriptions should have Defender for SQL Servers on VMs plan enabled |
+| Azure_DefenderForCloud_Auditor | Microsoft Defender for Cloud (Plan) | Azure Subscriptions should have Defender for Open Source Azure DBs plan enabled |
+| Azure_DefenderForCloud_Auditor | Microsoft Defender for Cloud (Plan) | Azure Subscriptions should have Defender for Storage plan enabled |
+| Azure_DefenderForCloud_Auditor | Microsoft Defender for Cloud (Plan) | Azure Subscriptions should have Defender for Container Registry (legacy) plan enabled |
+| Azure_DefenderForCloud_Auditor | Microsoft Defender for Cloud (Plan) | Azure Subscriptions should have Defender for Azure CosmosDB plan enabled |
+| Azure_DefenderForCloud_Auditor | Microsoft Defender for Cloud (Plan) | Azure Subscriptions should have Defender for Key Vault plan enabled |
+| Azure_DefenderForCloud_Auditor | Microsoft Defender for Cloud (Plan) | Azure Subscriptions should have Defender for DNS (legacy) plan enabled |
+| Azure_DefenderForCloud_Auditor | Microsoft Defender for Cloud (Plan) | Azure Subscriptions should have Defender for Resource Manager plan enabled |
+| Azure_DefenderForCloud_Auditor | Microsoft Defender for Cloud (Plan) | Azure Subscriptions should have Defender for APIs plan enabled |
+| Azure_DefenderForCloud_Auditor | Microsoft Defender for Cloud (Plan) | Azure Subscriptions should have Defender for Containers (Kubernetes) plan enabled |
 | Azure_VNET_Auditor | Azure Virtual Network | VNETs should have Azure Bastion deployed in them |
 | Azure_VNET_Auditor | Azure Virtual Network | VNETs should have DDOS Protection enabled |
 | Azure_VNET_Auditor | Azure Virtual Network | VNETs should have Azure Network Watchers deployed in the same Region as they are |
