@@ -151,7 +151,7 @@ In total there are:
 
 - **4** Supported Public CSPs: `AWS`, `GCP`, `OCI`, and `Azure`
 - **3** Supported SaaS Providers: `ServiceNow`, `M365`, and `Salesforce`
-- **1167** ElectricEye Checks
+- **1168** ElectricEye Checks
 - **171** Supported CSP & SaaS Asset Components across all Services
 - **129** ElectricEye Auditors
 

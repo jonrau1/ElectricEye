@@ -25,14 +25,12 @@ import json
 
 registry = CheckRegister()
 
-# This constant should only contain the THREE LATEST AWS EKS K8s versions.
-# DO NOT enter mainline K8s or older versions that have since been deprecated
+# current and extended support
 # check https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html
-CURRENT_EKS_K8_VERSIONS = ["1.26", "1.25", "1.24"]
-# This constant should only contain DEPRECATED AWS EKS K8s versions, it is possible to still
-# have EKS clusters running old versions which should be updated
-# check https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html#kubernetes-release-calendar
-DEPRECATED_EKS_K8_VERSIONS = ["1.19", "1.20", "1.21"] # "1.22" on 4 JUNE 2023
+CURRENT_AND_EXTEND_SUPPORT_EKS_K8_VERSIONS = [
+    "1.29","1.28","1.27","1.26","1.25","1.24","1.23"
+] # as of 27 FEB 2024
+
 
 def get_eks_clusters(cache, session):
     """
@@ -298,7 +296,7 @@ def eks_public_endpoint_access_check(cache: dict, session, awsAccountId: str, aw
 
 @registry.register_check("eks")
 def eks_latest_k8s_version_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EKS.2] Elastic Kubernetes Service (EKS) clusters should use the latest supported Kubernetes release versions for EKS"""
+    """[EKS.2] Elastic Kubernetes Service (EKS) clusters should utilize a standard or extended support release version"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in get_eks_clusters(cache, session):
@@ -308,7 +306,7 @@ def eks_latest_k8s_version_check(cache: dict, session, awsAccountId: str, awsReg
         clusterName = str(cluster["cluster"]["name"])
         clusterArn = str(cluster["cluster"]["arn"])
         k8sVersion = str(cluster["cluster"]["version"])
-        if k8sVersion not in CURRENT_EKS_K8_VERSIONS:
+        if k8sVersion not in CURRENT_AND_EXTEND_SUPPORT_EKS_K8_VERSIONS:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clusterArn + "/eks-latest-k8s-version-check",
@@ -321,8 +319,8 @@ def eks_latest_k8s_version_check(cache: dict, session, awsAccountId: str, awsReg
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": f"[EKS.2] Elastic Kubernetes Service (EKS) clusters should use the latest supported Kubernetes release versions for EKS",
-                "Description": f"Elastic Kubernetes Service (EKS) cluster {clusterName} is not using the latest supported Kubernetes release versions for EKS. Unless your application requires a specific version of Kubernetes, AWS recommends you choose the latest available Kubernetes version supported by Amazon EKS for your clusters. Refer to the remediation instructions if this configuration is not intended.",
+                "Title": f"[EKS.2] Elastic Kubernetes Service (EKS) clusters should utilize a standard or extended support release version",
+                "Description": f"Elastic Kubernetes Service (EKS) cluster {clusterName} is not using a version of Kubernetes that is on standard or extended support. Unless your application requires a specific version of Kubernetes, AWS recommends you choose the latest available Kubernetes version supported by Amazon EKS for your clusters. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For upgrade information refer to the Updating an Amazon EKS Cluster Kubernetes Version section of the EKS user guide",
@@ -385,8 +383,8 @@ def eks_latest_k8s_version_check(cache: dict, session, awsAccountId: str, awsReg
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[EKS.2] Elastic Kubernetes Service (EKS) clusters should use the latest supported Kubernetes release versions for EKS",
-                "Description": f"Elastic Kubernetes Service (EKS) cluster {clusterName} is not using a latest supported Kubernetes release versions for EKS.",
+                "Title": "[EKS.2] Elastic Kubernetes Service (EKS) clusters should utilize a standard or extended support release version",
+                "Description": f"Elastic Kubernetes Service (EKS) cluster {clusterName} is using a version of Kubernetes that is on standard or extended support.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For upgrade information refer to the Updating an Amazon EKS Cluster Kubernetes Version section of the EKS user guide",
@@ -746,7 +744,7 @@ def eks_secrets_envelope_encryption_check(cache: dict, session, awsAccountId: st
             yield finding
 
 @registry.register_check("eks")
-def eks_latest_k8s_version_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def eks_deprecated_k8s_version_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EKS.5] Elastic Kubernetes Service (EKS) clusters should not use deprecated Kubernetes version"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -757,7 +755,7 @@ def eks_latest_k8s_version_check(cache: dict, session, awsAccountId: str, awsReg
         clusterName = str(cluster["cluster"]["name"])
         clusterArn = str(cluster["cluster"]["arn"])
         k8sVersion = str(cluster["cluster"]["version"])
-        if k8sVersion in DEPRECATED_EKS_K8_VERSIONS:
+        if k8sVersion not in CURRENT_AND_EXTEND_SUPPORT_EKS_K8_VERSIONS:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{clusterArn}/eks-deprecated-k8s-version-check",

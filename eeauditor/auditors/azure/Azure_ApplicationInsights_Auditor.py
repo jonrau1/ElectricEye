@@ -833,4 +833,243 @@ def azure_app_insights_disable_ip_masking_check(cache: dict, awsAccountId: str, 
             }
             yield finding
 
+@registry.register_check("azure.application_insights")
+def azure_app_insights_disable_public_network_log_ingestion_and_query_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, azureCredential, azSubId: str) -> dict:
+    """
+    [Azure.ApplicationInsights.5] Azure Application Insights should be configured to disable public network log ingestion and query
+    """
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for component in get_all_app_insights_components(cache, azureCredential, azSubId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(component.as_dict(),default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        appInsightCompName = component.name
+        appInsightCompId = str(component.id)
+        azRegion = component.location
+        rgName = appInsightCompId.split("/")[4]
+        # this is a failing check
+        if component.public_network_access_for_query == "Enabled" or component.public_network_access_for_ingestion == "Enabled":
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azRegion}/{appInsightCompId}/azure-application-insights-disable-public-network-log-ingestion-and-query-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azRegion}/{appInsightCompId}/azure-application-insights-disable-public-network-log-ingestion-and-query-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[Azure.ApplicationInsights.5] Azure Application Insights should be configured to disable public network log ingestion and query",
+                "Description": f"Azure Application Insights component {appInsightCompName} in Subscription {azSubId} in {azRegion} is configured to allow public network log ingestion and/or query. An Azure Monitor private link connects a private endpoint to a set of Azure Monitor resources made up of Log Analytics workspaces and Application Insights resources. That set is called an Azure Monitor Private Link Scope. An AMPLS uses private IPs from your network's pool, instead of using the public IPs of these endpoints. For this reason, you can keep using your Azure Monitor resources without opening your virtual network to unrequired outbound traffic. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on network access control refer to the Use Azure Private Link to connect networks to Azure Monitor section in the Azure Monitor documentation.",
+                        "Url": "https://learn.microsoft.com/en-us/azure/azure-monitor/logs/private-link-security#configure-application-insights"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "Azure Application Insights",
+                    "AssetComponent": "Component"
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureApplicationInsightsComponent",
+                        "Id": azSubId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": appInsightCompName,
+                                "Id": appInsightCompId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST CSF V1.1 PR.AC-4",
+                        "NIST CSF V1.1 PR.DS-5",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AC-5",
+                        "NIST SP 800-53 Rev. 4 AC-6",
+                        "NIST SP 800-53 Rev. 4 AC-14",
+                        "NIST SP 800-53 Rev. 4 AC-16",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 AC-24",
+                        "NIST SP 800-53 Rev. 4 PE-19",
+                        "NIST SP 800-53 Rev. 4 PS-3",
+                        "NIST SP 800-53 Rev. 4 PS-6",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SC-8",
+                        "NIST SP 800-53 Rev. 4 SC-13",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "NIST SP 800-53 Rev. 4 SC-31",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC6.3",
+                        "AICPA TSC CC6.6",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.6.1.2",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.7.1.1",
+                        "ISO 27001:2013 A.7.1.2",
+                        "ISO 27001:2013 A.7.3.1",
+                        "ISO 27001:2013 A.8.2.2",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.9.1.1",
+                        "ISO 27001:2013 A.9.1.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.4.1",
+                        "ISO 27001:2013 A.9.4.4",
+                        "ISO 27001:2013 A.9.4.5",
+                        "ISO 27001:2013 A.10.1.1",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.11.1.5",
+                        "ISO 27001:2013 A.11.2.1",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.1.3",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.13.2.4",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{azRegion}/{appInsightCompId}/azure-application-insights-disable-public-network-log-ingestion-and-query-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{azRegion}/{appInsightCompId}/azure-application-insights-disable-public-network-log-ingestion-and-query-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Azure.ApplicationInsights.5] Azure Application Insights should be configured to disable public network log ingestion and query",
+                "Description": f"Azure Application Insights component {appInsightCompName} in Subscription {azSubId} in {azRegion} is not configured to allow public network log ingestion or query.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on network access control refer to the Use Azure Private Link to connect networks to Azure Monitor section in the Azure Monitor documentation.",
+                        "Url": "https://learn.microsoft.com/en-us/azure/azure-monitor/logs/private-link-security#configure-application-insights"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Azure",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": azSubId,
+                    "AssetRegion": azRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "Azure Application Insights",
+                    "AssetComponent": "Component"
+                },
+                "Resources": [
+                    {
+                        "Type": "AzureApplicationInsightsComponent",
+                        "Id": azSubId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "SubscriptionId": azSubId,
+                                "ResourceGroupName": rgName,
+                                "Region": azRegion,
+                                "Name": appInsightCompName,
+                                "Id": appInsightCompId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST CSF V1.1 PR.AC-4",
+                        "NIST CSF V1.1 PR.DS-5",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AC-5",
+                        "NIST SP 800-53 Rev. 4 AC-6",
+                        "NIST SP 800-53 Rev. 4 AC-14",
+                        "NIST SP 800-53 Rev. 4 AC-16",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 AC-24",
+                        "NIST SP 800-53 Rev. 4 PE-19",
+                        "NIST SP 800-53 Rev. 4 PS-3",
+                        "NIST SP 800-53 Rev. 4 PS-6",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SC-8",
+                        "NIST SP 800-53 Rev. 4 SC-13",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "NIST SP 800-53 Rev. 4 SC-31",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC6.3",
+                        "AICPA TSC CC6.6",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.6.1.2",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.7.1.1",
+                        "ISO 27001:2013 A.7.1.2",
+                        "ISO 27001:2013 A.7.3.1",
+                        "ISO 27001:2013 A.8.2.2",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.9.1.1",
+                        "ISO 27001:2013 A.9.1.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.4.1",
+                        "ISO 27001:2013 A.9.4.4",
+                        "ISO 27001:2013 A.9.4.5",
+                        "ISO 27001:2013 A.10.1.1",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.11.1.5",
+                        "ISO 27001:2013 A.11.2.1",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.1.3",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.13.2.4",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
 ## END ??
