@@ -8,7 +8,7 @@ oci>=2.104.0
 pandas==2.2.0
 pluginbase==1.0.1
 psycopg2-binary==2.9.9
-pymongo==4.6.1
+pymongo==4.7.2
 pysnow<=0.7.17
 python3-nmap==1.6.0
 tomli==2.0.1
