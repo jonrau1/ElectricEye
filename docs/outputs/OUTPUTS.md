@@ -6,6 +6,7 @@ This documentation is all about Outputs supported by ElectricEye and how to conf
 
 - [Key Considerations](#key-considerations)
 - [`stdout` Output](#stdout-output)
+- [OCSF `stdout` Output](#ocsf-stdout-output)
 - [JSON Output](#json-output)
 - [HTML Output](#html-output)
 - [HTML Compliance Output](#html-compliance-output)
@@ -33,7 +34,7 @@ To review the list of possible Output providers, use the following ElectricEye c
 
 ```bash
 $ python3 eeauditor/controller.py --list-options
-['amazon_sqs', 'cam_json', 'cam_mongodb', 'cam_postgresql', 'csv', 'firemon_cloud_defense', 'html', 'html_compliance', 'json', 'json_normalized', 'mongodb', 'ocsf_kdf', 'ocsf_v1_1_0', 'postgresql', 'sechub', 'slack', 'stdout']
+['amazon_sqs', 'cam_json', 'cam_mongodb', 'cam_postgresql', 'csv', 'firemon_cloud_defense', 'html', 'html_compliance', 'json', 'json_normalized', 'mongodb', 'ocsf_kdf', 'ocsf_stdout', 'ocsf_v1_1_0', 'postgresql', 'sechub', 'slack', 'stdout']
 ```
 
 #### IMPORTANT NOTE!! You can specify multiple Outputs by providing the `-o` or `--outputs` argument multiple times, for instance: `python3 eeauditor/controller.py -t AWS -o json -o csv -o postgresql`
@@ -71,7 +72,7 @@ It is important to note that outside of `json`, `stdout` and AWS Security Hub, t
 
 ## `stdout` Output
 
-This is the default Output of ElectricEye, all ElectricEye findings (including `AssetDetails`) are printed out to your terminal using `print(json.dumps(findings,default=str))`. As these are raw JSON objects, it can be used in conjunction with a `grep` statement as well as `jq` to query out specific keys within the ASFF as required.
+All ElectricEye findings (including `AssetDetails`) in ASFF format are printed out to your terminal using `print(json.dumps(findings,default=str))`. As these are raw JSON objects, it can be used in conjunction with a `grep` statement as well as `jq` to query out specific keys within the ASFF as required.
 
 For example, if you just want to have a "pretty-printed" JSON output you could use the following command, the `grep 'SchemaVersion'` pipe ensures that only JSON objects from the findings are piped to `jq` and not the logging and exception information that is produced by Electriceye.
 
@@ -89,6 +90,205 @@ To use this Output include the following arguments in your ElectricEye CLI: `pyt
 $ python3 eeauditor/controller.py -t AWS -c ebs_volume_encryption_check -o stdout | grep 'SchemaVersion'
 
 {"SchemaVersion": "2018-10-08", "Id": "arn:aws-iso:ec2:us-iso-west-1:111111111111:volume/vol-0istateintotheabyss2/ebs-volume-encryption-check", "ProductArn": "arn:aws-iso:securityhub:us-iso-west-1:111111111111:product/111111111111/default", "GeneratorId": "arn:aws-iso:ec2:us-iso-west-1:111111111111:volume/vol-0istateintotheabyss2", "AwsAccountId": "111111111111", "Types": ["Software and Configuration Checks/AWS Security Best Practices", "Effects/Data Exposure"], "FirstObservedAt": "1977-06-02T122:29:47.694473+00:00", "CreatedAt": "1977-06-02T12:39:57.694473+00:00", "UpdatedAt": "1977-06-02T12:29:47.694473+00:00", "Severity": {"Label": "INFORMATIONAL"}, "Confidence": 99, "Title": "[EBS.3] EBS Volumes should be encrypted", "Description": "EBS Volume vol-0istateintotheabyss2 is encrypted.", "Remediation": {"Recommendation": {"Text": "If your EBS volume should be encrypted refer to the Amazon EBS Encryption section of the Amazon Elastic Compute Cloud User Guide", "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html"}}, "ProductFields": {"ProductName": "ElectricEye", "Provider": "AWS", "ProviderType": "CSP", "ProviderAccountId": "111111111111", "AssetRegion": "us-iso-west-1", "AssetDetails": {"Attachments": [{"AttachTime": "2013-04-08 17:28:08+00:00", "Device": "/dev/xvda", "InstanceId": "i-123456abc", "State": "attached", "VolumeId": "vol-0istateintotheabyss2", "DeleteOnTermination": true}], "AvailabilityZone": "us-iso-west-1a", "CreateTime": "2023-04-08 17:28:08.422000+00:00", "Encrypted": true, "Size": 10, "SnapshotId": "snap-123456abc", "State": "in-use", "VolumeId": "vol-0istateintotheabyss2", "Iops": 100, "VolumeType": "gp2", "MultiAttachEnabled": false}, "AssetClass": "Storage", "AssetService": "Amazon Elastic Block Storage", "AssetComponent": "Volume"}, "Resources": [{"Type": "AwsEc2Volume", "Id": "arn:aws-iso:ec2:us-iso-west-1:111111111111:volume/vol-0istateintotheabyss2", "Partition": "aws", "Region": "us-iso-west-1", "Details": {"AwsEc2Volume": {"Encrypted": true}}}], "Compliance": {"Status": "PASSED", "RelatedRequirements": ["NIST CSF V1.1 PR.DS-1", "NIST SP 800-53 Rev. 4 MP-8", "NIST SP 800-53 Rev. 4 SC-12", "NIST SP 800-53 Rev. 4 SC-28", "AICPA TSC CC6.1", "ISO 27001:2013 A.8.2.3"]}, "Workflow": {"Status": "RESOLVED"}, "RecordState": "ARCHIVED"}
+```
+
+## OCSF `stdout` Output
+
+> **NOTE**: This is the default output option.
+
+All ElectricEye findings (including `AssetDetails`) in OCSF format are printed out to your terminal using `print(json.dumps(findings,default=str))`. As these are raw JSON objects, it can be used in conjunction with a `grep` statement as well as `jq` to query out specific keys within the ASFF as required.
+
+For example, if you just want to have a "pretty-printed" JSON output you could use the following command, the `grep 'SchemaVersion'` pipe ensures that only JSON objects from the findings are piped to `jq` and not the logging and exception information that is produced by Electriceye.
+
+```bash
+$ python3 eeauditor/controller.py -t AWS -c ebs_volume_encryption_check -o ocsf_stdout | grep 'SchemaVersion' | jq . -r
+```
+
+The OCSF V1.1.0 Output selection will convert all ElectricEye findings into the OCSF format (in JSON) which is a normalized and standardized security-centric data model, well-suited to ingestion in Data Lakes and Data Lake Houses built upon Amazon Security Lake, AWS Glue Data Catalog, Snowflake, Apache Iceberg, Google BigQuery, and more. The Event Class used for this finding is [`compliance_finding [2003]`](https://schema.ocsf.io/1.1.0/classes/compliance_finding?extensions=)
+
+This Output will provide the `ProductFields.AssetDetails` information.
+
+To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o ocsf_stdout` you can also choose to *not* specify `-o` at all as it is the default Output.
+
+### OCSF `stdout` Output
+
+```json
+{
+    "activity_id": 1,
+    "activity_name": "Create",
+    "category_name": "Findings",
+    "category_uid": 2,
+    "class_name": "Compliance Finding",
+    "class_uid": 2003,
+    "confidence_score": 99,
+    "severity": "Medium",
+    "severity_id": 99,
+    "status": "New",
+    "status_id": 1,
+    "time": 1709090374,
+    "type_name": "Compliance Finding: Create",
+    "type_uid": 200301,
+    "metadata": {
+        "uid": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/Databases/azure-defender-for-cloud-databases-plan-enabled-check",
+        "correlation_uid": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/Databases/azure-defender-for-cloud-databases-plan-enabled-check",
+        "version": "1.1.0",
+        "product": {
+            "name": "ElectricEye",
+            "version": "3.0",
+            "url_string": "https://github.com/jonrau1/ElectricEye",
+            "vendor_name": "ElectricEye"
+        },
+        "profiles": [
+            "cloud"
+        ]
+    },
+    "cloud": {
+        "provider": "Azure",
+        "region": "azure-global",
+        "account": {
+            "uid": "0000aaa-1234-bbb-dddd-example123",
+            "type": "Azure",
+            "type_uid": 99
+        }
+    },
+    "observables": [
+        {
+            "name": "cloud.account.uid",
+            "type": "Resource UID",
+            "type_id": 10,
+            "value": "0000aaa-1234-bbb-dddd-example123"
+        },
+        {
+            "name": "resource.uid",
+            "type": "Resource UID",
+            "type_id": 10,
+            "value": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/Databases"
+        }
+    ],
+    "compliance": {
+        "requirements": [
+            "AICPA TSC CC7.2",
+            "CIS Critical Security Controls V8 8.11",
+            "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.3",
+            "CMMC 2.0 AU.L2-3.3.5",
+            "CSA Cloud Controls Matrix V4.0 LOG-05",
+            "CSA Cloud Controls Matrix V4.0 LOG-13",
+            "Equifax SCF V1.0 CM-CS-14",
+            "FBI CJIS Security Policy V5.9 5.3.2.1",
+            "FBI CJIS Security Policy V5.9 5.3.2.2",
+            "FBI CJIS Security Policy V5.9 5.3.4",
+            "FBI CJIS Security Policy V5.9 5.4.1",
+            "FBI CJIS Security Policy V5.9 5.4.3",
+            "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(1)(ii)(D)",
+            "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.312(b)",
+            "ISO 27001:2013 A.12.4.1",
+            "ISO 27001:2013 A.16.1.1",
+            "ISO 27001:2013 A.16.1.4",
+            "ISO 27001:2022 A5.25",
+            "MITRE ATT&CK T1210",
+            "NERC Critical Infrastructure Protection CIP-007-6, Requirement R4 Part 4.4",
+            "NIST CSF V1.1 DE.AE-2",
+            "NIST SP 800-171 Rev. 2 3.3.3",
+            "NIST SP 800-171 Rev. 2 3.3.5",
+            "NIST SP 800-53 Rev. 4 AU-6",
+            "NIST SP 800-53 Rev. 4 CA-7",
+            "NIST SP 800-53 Rev. 4 IR-4",
+            "NIST SP 800-53 Rev. 4 SI-4",
+            "NIST SP 800-53 Rev. 5 AU-6",
+            "NIST SP 800-53 Rev. 5 AU-6(1)",
+            "NZISM V3.5 16.6.14. Event log auditing (CID:2034)",
+            "PCI-DSS V4.0 10.4.1",
+            "PCI-DSS V4.0 10.4.1.1",
+            "PCI-DSS V4.0 10.4.2",
+            "PCI-DSS V4.0 10.4.3",
+            "UK NCSC Cyber Assessment Framework V3.1 C1.c"
+        ],
+        "control": "Azure.DefenderForCloud.3",
+        "standards": [
+            "AICPA TSC",
+            "CIS Critical Security Controls V8",
+            "CMMC 2.0",
+            "CSA Cloud Controls Matrix V4.0",
+            "Equifax SCF V1.0",
+            "FBI CJIS Security Policy V5.9",
+            "HIPAA Security Rule 45 CFR Part 164 Subpart C",
+            "ISO 27001:2013",
+            "ISO 27001:2022",
+            "MITRE ATT&CK",
+            "NERC Critical Infrastructure Protection",
+            "NIST CSF V1.1",
+            "NIST SP 800-171 Rev. 2",
+            "NIST SP 800-53 Rev. 4",
+            "NIST SP 800-53 Rev. 5",
+            "NZISM V3.5",
+            "PCI-DSS V4.0",
+            "UK NCSC Cyber Assessment Framework V3.1"
+        ],
+        "status": "Fail",
+        "status_id": 3
+    },
+    "finding_info": {
+        "created_time": 1709090374,
+        "desc": "Microsoft Defender for Databases plan is not enabled in Subscription 0000aaa-1234-bbb-dddd-example123 because at least one of the four plans is on free tier. Defender for Databases in Microsoft Defender for Cloud allows you to protect your entire database estate with attack detection and threat response for the most popular database types in Azure. Defender for Cloud provides protection for the database engines and for data types, according to their attack surface and security risks: Defender for Azure SQL, SQL Server Machines, Open Source Relational DBs, and Azure Cosmos DBs. Refer to the remediation instructions if this configuration is not intended.",
+        "first_seen_time": 1709090374,
+        "modified_time": 1709090374,
+        "product_uid": "arn:aws:securityhub:us-gov-east-1:123456789012:product/123456789012/default",
+        "title": "[Azure.DefenderForCloud.3] Microsoft Defender for Databases plan should be enabled on your subscription",
+        "types": [
+            "Software and Configuration Checks"
+        ],
+        "uid": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/Databases/azure-defender-for-cloud-databases-plan-enabled-check"
+    },
+    "remediation": {
+        "desc": "For more information on the Defender for Databases plan and deployments refer to the Protect your databases with Defender for Databases section of the Azure Security Microsoft Defender for Cloud documentation.",
+        "references": [
+            "https://learn.microsoft.com/en-us/azure/defender-for-cloud/tutorial-enable-databases-plan"
+        ]
+    },
+    "resource": {
+        "data": [
+            {
+                "id": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/SqlServers",
+                "name": "SqlServers",
+                "type": "Microsoft.Security/pricings",
+                "pricing_tier": "Free",
+                "free_trial_remaining_time": "P30D"
+            },
+            {
+                "id": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/SqlServerVirtualMachines",
+                "name": "SqlServerVirtualMachines",
+                "type": "Microsoft.Security/pricings",
+                "pricing_tier": "Free",
+                "free_trial_remaining_time": "P30D"
+            },
+            {
+                "id": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/OpenSourceRelationalDatabases",
+                "name": "OpenSourceRelationalDatabases",
+                "type": "Microsoft.Security/pricings",
+                "pricing_tier": "Free",
+                "free_trial_remaining_time": "P30D"
+            },
+            {
+                "id": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/CosmosDbs",
+                "name": "CosmosDbs",
+                "type": "Microsoft.Security/pricings",
+                "pricing_tier": "Free",
+                "free_trial_remaining_time": "P30D"
+            }
+        ],
+        "cloud_partition": null,
+        "region": "azure-global",
+        "type": "Microsoft Defender for Cloud",
+        "uid": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/Databases"
+    },
+    "unmapped": {
+        "provider_type": "CSP",
+        "asset_class": "Security Services",
+        "asset_component": "Microsoft Defender for Databases",
+        "workflow_status": "NEW",
+        "record_state": "ACTIVE"
+    }
+}
 ```
 
 ## HTML Output
@@ -513,16 +713,16 @@ To use this Output include the following arguments in your ElectricEye CLI: `pyt
     "class_name": "Compliance Finding",
     "class_uid": 2003,
     "confidence_score": 99,
-    "severity": "Informational",
+    "severity": "Medium",
     "severity_id": 99,
     "status": "New",
     "status_id": 1,
-    "time": 1706990423,
+    "time": 1709090374,
     "type_name": "Compliance Finding: Create",
     "type_uid": 200301,
     "metadata": {
-        "uid": "arn:aws:lambda:us-isob-east-1:123456789012:function:super_secret_squirrel_serverless/public-lambda-function-check",
-        "correlation_uid": "arn:aws:lambda:us-isob-east-1:123456789012:function:super_secret_squirrel_serverless",
+        "uid": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/Databases/azure-defender-for-cloud-databases-plan-enabled-check",
+        "correlation_uid": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/Databases/azure-defender-for-cloud-databases-plan-enabled-check",
         "version": "1.1.0",
         "product": {
             "name": "ElectricEye",
@@ -535,230 +735,150 @@ To use this Output include the following arguments in your ElectricEye CLI: `pyt
         ]
     },
     "cloud": {
-        "provider": "AWS",
-        "project_uid": "123456789012",
-        "region": "us-isob-east-1",
+        "provider": "Azure",
+        "region": "azure-global",
         "account": {
-            "uid": "123456789012",
-            "type": "AWS Account",
-            "type_uid": 10
+            "uid": "0000aaa-1234-bbb-dddd-example123",
+            "type": "Azure",
+            "type_uid": 99
         }
     },
     "observables": [
         {
-            "name": "cloud.project_uid",
+            "name": "cloud.account.uid",
             "type": "Resource UID",
             "type_id": 10,
-            "value": "123456789012"
+            "value": "0000aaa-1234-bbb-dddd-example123"
         },
         {
             "name": "resource.uid",
             "type": "Resource UID",
             "type_id": 10,
-            "value": "arn:aws:lambda:us-isob-east-1:123456789012:function:super_secret_squirrel_serverless"
+            "value": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/Databases"
         }
     ],
     "compliance": {
         "requirements": [
-            "NIST CSF V1.1 PR.AC-3",
-            "NIST SP 800-53 Rev. 4 AC-1",
-            "NIST SP 800-53 Rev. 4 AC-17",
-            "NIST SP 800-53 Rev. 4 AC-19",
-            "NIST SP 800-53 Rev. 4 AC-20",
-            "NIST SP 800-53 Rev. 4 SC-15",
-            "AICPA TSC CC6.6",
-            "ISO 27001:2013 A.6.2.1",
-            "ISO 27001:2013 A.6.2.2",
-            "ISO 27001:2013 A.11.2.6",
-            "ISO 27001:2013 A.13.1.1",
-            "ISO 27001:2013 A.13.2.1",
-            "CIS Critical Security Controls V8 4.11",
-            "NIST SP 800-53 Rev. 5 AC-19",
-            "CSA Cloud Controls Matrix V4.0 UEM-13",
-            "CMMC 2.0 AC.L2-3.1.18",
-            "UK NCSC Cyber Assessment Framework V3.1 B3.d",
-            "NZISM V3.5 21.1.20. Emergency destruction (CID:4519)",
-            "ISO 27001:2022 A8.1",
-            "ECB CROE 2.3.2.1-13",
-            "Critical Risk Profile V1.2 PR.IP-1.2",
-            "ISO 27001:2022 A8.10",
-            "NZISM V3.5 21.4.11. BYOD Infrastructure and System Controls (CID:4666)",
-            "NIST SP 800-53 Rev. 5 AC-20",
-            "CIS Critical Security Controls V8 6.4",
-            "NIST SP 800-171 Rev. 2 3.1.12",
-            "CSA Cloud Controls Matrix V4.0 HRS-04",
-            "CMMC 2.0 AC.L2-3.1.12",
-            "UK NCSC Cyber Essentials V2.2 Key Control",
-            "FFIEC Cybersecurity Assessment Tool D3.PC.Am.B.9",
-            "NERC Critical Infrastructure Protection CIP-005-7, Requirement R2 Part 2.3",
-            "NYDFS 23 NYCRR Part 500 500.12 (b)",
-            "UK NCSC Cyber Assessment Framework V3.1 B2.a",
-            "PCI-DSS V4.0 8.4.3",
-            "NZISM V3.5 19.1.20. System user authentication (CID:3686)",
-            "ISO 27001:2022 A6.7",
-            "FFIEC Cybersecurity Assessment Tool D3.PC.Am.B.15",
-            "UK NCSC Cyber Essentials V2.2 A4.10",
-            "CMMC 2.0 AC.L2-3.1.15",
-            "CMMC 2.0 IA.L2-3.5.3",
-            "CMMC 2.0 MA.L2-3.7.5",
-            "NIST SP 800-171 Rev. 2 3.1.18",
-            "NIST SP 800-171 Rev. 2 3.5.3",
-            "NIST SP 800-53 Rev. 5 IA-2(1)",
-            "NIST SP 800-53 Rev. 5 IA-2(2)",
-            "CIS Critical Security Controls V8 6.6",
-            "NIST SP 800-53 Rev. 5 CM-8",
-            "CSA Cloud Controls Matrix V4.0 IAM-01",
-            "FFIEC Cybersecurity Assessment Tool D3.PC.Am.B.6",
-            "PCI-DSS V4.0 12.5.2",
-            "ISO 27001:2022 A8.5",
-            "NIST SP 800-53 Rev. 5 IA-8(2)",
-            "CIS Critical Security Controls V8 12.7",
-            "NIST SP 800-53 Rev. 5 AC-17",
-            "NZISM V3.5 16.5.10. Authentication (CID:1973)",
-            "ECB CROE 2.3.2.1-15",
-            "Critical Risk Profile V1.2 PR.AC-3.1",
-            "NZISM V3.5 16.5.12. VPNs (CID:1982)",
-            "NZISM V3.5 21.4.13. BYOD Device Controls (CID:4689)",
-            "NERC Critical Infrastructure Protection CIP-010-4, Requirement R4",
-            "CMMC 2.0 AC.L2-3.1.14",
-            "CMMC 2.0 AC.L2-3.1.13",
-            "CSA Cloud Controls Matrix V4.0 IAM-14",
-            "NIST SP 800-171 Rev. 2 3.1.14",
-            "NIST SP 800-53 Rev. 5 AC-17(1)",
-            "NIST SP 800-53 Rev. 5 AC-17(3)",
-            "CIS Critical Security Controls V8 13.5",
-            "NERC Critical Infrastructure Protection CIP-003-8, Requirement R2",
-            "ISO 27001:2022 A8.3",
-            "NERC Critical Infrastructure Protection CIP-005-7, Requirement R1 Part 1.4",
-            "NIST SP 800-53 Rev. 5 SI-4",
-            "NIST SP 800-53 Rev. 5 SC-7",
-            "Equifax SCF V1.0 NI-CS-11",
-            "Equifax SCF V1.0 NI-CS-3",
-            "FBI CJIS Security Policy V5.9 5.6.2.2.1",
-            "FBI CJIS Security Policy V5.9 5.6.2.2.2",
-            "FBI CJIS Security Policy V5.9 5.13.7",
-            "FBI CJIS Security Policy V5.9 5.10.1",
-            "FBI CJIS Security Policy V5.9 5.13.7.2.1",
-            "FBI CJIS Security Policy V5.9 5.6.2.1.2",
-            "FBI CJIS Security Policy V5.9 5.10.3.1",
-            "FBI CJIS Security Policy V5.9 5.13.3",
-            "FBI CJIS Security Policy V5.9 5.5.6.1",
-            "FBI CJIS Security Policy V5.9 5.13.6",
-            "FBI CJIS Security Policy V5.9 5.4.1.1",
-            "FBI CJIS Security Policy V5.9 5.6.2.1.3",
-            "FBI CJIS Security Policy V5.9 5.6.2.2",
-            "FBI CJIS Security Policy V5.9 5.5.6.2",
-            "FBI CJIS Security Policy V5.9 5.6.4",
-            "FBI CJIS Security Policy V5.9 5.10.1.2.3",
-            "FBI CJIS Security Policy V5.9 5.10.1.3",
-            "FBI CJIS Security Policy V5.9 5.10.1.1",
+            "AICPA TSC CC7.2",
+            "CIS Critical Security Controls V8 8.11",
+            "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.3",
+            "CMMC 2.0 AU.L2-3.3.5",
+            "CSA Cloud Controls Matrix V4.0 LOG-05",
+            "CSA Cloud Controls Matrix V4.0 LOG-13",
+            "Equifax SCF V1.0 CM-CS-14",
+            "FBI CJIS Security Policy V5.9 5.3.2.1",
+            "FBI CJIS Security Policy V5.9 5.3.2.2",
+            "FBI CJIS Security Policy V5.9 5.3.4",
             "FBI CJIS Security Policy V5.9 5.4.1",
-            "FBI CJIS Security Policy V5.9 5.10.4.1",
-            "FBI CJIS Security Policy V5.9 5.13.2",
-            "FBI CJIS Security Policy V5.9 5.5.6",
-            "FBI CJIS Security Policy V5.9 5.7.2",
-            "FBI CJIS Security Policy V5.9 5.13.7.2",
-            "FBI CJIS Security Policy V5.9 5.10.1.5"
+            "FBI CJIS Security Policy V5.9 5.4.3",
+            "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(1)(ii)(D)",
+            "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.312(b)",
+            "ISO 27001:2013 A.12.4.1",
+            "ISO 27001:2013 A.16.1.1",
+            "ISO 27001:2013 A.16.1.4",
+            "ISO 27001:2022 A5.25",
+            "MITRE ATT&CK T1210",
+            "NERC Critical Infrastructure Protection CIP-007-6, Requirement R4 Part 4.4",
+            "NIST CSF V1.1 DE.AE-2",
+            "NIST SP 800-171 Rev. 2 3.3.3",
+            "NIST SP 800-171 Rev. 2 3.3.5",
+            "NIST SP 800-53 Rev. 4 AU-6",
+            "NIST SP 800-53 Rev. 4 CA-7",
+            "NIST SP 800-53 Rev. 4 IR-4",
+            "NIST SP 800-53 Rev. 4 SI-4",
+            "NIST SP 800-53 Rev. 5 AU-6",
+            "NIST SP 800-53 Rev. 5 AU-6(1)",
+            "NZISM V3.5 16.6.14. Event log auditing (CID:2034)",
+            "PCI-DSS V4.0 10.4.1",
+            "PCI-DSS V4.0 10.4.1.1",
+            "PCI-DSS V4.0 10.4.2",
+            "PCI-DSS V4.0 10.4.3",
+            "UK NCSC Cyber Assessment Framework V3.1 C1.c"
         ],
-        "control": "Lambda.5",
+        "control": "Azure.DefenderForCloud.3",
         "standards": [
-            "NIST Cybersecurity Framework Version 1.1",
-            "NIST Special Publication 800-53 Revision 4",
-            "NIST Special Publication 800-53 Revision 5",
-            "NIST Special Publication 800-171 Revision 2",
-            "American Institute of Certified Public Accountants (AICPA) Trust Service Criteria (TSC) 2017/2020 for SOC 2",
-            "ISO/IEC 27001:2013/2017 Annex A",
-            "ISO/IEC 27001:2022 Annex A",
-            "Center for Internet Security (CIS) Critical Security Controls Version 8",
-            "Cloud Security Alliance (CSA) Cloud Controls Matrix (CCM) Version 4.0",
-            "United States Department of Defense Cybersecurity Maturity Model Certification (CMMC) Version 2.0",
-            "United States Federal Bureau of Investigation (FBI) Criminal Justice Information System (CJIS) Security Policy Version 5.9",
-            "United Kingdom National Cybercrime Security Center (NCSC) Cyber Essentials Version 2.2",
-            "United Kingdom National Cybercrime Security Center (NCSC) Assessment Framework Version 3.1",
-            "HIPAA 'Security Rule' U.S. Code 45 CFR Part 164 Subpart C",
-            "Federal Financial Institutions Examination Council (FFIEC) Cybersecurity Assessment Tool (CAT)",
-            "North American Electric Reliability Corporation (NERC) Critical Infrastructure Protection (CIP) Standard",
-            "New Zealand Information Security Manual Version 3.5",
-            "New York Department of Financial Services (NYDFS) Series 23 NYCRR Part 500; AKA NYDFS500",
-            "Critical Risk Institute (CRI) Critical Risk Profile Version 1.2",
-            "European Central Bank (ECB) Cyber Resilience Oversight Expectations (CROEs)",
-            "Equifax Security Controls Framework Version 1.0",
-            "Payment Card Industry (PCI) Data Security Standard (DSS) Version 4.0"
+            "AICPA TSC",
+            "CIS Critical Security Controls V8",
+            "CMMC 2.0",
+            "CSA Cloud Controls Matrix V4.0",
+            "Equifax SCF V1.0",
+            "FBI CJIS Security Policy V5.9",
+            "HIPAA Security Rule 45 CFR Part 164 Subpart C",
+            "ISO 27001:2013",
+            "ISO 27001:2022",
+            "MITRE ATT&CK",
+            "NERC Critical Infrastructure Protection",
+            "NIST CSF V1.1",
+            "NIST SP 800-171 Rev. 2",
+            "NIST SP 800-53 Rev. 4",
+            "NIST SP 800-53 Rev. 5",
+            "NZISM V3.5",
+            "PCI-DSS V4.0",
+            "UK NCSC Cyber Assessment Framework V3.1"
         ],
-        "status": "Pass",
-        "status_id": 1
+        "status": "Fail",
+        "status_id": 3
     },
     "finding_info": {
-        "created_time": 1706990423,
-        "desc": "Lambda function super_secret_squirrel_serverless is not allowed to be publicly invoked due to not having an invocation policy and is thus exempt from this check.",
-        "first_seen_time": 1706990423,
-        "modified_time": 1706990423,
-        "product_uid": "arn:aws:securityhub:us-isob-east-1:123456789012:product/123456789012/default",
-        "title": "[Lambda.5] Lambda functions should not be publicly shared",
+        "created_time": 1709090374,
+        "desc": "Microsoft Defender for Databases plan is not enabled in Subscription 0000aaa-1234-bbb-dddd-example123 because at least one of the four plans is on free tier. Defender for Databases in Microsoft Defender for Cloud allows you to protect your entire database estate with attack detection and threat response for the most popular database types in Azure. Defender for Cloud provides protection for the database engines and for data types, according to their attack surface and security risks: Defender for Azure SQL, SQL Server Machines, Open Source Relational DBs, and Azure Cosmos DBs. Refer to the remediation instructions if this configuration is not intended.",
+        "first_seen_time": 1709090374,
+        "modified_time": 1709090374,
+        "product_uid": "arn:aws:securityhub:us-gov-east-1:123456789012:product/123456789012/default",
+        "title": "[Azure.DefenderForCloud.3] Microsoft Defender for Databases plan should be enabled on your subscription",
         "types": [
-            "Software and Configuration Checks/AWS Security Best Practices",
-            "Effects/Data Exposure"
+            "Software and Configuration Checks"
         ],
-        "uid": "arn:aws:lambda:us-isob-east-1:123456789012:function:super_secret_squirrel_serverless/public-lambda-function-check"
+        "uid": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/Databases/azure-defender-for-cloud-databases-plan-enabled-check"
     },
     "remediation": {
-        "desc": "For more information on Lambda function resource-based policies and modifiying their permissions refer to the Using resource-based policies for AWS Lambda section of the Amazon Lambda Developer Guide",
+        "desc": "For more information on the Defender for Databases plan and deployments refer to the Protect your databases with Defender for Databases section of the Azure Security Microsoft Defender for Cloud documentation.",
         "references": [
-            "https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html"
+            "https://learn.microsoft.com/en-us/azure/defender-for-cloud/tutorial-enable-databases-plan"
         ]
     },
     "resource": {
-        "data": {
-            "FunctionName": "super_secret_squirrel_serverless",
-            "FunctionArn": "arn:aws:lambda:us-isob-east-1:123456789012:function:super_secret_squirrel_serverless",
-            "Runtime": "python3.9",
-            "Role": "arn:aws:iam::123456789012:role/SecretSquirrelAdmin",
-            "Handler": "lambda_handler.lambda_handler",
-            "CodeSize": 3199,
-            "Description": "",
-            "Timeout": 45,
-            "MemorySize": 3008,
-            "LastModified": "2023-09-22T22:33:45.693+0000",
-            "CodeSha256": "KCDZzRVjonhasalongmustacheLueX9fI=",
-            "Version": "$LATEST",
-            "Environment": {
-                "Variables": {
-                    "SPY_ARRAY": "nsa_001",
-                    "TARGET": "voldermort_zelensky"
-                }
+        "data": [
+            {
+                "id": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/SqlServers",
+                "name": "SqlServers",
+                "type": "Microsoft.Security/pricings",
+                "pricing_tier": "Free",
+                "free_trial_remaining_time": "P30D"
             },
-            "TracingConfig": {
-                "Mode": "PassThrough"
+            {
+                "id": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/SqlServerVirtualMachines",
+                "name": "SqlServerVirtualMachines",
+                "type": "Microsoft.Security/pricings",
+                "pricing_tier": "Free",
+                "free_trial_remaining_time": "P30D"
             },
-            "RevisionId": "872121f4-the-chair-is-cn-the-w2ll-a",
-            "PackageType": "Zip",
-            "Architectures": [
-                "x86_64"
-            ],
-            "EphemeralStorage": {
-                "Size": 512
+            {
+                "id": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/OpenSourceRelationalDatabases",
+                "name": "OpenSourceRelationalDatabases",
+                "type": "Microsoft.Security/pricings",
+                "pricing_tier": "Free",
+                "free_trial_remaining_time": "P30D"
             },
-            "SnapStart": {
-                "ApplyOn": "None",
-                "OptimizationStatus": "Off"
-            },
-            "LoggingConfig": {
-                "LogFormat": "Text",
-                "LogGroup": "/aws/lambda/super_secret_squirrel_serverless"
+            {
+                "id": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/CosmosDbs",
+                "name": "CosmosDbs",
+                "type": "Microsoft.Security/pricings",
+                "pricing_tier": "Free",
+                "free_trial_remaining_time": "P30D"
             }
-        },
-        "cloud_partition": "aws",
-        "region": "us-isob-east-1",
-        "type": "AWS Lambda",
-        "uid": "arn:aws:lambda:us-isob-east-1:123456789012:function:super_secret_squirrel_serverless"
+        ],
+        "cloud_partition": null,
+        "region": "azure-global",
+        "type": "Microsoft Defender for Cloud",
+        "uid": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/Databases"
     },
     "unmapped": {
-        "provide_type": "CSP",
-        "asset_class": "Compute",
-        "asset_service": "AWS Lambda",
-        "asset_component": "Function",
-        "workflow_status": "RESOLVED",
-        "record_state": "ARCHIVED"
+        "provider_type": "CSP",
+        "asset_class": "Security Services",
+        "asset_component": "Microsoft Defender for Databases",
+        "workflow_status": "NEW",
+        "record_state": "ACTIVE"
     }
 }
 ```

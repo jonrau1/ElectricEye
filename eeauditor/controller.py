@@ -53,6 +53,8 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
         findings = list(app.run_gcp_checks(pluginName=pluginName, delay=delay))
     elif assessmentTarget == "OCI":
         findings = list(app.run_oci_checks(pluginName=pluginName, delay=delay))
+    elif assessmentTarget == "Azure":
+        findings = list(app.run_azure_checks(pluginName=pluginName, delay=delay))
     elif assessmentTarget == "M365":
         findings = list(app.run_m365_checks(pluginName=pluginName, delay=delay))
     elif assessmentTarget == "Salesforce":
@@ -119,7 +121,7 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
     "-o",
     "--outputs",
     multiple=True,
-    default=(["stdout"]),
+    default=(["ocsf_stdout"]),
     show_default=True,
     help="A list of Outputs (files, APIs, databases, ChatOps) to send ElectricEye Findings, specify multiple with additional arguments: -o csv -o postgresql -o slack",
 )

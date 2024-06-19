@@ -78,7 +78,7 @@ def get_conditional_access_policies(cache, tenantId, clientId, clientSecret):
         return cache["get_conditional_access_policies"]
     
 @registry.register_check("m365.conditionalaccess")
-def m365_conditional_access_legacy_authentication_methods_block_policy_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_conditional_access_legacy_authentication_methods_block_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.ConditionalAccess.1] Microsoft 365 Conditional Access policies should be configured to block legacy authentication methods
     """
@@ -276,7 +276,7 @@ def m365_conditional_access_legacy_authentication_methods_block_policy_check(cac
         yield finding
 
 @registry.register_check("m365.conditionalaccess")
-def m365_conditional_access_mfa_medium_risk_signin_policy_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_conditional_access_mfa_medium_risk_signin_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.ConditionalAccess.2] Microsoft 365 Conditional Access policies should be configured to enforce MFA on Medium Risk sign-ins
     """
@@ -476,7 +476,7 @@ def m365_conditional_access_mfa_medium_risk_signin_policy_check(cache, awsAccoun
         yield finding
 
 @registry.register_check("m365.conditionalaccess")
-def m365_conditional_access_location_based_policy_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_conditional_access_location_based_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.ConditionalAccess.3] Microsoft 365 Conditional Access policies should be configured to enforce Location-based Conditional Access (LBCA) by blocking unsanctioned countries
     """
@@ -677,7 +677,7 @@ def m365_conditional_access_location_based_policy_check(cache, awsAccountId, aws
         yield finding
 
 @registry.register_check("m365.conditionalaccess")
-def m365_conditional_access_block_device_unused_os_policy_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_conditional_access_block_device_unused_os_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.ConditionalAccess.4] Microsoft 365 Conditional Access policies should be configured to block devices using unsupported operating systems
     """
@@ -878,7 +878,7 @@ def m365_conditional_access_block_device_unused_os_policy_check(cache, awsAccoun
         yield finding
 
 @registry.register_check("m365.conditionalaccess")
-def m365_conditional_access_block_device_compliance_policy_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_conditional_access_block_device_compliance_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.ConditionalAccess.5] Microsoft 365 Conditional Access policies should be configured to block non-compliant devices from accessing company resources
     """
@@ -1079,7 +1079,7 @@ def m365_conditional_access_block_device_compliance_policy_check(cache, awsAccou
         yield finding
 
 @registry.register_check("m365.conditionalaccess")
-def m365_conditional_access_block_device_app_protection_policy_policy_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_conditional_access_block_device_app_protection_policy_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.ConditionalAccess.6] Microsoft 365 Conditional Access policies should be configured to require devices have an associated Application Protection Policy before accessing company resources
     """
@@ -1280,7 +1280,7 @@ def m365_conditional_access_block_device_app_protection_policy_policy_check(cach
         yield finding
 
 @registry.register_check("m365.conditionalaccess")
-def m365_conditional_access_block_high_risk_users_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_conditional_access_block_high_risk_users_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.ConditionalAccess.7] Microsoft 365 Conditional Access policies should be configured to block High Risk Users
     """
@@ -1479,7 +1479,7 @@ def m365_conditional_access_block_high_risk_users_check(cache, awsAccountId, aws
         yield finding
 
 @registry.register_check("m365.conditionalaccess")
-def m365_conditional_access_block_high_risk_signin_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_conditional_access_block_high_risk_signin_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.ConditionalAccess.8] Microsoft 365 Conditional Access policies should be configured to block High Risk Sign-ins
     """

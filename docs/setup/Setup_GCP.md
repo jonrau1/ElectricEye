@@ -60,7 +60,7 @@ aws ssm put-parameter \
 
 #### NOTE: Rotate your JSON Private Key as often as your internal SOPs dictate, you can even change the entire Parameter as long as you remember to update the `.toml`
 
-4. With >=Python 3.6 installed, install and upgrade `pip3` and setup `virtualenv`.
+4. With >=Python 3.9 installed, install and upgrade `pip3` and setup `virtualenv`.
 
 ```bash
 sudo apt install -y python3-pip

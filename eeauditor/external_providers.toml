@@ -13,7 +13,7 @@ title = "ElectricEye Configuration"
     # Specifies the location of where ALL credentials are stored and will be retrieved from
     # if you specify "CONFIG_FILE" that means you can provide the value within the parameter itself
 
-    credentials_location = "AWS_SSM" # VALID CHOICES: AWS_SSM | AWS_SECRETS_MANAGER | CONFIG_FILE
+    credentials_location = "CONFIG_FILE" # VALID CHOICES: AWS_SSM | AWS_SECRETS_MANAGER | CONFIG_FILE
 
     # The location (or actual contents) of your Shodan.io API Key - limits are not respected!!
     # this location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then
@@ -51,6 +51,12 @@ title = "ElectricEye Configuration"
         
         gcp_project_ids = []
 
+    [regions_and_accounts.azure]
+    
+        # Provide a list of Azure Subscription ID's - your Application Registration's service principal must have Access Control (IAM) granted in each Subscription with the proper permissions
+        
+        azure_subscription_ids = []
+
     [regions_and_accounts.oci]
 
         # Provide your Oracle Cloud Infrastructure Tenancy OCID that is associated with your OCI credentials
@@ -83,11 +89,23 @@ title = "ElectricEye Configuration"
 
     [credentials.azure]
 
-        azure_sp_client_id_value = ""
+        # The location (or actual contents) of your Azure Application Registration Client ID this location must match the value 
+        # of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should 
+        # be the name of the AWS Systems Manager Parameter Store SecureString Parameter 
 
-        azure_sp_tenant_id_value = ""
+        azure_ent_app_client_id_value = ""
 
-        azure_sp_client_secret_id_value = ""
+        # The location (or actual contents) of your Azure Application Registration Client Secret Value this location must match the value 
+        # of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should 
+        # be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+
+        azure_ent_app_client_secret_id_value = ""
+
+        # The location (or actual contents) of your Azure Entra ID tenant ID this location must match the value 
+        # of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should 
+        # be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+
+        azure_ent_app_tenant_id_value = ""
 
     [credentials.gcp]
 
