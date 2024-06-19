@@ -48,7 +48,7 @@ aws ssm put-parameter \
 3. Set the value of **Password needs reset** to false and **Update** the User to save changes.
 
 
-4. With >=Python 3.6 installed, install and upgrade `pip3` and setup `virtualenv`.
+4. With >=Python 3.9 installed, install and upgrade `pip3` and setup `virtualenv`.
 
 ```bash
 sudo apt install -y python3-pip

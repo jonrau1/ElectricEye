@@ -40,35 +40,39 @@ This section explains how to configure ElectricEye using a TOML configuration fi
 
 To configure the TOML file, you need to modify the values of the variables in the `[global]` and `[regions_and_accounts.aws]` sections of the file. Here's an overview of the key variables you need to configure:
 
-- `aws_multi_account_target_type`: 
+#### `global.aws_multi_account_target_type`
 
-    Set this variable to specify if you want to run ElectricEye against a list of AWS Accounts (`Accounts`), a list of accounts within specific OUs (`OU`), or every account in an AWS Organization (`Organization`).
+Set this variable to specify if you want to run ElectricEye against a list of AWS Accounts (`Accounts`), a list of accounts within specific OUs (`OU`), or every account in an AWS Organization (`Organization`).
 
-- `credentials_location`: 
+#### `global.credentials_location`
 
-    Set this variable to specify the location of where credentials are stored and will be retrieved from. You can choose from AWS Systems Manager Parameter Store (`AWS_SSM`), AWS Secrets Manager (`AWS_SECRETS_MANAGER`), or from the TOML file itself (`CONFIG_FILE`) which is **NOT** recommended.
+Set this variable to specify the location of where credentials are stored and will be retrieved from. You can choose from AWS Systems Manager Parameter Store (`AWS_SSM`), AWS Secrets Manager (`AWS_SECRETS_MANAGER`), or from the TOML file itself (`CONFIG_FILE`) which is **NOT** recommended.
 
-    **NOTE** When retrieving from SSM or Secrets Manager, your current Profile / Boto3 Session is used and *NOT* the ElectricEye Role that is specified in `aws_electric_eye_iam_role_name`. Ensure you have `ssm:GetParameter`, `secretsmanager:GetSecretValue`, and relevant `kms` permissions as needed to retrieve this values.
+> **NOTE** When retrieving from SSM or Secrets Manager, your current Profile / Boto3 Session is used and *NOT* the ElectricEye Role that is specified in `aws_electric_eye_iam_role_name`. Ensure you have `ssm:GetParameter`, `secretsmanager:GetSecretValue`, and relevant `kms` permissions as needed to retrieve this values.
 
-- `shodan_api_key_value`: 
+#### `global.shodan_api_key_value`
 
-    This variable specifies the location (or actual value) of your Shodan.io API Key based on the option for `credentials_location`. This is an optional value but encouraged as having your resources being index by Shodan can be a useful pre-attack indicator if it is accurate information *and* your configurations are bad to begin with. This is only used for the **Amazon_Shodan_Auditor**.
+This variable specifies the location (or actual value) of your Shodan.io API Key based on the option for `credentials_location`. This is an optional value but encouraged as having your resources being index by Shodan can be a useful pre-attack indicator if it is accurate information *and* your configurations are bad to begin with.
 
-- `aws_account_targets`: 
+This was originally only used for the legacy **Amazon_Shodan_Auditor**, but those checks are now rolled up under the appropriate Auditors for EC2, RDS, AmazonMQ, CloudFront, ALB, and more.
 
-    This variable specifies a list of AWS accounts, OU IDs, or an organization's principal ID that you want to run ElectricEye against. If you do not specify any values, and your `aws_multi_account_target_type` is set to `Accounts` then your current AWS Account will be evaluated.
+#### `regions_and_accounts.aws.aws_account_targets`
 
-    If you are running this against your Organization **leave this option empty**. Additionally, the Account you are running ElectricEye from must either be the AWS Organizations Management Account or an Account which is a Delegated Admin for an Organizations-scoped service such as AWS FMS, Amazon GuardDuty, or otherwise.
+This variable specifies a list of AWS accounts, OU IDs, or an organization's principal ID that you want to run ElectricEye against. If you do not specify any values, and your `aws_multi_account_target_type` is set to `Accounts` then your current AWS Account will be evaluated.
 
-- `aws_regions_selection`: 
+If you are running this against your Organization **leave this option empty**. Additionally, the Account you are running ElectricEye from must either be the AWS Organizations Management Account or an Account which is a Delegated Admin for an Organizations-scoped service such as AWS FMS, Amazon GuardDuty, or otherwise.
 
-    This variable specifies the AWS regions that you want to scan. If left blank, the current AWS region is used. You can provide a list of AWS regions or simply use `["All"]` to scan all regions.
+#### `regions_and_accounts.aws.aws_regions_selection`
 
-- `aws_electric_eye_iam_role_name`: 
+This variable specifies the AWS regions that you want to scan. If left blank, the current AWS region is used. You can provide a list of AWS regions or simply use `["All"]` to scan all regions.
 
-    (**UPDATE AS OF 4 FEB 2024**: If you do not provide a value here, your current Boto3 Session will be used, if you provided an Org ID, OU IDs or Accounts those assessments will (obviously) fail!) 
+#### `regions_and_accounts.aws.aws_electric_eye_iam_role_name`
 
-    This variable specifies the ***Name*** of the AWS IAM role that ElectricEye will assume and utilize to execute its Checks. The role name must be the same for all accounts, including your current account. To facilitate this, use [this CloudFormation template](../../cloudformation/ElectricEye_Organizations_StackSet.yaml) and deploy it as an AWS CloudFormation StackSet. This is done to keep the credentials used for **Auditors** separate from the credentials you use for Outputs and for retrieving Secrets, it also makes it easier to audit (via CloudTrail or otherwise) the usage of the ElectricEye role.
+> **UPDATE AS OF 4 FEB 2024**: If you do not provide a value here, your current Boto3 Session will be used, if you provided an Org ID, OU IDs or Accounts those assessments will (obviously) fail!
+
+The name of an AWS IAM Role deployed to every single Account you want to run ElectricEye against, the name must be the same in all account as the Account and Name are used to create the ARN. If you do not provide a value, ElectricEye will attempt to use the current Boto3 session credentials. If you leave this value blank AND also provide values for aws_account_targets, ElectricEye will most likely fail.
+
+To facilitate this, use [this CloudFormation template](../../cloudformation/ElectricEye_Organizations_StackSet.yaml) and deploy it as an AWS CloudFormation StackSet. This is done to keep the credentials used for **Auditors** separate from the credentials you use for Outputs and for retrieving Secrets, it also makes it easier to audit (via CloudTrail or otherwise) the usage of the ElectricEye role.
 
 By configuring these variables in the TOML file, you can customize ElectricEye's behavior to suit your specific AWS environments.
 
@@ -76,7 +80,7 @@ By configuring these variables in the TOML file, you can customize ElectricEye's
 
 1. Before beginning ensure you have review the [Permissions section](#aws-iam-permissions) section to understand which AWS IAM Permissions your current profile requires and to setup the AWS IAM Roles that ElectricEye will assume to use the Auditors.
 
-2. With >=Python 3.6 installed, install & upgrade `pip3` and setup `virtualenv`.
+2. With >=Python 3.9 installed, install & upgrade `pip3` and setup `virtualenv`.
 
 ```bash
 sudo apt install -y python3-pip
@@ -239,7 +243,7 @@ The ASM Module uses NMAP at its core and will be expanded to include ZAP and Sho
 
 ## AWS Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **638 Checks** across **85 Auditors** that support the secure configuration of **121 services/components**
+These are the following services and checks perform by each Auditor, there are currently **633 Checks** across **85 Auditors** that support the secure configuration of **121 services/components**
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service**: AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
@@ -528,9 +532,9 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_Route53_Resolver_Auditor | VPC | Do VPCs have DNS Firewalls associated |
 | Amazon_Route53_Resolver_Auditor | VPC | Do VPCs enabled DNSSEC resolution |
 | Amazon_Route53_Resolver_Auditor | VPC | Do VPCs with DNS Firewall fail open |
-| Amazon_S3_Auditor | S3 Bucket | Is bucket encryption enabled |
-| Amazon_S3_Auditor | S3 Bucket | Is a bucket lifecycle enabled |
-| Amazon_S3_Auditor | S3 Bucket | Is bucket versioning enabled |
+| ~~Amazon_S3_Auditor~~ | ~~S3 Bucket~~ | ~~Is bucket encryption enabled~~ **THIS FINDING HAS BEEN RETIRED** |
+| ~~Amazon_S3_Auditor~~ | ~~S3 Bucket~~ | ~~Is a bucket lifecycle enabled~~ **THIS FINDING HAS BEEN RETIRED** |
+| ~~Amazon_S3_Auditor~~ | ~~S3 Bucket~~ | ~~Is bucket versioning enabled~~ **THIS FINDING HAS BEEN RETIRED** |
 | Amazon_S3_Auditor | S3 Bucket | Does the bucket policy allow public access |
 | Amazon_S3_Auditor | S3 Bucket | Does the bucket have a policy |
 | Amazon_S3_Auditor | S3 Bucket | Is server access logging enabled |
@@ -551,7 +555,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_Shield_Advanced_Auditor | Account (Shield subscription) | Is Shield Adv subscription on auto renew |
 | Amazon_Shield_Advanced_Auditor | Global Accelerator Accelerator | Are GA Accelerators protected by Shield Adv |
 | Amazon_Shield_Advanced_Auditor | Account | Has Shield Adv mitigated any attacks in the last 7 days |
-| Amazon_SNS_Auditor | SNS Topic | Is the topic encrypted |
+| ~~Amazon_SNS_Auditor~~ | ~~SNS Topic~~ | ~~Is the topic encrypted~~ **THIS FINDING HAS BEEN RETIRED** |
 | Amazon_SNS_Auditor | SNS Topic | Does the topic have plaintext (HTTP) subscriptions |
 | Amazon_SNS_Auditor | SNS Topic | Does the topic allow public access |
 | Amazon_SNS_Auditor | SNS Topic | Does the topic allow cross-account access |
@@ -597,7 +601,7 @@ These are the following services and checks perform by each Auditor, there are c
 | AWS_Backup_Auditor | DocumentDB cluster | Are DocumentDB clusters backed up |
 | AWS_Cloud9_Auditor | Cloud9 Environment | Are Cloud9 Envs using SSM for access |
 | AWS_CloudFormation_Auditor | CloudFormation Stack | Is drift detection enabled |
-| AWS_CloudFormation_Auditor | CloudFormation Stack | Are stacks monitored |
+| ~~AWS_CloudFormation_Auditor~~ | ~~CloudFormation Stack~~ | ~~Are stacks monitored~~ **THIS FINDING HAS BEEN RETIRED** |
 | AWS_CloudHSM_Auditor | CloudHSM Cluster | Is the CloudHSM Cluster in a degraded state |
 | AWS_CloudHSM_Auditor | CloudHSM HSM Module | Is the CloudHSM hardware security module in a degraded state |
 | AWS_CloudHSM_Auditor | CloudHSM Backups | Is there at least one backup in a READY state |

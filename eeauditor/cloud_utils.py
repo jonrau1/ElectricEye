@@ -26,6 +26,8 @@ from os import environ, path, chmod
 from re import compile
 import json
 from botocore.exceptions import ClientError
+from azure.identity import ClientSecretCredential
+from azure.mgmt.resource.subscriptions import SubscriptionClient
 
 logger = logging.getLogger("CloudUtils")
 
@@ -209,7 +211,79 @@ class CloudConfig(object):
 
         # Azure
         elif assessmentTarget == "Azure":
-            logger.info("Coming soon!")
+            # Process data["credentials"]["azure"] - values need to be assigned to self
+            azureValues = data["credentials"]["azure"]
+
+            azureClientId = azureValues["azure_ent_app_client_id_value"]
+            azureSecretId = azureValues["azure_ent_app_client_secret_id_value"]
+            azureTenantId = azureValues["azure_ent_app_tenant_id_value"]
+            azureSubscriptions = data["regions_and_accounts"]["azure"]["azure_subscription_ids"]
+
+            del azureValues
+
+            if any(
+                # Check to make sure none of the variables pulled from TOML are emtpy
+                not var for var in [
+                    azureClientId, azureSecretId, azureTenantId
+                    ]
+                ):
+                logger.error("One of your azure TOML entries in [credentials.azure] is empty!")
+                sys.exit(2)
+
+            # Retrieve the values for the azure Enterprise Application Client ID, Secret Value & Tenant ID
+            # SSM
+            if self.credentialsLocation == "AWS_SSM":
+                # Client ID
+                azureClientId = self.get_credential_from_aws_ssm(
+                    azureClientId,
+                    "azure_ent_app_client_id_value"
+                )
+                # Secret Value
+                azureSecretId = self.get_credential_from_aws_ssm(
+                    azureSecretId,
+                    "azure_ent_app_client_secret_id_value"
+                )
+                # Tenant ID
+                azureTenantId = self.get_credential_from_aws_ssm(
+                    azureTenantId,
+                    "azure_ent_app_tenant_id_value"
+                )
+            # AWS Secrets Manager
+            elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
+                # Client ID
+                azureClientId = self.get_credential_from_aws_secrets_manager(
+                    azureClientId,
+                    "azure_ent_app_client_id_value"
+                )
+                # Secret Value
+                azureSecretId = self.get_credential_from_aws_secrets_manager(
+                    azureSecretId,
+                    "azure_ent_app_client_secret_id_value"
+                )
+                # Tenant ID
+                azureTenantId = self.get_credential_from_aws_secrets_manager(
+                    azureTenantId,
+                    "azure_ent_app_tenant_id_value"
+                )
+
+            # Create Azure Identity credentials from Client ID/Secret Value/Tenant ID
+            azureCredentials = self.create_azure_identity_credentials_from_client_secret(
+                clientId=azureClientId,
+                clientSecret=azureSecretId,
+                tenantId=azureTenantId
+            )
+
+            # If subscriptions aren't supplied, attempt to find which ones you have access to
+            if not azureSubscriptions:
+                logger.warning(
+                    "No values provided for [regions_and_accounts.azure.azure_subscription_ids] - attempting to retrieve subscription IDs your Service Principal has access to..."
+                )
+                azureSubscriptions = self.retrieve_azure_subscriptions_for_service_principal(
+                    azureCredentials=azureCredentials
+                )
+            # pass list of subscriptions and the creds off
+            self.azureSubscriptions = azureSubscriptions
+            self.azureCredentials = azureCredentials
 
         # Alibaba Cloud
         elif assessmentTarget == "Alibaba":
@@ -658,5 +732,40 @@ class CloudConfig(object):
 
         logger.info("%s saved to environment variable", credentials_file_path)
         environ["OCI_PEM_FILE_PATH"] = credentials_file_path
+
+    def create_azure_identity_credentials_from_client_secret(self, clientId: str, clientSecret: str, tenantId: str) -> ClientSecretCredential:
+        """
+        Attempts to create and return Azure Identity Credentials built from Client Secret creds within an App Registration
+        """
+        # Create Azure Identity credentials from Client ID/Secret Value/Tenant ID
+        try:
+            azureCredentials = ClientSecretCredential(client_id=clientId,client_secret=clientSecret,tenant_id=tenantId)
+        except Exception as e:
+            logger.error(
+                "Error encountered attempting to create Azure Identity credentials from client secret: %s", e
+            )
+            sys.exit(2)
+
+        return azureCredentials
+
+    def retrieve_azure_subscriptions_for_service_principal(self, azureCredentials: ClientSecretCredential) -> list:
+        """
+        """
+        azureSubscriptionsClient = SubscriptionClient(azureCredentials)
+
+        try:
+            azureSubscriptionIds = [sub.subscription_id for sub in azureSubscriptionsClient.subscriptions.list()]
+            if not azureSubscriptionIds:
+                logger.error(
+                    "No Subscription IDs are available for your current Service Principal, please review your credentials and Access Control (IAM) settings in Azure Entra ID and Azure Subscriptions, respectively"
+                )
+                sys.exit(2)
+        except Exception as e:
+            logger.error(
+                "Error encountered attempting to list Azure Subscriptions for Service Principal: %s", e
+            )
+            sys.exit(2)
+
+        return azureSubscriptionIds
         
 ## EOF

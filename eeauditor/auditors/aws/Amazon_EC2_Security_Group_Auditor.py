@@ -139,9 +139,9 @@ def security_group_all_open_check(cache: dict, session, awsAccountId: str, awsRe
                             "CIS Amazon Web Services Foundations Benchmark V1.5 5.2",
                             "CIS Amazon Web Services Foundations Benchmark V1.5 5.3",
                             "CIS Amazon Web Services Foundations Benchmark V2.0 5.2",
-                        "CIS Amazon Web Services Foundations Benchmark V3.0 5.2",
+                            "CIS Amazon Web Services Foundations Benchmark V3.0 5.2",
                             "CIS Amazon Web Services Foundations Benchmark V2.0 5.3",
-                        "CIS Amazon Web Services Foundations Benchmark V3.0 5.3"
+                            "CIS Amazon Web Services Foundations Benchmark V3.0 5.3"
                         ]
                     },
                     "Workflow": {"Status": "NEW"},
@@ -281,7 +281,7 @@ def security_group_master_auditor_check(cache: dict, session, awsAccountId: str,
                             "FirstObservedAt": iso8601Time,
                             "CreatedAt": iso8601Time,
                             "UpdatedAt": iso8601Time,
-                            "Severity": {"Label": "HIGH"},
+                            "Severity": {"Label": "MEDIUM"},
                             "Confidence": 99,
                             "Title": checkTitle,
                             "Description": f"{sgName} allows unrestricted {checkDescription} access. Security Groups are often the first line of defense for network boundaries in AWS, allowing unfettered access removes an important part of a cloud security defense-in-depth and makes it easier for adversaries to perform recon on your assets and potentially gain unauthorized access where no other network-based controls exist. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements. Additionally, ensure that Network Firewalls, Route 53 Resolver DNS Firewalls, WAFv2, or some other self-managed host- or network-based appliance exists to interdict and prevent adversarial network traffic from reaching your hosts. Refer to the remediation instructions to remediate this behavior.",
@@ -412,9 +412,9 @@ def security_group_master_auditor_check(cache: dict, session, awsAccountId: str,
                                     "CIS Amazon Web Services Foundations Benchmark V1.5 5.2",
                                     "CIS Amazon Web Services Foundations Benchmark V1.5 5.3",
                                     "CIS Amazon Web Services Foundations Benchmark V2.0 5.2",
-                        "CIS Amazon Web Services Foundations Benchmark V3.0 5.2",
+                                    "CIS Amazon Web Services Foundations Benchmark V3.0 5.2",
                                     "CIS Amazon Web Services Foundations Benchmark V2.0 5.3",
-                        "CIS Amazon Web Services Foundations Benchmark V3.0 5.3"
+                                    "CIS Amazon Web Services Foundations Benchmark V3.0 5.3"
                                 ]
                             },
                             "Workflow": {"Status": "RESOLVED"},

@@ -1,0 +1,266 @@
+[
+    {
+        "ToPort": 20,
+        "FromPort": 21,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.2] Azure network security groups should not allow unrestricted File Transfer Protocol (FTP) access",
+        "CheckId": "azure-nsg-ftp-open-check",
+        "CheckDescriptor": "File Transfer Protocol (FTP)"
+    },
+    {
+        "ToPort": 23,
+        "FromPort": 23,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.3] Azure network security groups should not allow unrestricted TelNet access",
+        "CheckId": "azure-nsg-telnet-open-check",
+        "CheckDescriptor": "TelNet"
+    },
+    {
+        "ToPort": 135,
+        "FromPort": 135,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.4] Azure network security groups should not allow unrestricted Windows RPC DCOM access",
+        "CheckId": "azure-nsg-rpc-dcom-open-check",
+        "CheckDescriptor": "Windows RPC DCOM"
+    },
+    {
+        "ToPort": 445,
+        "FromPort": 445,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.5] Azure network security groups should not allow unrestricted Server Message Blocks (SMB) access",
+        "CheckId": "azure-nsg-smb-open-check",
+        "CheckDescriptor": "Server Message Blocks (SMB)"
+    },
+    {
+        "ToPort": 1433,
+        "FromPort": 1433,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.6] Azure network security groups should not allow unrestricted Microsoft SQL Server (MSSQL) access",
+        "CheckId": "azure-nsg-mssql-open-check",
+        "CheckDescriptor": "Microsoft SQL Server (MSSQL)"
+    },
+    {
+        "ToPort": 1521,
+        "FromPort": 1521,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.7] Azure network security groups should not allow unrestricted Oracle database (TCP 1521) access",
+        "CheckId": "azure-nsg-oracledb-open-check",
+        "CheckDescriptor": "Oracle database (TCP 1521)"
+    },
+    {
+        "ToPort": 3306,
+        "FromPort": 3306,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.8] Azure network security groups should not allow unrestricted MySQL or MariaDB database (TCP 3306) access",
+        "CheckId": "azure-nsg-mysql-mariadb-open-check",
+        "CheckDescriptor": "MySQL or MariaDB database (TCP 3306)"
+    },
+    {
+        "ToPort": 3389,
+        "FromPort": 3389,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.9] Azure network security groups should not allow unrestricted Remote Desktop Protocol (RDP) access",
+        "CheckId": "azure-nsg-rdp-open-check",
+        "CheckDescriptor": "Remote Desktop Protocol (RDP)"
+    },
+    {
+        "ToPort": 5432,
+        "FromPort": 5432,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.10] Azure network security groups should not allow unrestricted PostgreSQL database (TCP 5432) access",
+        "CheckId": "azure-nsg-postgresql-open-check",
+        "CheckDescriptor": "PostgreSQL database (TCP 5432)"
+    },
+    {
+        "ToPort": 5601,
+        "FromPort": 5601,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.11] Azure network security groups should not allow unrestricted access to Kibana (TCP 5601)",
+        "CheckId": "azure-nsg-kibana-open-check",
+        "CheckDescriptor": "Kibana (TCP 5601)"
+    },
+    {
+        "ToPort": 6379,
+        "FromPort": 6379,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.12] Azure network security groups should not allow unrestricted Redis (TCP 6379) access",
+        "CheckId": "azure-nsg-redis-open-check",
+        "CheckDescriptor": "Redis (TCP 6379)"
+    },
+    {
+        "ToPort": 8089,
+        "FromPort": 8089,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.13] Azure network security groups should not allow unrestricted Splunkd (TCP 8089) access",
+        "CheckId": "azure-nsg-splunkd-open-check",
+        "CheckDescriptor": "Splunkd (TCP 8089)"
+    },
+    {
+        "ToPort": 9200,
+        "FromPort": 9200,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.14] Azure network security groups should not allow unrestricted Elasticsearch/OpenSearch (TCP 9200) access",
+        "CheckId": "azure-nsg-elasticsearch-9200-open-check",
+        "CheckDescriptor": "Elasticsearch/OpenSearch (TCP 9200)"
+    },
+    {
+        "ToPort": 9300,
+        "FromPort": 9300,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.15] Azure network security groups should not allow unrestricted Elasticsearch/OpenSearch (TCP 9300) access",
+        "CheckId": "azure-nsg-elasticsearch-9300-open-check",
+        "CheckDescriptor": "Elasticsearch/OpenSearch (TCP 9300)"
+    },
+    {
+        "ToPort": 11211,
+        "FromPort": 11211,
+        "Protocol": "udp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.16] Azure network security groups should not allow unrestricted Memcached (UDP 11211) access",
+        "CheckId": "azure-nsg-memcached-open-check",
+        "CheckDescriptor": "Memcached (UDP 11211)"
+    },
+    {
+        "ToPort": 5439,
+        "FromPort": 5439,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.17] Azure network security groups should not allow unrestricted Azure Databricks (TCP 5439) access",
+        "CheckId": "azure-nsg-redshift-open-check",
+        "CheckDescriptor": "Azure Databricks (TCP 5439)"
+    },
+    {
+        "ToPort": 27017,
+        "FromPort": 27017,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.18] Azure network security groups should not allow unrestricted MongoDB/CosmosDB (TCP 27017) access",
+        "CheckId": "azure-nsg-documentdb-open-check",
+        "CheckDescriptor": "CosmosDB / MongoDB (TCP 27017)"
+    },
+    {
+        "ToPort": 9142,
+        "FromPort": 9142,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.19] Azure network security groups should not allow unrestricted Apache Cassandra/CosmosDB (TCP 9142) access",
+        "CheckId": "azure-nsg-cassandra-open-check",
+        "CheckDescriptor": "Apache Cassandra / CosmosDB (TCP 9142)"
+    },
+    {
+        "ToPort": 9092,
+        "FromPort": 9092,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.20] Azure network security groups should not allow unrestricted Kafka streams (TCP 9092) access",
+        "CheckId": "azure-nsg-kafka-open-check",
+        "CheckDescriptor": "Kafka streams (TCP 9092)"
+    },
+    {
+        "ToPort": 2049,
+        "FromPort": 2049,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.21] Azure network security groups should not allow unrestricted NFS (TCP 2049) access",
+        "CheckId": "azure-nsg-nfs-open-check",
+        "CheckDescriptor": "Amazon EFS / NFS (TCP 2049)"
+    },
+    {
+        "ToPort": 873,
+        "FromPort": 873,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.22] Azure network security groups should not allow unrestricted Rsync (TCP 873) access",
+        "CheckId": "azure-nsg-rsync-open-check",
+        "CheckDescriptor": "Rsync (TCP 873)"
+    },
+    {
+        "ToPort": 69,
+        "FromPort": 69,
+        "Protocol": "udp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.23] Azure network security groups should not allow unrestricted TFTP (UDP 69) access",
+        "CheckId": "azure-nsg-tftp-open-check",
+        "CheckDescriptor": "TFTP (UDP 69)"
+    },
+    {
+        "ToPort": 2375,
+        "FromPort": 2375,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.24] Azure network security groups should not allow unrestricted Docker API (TCP 2375) access",
+        "CheckId": "azure-nsg-docker-open-check",
+        "CheckDescriptor": "Docker API (TCP 2375)"
+    },
+    {
+        "ToPort": 10250,
+        "FromPort": 10250,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.25] Azure network security groups should not allow unrestricted Kubernetes API (TCP 10250) access",
+        "CheckId": "azure-nsg-k8sapi-open-check",
+        "CheckDescriptor": "Kubernetes (TCP 10250)"
+    },
+    {
+        "ToPort": 137,
+        "FromPort": 139,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.26] Azure network security groups should not allow unrestricted Windows NetBIOS (TCP 137-139) access",
+        "CheckId": "azure-nsg-winnetbios-open-check",
+        "CheckDescriptor": "Windows NetBIOS (TCP 137-139)"
+    },
+    {
+        "ToPort": 25,
+        "FromPort": 25,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.27] Azure network security groups should not allow unrestricted SMTP (TCP 25) access",
+        "CheckId": "azure-nsg-smtp-open-check",
+        "CheckDescriptor": "Secure Mail Transfer Protocol (SMTP)"
+    },
+    {
+        "ToPort": 1194,
+        "FromPort": 1194,
+        "Protocol": "udp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.28] Azure network security groups should not allow unrestricted OpenVPN (UDP 1194) access",
+        "CheckId": "azure-nsg-openvpn-open-check",
+        "CheckDescriptor": "OpenVPN (UDP 1194)"
+    },
+    {
+        "ToPort": 5672,
+        "FromPort": 5672,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.29] Azure network security groups should not allow unrestricted access to RabbitMQ (TCP 5672)",
+        "CheckId": "azure-nsg-rabbitmq-open-check",
+        "CheckDescriptor": "AmazonMQ / RabbitMQ / AMQP (TCP 5672)"
+    },
+    {
+        "ToPort": 4040,
+        "FromPort": 4040,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.30] Azure network security groups should not allow unrestricted access to Spark Web UI (TCP 4040)",
+        "CheckId": "azure-nsg-sparkui-open-check",
+        "CheckDescriptor": "Spark Web UI (TCP 4040)"
+    },
+    {
+        "ToPort": 110,
+        "FromPort": 110,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.31] Azure network security groups should not allow unrestricted POP3 access",
+        "CheckId": "azure-nsg-pop3-open-check",
+        "CheckDescriptor": "Post Office Protocol 3 (POP3)"
+    },
+    {
+        "ToPort": 8182,
+        "FromPort": 8182,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.32] Azure network security groups should not allow unrestricted VMWare ESXi access",
+        "CheckId": "azure-nsg-vmware-esxi-open-check",
+        "CheckDescriptor": "VMWare ESXi"
+    },
+    {
+        "ToPort": 443,
+        "FromPort": 443,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.33] Azure network security groups should not allow unrestricted HTTPS (TCP 443) access",
+        "CheckId": "azure-nsg-vmware-esxi-open-check",
+        "CheckDescriptor": "HTTPS (TCP 443)"
+    },
+    {
+        "ToPort": 22,
+        "FromPort": 22,
+        "Protocol": "tcp",
+        "CheckTitle": "[Azure.NetworkSecurityGroup.34] Azure network security groups should not allow unrestricted Secure Shell (SSH) (TCP 22) access",
+        "CheckId": "azure-nsg-vmware-esxi-open-check",
+        "CheckDescriptor": "SSH (TCP 22)"
+    }
+]

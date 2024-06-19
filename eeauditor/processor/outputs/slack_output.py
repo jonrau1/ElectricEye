@@ -372,12 +372,25 @@ class SlackProvider(object):
             # This will transform the text written in the Block field going to Slack based on what it is
             if provider == "AWS":
                 providerMarkdownText = "AWS Account ID"
-            elif provider == "GCP":
+            if provider == "GCP":
                 providerMarkdownText = "Google Cloud Project ID"
-            elif provider == "OCI":
+            if provider == "OCI":
                 providerMarkdownText = "Oracle Cloud Infrastructure Tenancy"
-            elif provider == "Servicenow":
+            if provider == "Servicenow":
                 providerMarkdownText = "ServiceNow Instance"
+            if provider == "Azure":
+                providerMarkdownText = "Azure Subscription"
+            if provider == "M365":
+                providerMarkdownText = "Microsoft M365 Tenant"
+            if provider == "Salesforce":
+                providerMarkdownText = "Salesforce Tenant"
+            if provider == "Snowflake":
+                providerMarkdownText = "Snowflake Account"
+            if provider == "Google Workspaces":
+                providerMarkdownText = "Google Workspaces Domain"
+            if provider == "Alibaba Cloud":
+                providerMarkdownText = "Alibaba Cloud Account"
+            
             providerAccountId = finding["ProductFields"]["ProviderAccountId"]
             providerType = finding["ProductFields"]["ProviderType"]
             assetRegion = finding["ProductFields"]["AssetRegion"]
@@ -393,9 +406,9 @@ class SlackProvider(object):
             #severity = finding["Severity"]["Label"]
             #findingState = finding["RecordState"]
             relatedControls = ""
-            complianceRelatedRequirements = finding["Compliance"]["RelatedRequirements"]
+            complianceRelatedRequirements = list(finding["Compliance"]["RelatedRequirements"])
             newControls = []
-            nistCsfControls = [control for control in complianceRelatedRequirements if control.startswith("NIST CSF V1.1")]
+            nistCsfControls = [control for control in complianceRelatedRequirements if str(control).startswith("NIST CSF V1.1")]
             for control in nistCsfControls:
                 crosswalkedControls = self.nist_csf_v_1_1_controls_crosswalk(control)
                 # Not every single NIST CSF Control maps across to other frameworks
