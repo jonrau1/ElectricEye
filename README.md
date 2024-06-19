@@ -33,11 +33,11 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 - [Workflow](#workflow)
 - [Quick Run Down](#quick-run-down-running-running)
 - [Configuring ElectricEye](#configuring-electriceye)
-- [ElectricEye on Docker](#electriceye-on-docker)
 - [Cloud Asset Management](#cloud-asset-management-cam)
+- [Supported Services and Checks](#supported-services-and-checks)
+- [ElectricEye on Docker](#electriceye-on-docker)
 - [Outputs](./docs/outputs/OUTPUTS.md)
 - [FAQ](./docs/faq/FAQ.md)
-- [Supported Services and Checks](#supported-services-and-checks)
 - [Contributing](#contributing)
 - [Developer & Testing Guide](./docs/new_checks/DEVELOPER_GUIDE.md)
 - [Repository Security](#repository-security)
@@ -49,7 +49,7 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 
 ## Quick Run Down :running: :running:
 
-- ElectricEye is a Python CLI tool that offers cross-Account, cross-Region, multi-Cloud & SaaS Asset Management, Security Posture Management, and Attack Surface Monitoring capabilities across [AWS, all Partitions supported!](https://aws.amazon.com/), [GCP](https://cloud.google.com/), [Oracle Cloud Infrastructure (OCI)](https://www.oracle.com/cloud/), [ServiceNow](https://www.servicenow.com/), [Microsoft 365 Enterprise (*M365*)](https://www.microsoft.com/en-us/microsoft-365/compare-microsoft-365-enterprise-plans), and [Salesforce (*SFDC*)](https://help.salesforce.com/s), *with more on the way*.
+- ElectricEye is a Python CLI tool that offers cross-Account, cross-Region, multi-Cloud & SaaS Asset Management, Security Posture Management, and Attack Surface Monitoring capabilities across [AWS, all Partitions supported!](https://aws.amazon.com/), [GCP](https://cloud.google.com/), [Oracle Cloud Infrastructure (OCI)](https://www.oracle.com/cloud/), [ServiceNow](https://www.servicenow.com/), [Microsoft 365 Enterprise (*M365*)](https://www.microsoft.com/en-us/microsoft-365/compare-microsoft-365-enterprise-plans), [Salesforce (*SFDC*)](https://help.salesforce.com/s), and [Azure](https://portal.azure.com/).
 
 - ElectricEye offers over *1000* Checks against security, resilience, performance, and financial best practices across more than 100 CSP & SaaS services, including atypical services not supported by CSP/SaaS-native asset management tools/views or mainstream CSPM & CNAPP tools.
 
@@ -124,12 +124,11 @@ Refer to sub-headings for per-CSP or per-SaaS setup instructions. Go to [Outputs
 - [For Amazon Web Services (AWS)](./docs/setup/Setup_AWS.md)
 - [For Google Cloud Platform (GCP)](./docs/setup/Setup_GCP.md)
 - [For Oracle Cloud Infrastructure](./docs/setup/Setup_OCI.md)
+- [For Microsoft Azure](./docs/setup/Setup_Azure.md)
 
 The following Cloud Service Providers are on the Roadmap
 
-- [For Microsoft Azure (*Coming Soon*)](./docs/setup/Setup_Azure.md)
 - [For Alibaba Cloud (*Coming Soon*)](./docs/setup/Setup_AlibabaCloud.md)
-- [For VMWare Cloud on AWS (*Coming Soon*)](./docs/setup/Setup_VMC.md)
 
 ### Software-as-a-Service (SaaS) Providers
 
@@ -139,9 +138,24 @@ The following Cloud Service Providers are on the Roadmap
 
 The following SaaS Providers are on the Roadmap
 
-- [For Workday ERP (*Coming Soon*)](./docs/setup/Setup_WorkDay.md)
-- [For GitHub (*Coming Soon*)](./docs/setup/Setup_GitHub.md)
 - [For Google Workspaces (*Coming Soon*)](./docs/setup/Setup_Google_Workspaces.md)
+- [For Snowflake (*Coming Soon*)](./docs/setup/Setup_Snowflake.md)
+
+## Cloud Asset Management (CAM)
+
+For more information on ElectricEye's CAM concept of operations and schema, refer to [the Asset Management documentation](./docs/asset_management/ASSET_MANAGEMENT.md).
+
+## Supported Services and Checks
+
+In total there are:
+
+- **4** Supported Public CSPs: `AWS`, `GCP`, `OCI`, and `Azure`
+- **3** Supported SaaS Providers: `ServiceNow`, `M365`, and `Salesforce`
+- **1168** ElectricEye Checks
+- **171** Supported CSP & SaaS Asset Components across all Services
+- **129** ElectricEye Auditors
+
+The tables of supported Services and Checks have been migrated to the respective per-Provider setup documentation linked above in [Configuring ElectricEye](#configuring-electriceye).
 
 ## ElectricEye on Docker
 
@@ -263,22 +277,6 @@ sudo docker run \
 ```
 
 For more configuration information ensure you refer back to the per-Provider setup instructions.
-
-## Cloud Asset Management (CAM)
-
-For more information on ElectricEye's CAM concept of operations and schema, refer to [the Asset Management documentation](./docs/asset_management/ASSET_MANAGEMENT.md).
-
-## Supported Services and Checks
-
-In total there are:
-
-- **3** Supported Public CSPs: `AWS`, `GCP`, `OCI`
-- **3** Supported SaaS Providers: `ServiceNow`, `M365`, `Salesforce`
-- **1060** ElectricEye Checks
-- **161** Supported CSP & SaaS Asset Components across all Services
-- **120** ElectricEye Auditors
-
-The tables of supported Services and Checks have been migrated to the respective per-Provider setup documentation linked above in [Configuring ElectricEye](#configuring-electriceye).
 
 ## Contributing
 

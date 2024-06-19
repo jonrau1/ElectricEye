@@ -164,7 +164,7 @@ def get_cisa_kev():
     return kevCves
 
 @registry.register_check("m365.mde")
-def m365_mde_machine_unhealthy_sensor_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_mde_machine_unhealthy_sensor_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.MDE.1] Microsoft Defender for Endpoint protected devices with unhealthy sensors should be investigated
     """
@@ -332,7 +332,7 @@ def m365_mde_machine_unhealthy_sensor_check(cache, awsAccountId, awsRegion, awsP
             yield finding
 
 @registry.register_check("m365.mde")
-def m365_mde_machine_high_risk_score_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_mde_machine_high_risk_score_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.MDE.2] Microsoft Defender for Endpoint protected devices with a High risk level should be investigated
     """
@@ -500,7 +500,7 @@ def m365_mde_machine_high_risk_score_check(cache, awsAccountId, awsRegion, awsPa
             yield finding
 
 @registry.register_check("m365.mde")
-def m365_mde_machine_high_exposure_score_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_mde_machine_high_exposure_score_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.MDE.3] Microsoft Defender for Endpoint protected devices with a High exposure score should be investigated
     """
@@ -658,7 +658,7 @@ def m365_mde_machine_high_exposure_score_check(cache, awsAccountId, awsRegion, a
             yield finding
 
 @registry.register_check("m365.mde")
-def m365_mde_machine_exploitable_vulns_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_mde_machine_exploitable_vulns_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.MDE.4] Microsoft Defender for Endpoint protected devices with known exploitable vulnerabilities should be immediately remediated
     """
@@ -841,7 +841,7 @@ def m365_mde_machine_exploitable_vulns_check(cache, awsAccountId, awsRegion, aws
             yield finding
 
 @registry.register_check("m365.mde")
-def m365_mde_machine_active_alerts_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_mde_machine_active_alerts_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.MDE.5] Microsoft Defender for Endpoint protected devices with active Alerts should be investigated
     """

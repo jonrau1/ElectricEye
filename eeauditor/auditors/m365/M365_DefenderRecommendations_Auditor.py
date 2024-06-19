@@ -81,7 +81,7 @@ def get_security_center_recommendations(cache, tenantId, clientId, clientSecret)
         return cache["get_security_center_recommendations"]
     
 @registry.register_check("m365.recommendations")
-def m365_security_center_recommendations_security_controls_for_macos_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_security_center_recommendations_security_controls_for_macos_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.DefenderRecommendations.1] Microsoft 365 Defender recommendations for MacOS Security Controls should be implemented
     """
@@ -260,7 +260,7 @@ def m365_security_center_recommendations_security_controls_for_macos_check(cache
         yield finding
 
 @registry.register_check("m365.recommendations")
-def m365_security_center_recommendations_accounts_for_macos_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_security_center_recommendations_accounts_for_macos_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.DefenderRecommendations.2] Microsoft 365 Defender recommendations for MacOS Accounts should be implemented
     """
@@ -439,7 +439,7 @@ def m365_security_center_recommendations_accounts_for_macos_check(cache, awsAcco
         yield finding
 
 @registry.register_check("m365.recommendations")
-def m365_security_center_recommendations_network_for_macos_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_security_center_recommendations_network_for_macos_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.DefenderRecommendations.3] Microsoft 365 Defender recommendations for MacOS Network configurations should be implemented
     """
@@ -618,7 +618,7 @@ def m365_security_center_recommendations_network_for_macos_check(cache, awsAccou
         yield finding
 
 @registry.register_check("m365.recommendations")
-def m365_security_center_recommendations_os_for_macos_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_security_center_recommendations_os_for_macos_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.DefenderRecommendations.4] Microsoft 365 Defender recommendations for MacOS OS configurations should be implemented
     """
@@ -797,7 +797,7 @@ def m365_security_center_recommendations_os_for_macos_check(cache, awsAccountId,
         yield finding
 
 @registry.register_check("m365.recommendations")
-def m365_security_center_recommendations_network_assessment_for_macos_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_security_center_recommendations_network_assessment_for_macos_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.DefenderRecommendations.5] Microsoft 365 Defender recommendations for MacOS Network Assessments should be implemented
     """
@@ -976,7 +976,7 @@ def m365_security_center_recommendations_network_assessment_for_macos_check(cach
         yield finding
 
 @registry.register_check("m365.recommendations")
-def m365_security_center_recommendations_security_controls_for_win10_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_security_center_recommendations_security_controls_for_win10_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.DefenderRecommendations.6] Microsoft 365 Defender recommendations for Windows 10 Security Controls should be implemented
     """
@@ -1155,7 +1155,7 @@ def m365_security_center_recommendations_security_controls_for_win10_check(cache
         yield finding
 
 @registry.register_check("m365.recommendations")
-def m365_security_center_recommendations_accounts_for_win10_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_security_center_recommendations_accounts_for_win10_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.DefenderRecommendations.7] Microsoft 365 Defender recommendations for Windows 10 Accounts should be implemented
     """
@@ -1334,7 +1334,7 @@ def m365_security_center_recommendations_accounts_for_win10_check(cache, awsAcco
         yield finding
 
 @registry.register_check("m365.recommendations")
-def m365_security_center_recommendations_network_for_win10_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_security_center_recommendations_network_for_win10_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.DefenderRecommendations.8] Microsoft 365 Defender recommendations for Windows 10 Network configurations should be implemented
     """
@@ -1513,7 +1513,7 @@ def m365_security_center_recommendations_network_for_win10_check(cache, awsAccou
         yield finding
 
 @registry.register_check("m365.recommendations")
-def m365_security_center_recommendations_os_for_win10_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_security_center_recommendations_os_for_win10_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.DefenderRecommendations.9] Microsoft 365 Defender recommendations for Windows 10 OS configurations should be implemented
     """
@@ -1692,7 +1692,7 @@ def m365_security_center_recommendations_os_for_win10_check(cache, awsAccountId,
         yield finding
 
 @registry.register_check("m365.recommendations")
-def m365_security_center_recommendations_network_assessment_for_win10_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_security_center_recommendations_network_assessment_for_win10_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.DefenderRecommendations.10] Microsoft 365 Defender recommendations for Windows 10 Network Assessments should be implemented
     """
@@ -1871,7 +1871,7 @@ def m365_security_center_recommendations_network_assessment_for_win10_check(cach
         yield finding
 
 @registry.register_check("m365.recommendations")
-def m365_security_center_recommendations_security_controls_for_win11_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_security_center_recommendations_security_controls_for_win11_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.DefenderRecommendations.11] Microsoft 365 Defender recommendations for Windows 11 Security Controls should be implemented
     """
@@ -2050,7 +2050,7 @@ def m365_security_center_recommendations_security_controls_for_win11_check(cache
         yield finding
 
 @registry.register_check("m365.recommendations")
-def m365_security_center_recommendations_accounts_for_win11_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_security_center_recommendations_accounts_for_win11_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.DefenderRecommendations.12] Microsoft 365 Defender recommendations for Windows 11 Accounts should be implemented
     """
@@ -2229,7 +2229,7 @@ def m365_security_center_recommendations_accounts_for_win11_check(cache, awsAcco
         yield finding
 
 @registry.register_check("m365.recommendations")
-def m365_security_center_recommendations_network_for_win11_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_security_center_recommendations_network_for_win11_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.DefenderRecommendations.13] Microsoft 365 Defender recommendations for Windows 11 Network configurations should be implemented
     """
@@ -2408,7 +2408,7 @@ def m365_security_center_recommendations_network_for_win11_check(cache, awsAccou
         yield finding
 
 @registry.register_check("m365.recommendations")
-def m365_security_center_recommendations_os_for_win11_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_security_center_recommendations_os_for_win11_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.DefenderRecommendations.14] Microsoft 365 Defender recommendations for Windows 11 OS configurations should be implemented
     """
@@ -2587,7 +2587,7 @@ def m365_security_center_recommendations_os_for_win11_check(cache, awsAccountId,
         yield finding
 
 @registry.register_check("m365.recommendations")
-def m365_security_center_recommendations_network_assessment_for_win11_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_security_center_recommendations_network_assessment_for_win11_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.DefenderRecommendations.15] Microsoft 365 Defender recommendations for Windows 11 Network Assessments should be implemented
     """
@@ -2766,7 +2766,7 @@ def m365_security_center_recommendations_network_assessment_for_win11_check(cach
         yield finding
 
 @registry.register_check("m365.recommendations")
-def m365_security_center_recommendations_security_controls_for_linux_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_security_center_recommendations_security_controls_for_linux_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.DefenderRecommendations.16] Microsoft 365 Defender recommendations for Linux Security Controls should be implemented
     """
@@ -2945,7 +2945,7 @@ def m365_security_center_recommendations_security_controls_for_linux_check(cache
         yield finding
 
 @registry.register_check("m365.recommendations")
-def m365_security_center_recommendations_accounts_for_linux_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_security_center_recommendations_accounts_for_linux_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.DefenderRecommendations.17] Microsoft 365 Defender recommendations for Linux Accounts should be implemented
     """
@@ -3124,7 +3124,7 @@ def m365_security_center_recommendations_accounts_for_linux_check(cache, awsAcco
         yield finding
 
 @registry.register_check("m365.recommendations")
-def m365_security_center_recommendations_network_for_linux_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_security_center_recommendations_network_for_linux_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.DefenderRecommendations.18] Microsoft 365 Defender recommendations for Linux Network configurations should be implemented
     """
@@ -3303,7 +3303,7 @@ def m365_security_center_recommendations_network_for_linux_check(cache, awsAccou
         yield finding
 
 @registry.register_check("m365.recommendations")
-def m365_security_center_recommendations_os_for_linux_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_security_center_recommendations_os_for_linux_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.DefenderRecommendations.19] Microsoft 365 Defender recommendations for Linux OS configurations should be implemented
     """
@@ -3482,7 +3482,7 @@ def m365_security_center_recommendations_os_for_linux_check(cache, awsAccountId,
         yield finding
 
 @registry.register_check("m365.recommendations")
-def m365_security_center_recommendations_network_assessment_for_linux_check(cache, awsAccountId, awsRegion, awsPartition, tenantId, clientId, clientSecret, tenantLocation):
+def m365_security_center_recommendations_network_assessment_for_linux_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, tenantId: str, clientId: str, clientSecret: str, tenantLocation: str) -> dict:
     """
     [M365.DefenderRecommendations.20] Microsoft 365 Defender recommendations for Linux Network Assessments should be implemented
     """

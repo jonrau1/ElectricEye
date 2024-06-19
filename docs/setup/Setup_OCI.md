@@ -45,7 +45,7 @@ By default, each Tenancy has a "root" Compartment, which can have up to 5 nested
 
 8. Within the **Policy Builder** paste in one of the following policy snippets depending on the level of access you wish to grant to ElectricEye. Granting access to your entire Tenancy provides access to all Compartments and Regions, you can scope down further to specific Compartments and use Conditional statements to scope down to specific Regions and/or specific Network Sources (if you did `Optional Steps 4 and 5`). Select **Create** when done.
 
-#### IMPORTANT NOTE: Replace <your_group_name> with, you know, your actual Group name you created in Step 3. Leave the single-quotes.
+#### IMPORTANT NOTE: Replace `<your_group_name>` with, you know, your actual Group name you created in Step 3. Leave the single-quotes.
 
 > - Granting Read Access to all resources and log events in your entire Tenancy
 
@@ -95,13 +95,13 @@ export OCI_PEM_FINGERPINT='<you_fingerprint_here>'
 export OCI_PEM_CONTENTS=$(cat ./oci.pem)
 
 aws ssm put-parameter \
-    --name $OCI_PEM_CONTENTS \
+    --name $OCI_API_KEY_PARAMETER_NAME-contents \
     --description 'Oracle Cloud API Key private key for ElectricEye' \
     --type SecureString \
-    --value $OCI_API_KEY_PARAMETER_NAME
+    --value $OCI_PEM_CONTENTS
 
 aws ssm put-parameter \
-    --name $OCI_PEM_CONTENTS-fingerprint \
+    --name $OCI_API_KEY_PARAMETER_NAME-fingerprint \
     --description 'Oracle Cloud API Key Fingerprint for ElectricEye' \
     --type SecureString \
     --value $OCI_PEM_FINGERPINT
@@ -135,11 +135,11 @@ To configure the TOML file, you need to modify the values of the variables in th
 
 - `oci_user_api_key_private_key_pem_contents_value`: The location (or actual contents) of your OCI User API Key Private Key PEM. This must be the CONTENTS not the file path this location must match the value  of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
 
-It's important to note that this setting is a sensitive credential, and as such, its value should be stored in a secure manner that matches the location specified in the `[global]` section's `credentials_location` setting. For example, if `credentials_location` is set to `"AWS_SSM"`, then the OCI_service_account_json_payload_value should be the name of an AWS Systems Manager Parameter Store SecureString parameter that contains the contents of the OCI service account key JSON file.
+> It's important to note that this setting is a sensitive credential, and as such, its value should be stored in a secure manner that matches the location specified in the `[global]` section's `credentials_location` setting. For example, if `credentials_location` is set to `"AWS_SSM"`, then the OCI_service_account_json_payload_value should be the name of an AWS Systems Manager Parameter Store SecureString parameter that contains the contents of the OCI service account key JSON file.
 
 ## Use ElectricEye for OCI
 
-1. With >=Python 3.7 installed, install and upgrade `pip3` and setup `virtualenv`.
+1. With >=Python 3.9 installed, install and upgrade `pip3` and setup `virtualenv`.
 
 ```bash
 sudo apt install -y python3-pip
@@ -165,7 +165,7 @@ git clone https://github.com/jonrau1/ElectricEye.git
 cd ElectricEye
 pip3 install -r requirements.txt
 
-# if use AWS CloudShell
+# if using AWS CloudShell
 pip3 install --user -r requirements.txt
 ```
 
@@ -189,7 +189,7 @@ pip3 install --user -r requirements.txt
     python3 eeauditor/controller.py -t OCI -a OCI_AutonomousDatabase_Auditor
     ```
 
-    - 7D. Evaluate your OCI environment against a specific Check within any Auditor, it is ***not required*** to specify the Auditor name as well. The below examples runs the "[OCI.OKE.1] Oracle Container Engine for Kubernetes (OKE) cluster API servers should not be accessible from the internet" check.
+    - 4D. Evaluate your OCI environment against a specific Check within any Auditor, it is ***not required*** to specify the Auditor name as well. The below examples runs the "[OCI.OKE.1] Oracle Container Engine for Kubernetes (OKE) cluster API servers should not be accessible from the internet" check.
 
     ```bash
     python3 eeauditor/controller.py -t OCI -c oci_oke_cluster_public_api_endpoint_check

@@ -22,6 +22,7 @@ import os
 from datetime import datetime
 import yaml
 from processor.outputs.output_base import ElectricEyeOutput
+import json
 from os import path
 
 here = path.abspath(path.dirname(__file__))
@@ -31,6 +32,10 @@ currentDir = os.path.abspath(os.path.dirname(__file__))
 ICONOGRAPHY_FILE = f"{currentDir}/iconography.yaml"
 with open(ICONOGRAPHY_FILE) as f:
     ICONOGRAPHY = yaml.safe_load(f)
+
+here = path.abspath(path.dirname(__file__))
+with open(f"{here}/mapped_compliance_controls.json") as jsonfile:
+    CONTROLS_CROSSWALK = json.load(jsonfile)
 
 @ElectricEyeOutput
 class HtmlProvider(object):
@@ -83,6 +88,7 @@ class HtmlProvider(object):
                 complianceStatus = f'<p class="compliance passed">{complianceStatus}</p>'
             elif complianceStatus == "FAILED":
                 complianceStatus = f'<p class="compliance failed">{complianceStatus}</p>'
+
             newTd = f'''
                 <tr>
                     <td>{findingId}</td>
@@ -214,14 +220,12 @@ class HtmlProvider(object):
         }
 
         main.table {
-            width: 82vw;
+            width: 85vw;
             height: 90vh;
             background-color: #fff5;
-
             backdrop-filter: blur(7px);
             box-shadow: 0 .4rem .8rem #0005;
             border-radius: .8rem;
-
             overflow: hidden;
         }
 
@@ -343,7 +347,7 @@ class HtmlProvider(object):
         }
 
         footer {
-            height: 1.5rem; /* Footer height */
+            height: 1.5rem;
             text-align: center;
             color: white;
         }

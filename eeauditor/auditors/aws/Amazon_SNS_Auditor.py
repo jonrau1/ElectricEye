@@ -33,6 +33,7 @@ def list_topics(cache, session):
     cache["list_topics"] = sns.list_topics()
     return cache["list_topics"]
 
+'''
 @registry.register_check("sns")
 def sns_topic_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SNS.1] SNS topics should be encrypted"""
@@ -174,6 +175,7 @@ def sns_topic_encryption_check(cache: dict, session, awsAccountId: str, awsRegio
                 "RecordState": "ACTIVE",
             }
             yield finding
+'''
 
 @registry.register_check("sns")
 def sns_http_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
