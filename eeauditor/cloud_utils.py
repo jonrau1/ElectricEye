@@ -289,10 +289,6 @@ class CloudConfig(object):
         elif assessmentTarget == "Alibaba":
             logger.info("Coming soon!")
 
-        # VMWare Cloud on AWS
-        elif assessmentTarget == "VMC":
-            logger.info("Coming soon!")
-
         ###################################
         # SOFTWARE-AS-A-SERVICE PROVIDERS #
         ###################################
@@ -491,6 +487,14 @@ class CloudConfig(object):
                     salesforceUserSecurityToken,
                     "salesforce_api_enabled_security_token_value"
                 )
+
+        # Google Workspace
+        elif assessmentTarget == "GoogleWorkspace":
+            logger.info("Coming soon!")
+
+        # Snowflake
+        elif assessmentTarget == "Snowflake":
+            logger.info("Coming soon!")
 
     def get_aws_regions(self):
         """

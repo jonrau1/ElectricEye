@@ -117,9 +117,9 @@ class EEAuditor(object):
         if assessmentTarget == "Snowflake":
             searchPath = "./auditors/snowflake"
             utils = CloudConfig(assessmentTarget, tomlPath)
-        # Google Workspaces
-        if assessmentTarget == "GoogleWorkspaces":
-            searchPath = "./auditors/google_workspaces"
+        # Google Workspace
+        if assessmentTarget == "GoogleWorkspace":
+            searchPath = "./auditors/google_workspace"
             utils = CloudConfig(assessmentTarget, tomlPath)
 
         # Search path for Auditors
@@ -504,7 +504,7 @@ class EEAuditor(object):
                     try:
                         logger.info(
                             "Executing Check %s for M365",
-                            checkName, self.m365TenantId
+                            checkName
                         )
                         for finding in check(
                             cache=auditorCache,
@@ -555,8 +555,8 @@ class EEAuditor(object):
                 ):
                     try:
                         logger.info(
-                            "Executing Check %s for Salesforce instance using User %s",
-                            checkName, self.salesforceApiUsername
+                            "Executing Check %s for Salesforce instance",
+                            checkName
                         )
                         for finding in check(
                             cache=auditorCache,
