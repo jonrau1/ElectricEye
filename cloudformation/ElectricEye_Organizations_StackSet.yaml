@@ -42,6 +42,7 @@ Resources:
                 - athena:ListWorkGroups
                 - autoscaling:DescribeAutoScalingGroups
                 - backup:DescribeProtectedResource
+                - bedrock:List*
                 - cassandra:Select
                 - cloud9:DescribeEnvironments
                 - cloud9:ListEnvironments
