@@ -385,6 +385,7 @@ The controls frameworks that ElectricEye supports is always being updated as new
 - CIS AWS Database Services Benchmark V1.0
 - CIS Amazon Web Services Foundations Benchmark V1.5
 - CIS Amazon Web Services Foundations Benchmark V2.0
+- CIS Amazon Web Services Foundations Benchmark V3.0
 - CIS Microsoft Azure Foundations Benchmark V2.0.0
 
 ## Repository Security

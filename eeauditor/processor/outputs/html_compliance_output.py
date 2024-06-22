@@ -53,9 +53,10 @@ SUPPORTED_FRAMEWORKS = [
     "FBI CJIS Security Policy V5.9",
     "CIS Amazon Web Services Foundations Benchmark V1.5",
     "CIS Amazon Web Services Foundations Benchmark V2.0",
+    "CIS Amazon Web Services Foundations Benchmark V3.0",
     "MITRE ATT&CK",
     "CIS AWS Database Services Benchmark V1.0",
-    "CIS Amazon Web Services Foundations Benchmark V3.0"
+    "CIS Microsoft Azure Foundations Benchmark V2.0.0"
 ]
 
 with open(f"{here}/mapped_compliance_controls.json") as jsonfile:
