@@ -46,7 +46,6 @@ def q_business_app_audit_check(cache: dict, session, awsAccountId: str, awsRegio
     """[QBusiness.1] Amazon Q Business applications should be monitored for usage"""
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    # loop work groups from cache
     for qapp in list_q_biz_apps(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(qapp,default=str).encode("utf-8")
@@ -121,5 +120,153 @@ def q_business_app_audit_check(cache: dict, session, awsAccountId: str, awsRegio
             "RecordState": "ACTIVE"
         }
         yield finding
+
+@registry.register_check("bedrock")
+def q_business_app_kms_cmk_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[QBusiness.2] Amazon Q Business applications should be configured to encrypt data at rest with customer managed keys (CMKs)"""
+    # ISO time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for qapp in list_q_biz_apps(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(qapp,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+
+        displayName = qapp["displayName"]
+        applicationId = qapp["applicationId"]
+        applicationArn = qapp["applicationArn"]
+        # determine encryption
+        try:
+            kmsKeyId = qapp["encryptionConfiguration"]["kmsKeyId"]
+        except KeyError:
+            kmsKeyId = None
+        
+        if kmsKeyId is None:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{applicationArn}/q-business-app-kms-cmk-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": applicationArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[QBusiness.2] Amazon Q Business applications should be configured to encrypt data at rest with customer managed keys (CMKs)",
+                "Description": f"Amazon Q Business application {displayName} (ID: {applicationId}) is not configured to encrypt data at rest with AWS Key Management Service (KMS) Customer Managed Keys. Amazon Q Business provides encryption by default to protect sensitive customer data at rest using AWS owned encryption keys. Sensitive customer data includes both questions and answers in the Amazon Q web experience and the documents uploaded to Amazon Q index. Amazon Q supports the use of symmetric customer managed keys that you create, own, and manage to add a second layer of encryption over the existing AWS owned encryption. Refer to the remediation instructions to remediate this behavior.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on using KMS CMKs to encrypt Amazon Q Business prompts and answers refer to the Encryption at Rest section of the Amazon Q Business User Guide",
+                        "Url": "https://docs.aws.amazon.com/amazonq/latest/qbusiness-ug/data-encryption.html#encryption-rest",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Artificial Intelligence",
+                    "AssetService": "Amazon Q Business",
+                    "AssetComponent": "Application"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsQBusinessApplication",
+                        "Id": applicationArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "displayName": displayName,
+                                "applicationId": applicationId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{applicationArn}/q-business-app-kms-cmk-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": applicationArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[QBusiness.2] Amazon Q Business applications should be configured to encrypt data at rest with customer managed keys (CMKs)",
+                "Description": f"Amazon Q Business application {displayName} (ID: {applicationId}) is configured to encrypt data at rest with AWS Key Management Service (KMS) Customer Managed Keys.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on using KMS CMKs to encrypt Amazon Q Business prompts and answers refer to the Encryption at Rest section of the Amazon Q Business User Guide",
+                        "Url": "https://docs.aws.amazon.com/amazonq/latest/qbusiness-ug/data-encryption.html#encryption-rest",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Artificial Intelligence",
+                    "AssetService": "Amazon Q Business",
+                    "AssetComponent": "Application"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsQBusinessApplication",
+                        "Id": applicationArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "displayName": displayName,
+                                "applicationId": applicationId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 ## EOF

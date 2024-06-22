@@ -243,7 +243,7 @@ The ASM Module uses NMAP at its core and will be expanded to include ZAP and Sho
 
 ## AWS Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **635 Checks** across **86 Auditors** that support the secure configuration of **123 services/components**
+These are the following services and checks perform by each Auditor, there are currently **637 Checks** across **87 Auditors** that support the secure configuration of **124 services/components**
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service**: AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
@@ -492,6 +492,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_Neptune_Auditor | Neptune cluster | Are Neptune clusters configured to auto-scale |
 | Amazon_Neptune_Auditor | Neptune cluster | Are Neptune clusters configured to cache query results |
 | Amazon_QBusiness_Auditor | Q Business application | Are any Q Business applications active |
+| Amazon_QBusiness_Auditor | Q Business application | Are any Q Business applications encrypted with a KMS CMK |
 | Amazon_QLDB_Auditor | QLDB Ledger | Does ledger have deletion protection |
 | Amazon_QLDB_Auditor | QLDB Export | Is export encryption enabled |
 | Amazon_RDS_Auditor | RDS DB Instance | Is HA configured |
