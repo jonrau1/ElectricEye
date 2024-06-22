@@ -901,6 +901,20 @@ class JsonProvider(object):
         # CIS Amazon Web Services Foundations Benchmark V3.0
         elif framework == "CIS Amazon Web Services Foundations Benchmark V3.0":
             imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/CIS_AWS_Foundation_V3_0.JPG" class="framework__header__image">'
+            frameworkInfo = """
+            All CIS Benchmarks focus on technical configuration settings used to maintain and/or increase the security of the addressed technology, and they should be used in conjunction with other essential cyber hygiene tasks like: Monitoring the base operating system for vulnerabilities and quickly updating with the latest security patches or Monitoring applications and libraries for vulnerabilities and quickly updating with the latest security patches.</br>
+
+            </br>This benchmark provides prescriptive guidance for configuring security options for a subset of Amazon Web Services with an emphasis on foundational, testable, and architecture agnostic settings. This CIS Benchmark was created using a consensus review process comprised of a global community of subject matter experts. The process combines real world experience with data-based information to create technology specific guidance to assist users to secure their environments. Consensus participants provide perspective from a diverse set of backgrounds including consulting, software development, audit and compliance, security research, operations, government, and legal.
+            """
+
+        # CIS Microsoft Azure Foundations Benchmark V2.0.0
+        elif framework == "CIS Microsoft Azure Foundations Benchmark V2.0.0":
+            imgSource = '<img src="https://iconography.electriceye.lol/AuditFrameworks/CIS_Azure_Foundation_V2_0_0.JPG" class="framework__header__image">'
+            frameworkInfo = """
+            All CIS Benchmarks focus on technical configuration settings used to maintain and/or increase the security of the addressed technology, and they should be used in conjunction with other essential cyber hygiene tasks like: Monitoring the base operating system for vulnerabilities and quickly updating with the latest security patches or Monitoring applications and libraries for vulnerabilities and quickly updating with the latest security patches.</br>
+
+            </br>This benchmark provides prescriptive guidance for configuring security options for a subset of Microsoft Azure with an emphasis on foundational, testable, and architecture agnostic settings. This CIS Benchmark was created using a consensus review process comprised of a global community of subject matter experts. The process combines real world experience with data-based information to create technology specific guidance to assist users to secure their environments. Consensus participants provide perspective from a diverse set of backgrounds including consulting, software development, audit and compliance, security research, operations, government, and legal.
+            """
 
         else:
             return []
