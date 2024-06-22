@@ -120,3 +120,5 @@ def bedrock_foundation_model_audit_check(cache: dict, session, awsAccountId: str
             "RecordState": "ACTIVE"
         }
         yield finding
+
+# eof
