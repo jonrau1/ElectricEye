@@ -115,6 +115,7 @@ The following mapping is used, where the entry for "ElectricEye CAM `AssetClass`
 | Games | **NOT_MAPPED** | Not currently used |
 | Internet of Things | **NOT_MAPPED** | Not currently used |
 | Machine Learning | Machine Learning | Mapped 1:1 |
+| Artificial Intelligence | Artificial Intelligence | Mapped 1:1 |
 | Management & Governance | Management & Governance | Management, IT Operations, and GRC tools (such as AWS Audit Manager) which map here - this also includes security ***configurations*** and other "account-wide" or "project-wide" settings, plugins, and properties |
 | Media Services | Media Services | Mapped 1:1 |
 | Migration & Transfer | Migration & Transfer | Mapped 1:1 |

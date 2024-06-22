@@ -15558,5 +15558,637 @@
     {
         "ControlTitle":"CIS AWS Database Services Benchmark V1.0 11.7",
         "ControlDescription":"Ensure to Enable Backup and Recovery for Amazon Ledger Database Services (QLDB)"
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.1.2",
+        "ControlDescription": "Ensure that 'Multi-Factor Auth Status' is 'Enabled' for all Privileged Users "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.1.3",
+        "ControlDescription": "Ensure that 'Multi-Factor Auth Status' is 'Enabled' for all Non-Privileged Users "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.1.4",
+        "ControlDescription": "Ensure that 'Allow users to remember multi-factor authentication on devices they trust' is Disabled "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.2.1",
+        "ControlDescription": "Ensure Trusted Locations Are Defined "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.2.2",
+        "ControlDescription": "Ensure that an exclusionary Geographic Access Policy is considered "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.2.3",
+        "ControlDescription": "Ensure that A Multi-factor Authentication Policy Exists for Administrative Groups "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.2.4",
+        "ControlDescription": "Ensure that A Multi-factor Authentication Policy Exists for All Users "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.2.5",
+        "ControlDescription": "Ensure Multi-factor Authentication is Required for Risky Sign-ins "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.2.6",
+        "ControlDescription": "Ensure Multi-factor Authentication is Required for Azure Management "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.4",
+        "ControlDescription": "Ensure Access Review is Set Up for External Users in Azure AD Privileged Identity Management "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.5",
+        "ControlDescription": "Ensure Guest Users Are Reviewed on a Regular Basis "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.6",
+        "ControlDescription": "Ensure That 'Number of methods required to reset' is set to '2' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.7",
+        "ControlDescription": "Ensure that a Custom Bad Password List is set to 'Enforce' for your Organization "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.8",
+        "ControlDescription": "Ensure that 'Number of days before users are asked to re-confirm their authentication information' is not set to '0' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.9",
+        "ControlDescription": "Ensure that 'Notify users on password resets?' is set to 'Yes' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.1",
+        "ControlDescription": "Ensure That 'Notify all admins when other admins reset their password?' is set to 'Yes' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.11",
+        "ControlDescription": "Ensure `User consent for applications` is set to `Do not allow user consent` "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.12",
+        "ControlDescription": "Ensure \u0081eUser consent for applications\u0081f Is Set To \u0081eAllow for Verified Publishers\u0081f "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.13",
+        "ControlDescription": "Ensure that 'Users can add gallery apps to My Apps' is set to 'No' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.14",
+        "ControlDescription": "Ensure That \u0081eUsers Can Register Applications\u0081f Is Set to \u0081eNo\u0081f "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.15",
+        "ControlDescription": "Ensure That 'Guest users access restrictions' is set to 'Guest user access is restricted to properties and memberships of their own directory objects' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.16",
+        "ControlDescription": "Ensure that 'Guest invite restrictions' is set to \"Only users assigned to specific admin roles can invite guest users\" "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.17",
+        "ControlDescription": "Ensure That 'Restrict access to Azure AD administration portal' is Set to 'Yes' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.18",
+        "ControlDescription": "Ensure that 'Restrict user ability to access groups features in the Access Pane' is Set to 'Yes' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.19",
+        "ControlDescription": "Ensure that 'Users can create security groups in Azure portals, API or PowerShell' is set to 'No' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.2",
+        "ControlDescription": "Ensure that 'Owners can manage group membership requests in the Access Panel' is set to 'No' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.21",
+        "ControlDescription": "Ensure that 'Users can create Microsoft 365 groups in Azure portals, API or PowerShell' is set to 'No' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.22",
+        "ControlDescription": "Ensure that 'Require Multi-Factor Authentication to register or join devices with Azure AD' is set to 'Yes' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.23",
+        "ControlDescription": "Ensure That No Custom Subscription Administrator Roles Exist "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.24",
+        "ControlDescription": "Ensure a Custom Role is Assigned Permissions for Administering Resource Locks "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 1.25",
+        "ControlDescription": "Ensure That \u0081eSubscription Entering AAD Directory\u0081f and \u0081eSubscription Leaving AAD Directory\u0081f Is Set To \u0081ePermit No One\u0081f "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.1",
+        "ControlDescription": "Ensure That Microsoft Defender for Servers Is Set to 'On' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.2",
+        "ControlDescription": "Ensure That Microsoft Defender for App Services Is Set To 'On' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.3",
+        "ControlDescription": "Ensure That Microsoft Defender for Databases Is Set To 'On' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.4",
+        "ControlDescription": "Ensure That Microsoft Defender for Azure SQL Databases Is Set To 'On' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.5",
+        "ControlDescription": "Ensure That Microsoft Defender for SQL Servers on Machines Is Set To 'On' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.6",
+        "ControlDescription": "Ensure That Microsoft Defender for Open-Source Relational Databases Is Set To 'On' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.7",
+        "ControlDescription": "Ensure That Microsoft Defender for Storage Is Set To 'On' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.8",
+        "ControlDescription": "Ensure That Microsoft Defender for Containers Is Set To 'On' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.9",
+        "ControlDescription": "Ensure That Microsoft Defender for Azure Cosmos DB Is Set To 'On' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.10",
+        "ControlDescription": "Ensure That Microsoft Defender for Key Vault Is Set To 'On' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.11",
+        "ControlDescription": "Ensure That Microsoft Defender for DNS Is Set To 'On' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.12",
+        "ControlDescription": "Ensure That Microsoft Defender for Resource Manager Is Set To 'On' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.13",
+        "ControlDescription": "Ensure that Microsoft Defender Recommendation for 'Apply system updates' status is 'Completed' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.14",
+        "ControlDescription": "Ensure Any of the ASC Default Policy Settings are Not Set to 'Disabled' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.15",
+        "ControlDescription": "Ensure that Auto provisioning of 'Log Analytics agent for Azure VMs' is Set to 'On' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.16",
+        "ControlDescription": "Ensure that Auto provisioning of 'Vulnerability assessment for machines' is Set to 'On' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.17",
+        "ControlDescription": "Ensure that Auto provisioning of 'Microsoft Defender for Containers components' is Set to 'On' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.18",
+        "ControlDescription": "Ensure That 'All users with the following roles' is set to 'Owner' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.19",
+        "ControlDescription": "Ensure 'Additional email addresses' is Configured with a Security Contact Email "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.20",
+        "ControlDescription": "Ensure That 'Notify about alerts with the following severity' is Set to 'High' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.21",
+        "ControlDescription": "Ensure that Microsoft Defender for Cloud Apps integration with Microsoft Defender for Cloud is Selected "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.22",
+        "ControlDescription": "Ensure that Microsoft Defender for Endpoint integration with Microsoft Defender for Cloud is selected "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.2.1",
+        "ControlDescription": "Ensure That Microsoft Defender for IoT Hub Is Set To 'On' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.1",
+        "ControlDescription": "Ensure that 'Secure transfer required' is set to 'Enabled' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.2",
+        "ControlDescription": "Ensure that \u0081eEnable Infrastructure Encryption\u0081f for Each Storage Account in Azure Storage is Set to \u0081eenabled\u0081f "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.3",
+        "ControlDescription": "Ensure that 'Enable key rotation reminders' is enabled for each Storage Account "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.4",
+        "ControlDescription": "Ensure that Storage Account Access Keys are Periodically Regenerated "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.5",
+        "ControlDescription": "Ensure Storage Logging is Enabled for Queue Service for 'Read', 'Write', and 'Delete' requests "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.6",
+        "ControlDescription": "Ensure that Shared Access Signature Tokens Expire Within an Hour "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.7",
+        "ControlDescription": "Ensure that 'Public access level' is disabled for storage accounts with blob containers "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.8",
+        "ControlDescription": "Ensure Default Network Access Rule for Storage Accounts is Set to Deny "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.9",
+        "ControlDescription": "Ensure 'Allow Azure services on the trusted services list to access this storage account' is Enabled for Storage Account Access "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.1",
+        "ControlDescription": "Ensure Private Endpoints are used to access Storage Accounts "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.11",
+        "ControlDescription": "Ensure Soft Delete is Enabled for Azure Containers and Blob Storage "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.12",
+        "ControlDescription": "Ensure Storage for Critical Data are Encrypted with Customer Managed Keys "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.13",
+        "ControlDescription": "Ensure Storage logging is Enabled for Blob Service for 'Read', 'Write', and 'Delete' requests "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.14",
+        "ControlDescription": "Ensure Storage Logging is Enabled for Table Service for 'Read', 'Write', and 'Delete' Requests "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 3.15",
+        "ControlDescription": "Ensure the \"Minimum TLS version\" for storage accounts is set to \"Version 1.2\" "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.1.1",
+        "ControlDescription": "Ensure that 'Auditing' is set to 'On' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.1.2",
+        "ControlDescription": "Ensure no Azure SQL Databases allow ingress from 0.0.0.0/0 (ANY IP) "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.1.3",
+        "ControlDescription": "Ensure SQL server's Transparent Data Encryption (TDE) protector is encrypted with Customer-managed key "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.1.4",
+        "ControlDescription": "Ensure that Azure Active Directory Admin is Configured for SQL Servers "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.1.5",
+        "ControlDescription": "Ensure that 'Data encryption' is set to 'On' on a SQL Database "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.1.6",
+        "ControlDescription": "Ensure that 'Auditing' Retention is 'greater than 90 days' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.2.1",
+        "ControlDescription": "Ensure that Microsoft Defender for SQL is set to 'On' for critical SQL Servers "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.2.2",
+        "ControlDescription": "Ensure that Vulnerability Assessment (VA) is enabled on a SQL server by setting a Storage Account "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.2.3",
+        "ControlDescription": "Ensure that Vulnerability Assessment (VA) setting 'Periodic recurring scans' is set to 'on' for each SQL server "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.2.4",
+        "ControlDescription": "Ensure that Vulnerability Assessment (VA) setting 'Send scan reports to' is configured for a SQL server "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.2.5",
+        "ControlDescription": "Ensure that Vulnerability Assessment (VA) setting 'Also send email notifications to admins and subscription owners' is set for each SQL Server "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.3.1",
+        "ControlDescription": "Ensure 'Enforce SSL connection' is set to 'ENABLED' for PostgreSQL Database Server "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.3.2",
+        "ControlDescription": "Ensure Server Parameter 'log_checkpoints' is set to 'ON' for PostgreSQL Database Server "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.3.3",
+        "ControlDescription": "Ensure server parameter 'log_connections' is set to 'ON' for PostgreSQL Database Server "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.3.4",
+        "ControlDescription": "Ensure server parameter 'log_disconnections' is set to 'ON' for PostgreSQL Database Server "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.3.5",
+        "ControlDescription": "Ensure server parameter 'connection_throttling' is set to 'ON' for PostgreSQL Database Server "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.3.6",
+        "ControlDescription": "Ensure Server Parameter 'log_retention_days' is greater than 3 days for PostgreSQL Database Server "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.3.7",
+        "ControlDescription": "Ensure 'Allow access to Azure services' for PostgreSQL Database Server is disabled "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.3.8",
+        "ControlDescription": "Ensure 'Infrastructure double encryption' for PostgreSQL Database Server is 'Enabled' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.4.1",
+        "ControlDescription": "Ensure 'Enforce SSL connection' is set to 'Enabled' for Standard MySQL Database Server "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.4.2",
+        "ControlDescription": "Ensure 'TLS Version' is set to 'TLSV1.2' for MySQL flexible Database Server "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.4.3",
+        "ControlDescription": "Ensure server parameter 'audit_log_enabled' is set to 'ON' for MySQL Database Server "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.4.4",
+        "ControlDescription": "Ensure server parameter 'audit_log_events' has 'CONNECTION' set for MySQL Database Server "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.5.1",
+        "ControlDescription": "Ensure That 'Firewalls & Networks' Is Limited to Use Selected Networks Instead of All Networks "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.5.2",
+        "ControlDescription": "Ensure That Private Endpoints Are Used Where Possible "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 4.5.3",
+        "ControlDescription": "Use Azure Active Directory (AAD) Client Authentication and Azure RBAC where possible. "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 5.1.1",
+        "ControlDescription": "Ensure that a 'Diagnostic Setting' exists "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 5.1.2",
+        "ControlDescription": "Ensure Diagnostic Setting captures appropriate categories "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 5.1.3",
+        "ControlDescription": "Ensure the Storage Container Storing the Activity Logs is not Publicly Accessible "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 5.1.4",
+        "ControlDescription": "Ensure the storage account containing the container with activity logs is encrypted with Customer Managed Key "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 5.1.5",
+        "ControlDescription": "Ensure that logging for Azure Key Vault is 'Enabled' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 5.1.6",
+        "ControlDescription": "Ensure that Network Security Group Flow logs are captured and sent to Log Analytics "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 5.1.7",
+        "ControlDescription": "Ensure that logging for Azure AppService 'HTTP logs' is enabled "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 5.2.1",
+        "ControlDescription": "Ensure that Activity Log Alert exists for Create Policy Assignment "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 5.2.2",
+        "ControlDescription": "Ensure that Activity Log Alert exists for Delete Policy Assignment "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 5.2.3",
+        "ControlDescription": "Ensure that Activity Log Alert exists for Create or Update Network Security Group "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 5.2.4",
+        "ControlDescription": "Ensure that Activity Log Alert exists for Delete Network Security Group "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 5.2.5",
+        "ControlDescription": "Ensure that Activity Log Alert exists for Create or Update Security Solution "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 5.2.6",
+        "ControlDescription": "Ensure that Activity Log Alert exists for Delete Security Solution "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 5.2.7",
+        "ControlDescription": "Ensure that Activity Log Alert exists for Create or Update SQL Server Firewall Rule "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 5.2.8",
+        "ControlDescription": "Ensure that Activity Log Alert exists for Delete SQL Server Firewall Rule "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 5.2.9",
+        "ControlDescription": "Ensure that Activity Log Alert exists for Create or Update Public IP Address rule "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 5.2.10",
+        "ControlDescription": "Ensure that Activity Log Alert exists for Delete Public IP Address rule "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 5.3.1",
+        "ControlDescription": "Ensure Application Insights are Configured "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 5.4",
+        "ControlDescription": "Ensure that Azure Monitor Resource Logging is Enabled for All Services that Support it "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 5.5",
+        "ControlDescription": "Ensure that SKU Basic/Consumption is not used on artifacts that need to be monitored (Particularly for Production Workloads) "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 6.1",
+        "ControlDescription": "Ensure that RDP access from the Internet is evaluated and restricted "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 6.2",
+        "ControlDescription": "Ensure that SSH access from the Internet is evaluated and restricted "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 6.3",
+        "ControlDescription": "Ensure that UDP access from the Internet is evaluated and restricted "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 6.4",
+        "ControlDescription": "Ensure that HTTP(S) access from the Internet is evaluated and restricted "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 6.5",
+        "ControlDescription": "Ensure that Network Security Group Flow Log retention period is 'greater than 90 days' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 6.6",
+        "ControlDescription": "Ensure that Network Watcher is 'Enabled' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 6.7",
+        "ControlDescription": "Ensure that Public IP addresses are Evaluated on a Periodic Basis "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 7.1",
+        "ControlDescription": "Ensure an Azure Bastion Host Exists "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 7.2",
+        "ControlDescription": "Ensure Virtual Machines are utilizing Managed Disks "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 7.3",
+        "ControlDescription": "Ensure that 'OS and Data' disks are encrypted with Customer Managed Key (CMK) "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 7.4",
+        "ControlDescription": "Ensure that 'Unattached disks' are encrypted with 'Customer Managed Key' (CMK) "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 7.5",
+        "ControlDescription": "Ensure that Only Approved Extensions Are Installed "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 7.6",
+        "ControlDescription": "Ensure that Endpoint Protection for all Virtual Machines is installed "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 7.7",
+        "ControlDescription": "[Legacy] Ensure that VHDs are Encrypted "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 8.1",
+        "ControlDescription": "Ensure that the Expiration Date is set for all Keys in RBAC Key Vaults "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 8.2",
+        "ControlDescription": "Ensure that the Expiration Date is set for all Keys in Non- RBAC Key Vaults. "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 8.3",
+        "ControlDescription": "Ensure that the Expiration Date is set for all Secrets in RBAC Key Vaults "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 8.4",
+        "ControlDescription": "Ensure that the Expiration Date is set for all Secrets in Non-RBAC Key Vaults "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 8.5",
+        "ControlDescription": "Ensure the Key Vault is Recoverable "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 8.6",
+        "ControlDescription": "Enable Role Based Access Control for Azure Key Vault "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 8.7",
+        "ControlDescription": "Ensure that Private Endpoints are Used for Azure Key Vault "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 8.8",
+        "ControlDescription": "Ensure Automatic Key Rotation is Enabled Within Azure Key Vault for the Supported Services "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 9.1",
+        "ControlDescription": "Ensure App Service Authentication is set up for apps in Azure App Service "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 9.2",
+        "ControlDescription": "Ensure Web App Redirects All HTTP traffic to HTTPS in Azure App Service "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 9.3",
+        "ControlDescription": "Ensure Web App is using the latest version of TLS encryption "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 9.4",
+        "ControlDescription": "Ensure the web app has 'Client Certificates (Incoming client certificates)' set to 'On' "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 9.5",
+        "ControlDescription": "Ensure that Register with Azure Active Directory is enabled on App Service "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 9.6",
+        "ControlDescription": "Ensure That 'PHP version' is the Latest, If Used to Run the Web App "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 9.7",
+        "ControlDescription": "Ensure that 'Python version' is the Latest Stable Version, if Used to Run the Web App "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 9.8",
+        "ControlDescription": "Ensure that 'Java version' is the latest, if used to run the Web App "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 9.9",
+        "ControlDescription": "Ensure that 'HTTP Version' is the Latest, if Used to Run the Web App "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 9.1",
+        "ControlDescription": "Ensure FTP deployments are Disabled "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 9.11",
+        "ControlDescription": "Ensure Azure Key Vaults are Used to Store Secrets "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 10.1",
+        "ControlDescription": "Ensure that Resource Locks are set for Mission-Critical Azure Resources "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 10.1",
+        "ControlDescription": "Ensure that Resource Locks are set for Mission-Critical Azure Resources "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 10.1",
+        "ControlDescription": "Ensure that Resource Locks are set for Mission-Critical Azure Resources "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 10.1",
+        "ControlDescription": "Ensure that Resource Locks are set for Mission-Critical Azure Resources "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 10.1",
+        "ControlDescription": "Ensure that Resource Locks are set for Mission-Critical Azure Resources "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 10.1",
+        "ControlDescription": "Ensure that Resource Locks are set for Mission-Critical Azure Resources "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 10.1",
+        "ControlDescription": "Ensure that Resource Locks are set for Mission-Critical Azure Resources "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 10.1",
+        "ControlDescription": "Ensure that Resource Locks are set for Mission-Critical Azure Resources "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 10.1",
+        "ControlDescription": "Ensure that Resource Locks are set for Mission-Critical Azure Resources "
+    },
+    {
+        "ControlTitle": "CIS Microsoft Azure Foundations Benchmark V2.0.0 10.1",
+        "ControlDescription": "Ensure that Resource Locks are set for Mission-Critical Azure Resources "
     }
 ]

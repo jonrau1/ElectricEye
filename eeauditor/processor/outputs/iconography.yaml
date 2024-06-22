@@ -179,6 +179,10 @@
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Networking-Content-Delivery/64/Arch_AWS-PrivateLink_64.svg">
 - AssetService: AWS Verified Access
   ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Networking-Content-Delivery/64/Arch_AWS-Verified-Access_64.svg">
+- AssetService: Amazon Bedrock
+  ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Artificial-Intelligence/64/Arch_Amazon-Bedrock_64.svg">
+- AssetService: Amazon Q Business
+  ImageTag: <img src="https://iconography.electriceye.lol/AWS/Arch_Artificial-Intelligence/64/Arch_Amazon-Q_64.svg">
 #########################################
 # AWS - ASSET_SERVICE + COMPONENT ICONS #
 #########################################
