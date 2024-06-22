@@ -179,6 +179,8 @@ Resources:
                 - mq:List*
                 - qldb:ListJournalS3Exports
                 - qldb:ListLedgers
+                - qbusiness:GetApplication
+				        - qbusiness:ListApplications
                 - ram:GetResourceShares
                 - rds:DescribeDB*
                 - rds:DescribeEvent*
