@@ -491,6 +491,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_Neptune_Auditor | Neptune instance | Does Neptune instance automatically update minor versions |
 | Amazon_Neptune_Auditor | Neptune cluster | Are Neptune clusters configured to auto-scale |
 | Amazon_Neptune_Auditor | Neptune cluster | Are Neptune clusters configured to cache query results |
+| Amazon_QBusiness_Auditor | Q Business application | Are any Q Business applications active |
 | Amazon_QLDB_Auditor | QLDB Ledger | Does ledger have deletion protection |
 | Amazon_QLDB_Auditor | QLDB Export | Is export encryption enabled |
 | Amazon_RDS_Auditor | RDS DB Instance | Is HA configured |

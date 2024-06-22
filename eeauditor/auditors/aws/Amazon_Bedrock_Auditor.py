@@ -79,10 +79,10 @@ def bedrock_foundation_model_audit_check(cache: dict, session, awsAccountId: str
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
             "Title": "[Bedrock.1] Amazon Bedrock foundation models should be monitored for usage",
-            "Description": f"Amazon Bedrock foundation model {modelName} (Model ID: {modelId}) is available for use from {providerName}. Amazon Bedrock is an managed Generative AI service that enables you to build, train, and deploy machine learning models. This finding is informational only and requires no further action.",
+            "Description": f"Amazon Bedrock foundation model {modelName} (Model ID: {modelId}) is available for use from {providerName}. Amazon Bedrock is an managed Generative AI service that enables you to build, train, and deploy Artificial Intelligence models. This finding is informational only and requires no further action.",
             "Remediation": {
                 "Recommendation": {
-                    "Text": "Trained on massive datasets, foundation models (FMs) are large deep learning neural networks that have changed the way data scientists approach machine learning (ML). Rather than develop artificial intelligence (AI) from scratch, data scientists use a foundation model as a starting point to develop ML models that power new applications more quickly and cost-effectively. The term foundation model was coined by researchers to describe ML models trained on a broad spectrum of generalized and unlabeled data and capable of performing a wide variety of general tasks such as understanding language, generating text and images, and conversing in natural language.",
+                    "Text": "Trained on massive datasets, foundation models (FMs) are large deep learning neural networks that have changed the way data scientists approach Artificial Intelligence (ML). Rather than develop artificial intelligence (AI) from scratch, data scientists use a foundation model as a starting point to develop ML models that power new applications more quickly and cost-effectively. The term foundation model was coined by researchers to describe ML models trained on a broad spectrum of generalized and unlabeled data and capable of performing a wide variety of general tasks such as understanding language, generating text and images, and conversing in natural language.",
                     "Url": "https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html"
                 }
             },
@@ -93,7 +93,7 @@ def bedrock_foundation_model_audit_check(cache: dict, session, awsAccountId: str
                 "ProviderAccountId": awsAccountId,
                 "AssetRegion": awsRegion,
                 "AssetDetails": assetB64,
-                "AssetClass": "Machine Learning",
+                "AssetClass": "Artificial Intelligence",
                 "AssetService": "Amazon Bedrock",
                 "AssetComponent": "Foundation Model"
             },
@@ -147,7 +147,7 @@ def bedrock_custom_model_audit_check(cache: dict, session, awsAccountId: str, aw
         
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": f"{modelArn}/bedrock-fm-usage-check",
+            "Id": f"{modelArn}/bedrock-cm-usage-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
             "GeneratorId": modelArn,
             "AwsAccountId": awsAccountId,
@@ -161,7 +161,7 @@ def bedrock_custom_model_audit_check(cache: dict, session, awsAccountId: str, aw
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
             "Title": "[Bedrock.2] Amazon Bedrock custom models should be monitored for usage",
-            "Description": f"Amazon Bedrock foundation model {modelName} is available for use, created from {baseModelName}. Amazon Bedrock is an managed Generative AI service that enables you to build, train, and deploy machine learning models. Model customization is the process of providing training data to a model in order to improve its performance for specific use-cases. You can customize Amazon Bedrock foundation models in order to improve their performance and create a better customer experience. Amazon Bedrock currently provides the following customization methods. This finding is informational only and requires no further action.",
+            "Description": f"Amazon Bedrock foundation model {modelName} is available for use, created from {baseModelName}. Amazon Bedrock is an managed Generative AI service that enables you to build, train, and deploy Artificial Intelligence models. Model customization is the process of providing training data to a model in order to improve its performance for specific use-cases. You can customize Amazon Bedrock foundation models in order to improve their performance and create a better customer experience. Amazon Bedrock currently provides the following customization methods. This finding is informational only and requires no further action.",
             "Remediation": {
                 "Recommendation": {
                     "Text": "Model customization is the process of providing training data to a model in order to improve its performance for specific use-cases. You can customize Amazon Bedrock foundation models in order to improve their performance and create a better customer experience. Amazon Bedrock currently provides the following customization methods..",
@@ -175,7 +175,7 @@ def bedrock_custom_model_audit_check(cache: dict, session, awsAccountId: str, aw
                 "ProviderAccountId": awsAccountId,
                 "AssetRegion": awsRegion,
                 "AssetDetails": assetB64,
-                "AssetClass": "Machine Learning",
+                "AssetClass": "Artificial Intelligence",
                 "AssetService": "Amazon Bedrock",
                 "AssetComponent": "Custom Model"
             },
