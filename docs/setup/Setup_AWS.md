@@ -243,7 +243,7 @@ The ASM Module uses NMAP at its core and will be expanded to include ZAP and Sho
 
 ## AWS Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **634 Checks** across **86 Auditors** that support the secure configuration of **122 services/components**
+These are the following services and checks perform by each Auditor, there are currently **635 Checks** across **86 Auditors** that support the secure configuration of **123 services/components**
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service**: AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
@@ -277,6 +277,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_Autoscaling_Auditor | Autoscaling groups | Do ASGs with ELB or Target Groups use ELB health checks |
 | Amazon_Autoscaling_Auditor | Autoscaling groups | Do ASGs use at least half or more of a Region's open AZs |
 | Amazon_Bedrock_Auditor | Bedrock foundation models | Are any Bedrock FMs active |
+| Amazon_Bedrock_Auditor | Bedrock custom models | Are any Bedrock CMs active |
 | Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros with trusted signers use key pairs |
 | Amazon_CloudFront_Auditor | CloudFront Distribution | Do distro origins have Origin Shield enabled |
 | Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros use the default viewer certificate |

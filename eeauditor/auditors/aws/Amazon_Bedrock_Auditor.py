@@ -25,7 +25,6 @@ import json
 
 registry = CheckRegister()
 
-# Get all bedrock work groups
 def list_bedrock_foundation_models(cache, session):
     response = cache.get("list_bedrock_foundation_models")
 
@@ -37,10 +36,20 @@ def list_bedrock_foundation_models(cache, session):
     cache["list_bedrock_foundation_models"] = bedrock.list_foundation_models()["modelSummaries"]
     return cache["list_bedrock_foundation_models"]
 
+def list_bedrock_custom_models(cache, session):
+    response = cache.get("list_bedrock_custom_models")
+
+    if response:
+        return response
+    
+    bedrock = session.client("bedrock")
+
+    cache["list_bedrock_custom_models"] = bedrock.list_custom_models()["modelSummaries"]
+    return cache["list_bedrock_custom_models"]
+
 @registry.register_check("bedrock")
 def bedrock_foundation_model_audit_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Bedrock.1] Amazon Bedrock foundation models should be monitored for usage"""
-    bedrock = session.client("bedrock")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # loop work groups from cache
@@ -99,6 +108,87 @@ def bedrock_foundation_model_audit_check(cache: dict, session, awsAccountId: str
                             "modelName": modelName,
                             "modelId": modelId,
                             "providerName": providerName
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 ID.AM-2",
+                    "NIST SP 800-53 Rev. 4 CM-8",
+                    "NIST SP 800-53 Rev. 4 PM-5",
+                    "AICPA TSC CC3.2",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.8.1.1",
+                    "ISO 27001:2013 A.8.1.2",
+                    "ISO 27001:2013 A.12.5.1"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+
+@registry.register_check("bedrock")
+def bedrock_custom_model_audit_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Bedrock.2] Amazon Bedrock custom models should be monitored for usage"""
+    # ISO time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    # loop work groups from cache
+    for fm in list_bedrock_custom_models(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(fm,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+
+        modelName = fm["modelName"]
+        modelArn = fm["modelArn"]
+        baseModelName = fm["baseModelName"]
+        
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{modelArn}/bedrock-fm-usage-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": modelArn,
+            "AwsAccountId": awsAccountId,
+            "Types": [
+                "Software and Configuration Checks/AWS Security Best Practices",
+                "Effects/Data Exposure"
+            ],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[Bedrock.2] Amazon Bedrock custom models should be monitored for usage",
+            "Description": f"Amazon Bedrock foundation model {modelName} is available for use, created from {baseModelName}. Amazon Bedrock is an managed Generative AI service that enables you to build, train, and deploy machine learning models. Model customization is the process of providing training data to a model in order to improve its performance for specific use-cases. You can customize Amazon Bedrock foundation models in order to improve their performance and create a better customer experience. Amazon Bedrock currently provides the following customization methods. This finding is informational only and requires no further action.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "Model customization is the process of providing training data to a model in order to improve its performance for specific use-cases. You can customize Amazon Bedrock foundation models in order to improve their performance and create a better customer experience. Amazon Bedrock currently provides the following customization methods..",
+                    "Url": "https://docs.aws.amazon.com/bedrock/latest/userguide/custom-models.html"
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Machine Learning",
+                "AssetService": "Amazon Bedrock",
+                "AssetComponent": "Custom Model"
+            },
+            "Resources": [
+                {
+                    "Type": "AwsBedrockCustomModel",
+                    "Id": modelArn,
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "modelName": modelName,
+                            "baseModelName": baseModelName
                         }
                     }
                 }
