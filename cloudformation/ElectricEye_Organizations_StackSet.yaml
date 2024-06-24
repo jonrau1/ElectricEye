@@ -177,10 +177,10 @@ Resources:
                 - memorydb:Describe*
                 - mq:Describe*
                 - mq:List*
+								- qbusiness:List*
+								- qbusiness:Describe*
                 - qldb:ListJournalS3Exports
                 - qldb:ListLedgers
-                - qbusiness:GetApplication
-				        - qbusiness:ListApplications
                 - ram:GetResourceShares
                 - rds:DescribeDB*
                 - rds:DescribeEvent*
@@ -206,7 +206,7 @@ Resources:
                 - securityhub:BatchIm*
                 - securityhub:DescribeHub
                 - shield:Describ*
-                - shield:ListAttacks
+                - shield:ListA*
                 - sns:GetTopicAttributes
                 - sns:ListSub*
                 - ssm:ListDocuments
@@ -220,9 +220,9 @@ Resources:
                 - support:DescribeTrustedA*
                 - vpc-lattice:Get*
                 - vpc-lattice:List*
-                - wafv2:GetLoggingConfiguration
+                - wafv2:GetLogging*
                 - wafv2:GetWeb*
-                - wafv2:ListWebACLs
+                - wafv2:ListW*
                 - workspaces:DescribeWorkspaceDirectories
                 - workspaces:DescribeWorkspaces
                 - xray:GetEncryptionConfig
