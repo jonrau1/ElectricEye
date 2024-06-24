@@ -50,9 +50,9 @@ LABEL \
     org.opencontainers.image.title="ElectricEye" \
     org.opencontainers.image.description="ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring supporting 100s of services and evaluations to harden your CSP & SaaS environments with controls mapped to over 20 industry, regulatory, and best practice controls frameworks." \
     org.opencontainers.image.version="3.0" \
-    org.opencontainers.image.created="2024-02-02T00:00:00Z" \
+    org.opencontainers.image.created="2024-06-24T00:00:00Z" \
     org.opencontainers.image.documentation="https://github.com/jonrau1/ElectricEye" \
-    org.opencontainers.image.revision="sha256:6457d53fb065d6f250e1504b9bc42d5b6c65941d57532c072d929dd0628977d0" \
+    org.opencontainers.image.revision="sha256:b89d9c93e9ed3597455c90a0b88a8bbb5cb7188438f70953fede212a0c4394e0" \
     org.opencontainers.image.source="https://github.com/alpinelinux/docker-alpine" \
     org.opencontainers.image.licenses="Apache-2.0" \
     org.opencontainers.image.authors="opensource@electriceye.cloud"
