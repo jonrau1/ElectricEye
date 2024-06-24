@@ -25,7 +25,7 @@ jobs:
 
       # Get OCR Repo Information
       - name: Get OCR Repository
-        uses: oracle-actions/get-ocir-repository@v1.2.1
+        uses: oracle-actions/get-ocir-repository@v1.3.0
         id: get-ocir-repository
         with:
           name: electriceye
