@@ -33,7 +33,7 @@ jobs:
 
       # Log into OCR with AuthKey
       - name: OCR Login
-        uses: oracle-actions/login-ocir@v1.2.1
+        uses: oracle-actions/login-ocir@v1.3.0
         id: login-ocir
         with:
           auth_token: ${{ secrets.OCR_AUTHKEY }}
