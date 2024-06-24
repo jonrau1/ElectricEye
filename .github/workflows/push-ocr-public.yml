@@ -25,7 +25,7 @@ jobs:
 
       # Get OCR Repo Information
       - name: Get OCR Repository
-        uses: oracle-actions/get-ocir-repository@v1.2.1
+        uses: oracle-actions/get-ocir-repository@v1.3.0
         id: get-ocir-repository
         with:
           name: electriceye
@@ -33,7 +33,7 @@ jobs:
 
       # Log into OCR with AuthKey
       - name: OCR Login
-        uses: oracle-actions/login-ocir@v1.2.1
+        uses: oracle-actions/login-ocir@v1.3.0
         id: login-ocir
         with:
           auth_token: ${{ secrets.OCR_AUTHKEY }}
