@@ -177,8 +177,8 @@ Resources:
                 - memorydb:Describe*
                 - mq:Describe*
                 - mq:List*
-								- qbusiness:List*
 								- qbusiness:Describe*
+                - qbusiness:List*
                 - qldb:ListJournalS3Exports
                 - qldb:ListLedgers
                 - ram:GetResourceShares
