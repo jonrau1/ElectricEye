@@ -330,14 +330,9 @@ class EEAuditor(object):
         """
         Runs GCP Auditors across all TOML-specified Projects
         """
-
-        # These details are needed for the ASFF...
-        import boto3
-
-        sts = boto3.client("sts")
-
-        region = boto3.Session().region_name
-        account = sts.get_caller_identity()["Account"]
+        # hardcode the region and account for GCP
+        region = "us-east-1"
+        account = "000000000000"
         # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
         partition = CloudConfig.check_aws_partition(region)
 
@@ -379,13 +374,9 @@ class EEAuditor(object):
         """
         Run OCI Auditors for all Compartments specified in the TOML for a Tenancy
         """
-
-        import boto3
-
-        sts = boto3.client("sts")
-
-        region = boto3.Session().region_name
-        account = sts.get_caller_identity()["Account"]
+        # hardcode the region and account for OCI
+        region = "us-east-1"
+        account = "000000000000"
         # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
         partition = CloudConfig.check_aws_partition(region)
 
@@ -430,14 +421,9 @@ class EEAuditor(object):
         """
         Runs Azure Auditors using Client Secret credentials from an Application Registration
         """
-
-        # These details are needed for the ASFF...
-        import boto3
-
-        sts = boto3.client("sts")
-
-        region = boto3.Session().region_name
-        account = sts.get_caller_identity()["Account"]
+        # hardcode the region and account for Azure
+        region = "us-east-1"
+        account = "000000000000"
         # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
         partition = CloudConfig.check_aws_partition(region)
 
@@ -480,14 +466,9 @@ class EEAuditor(object):
         """
         Runs M365 Auditors using Client Secret credentials from an Enterprise Application
         """
-
-        # These details are needed for the ASFF...
-        import boto3
-
-        sts = boto3.client("sts")
-
-        region = boto3.Session().region_name
-        account = sts.get_caller_identity()["Account"]
+        # hardcode the region and account for M365
+        region = "us-east-1"
+        account = "000000000000"
         # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
         partition = CloudConfig.check_aws_partition(region)
 
@@ -532,14 +513,9 @@ class EEAuditor(object):
         Runs Salesforce Auditors using Password-based OAuth flow with Username, Password along with a 
         Connected Application Client ID and Client Secret and a User Security Token
         """
-
-        # These details are needed for the ASFF...
-        import boto3
-
-        sts = boto3.client("sts")
-
-        region = boto3.Session().region_name
-        account = sts.get_caller_identity()["Account"]
+        # hardcode the region and account for SFDC
+        region = "us-east-1"
+        account = "000000000000"
         # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
         partition = CloudConfig.check_aws_partition(region)
 
@@ -585,13 +561,9 @@ class EEAuditor(object):
         """
         Generic function to run Auditors, unless specialized logic is required, Assessment Target default to running here
         """
-
-        import boto3
-
-        sts = boto3.client("sts")
-
-        region = boto3.Session().region_name
-        account = sts.get_caller_identity()["Account"]
+        # hardcode the region and account for Non-AWS Checks
+        region = "us-east-1"
+        account = "000000000000"
         # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
         partition = CloudConfig.check_aws_partition(region)
 
