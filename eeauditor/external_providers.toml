@@ -232,6 +232,26 @@ title = "ElectricEye Configuration"
 
         salesforce_api_version = "v58.0"
 
+        [credentials.snowflake]
+
+        # Username for your Snowflake Account, this should be a user with the ability to read all tables and views in the default schemas
+        
+        snowflake_username = ""
+
+        # The location (or actual contents) of the Password for the User specified in `snowflake_account_id`
+        # this location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then
+        # the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+
+        snowflake_password_value = ""
+
+        # The Account ID for your Snowflake Account, this is found in the URL when you login to your Snowflake Account, e.g., VULEDAR-MR69420
+
+        snowflake_account_id = ""
+
+        # The Region of your Snowflake Account, this is found in the URL when you login to your Snowflake Account, e.g., us-east-1
+
+        snowflake_region = ""
+
 [outputs]
 
     # ***IMPORTANT*** 
@@ -345,7 +365,7 @@ title = "ElectricEye Configuration"
 
         # Batch Size
 
-        amazon_sqs_batch_size = 10 # This must be an integer
+        amazon_sqs_batch_size = 1000 # This must be an integer
 
         # Queue Region
 
