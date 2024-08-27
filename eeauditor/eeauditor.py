@@ -333,8 +333,7 @@ class EEAuditor(object):
         # hardcode the region and account for GCP
         region = "us-east-1"
         account = "000000000000"
-        # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
-        partition = CloudConfig.check_aws_partition(region)
+        partition = "aws"
 
         for project in self.gcpProjectIds:
             for serviceName, checkList in self.registry.checks.items():
@@ -377,8 +376,7 @@ class EEAuditor(object):
         # hardcode the region and account for OCI
         region = "us-east-1"
         account = "000000000000"
-        # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
-        partition = CloudConfig.check_aws_partition(region)
+        partition = "aws"
 
         for serviceName, checkList in self.registry.checks.items():
             # Pass the Cache at the "serviceName" level aka Plugin
@@ -424,8 +422,7 @@ class EEAuditor(object):
         # hardcode the region and account for Azure
         region = "us-east-1"
         account = "000000000000"
-        # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
-        partition = CloudConfig.check_aws_partition(region)
+        partition = "aws"
 
         for azSubId in self.azureSubscriptions:
             for serviceName, checkList in self.registry.checks.items():
@@ -469,8 +466,7 @@ class EEAuditor(object):
         # hardcode the region and account for M365
         region = "us-east-1"
         account = "000000000000"
-        # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
-        partition = CloudConfig.check_aws_partition(region)
+        partition = "aws"
 
         for serviceName, checkList in self.registry.checks.items():
             # Pass the Cache at the "serviceName" level aka Plugin
@@ -516,8 +512,7 @@ class EEAuditor(object):
         # hardcode the region and account for SFDC
         region = "us-east-1"
         account = "000000000000"
-        # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
-        partition = CloudConfig.check_aws_partition(region)
+        partition = "aws"
 
         for serviceName, checkList in self.registry.checks.items():
             # Pass the Cache at the "serviceName" level aka Plugin
@@ -564,8 +559,7 @@ class EEAuditor(object):
         # hardcode the region and account for Non-AWS Checks
         region = "us-east-1"
         account = "000000000000"
-        # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
-        partition = CloudConfig.check_aws_partition(region)
+        partition = "aws"
 
         for serviceName, checkList in self.registry.checks.items():
             # Pass the Cache at the "serviceName" level aka Plugin
@@ -610,7 +604,7 @@ class EEAuditor(object):
                 if doc:
                     description = str(check.__doc__).replace("\n", "").replace("    ", "")
                 else:
-                    description = "This shit is fucked!"
+                    description = "Docstring is missing, please open an Issue!"
 
                 auditorFile = getfile(check).rpartition("/")[2]
                 auditorName = auditorFile.split(".py")[0]
@@ -631,10 +625,10 @@ class EEAuditor(object):
                 if doc:
                     description = str(check.__doc__).replace("\n", "").replace("    ", "")
                 else:
-                    description = "This shit is fucked!"
+                    description = "Docstring is missing, please open an Issue!"
                 
                 controlPrinter.append(description)
 
-        print(json.dumps(controlPrinter,indent=2))
+        print(json.dumps(controlPrinter,indent=4))
 
 # EOF
