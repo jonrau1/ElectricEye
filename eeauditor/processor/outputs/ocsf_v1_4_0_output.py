@@ -225,13 +225,13 @@ class OcsfV140Output(object):
             complianceStatusId = 99
             complianceStatus = complianceStatusLabel.lower().capitalize()
 
-        return (
-            severityId,
-            severity,
-            acctTypeId,
-            acctType,
-            complianceStatusId,
-            complianceStatus
+        return SeverityAccountTypeComplianceMapping(
+            severityId=severityId,
+            severity=severity,
+            cloudAccountTypeId=acctTypeId,
+            cloudAccountType=acctType,
+            complianceStatusId=complianceStatusId,
+            complianceStatus=complianceStatus
         )
 
     def iso8061_to_epochseconds(self, iso8061: str) -> int:
