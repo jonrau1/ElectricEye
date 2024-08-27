@@ -18,10 +18,10 @@
 #specific language governing permissions and limitations
 #under the License.
 
-# latest hash as of 21 JUNE 2024 - Alpine 3.20.1
-# https://hub.docker.com/layers/library/alpine/3.20.1/images/sha256-dabf91b69c191a1a0a1628fd6bdd029c0c4018041c7f052870bb13c5a222ae76?context=explore
+# latest hash as of 27 AUG 2024 - Alpine 3.20.2
+# https://hub.docker.com/layers/library/alpine/3.20.2/images/sha256-eddacbc7e24bf8799a4ed3cdcfa50d4b88a323695ad80f317b6629883b2c2a78?context=explore
 # use as builder image to pull in required deps
-FROM alpine@sha256:b89d9c93e9ed3597455c90a0b88a8bbb5cb7188438f70953fede212a0c4394e0 AS builder
+FROM alpine@sha256:0a4eaa0eecf5f8c050e5bba433f58c052be7587ee8af3e8b3910ef9ab5fbe9f5 AS builder
 
 ENV PYTHONUNBUFFERED=1
 
@@ -40,9 +40,9 @@ RUN \
     rm -rf /tmp/* && \
     rm -f /var/cache/apk/*
 
-# latest hash as of 21 JUNE 2024 - Alpine 3.20.1
-# https://hub.docker.com/layers/library/alpine/3.20.1/images/sha256-dabf91b69c191a1a0a1628fd6bdd029c0c4018041c7f052870bb13c5a222ae76?context=explore
-FROM alpine@sha256:b89d9c93e9ed3597455c90a0b88a8bbb5cb7188438f70953fede212a0c4394e0 as electriceye
+# latest hash as of 27 AUG 2024 - Alpine 3.20.2
+# https://hub.docker.com/layers/library/alpine/3.20.2/images/sha256-eddacbc7e24bf8799a4ed3cdcfa50d4b88a323695ad80f317b6629883b2c2a78?context=explore
+FROM alpine@sha256:0a4eaa0eecf5f8c050e5bba433f58c052be7587ee8af3e8b3910ef9ab5fbe9f5 as electriceye
 
 COPY --from=builder /usr /usr
 
