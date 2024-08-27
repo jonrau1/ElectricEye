@@ -31,12 +31,6 @@ from azure.mgmt.resource.subscriptions import SubscriptionClient
 
 logger = logging.getLogger("CloudUtils")
 
-# Boto3 Clients
-sts = boto3.client("sts")
-ssm = boto3.client("ssm")
-asm = boto3.client("secretsmanager")
-org = boto3.client("organizations")
-
 # These Constants define legitimate values for certain parameters within the external_providers.toml file
 AWS_MULTI_ACCOUNT_TARGET_TYPE_CHOICES = ["Accounts", "OU", "Organization"]
 CREDENTIALS_LOCATION_CHOICES = ["AWS_SSM", "AWS_SECRETS_MANAGER", "CONFIG_FILE"]
@@ -77,6 +71,7 @@ class CloudConfig(object):
         
         # AWS
         if assessmentTarget == "AWS":
+            sts = boto3.client("sts")
             # Process ["aws_account_targets"] 
             awsAccountTargets = data["regions_and_accounts"]["aws"]["aws_account_targets"]
             if self.awsMultiAccountTargetType == "Accounts":
@@ -520,6 +515,8 @@ class CloudConfig(object):
         Retrieves a TOML variable from AWS Systems Manager Parameter Store and returns it
         """
 
+        ssm = boto3.client("ssm")
+
         if value is None or value == "":
             logger.error(
                 "A value for %s was not provided. Fix the TOML file and run ElectricEye again.",
@@ -546,6 +543,8 @@ class CloudConfig(object):
         """
         Retrieves a TOML variable from AWS Secrets Manager and returns it
         """
+        asm = boto3.client("secretsmanager")
+
         if value is None or value == "":
             logger.error(
                 "A value for %s was not provided. Fix the TOML file and run ElectricEye again.",
@@ -568,6 +567,8 @@ class CloudConfig(object):
         """
         Uses Organizations ListAccounts API to get a list of "ACTIVE" AWS Accounts in the entire Organization
         """
+        org = boto3.client("organizations")
+
         try:
             accounts = [account["Id"] for account in org.list_accounts()["Accounts"] if account["Status"] == "ACTIVE"]
         except ClientError as e:
@@ -582,6 +583,9 @@ class CloudConfig(object):
         """
         Uses Organizations ListAccountsForParent API to get a list of "ACTIVE" AWS Accounts for specified OUs
         """
+        sts = boto3.client("sts")
+        org = boto3.client("organizations")
+
         accounts = [sts.get_caller_identity()["Account"]]  # Caller account is added directly.
 
         for parent in targets:
@@ -604,6 +608,8 @@ class CloudConfig(object):
         Creates a Boto3 Session by assuming a given AWS IAM Role
         """
         crossAccountRoleArn = f"arn:{partition}:iam::{account}:role/{roleName}"
+
+        sts = boto3.client("sts")
 
         try:
             memberAcct = sts.assume_role(
