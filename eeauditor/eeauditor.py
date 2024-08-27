@@ -331,9 +331,9 @@ class EEAuditor(object):
         Runs GCP Auditors across all TOML-specified Projects
         """
         # hardcode the region and account for GCP
-        region = "us-east-1"
+        region = "us-placeholder-1"
         account = "000000000000"
-        partition = "aws"
+        partition = "not-aws"
 
         for project in self.gcpProjectIds:
             for serviceName, checkList in self.registry.checks.items():
@@ -374,9 +374,9 @@ class EEAuditor(object):
         Run OCI Auditors for all Compartments specified in the TOML for a Tenancy
         """
         # hardcode the region and account for OCI
-        region = "us-east-1"
+        region = "us-placeholder-1"
         account = "000000000000"
-        partition = "aws"
+        partition = "not-aws"
 
         for serviceName, checkList in self.registry.checks.items():
             # Pass the Cache at the "serviceName" level aka Plugin
@@ -420,9 +420,9 @@ class EEAuditor(object):
         Runs Azure Auditors using Client Secret credentials from an Application Registration
         """
         # hardcode the region and account for Azure
-        region = "us-east-1"
+        region = "us-placeholder-1"
         account = "000000000000"
-        partition = "aws"
+        partition = "not-aws"
 
         for azSubId in self.azureSubscriptions:
             for serviceName, checkList in self.registry.checks.items():
@@ -463,10 +463,10 @@ class EEAuditor(object):
         """
         Runs M365 Auditors using Client Secret credentials from an Enterprise Application
         """
-        # hardcode the region and account for M365
-        region = "us-east-1"
+        # hardcode the region and account for non-AWS checks
+        region = "us-placeholder-1"
         account = "000000000000"
-        partition = "aws"
+        partition = "not-aws"
 
         for serviceName, checkList in self.registry.checks.items():
             # Pass the Cache at the "serviceName" level aka Plugin
@@ -510,9 +510,9 @@ class EEAuditor(object):
         Connected Application Client ID and Client Secret and a User Security Token
         """
         # hardcode the region and account for SFDC
-        region = "us-east-1"
+        region = "us-placeholder-1"
         account = "000000000000"
-        partition = "aws"
+        partition = "not-aws"
 
         for serviceName, checkList in self.registry.checks.items():
             # Pass the Cache at the "serviceName" level aka Plugin
@@ -557,9 +557,9 @@ class EEAuditor(object):
         Generic function to run Auditors, unless specialized logic is required, Assessment Target default to running here
         """
         # hardcode the region and account for Non-AWS Checks
-        region = "us-east-1"
+        region = "us-placeholder-1"
         account = "000000000000"
-        partition = "aws"
+        partition = "not-aws"
 
         for serviceName, checkList in self.registry.checks.items():
             # Pass the Cache at the "serviceName" level aka Plugin
