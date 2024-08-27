@@ -154,7 +154,7 @@ class OcsfStdoutOutput(object):
         except KeyError:
             return []
         
-    def asff_to_ocsf_normalization(self, severityLabel: str, cloudProvider: str, complianceStatusLabel: str) -> SeverityAccountTypeComplianceMapping:
+    def compliance_finding_ocsf_normalization(self, severityLabel: str, cloudProvider: str, complianceStatusLabel: str) -> SeverityAccountTypeComplianceMapping:
         """
         Normalizes the following ASFF Severity, Cloud Account Provider, and Compliance values into OCSF
         """
