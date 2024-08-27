@@ -330,16 +330,10 @@ class EEAuditor(object):
         """
         Runs GCP Auditors across all TOML-specified Projects
         """
-
-        # These details are needed for the ASFF...
-        import boto3
-
-        sts = boto3.client("sts")
-
-        region = boto3.Session().region_name
-        account = sts.get_caller_identity()["Account"]
-        # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
-        partition = CloudConfig.check_aws_partition(region)
+        # hardcode the region and account for GCP
+        region = "us-placeholder-1"
+        account = "000000000000"
+        partition = "not-aws"
 
         for project in self.gcpProjectIds:
             for serviceName, checkList in self.registry.checks.items():
@@ -379,15 +373,10 @@ class EEAuditor(object):
         """
         Run OCI Auditors for all Compartments specified in the TOML for a Tenancy
         """
-
-        import boto3
-
-        sts = boto3.client("sts")
-
-        region = boto3.Session().region_name
-        account = sts.get_caller_identity()["Account"]
-        # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
-        partition = CloudConfig.check_aws_partition(region)
+        # hardcode the region and account for OCI
+        region = "us-placeholder-1"
+        account = "000000000000"
+        partition = "not-aws"
 
         for serviceName, checkList in self.registry.checks.items():
             # Pass the Cache at the "serviceName" level aka Plugin
@@ -430,16 +419,10 @@ class EEAuditor(object):
         """
         Runs Azure Auditors using Client Secret credentials from an Application Registration
         """
-
-        # These details are needed for the ASFF...
-        import boto3
-
-        sts = boto3.client("sts")
-
-        region = boto3.Session().region_name
-        account = sts.get_caller_identity()["Account"]
-        # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
-        partition = CloudConfig.check_aws_partition(region)
+        # hardcode the region and account for Azure
+        region = "us-placeholder-1"
+        account = "000000000000"
+        partition = "not-aws"
 
         for azSubId in self.azureSubscriptions:
             for serviceName, checkList in self.registry.checks.items():
@@ -480,16 +463,10 @@ class EEAuditor(object):
         """
         Runs M365 Auditors using Client Secret credentials from an Enterprise Application
         """
-
-        # These details are needed for the ASFF...
-        import boto3
-
-        sts = boto3.client("sts")
-
-        region = boto3.Session().region_name
-        account = sts.get_caller_identity()["Account"]
-        # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
-        partition = CloudConfig.check_aws_partition(region)
+        # hardcode the region and account for non-AWS checks
+        region = "us-placeholder-1"
+        account = "000000000000"
+        partition = "not-aws"
 
         for serviceName, checkList in self.registry.checks.items():
             # Pass the Cache at the "serviceName" level aka Plugin
@@ -532,16 +509,10 @@ class EEAuditor(object):
         Runs Salesforce Auditors using Password-based OAuth flow with Username, Password along with a 
         Connected Application Client ID and Client Secret and a User Security Token
         """
-
-        # These details are needed for the ASFF...
-        import boto3
-
-        sts = boto3.client("sts")
-
-        region = boto3.Session().region_name
-        account = sts.get_caller_identity()["Account"]
-        # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
-        partition = CloudConfig.check_aws_partition(region)
+        # hardcode the region and account for SFDC
+        region = "us-placeholder-1"
+        account = "000000000000"
+        partition = "not-aws"
 
         for serviceName, checkList in self.registry.checks.items():
             # Pass the Cache at the "serviceName" level aka Plugin
@@ -585,15 +556,10 @@ class EEAuditor(object):
         """
         Generic function to run Auditors, unless specialized logic is required, Assessment Target default to running here
         """
-
-        import boto3
-
-        sts = boto3.client("sts")
-
-        region = boto3.Session().region_name
-        account = sts.get_caller_identity()["Account"]
-        # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
-        partition = CloudConfig.check_aws_partition(region)
+        # hardcode the region and account for Non-AWS Checks
+        region = "us-placeholder-1"
+        account = "000000000000"
+        partition = "not-aws"
 
         for serviceName, checkList in self.registry.checks.items():
             # Pass the Cache at the "serviceName" level aka Plugin
@@ -638,7 +604,7 @@ class EEAuditor(object):
                 if doc:
                     description = str(check.__doc__).replace("\n", "").replace("    ", "")
                 else:
-                    description = "This shit is fucked!"
+                    description = "Docstring is missing, please open an Issue!"
 
                 auditorFile = getfile(check).rpartition("/")[2]
                 auditorName = auditorFile.split(".py")[0]
@@ -659,10 +625,10 @@ class EEAuditor(object):
                 if doc:
                     description = str(check.__doc__).replace("\n", "").replace("    ", "")
                 else:
-                    description = "This shit is fucked!"
+                    description = "Docstring is missing, please open an Issue!"
                 
                 controlPrinter.append(description)
 
-        print(json.dumps(controlPrinter,indent=2))
+        print(json.dumps(controlPrinter,indent=4))
 
 # EOF

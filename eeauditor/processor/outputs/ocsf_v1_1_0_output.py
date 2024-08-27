@@ -239,10 +239,23 @@ class OcsfV110Output(object):
                 complianceStatusLabel=finding["Compliance"]["Status"]
             )
 
-            if finding["ProductFields"]["Provider"] == "AWS":
-                partition = finding["Resources"][0]["Partition"]
-            else:
+            partition = finding["Resources"][0]["Partition"]
+            region = finding["ProductFields"]["AssetRegion"]
+            accountId = finding["ProductFields"]["ProviderAccountId"]
+
+            if partition != "AWS" or partition == "not-aws":
                 partition = None
+
+            if partition == "AWS" and region == "us-placeholder-1":
+                region = None
+
+            if partition == "AWS" and accountId == "000000000000":
+                accountId = None
+
+            # Non-AWS checks have hardcoded "dummy" data for Account, Region, and Partition - set these to none depending on the dummy data
+            #region = "us-placeholder-1"
+            #account = "000000000000"
+            #partition = "not-aws"
             
             ocsf = {
                 # Base Event data
@@ -277,9 +290,9 @@ class OcsfV110Output(object):
                 },
                 "cloud": {
                     "provider": finding["ProductFields"]["Provider"],
-                    "region": finding["ProductFields"]["AssetRegion"],
+                    "region": region,
                     "account": {
-                        "uid": finding["ProductFields"]["ProviderAccountId"],
+                        "uid": accountId,
                         "type": asffToOcsf[3],
                         "type_uid": asffToOcsf[2]
                     }
@@ -291,7 +304,7 @@ class OcsfV110Output(object):
                         "name": "cloud.account.uid",
                         "type": "Resource UID",
                         "type_id": 10,
-                        "value": finding["ProductFields"]["ProviderAccountId"]
+                        "value": accountId
                     },
                     # Resource UID
                     {
@@ -326,7 +339,7 @@ class OcsfV110Output(object):
                 "resource": {
                     "data": finding["ProductFields"]["AssetDetails"],
                     "cloud_partition": partition,
-                    "region": finding["ProductFields"]["AssetRegion"],
+                    "region": region,
                     "type": finding["ProductFields"]["AssetService"],
                     "uid": finding["Resources"][0]["Id"]
                 },
