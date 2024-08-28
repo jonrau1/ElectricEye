@@ -107,6 +107,7 @@ class EEAuditor(object):
         if assessmentTarget == "Salesforce":
             searchPath = "./auditors/salesforce"
             utils = CloudConfig(assessmentTarget, tomlPath)
+            # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.salesforceAppClientId = utils.salesforceAppClientId
             self.salesforceAppClientSecret = utils.salesforceAppClientSecret
             self.salesforceApiUsername = utils.salesforceApiUsername
@@ -117,6 +118,11 @@ class EEAuditor(object):
         if assessmentTarget == "Snowflake":
             searchPath = "./auditors/snowflake"
             utils = CloudConfig(assessmentTarget, tomlPath)
+            # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
+            self.snowflakeAccountId = utils.snowflakeAccountId
+            self.snowflakeRegion = utils.snowflakeRegion
+            self.snowflakeCursor = utils.snowflakeCursor
+            self.snowflakeConnection = utils.snowflakeConnection
         # Google Workspace
         if assessmentTarget == "GoogleWorkspace":
             searchPath = "./auditors/google_workspace"
@@ -550,6 +556,55 @@ class EEAuditor(object):
                         )
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
+
+    # Called from eeauditor/controller.py run_auditor()
+    def run_snowflake_checks(self, pluginName=None, delay=0):
+        """
+        Runs Snowflake Auditors using Username and Password for a given Warehouse
+        """
+        # hardcode the region and account for non-AWS checks
+        region = "us-placeholder-1"
+        account = "000000000000"
+        partition = "not-aws"
+
+        for serviceName, checkList in self.registry.checks.items():
+            # Pass the Cache at the "serviceName" level aka Plugin
+            auditorCache = {}
+            for checkName, check in checkList.items():
+                # if a specific check is requested, only run that one check
+                if (
+                    not pluginName
+                    or pluginName
+                    and pluginName == checkName
+                ):
+                    try:
+                        logger.info(
+                            "Executing Check %s for M365",
+                            checkName
+                        )
+                        for finding in check(
+                            cache=auditorCache,
+                            awsAccountId=account,
+                            awsRegion=region,
+                            awsPartition=partition,
+                            snowflakeAccountId=self.snowflakeAccountId,
+                            snowflakeRegion=self.snowflakeRegion,
+                            snowflakeCursor=self.snowflakeCursor,
+                            snowflakeConnection=self.snowflakeConnection
+                        ):
+                            if finding is not None:
+                                yield finding
+                    except Exception:
+                        logger.warn(
+                            "Failed to execute check %s with traceback %s",
+                            checkName, format_exc()
+                        )
+            # optional sleep if specified - defaults to 0 seconds
+            sleep(delay)
+
+        # close the connection to the Snowflake Warehouse
+        self.snowflakeCursor.close()
+        self.snowflakeConnection.close()
 
     # Called from eeauditor/controller.py run_auditor()
     def run_non_aws_checks(self, pluginName=None, delay=0):
