@@ -11,3 +11,4 @@ pysnow>=0.7.17
 python3-nmap>=1.6.0
 tomli>=2.0.1
 vt-py>=0.18.0
+snowflake-connector-python>=3.12.1
