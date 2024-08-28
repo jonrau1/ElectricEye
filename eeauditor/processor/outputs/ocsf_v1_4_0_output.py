@@ -303,6 +303,9 @@ class OcsfV140Output(object):
             if partition == "AWS" and region == "us-placeholder-1":
                 region = None
 
+            if region == "aws-global":
+                region = "us-east-1"
+
             if partition == "AWS" and accountId == "000000000000":
                 accountId = None
 
