@@ -18,6 +18,11 @@
 #specific language governing permissions and limitations
 #under the License.
 
+import logging
+from sys import exit as sysexit
+
+logger = logging.getLogger("OutputBase")
+
 class ElectricEyeOutput(object):
     """Class to be used as a decorator to register all output providers"""
 
@@ -33,8 +38,10 @@ class ElectricEyeOutput(object):
         try:
             return cls._outputs[provider]
         except KeyError as ke:
-            print(f"Designated output provider {provider} does not exist")
-            raise ke
+            logger.warning(
+                "Designated output provider %s does not exist", provider
+            )
+            sysexit(2)
 
     @classmethod
     def get_all_providers(cls):
