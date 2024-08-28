@@ -391,7 +391,7 @@ class OcsfFirehoseOutput(object):
                 "severity": asffToOcsf.severity,
                 "severity_id": asffToOcsf.severityId,
                 "status": recordStateMapping.status,
-                "status_id": recordStateMapping.status,
+                "status_id": recordStateMapping.statusId,
                 "start_time": eventTime,
                 "time": eventTime,
                 "type_name": recordStateMapping.typeName,
