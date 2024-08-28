@@ -58,7 +58,8 @@ SUPPORTED_FRAMEWORKS = [
     "CIS Amazon Web Services Foundations Benchmark V3.0",
     "MITRE ATT&CK",
     "CIS AWS Database Services Benchmark V1.0",
-    "CIS Microsoft Azure Foundations Benchmark V2.0.0"
+    "CIS Microsoft Azure Foundations Benchmark V2.0.0",
+    "CIS Snowflake Foundations Benchmark V1.0.0"
 ]
 
 class SeverityAccountTypeComplianceMapping(NamedTuple):
