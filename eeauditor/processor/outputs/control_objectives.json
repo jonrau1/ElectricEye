@@ -16157,6 +16157,82 @@
     },
     {
         "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 1.1",
-        "ControlDescription": "Ensure that Resource Locks are set for Mission-Critical Azure Resources"
+        "ControlDescription": "Ensure single sign-on (SSO) is configured for your account / organization"
+    },
+    {
+        "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 1.2",
+        "ControlDescription": "Ensure Snowflake SCIM integration is configured to automatically provision and deprovision users and groups (i.e. roles)"
+    },
+    {
+        "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 1.4",
+        "ControlDescription": "Ensure multi-factor authentication (MFA) is turned on for all human users with password-based authentication"
+    },
+    {
+        "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 1.5",
+        "ControlDescription": "Ensure minimum password length is set to 14 characters or more"
+    },
+    {
+        "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 1.6",
+        "ControlDescription": "Ensure that service accounts use key pair authentication"
+    },
+    {
+        "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 1.7",
+        "ControlDescription": "Ensure authentication key pairs are rotated every 180 days"
+    },
+    {
+        "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 1.8",
+        "ControlDescription": "Ensure that users who did not log in for 90 days are disabled"
+    },
+    {
+        "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 1.9",
+        "ControlDescription": "Ensure that the idle session timeout is set to 15 minutes or less for users with the ACCOUNTADMIN and SECURITYADMIN roles"
+    },
+    {
+        "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 1.10",
+        "ControlDescription": "Limit the number of users with ACCOUNTADMIN and SECURITYADMIN"
+    },
+    {
+        "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 1.11",
+        "ControlDescription": "Ensure that all users granted the ACCOUNTADMIN role have an email address assigned"
+    },
+    {
+        "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 1.12",
+        "ControlDescription": "Ensure that no users have ACCOUNTADMIN or SECURITYADMIN as the default role"
+    },
+    {
+        "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 1.13",
+        "ControlDescription": "Ensure that the ACCOUNTADMIN or SECURITYADMIN role is not granted to any custom role"
+    },
+    {
+        "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 1.14",
+        "ControlDescription": "Ensure that Snowflake tasks are not owned by the ACCOUNTADMIN or SECURITYADMIN roles"
+    },
+    {
+        "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 1.15",
+        "ControlDescription": "Ensure that Snowflake tasks do not run with the ACCOUNTADMIN or SECURITYADMIN role privileges"
+    },
+    {
+        "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 1.16",
+        "ControlDescription": "Ensure that Snowflake stored procedures are not owned by the ACCOUNTADMIN or SECURITYADMIN roles"
+    },
+    {
+        "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 1.17",
+        "ControlDescription": "Ensure Snowflake stored procedures do not run with ACCOUNTADMIN or SECURITYADMIN role privileges"
+    },
+    {
+        "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 2.1",
+        "ControlDescription": "Ensure monitoring and alerting exist for ACCOUNTADMIN and SECURITYADMIN role grants"
+    },
+    {
+        "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 2.4",
+        "ControlDescription": "Ensure monitoring and alerting exist for password sign-in without MFA"
+    },
+    {
+        "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 2.7",
+        "ControlDescription": "Ensure monitoring and alerting exist for SCIM token creation"
+    },
+    {
+        "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 3.1",
+        "ControlDescription": "Ensure that an account-level network policy has been configured to only allow access from trusted IP addresses"
     }
 ]
