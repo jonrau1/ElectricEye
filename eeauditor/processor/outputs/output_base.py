@@ -37,7 +37,7 @@ class ElectricEyeOutput(object):
         """Returns the class to process the findings"""
         try:
             return cls._outputs[provider]
-        except KeyError as ke:
+        except KeyError:
             logger.warning(
                 "Designated output provider %s does not exist", provider
             )
