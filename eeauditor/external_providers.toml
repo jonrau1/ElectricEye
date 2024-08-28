@@ -232,7 +232,7 @@ title = "ElectricEye Configuration"
 
         salesforce_api_version = "v58.0"
 
-        [credentials.snowflake]
+    [credentials.snowflake]
 
         # Username for your Snowflake Account, this should be a user with the ability to read all tables and views in the default schemas
         
@@ -247,6 +247,10 @@ title = "ElectricEye Configuration"
         # The Account ID for your Snowflake Account, this is found in the URL when you login to your Snowflake Account, e.g., VULEDAR-MR69420
 
         snowflake_account_id = ""
+
+        # The name of the warehouse you use for querying data in Snowflake, this should be a warehouse that has the ability to run queries
+
+        snowflake_warehouse_name = ""
 
         # The Region of your Snowflake Account, this is found in the URL when you login to your Snowflake Account, e.g., us-east-1
 

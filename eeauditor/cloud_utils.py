@@ -489,7 +489,45 @@ class CloudConfig(object):
 
         # Snowflake
         elif assessmentTarget == "Snowflake":
-            logger.info("Coming soon!")
+            # Process data["credentials"]["snowflake"] - values need to be assigned to self
+            snowflakeTomlValues = data["credentials"]["snowflake"]
+
+            snowflakeUsername = snowflakeTomlValues["snowflake_username"]
+            snowflakePasswordValue = snowflakeTomlValues["snowflake_password_value"]
+            snowflakeAccountId = snowflakeTomlValues["snowflake_account_id"]
+            snowflakeWarehouseName = snowflakeTomlValues["snowflake_warehouse_name"]
+            snowflakeRegion = snowflakeTomlValues["snowflake_region"]
+
+            if any(
+                # Check to make sure none of the variables pulled from TOML are emtpy
+                not var for var in [
+                    snowflakeUsername, snowflakePasswordValue, snowflakeAccountId, snowflakeWarehouseName, snowflakeRegion
+                    ]
+                ):
+                logger.error(f"One of your Salesforce TOML entries in [credentials.salesforce] is empty!")
+                sys.exit(2)
+
+            # Parse non-confidential values to environ
+            self.snowflakeUsername = snowflakeUsername
+            self.snowflakeAccountId = snowflakeAccountId
+            self.snowflakeWarehouseName = snowflakeWarehouseName
+            self.snowflakeRegion = snowflakeRegion
+
+            # Retrieve value for Snowflake Password from the TOML, AWS SSM or AWS Secrets Manager
+            if self.credentialsLocation == "CONFIG_FILE":
+                self.snowflakePasswordValue = snowflakePasswordValue
+            # SSM
+            elif self.credentialsLocation == "AWS_SSM":
+                self.snowflakePasswordValue = self.get_credential_from_aws_ssm(
+                    snowflakePasswordValue,
+                    "snowflake_password_value"
+                )
+            # AWS Secrets Manager
+            elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
+                self.snowflakePasswordValue = self.get_credential_from_aws_secrets_manager(
+                    snowflakePasswordValue,
+                    "snowflake_password_value"
+                )
 
     def get_aws_regions(self):
         """
