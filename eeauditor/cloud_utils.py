@@ -28,6 +28,7 @@ import json
 from botocore.exceptions import ClientError
 from azure.identity import ClientSecretCredential
 from azure.mgmt.resource.subscriptions import SubscriptionClient
+import snowflake.connector as snowconn
 
 logger = logging.getLogger("CloudUtils")
 
@@ -515,19 +516,25 @@ class CloudConfig(object):
 
             # Retrieve value for Snowflake Password from the TOML, AWS SSM or AWS Secrets Manager
             if self.credentialsLocation == "CONFIG_FILE":
-                self.snowflakePasswordValue = snowflakePasswordValue
+                self.snowflakePassowrd = snowflakePasswordValue
             # SSM
             elif self.credentialsLocation == "AWS_SSM":
-                self.snowflakePasswordValue = self.get_credential_from_aws_ssm(
+                self.snowflakePassowrd = self.get_credential_from_aws_ssm(
                     snowflakePasswordValue,
                     "snowflake_password_value"
                 )
             # AWS Secrets Manager
             elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
-                self.snowflakePasswordValue = self.get_credential_from_aws_secrets_manager(
+                self.snowflakePassowrd = self.get_credential_from_aws_secrets_manager(
                     snowflakePasswordValue,
                     "snowflake_password_value"
                 )
+
+            # Retrieve cursor and connector
+            snowflakeCursorConn = self.connectToSnowflake()
+
+            self.snowflakeConnection = snowflakeCursorConn[0]
+            self.snowflakeCursor = snowflakeCursorConn[1]
 
     def get_aws_regions(self):
         """
@@ -815,5 +822,23 @@ class CloudConfig(object):
             sys.exit(2)
 
         return azureSubscriptionIds
-        
+
+    def connectToSnowflake(self) -> tuple[snowconn.connection.SnowflakeConnection, snowconn.cursor.SnowflakeCursor]:
+        """
+        Returns a Snowflake cursor object for a given warehouse
+        """
+        try:
+            conn = snowconn.connect(
+            user=self.snowflakeUsername,
+            password=self.snowflakePassowrd,
+            account=self.snowflakeAccountId,
+            warehouse=self.snowflakeWarehouseName
+            )
+        except Exception as e:
+            raise e
+    
+        cur = conn.cursor()
+
+        return conn, cur
+
 ## EOF
