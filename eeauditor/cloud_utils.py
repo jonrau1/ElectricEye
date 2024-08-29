@@ -493,11 +493,11 @@ class CloudConfig(object):
             # Process data["credentials"]["snowflake"] - values need to be assigned to self
             snowflakeTomlValues = data["credentials"]["snowflake"]
 
-            snowflakeUsername = snowflakeTomlValues["snowflake_username"]
-            snowflakePasswordValue = snowflakeTomlValues["snowflake_password_value"]
-            snowflakeAccountId = snowflakeTomlValues["snowflake_account_id"]
-            snowflakeWarehouseName = snowflakeTomlValues["snowflake_warehouse_name"]
-            snowflakeRegion = snowflakeTomlValues["snowflake_region"]
+            snowflakeUsername = str(snowflakeTomlValues["snowflake_username"])
+            snowflakePasswordValue = str(snowflakeTomlValues["snowflake_password_value"])
+            snowflakeAccountId = str(snowflakeTomlValues["snowflake_account_id"])
+            snowflakeWarehouseName = str(snowflakeTomlValues["snowflake_warehouse_name"])
+            snowflakeRegion = str(snowflakeTomlValues["snowflake_region"])
 
             if any(
                 # Check to make sure none of the variables pulled from TOML are emtpy

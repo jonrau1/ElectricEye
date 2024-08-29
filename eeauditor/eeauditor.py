@@ -532,7 +532,7 @@ class EEAuditor(object):
                 ):
                     try:
                         logger.info(
-                            "Executing Check %s for Salesforce instance",
+                            "Executing Check %s for Salesforce",
                             checkName
                         )
                         for finding in check(
@@ -579,7 +579,7 @@ class EEAuditor(object):
                 ):
                     try:
                         logger.info(
-                            "Executing Check %s for M365",
+                            "Executing Check %s for Snowflake",
                             checkName
                         )
                         for finding in check(
@@ -603,8 +603,12 @@ class EEAuditor(object):
             sleep(delay)
 
         # close the connection to the Snowflake Warehouse
-        self.snowflakeCursor.close()
-        self.snowflakeConnection.close()
+        curClose = self.snowflakeCursor.close()
+        connClose = self.snowflakeConnection.close()
+
+        print(curClose, connClose)
+
+        logger.info("Snowflake connection and cursor closed.")
 
     # Called from eeauditor/controller.py run_auditor()
     def run_non_aws_checks(self, pluginName=None, delay=0):
