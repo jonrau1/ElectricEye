@@ -212,8 +212,8 @@ def get_snowflake_users(cache: dict, snowflakeCursor: cursor.SnowflakeCursor) ->
     return cache["get_snowflake_users"]
 
 @registry.register_check("snowflake.users")
-def ec2_imdsv2_check(
-    cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+def snowflake_password_assigned_user_has_mfa_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
 ) -> dict:
     """[Snowflake.Users.1] Snowflake users with passwords should have MFA enabled"""
     # ISO Time

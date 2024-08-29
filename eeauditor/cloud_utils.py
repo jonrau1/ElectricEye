@@ -829,15 +829,16 @@ class CloudConfig(object):
         """
         try:
             conn = snowconn.connect(
-            user=self.snowflakeUsername,
-            password=self.snowflakePassowrd,
-            account=self.snowflakeAccountId,
-            warehouse=self.snowflakeWarehouseName
+                user=self.snowflakeUsername,
+                password=self.snowflakePassowrd,
+                account=self.snowflakeAccountId,
+                warehouse=self.snowflakeWarehouseName
             )
         except Exception as e:
             raise e
-    
-        cur = conn.cursor()
+
+        # This allows us to return a dictionary instead of tuples
+        cur = conn.cursor(snowconn.DictCursor)
 
         return conn, cur
 
