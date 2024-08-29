@@ -589,8 +589,7 @@ class EEAuditor(object):
                             awsPartition=partition,
                             snowflakeAccountId=self.snowflakeAccountId,
                             snowflakeRegion=self.snowflakeRegion,
-                            snowflakeCursor=self.snowflakeCursor,
-                            snowflakeConnection=self.snowflakeConnection
+                            snowflakeCursor=self.snowflakeCursor
                         ):
                             if finding is not None:
                                 yield finding

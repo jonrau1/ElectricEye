@@ -81,6 +81,38 @@ def get_roles_for_user(username: str, snowflakeCursor: cursor.SnowflakeCursor) -
 
     return roles, isAdmin
 
+def check_user_logon_without_mfa(username: str, snowflakeCursor: cursor.SnowflakeCursor) -> tuple[bool, int]:
+    """Pulls distinct logs for a user where they did not use MFA, returns True if they did not use MFA along with the amount of times"""
+
+    # Check for specific users that used Password, didn't fail, and didn't use a 2FA factor
+    query = f"""
+    SELECT DISTINCT
+        USER_NAME,
+        IS_SUCCESS
+        FIRST_AUTHENTICATION_FACTOR,
+        SECOND_AUTHENTICATION_FACTOR
+    FROM SNOWFLAKE.ACCOUNT_USAGE.LOGIN_HISTORY
+    WHERE USER_NAME = '{username}'
+    AND IS_SUCCESS = 'YES'
+    AND FIRST_AUTHENTICATION_FACTOR = 'PASSWORD'
+    AND SECOND_AUTHENTICATION_FACTOR IS NULL
+    """
+
+    try:
+        q = snowflakeCursor.execute(query).fetchall()
+    except Exception as e:
+        logger.warning("Exception encountered while trying to get logon history for user %s: %s", username, e)
+        return (False, 0)
+
+    if q:
+        loginWithoutMfa = True
+        logonsWithoutMfaCount = len(q)
+    else:
+        loginWithoutMfa = False
+        logonsWithoutMfaCount = 0
+
+    return (loginWithoutMfa, logonsWithoutMfaCount)
+
 def get_snowflake_users(cache: dict, snowflakeCursor: cursor.SnowflakeCursor) -> dict:
     """
     Gathers a list of users from the SNOWFLAKE.ACCOUNT_USAGE.USERS table, enriches the data with Snowflake Roles and Snowflake Logon data, and returns a list of dictionaries containing user data. This is written into the ElectricEye cache.
@@ -178,3 +210,166 @@ def get_snowflake_users(cache: dict, snowflakeCursor: cursor.SnowflakeCursor) ->
     cache["get_snowflake_users"] = snowflakeUsers
 
     return cache["get_snowflake_users"]
+
+@registry.register_check("snowflake.users")
+def ec2_imdsv2_check(
+    cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+) -> dict:
+    """[Snowflake.Users.1] Snowflake users with passwords should have MFA enabled"""
+    # ISO Time
+    iso8601Time = datetime.utcnow().replace(tzinfo=timezone.utc).isoformat()
+    # Get all of the users
+    for user in get_snowflake_users(cache, snowflakeCursor):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(user,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        username = user["name"]
+        # this is a passing check
+        if user["ext_authn_duo"] is True and user["has_password"] is True:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{snowflakeAccountId}/{username}/password-user-mfa-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{snowflakeAccountId}/{username}",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Snowflake.Users.1] Snowflake users with passwords should have MFA enabled",
+                "Description": f"Snowflake user {username} has a password assigned and has MFA enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on MFA best practices for users in Snowflake refer to the community post Snowflake Security Overview and Best Practices in the Snowflake Community Portal.",
+                        "Url": "https://community.snowflake.com/s/article/Snowflake-Security-Overview-and-Best-Practices?mkt_tok=MjUyLVJGTy0yMjcAAAGTVPcnsobib0St0CwRwVZ4sfwHPicq12DnL_MX_bz-yG4OgkADmIh6ll3PcRhIqFeezBwdFSNL-ipp9vJHUV6hRiKUK2b-0f5_HGpkwz7pTG2_w6cO9Q"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Snowflake",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": snowflakeAccountId,
+                    "AssetRegion": snowflakeRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Snowflake Users",
+                    "AssetComponent": "User"
+                },
+                "Resources": [
+                    {
+                        "Type": "SnowflakeUser",
+                        "Id": username,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-3",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-6",
+                        "NIST SP 800-53 Rev. 4 IA-7",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 IA-9",
+                        "NIST SP 800-53 Rev. 4 IA-10",
+                        "NIST SP 800-53 Rev. 4 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3",
+                        "CIS Snowflake Foundations Benchmark V1.0 1.4"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{snowflakeAccountId}/{username}/password-user-mfa-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{snowflakeAccountId}/{username}",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[Snowflake.Users.1] Snowflake users with passwords should have MFA enabled",
+                "Description": f"Snowflake user {username} has a password assigned but does not have MFA enabled. Multi-factor authentication (MFA) is a security control used to add an additional layer of login security. It works by requiring the user to present two or more proofs (factors) of user identity. An MFA example would be requiring a password and a verification code delivered to the user's phone during user sign-in. The MFA feature for Snowflake users is powered by the Duo Security service. This check does not account for SCIM or IdP-managed users with external MFA devices assigned, that criteria should be manually verified. Refer to the remediation section if this behavior is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on MFA best practices for users in Snowflake refer to the community post Snowflake Security Overview and Best Practices in the Snowflake Community Portal.",
+                        "Url": "https://community.snowflake.com/s/article/Snowflake-Security-Overview-and-Best-Practices?mkt_tok=MjUyLVJGTy0yMjcAAAGTVPcnsobib0St0CwRwVZ4sfwHPicq12DnL_MX_bz-yG4OgkADmIh6ll3PcRhIqFeezBwdFSNL-ipp9vJHUV6hRiKUK2b-0f5_HGpkwz7pTG2_w6cO9Q"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Snowflake",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": snowflakeAccountId,
+                    "AssetRegion": snowflakeRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Snowflake Users",
+                    "AssetComponent": "User"
+                },
+                "Resources": [
+                    {
+                        "Type": "SnowflakeUser",
+                        "Id": username,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-3",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-6",
+                        "NIST SP 800-53 Rev. 4 IA-7",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 IA-9",
+                        "NIST SP 800-53 Rev. 4 IA-10",
+                        "NIST SP 800-53 Rev. 4 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3",
+                        "CIS Snowflake Foundations Benchmark V1.0 1.4"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
