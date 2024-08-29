@@ -47,18 +47,29 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
 
     app.load_plugins(auditorName)
     # Per-target calls - ensure you use the right run_*_checks*() function
+    
+    # Amazon Web Services
     if assessmentTarget == "AWS":
         findings = list(app.run_aws_checks(pluginName=pluginName, delay=delay))
-    elif assessmentTarget == "GCP":
+    # Google Cloud Platform
+    if assessmentTarget == "GCP":
         findings = list(app.run_gcp_checks(pluginName=pluginName, delay=delay))
-    elif assessmentTarget == "OCI":
+    # Oracle Cloud Infrastructure
+    if assessmentTarget == "OCI":
         findings = list(app.run_oci_checks(pluginName=pluginName, delay=delay))
-    elif assessmentTarget == "Azure":
+    # Microsoft Azure
+    if assessmentTarget == "Azure":
         findings = list(app.run_azure_checks(pluginName=pluginName, delay=delay))
-    elif assessmentTarget == "M365":
+    # Microsoft 365
+    if assessmentTarget == "M365":
         findings = list(app.run_m365_checks(pluginName=pluginName, delay=delay))
-    elif assessmentTarget == "Salesforce":
+    # Salesforce
+    if assessmentTarget == "Salesforce":
         findings = list(app.run_salesforce_checks(pluginName=pluginName, delay=delay))
+    # Snowflake
+    if assessmentTarget == "Snowflake":
+        findings = list(app.run_snowflake_checks(pluginName=pluginName, delay=delay))
+    # ServiceNow, and some other shit, probably
     else:
         findings = list(app.run_non_aws_checks(pluginName=pluginName, delay=delay))
 

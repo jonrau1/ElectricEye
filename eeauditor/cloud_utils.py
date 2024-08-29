@@ -117,7 +117,7 @@ class CloudConfig(object):
             self.electricEyeRoleName = electricEyeRoleName
         
         # GCP
-        elif assessmentTarget == "GCP":
+        if assessmentTarget == "GCP":
             # Process ["gcp_project_ids"]
             gcpProjects = data["regions_and_accounts"]["gcp"]["gcp_project_ids"]
             if not gcpProjects:
@@ -143,7 +143,7 @@ class CloudConfig(object):
             self.setup_gcp_credentials(self.gcpServiceAccountJsonPayloadValue)
         
         # Oracle Cloud Infrastructure (OCI)
-        elif assessmentTarget == "OCI":
+        if assessmentTarget == "OCI":
             ociValues = data["regions_and_accounts"]["oci"]
 
             # Retrieve the OCIDs for Tenancy & User and the Region ID along with a list of Compartment OCIDs
@@ -206,7 +206,7 @@ class CloudConfig(object):
             self.setup_oci_credentials(ociUserApiKeyPemLocation)
 
         # Azure
-        elif assessmentTarget == "Azure":
+        if assessmentTarget == "Azure":
             # Process data["credentials"]["azure"] - values need to be assigned to self
             azureValues = data["credentials"]["azure"]
 
@@ -282,7 +282,7 @@ class CloudConfig(object):
             self.azureCredentials = azureCredentials
 
         # Alibaba Cloud
-        elif assessmentTarget == "Alibaba":
+        if assessmentTarget == "Alibaba":
             logger.info("Coming soon!")
 
         ###################################
@@ -290,7 +290,7 @@ class CloudConfig(object):
         ###################################
 
         # ServiceNow
-        elif assessmentTarget == "Servicenow":
+        if assessmentTarget == "Servicenow":
             # Process data["credentials"]["servicenow"] - nothing needs to be assigned to `self`
             serviceNowValues = data["credentials"]["servicenow"]
 
@@ -330,7 +330,7 @@ class CloudConfig(object):
             environ["SNOW_FAILED_LOGIN_BREACHING_RATE"] = snowUserLoginBreachRate
 
         # M365
-        elif assessmentTarget == "M365":
+        if assessmentTarget == "M365":
             # Process data["credentials"]["m365"] - values need to be assigned to self
             m365Values = data["credentials"]["m365"]
 
@@ -392,7 +392,7 @@ class CloudConfig(object):
                 )
     
         # Salesforce
-        elif assessmentTarget == "Salesforce":
+        if assessmentTarget == "Salesforce":
             # Process data["credentials"]["m365"] - values need to be assigned to self
             salesforceValues = data["credentials"]["salesforce"]
 
@@ -485,11 +485,11 @@ class CloudConfig(object):
                 )
 
         # Google Workspace
-        elif assessmentTarget == "GoogleWorkspace":
+        if assessmentTarget == "GoogleWorkspace":
             logger.info("Coming soon!")
 
         # Snowflake
-        elif assessmentTarget == "Snowflake":
+        if assessmentTarget == "Snowflake":
             # Process data["credentials"]["snowflake"] - values need to be assigned to self
             snowflakeTomlValues = data["credentials"]["snowflake"]
 
