@@ -18,13 +18,15 @@
 #specific language governing permissions and limitations
 #under the License.
 
+import logging
 from datetime import datetime, timezone, timedelta, UTC
 from snowflake.connector import cursor
 import snowflake.connector.errors as snowerrors
-import os
 from check_register import CheckRegister
 import base64
 import json
+
+logger = logging.getLogger("AwsEc2Auditor")
 
 registry = CheckRegister()
 
@@ -61,12 +63,13 @@ def get_roles_for_user(username: str, snowflakeCursor: cursor.SnowflakeCursor) -
         for row in q.fetchall():
             roles.append(row["role"])
     except TypeError:
-        print(f"no roles for the user: {username}")
+        logger.warn(f"no roles for the user: {username}")
     except snowerrors.ProgrammingError as spe:
         if "does not exist" in str(spe):
-            print(f"User {username} is inactive or roles are unable to be retrieved.")
+            logger.warning("User %s is inactive or roles are unable to be retrieved.", username)
     except Exception as e:
-        raise e
+        logger.warning("Exception encounterd while trying to get roles for user %s: %s", username, e)
+        return (list(), None)
     
     if roles:
         if any(adminrole in roles for adminrole in adminRoles):
@@ -170,7 +173,7 @@ def get_snowflake_users(cache: dict, snowflakeCursor: cursor.SnowflakeCursor) ->
                 }
             )
     except Exception as e:
-        raise e
+        logger.warning("Exception encountered while trying to get users: %s", e)
     
     cache["get_snowflake_users"] = snowflakeUsers
 
