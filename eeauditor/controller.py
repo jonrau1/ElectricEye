@@ -101,11 +101,12 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
             "GCP",
             "Servicenow",
             "M365",
-            "Salesforce"
+            "Salesforce",
+            "Snowflake"
         ],
         case_sensitive=True
     ),
-    help="CSP or SaaS Vendor Assessment Target, ensure that any -a or -c arg maps to your target provider e.g., -t AWS -a Amazon_APGIW_Auditor"
+    help="Public cloud or SaaS assessment target, ensure that any -a or -c arg maps to your target provider to avoid any errors. e.g., -t AWS -a Amazon_APGIW_Auditor"
 )
 # Run Specific Auditor
 @click.option(
