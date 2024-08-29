@@ -217,7 +217,7 @@ def snowflake_password_assigned_user_has_mfa_check(
 ) -> dict:
     """[Snowflake.Users.1] Snowflake users with passwords should have MFA enabled"""
     # ISO Time
-    iso8601Time = datetime.utcnow().replace(tzinfo=timezone.utc).isoformat()
+    iso8601Time = datetime.now(UTC).replace(tzinfo=timezone.utc).isoformat()
     # Get all of the users
     for user in get_snowflake_users(cache, snowflakeCursor):
         # B64 encode all of the details for the Asset
@@ -384,7 +384,7 @@ def snowflake_service_account_user_uses_keypair_check(
 ) -> dict:
     """[Snowflake.Users.2] Snowflake 'service account' users should use RSA key pairs for authentication"""
     # ISO Time
-    iso8601Time = datetime.utcnow().replace(tzinfo=timezone.utc).isoformat()
+    iso8601Time = datetime.now(UTC).replace(tzinfo=timezone.utc).isoformat()
     # Get all of the users
     for user in get_snowflake_users(cache, snowflakeCursor):
         # B64 encode all of the details for the Asset
@@ -539,6 +539,215 @@ def snowflake_service_account_user_uses_keypair_check(
                         "MITRE ATT&CK T1589",
                         "MITRE ATT&CK T1586",
                         "CIS Snowflake Foundations Benchmark V1.0 1.6"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+
+@registry.register_check("snowflake.users")
+def snowflake_disable_users_without_last_90_day_login_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+) -> dict:
+    """[Snowflake.Users.3] Snowflake users that have not logged in within the last 90 days should be disabled"""
+    # ISO Time
+    iso8601Time = datetime.now(UTC).replace(tzinfo=timezone.utc).isoformat()
+    # Get all of the users
+    for user in get_snowflake_users(cache, snowflakeCursor):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(user,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        username = user["name"]
+
+        # determine if there was a successful login in the last 90 days for users that are not disabled and have otherwise logged in
+        passingCheck = True
+        if user["last_success_login"] and user["disabled"] is False:
+            lastLogin = datetime.fromisoformat(user["last_success_login"])
+            ninetyDaysAgo = datetime.now(UTC) - timedelta(days=90)
+            if lastLogin > ninetyDaysAgo:
+                passingCheck = False
+
+        # this is a passing check
+        if passingCheck:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{snowflakeAccountId}/{username}/disable-user-without-login-in-last-90-days-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{snowflakeAccountId}/{username}",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "Snowflake users that have not logged in within the last 90 days should be disabled",
+                "Description": f"Snowflake user {username} is either disabled or has logged in within the last 90 days.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on user management best practices for users in Snowflake refer to the community post Snowflake Security Overview and Best Practices in the Snowflake Community Portal.",
+                        "Url": "https://community.snowflake.com/s/article/Snowflake-Security-Overview-and-Best-Practices?mkt_tok=MjUyLVJGTy0yMjcAAAGTVPcnsobib0St0CwRwVZ4sfwHPicq12DnL_MX_bz-yG4OgkADmIh6ll3PcRhIqFeezBwdFSNL-ipp9vJHUV6hRiKUK2b-0f5_HGpkwz7pTG2_w6cO9Q"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Snowflake",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": snowflakeAccountId,
+                    "AssetRegion": snowflakeRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Snowflake Users",
+                    "AssetComponent": "User"
+                },
+                "Resources": [
+                    {
+                        "Type": "SnowflakeUser",
+                        "Id": username,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Snowflake Foundations Benchmark V1.0 1.8"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+        # this is a failing check
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{snowflakeAccountId}/{username}/disable-user-without-login-in-last-90-days-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{snowflakeAccountId}/{username}",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "Snowflake users that have not logged in within the last 90 days should be disabled",
+                "Description": f"Snowflake user {username} has not logged in within the last 90 days and should be considered for disablement. Access grants tend to accumulate over time unless explicitly set to expire. Regularly revoking unused access grants and disabling inactive user accounts is a good countermeasure to this dynamic. If credentials of an inactive user account are leaked or stolen, it may take longer to discover the compromise. In Snowflake an user account can be disabled by users with the ACCOUNTADMIN role. Disabling inactive user accounts supports the principle of least privilege and generally reduces attack surface. For more information on user management best practices refer to the Snowflake documentation.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on user management best practices for users in Snowflake refer to the community post Snowflake Security Overview and Best Practices in the Snowflake Community Portal.",
+                        "Url": "https://community.snowflake.com/s/article/Snowflake-Security-Overview-and-Best-Practices?mkt_tok=MjUyLVJGTy0yMjcAAAGTVPcnsobib0St0CwRwVZ4sfwHPicq12DnL_MX_bz-yG4OgkADmIh6ll3PcRhIqFeezBwdFSNL-ipp9vJHUV6hRiKUK2b-0f5_HGpkwz7pTG2_w6cO9Q"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Snowflake",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": snowflakeAccountId,
+                    "AssetRegion": snowflakeRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Snowflake Users",
+                    "AssetComponent": "User"
+                },
+                "Resources": [
+                    {
+                        "Type": "SnowflakeUser",
+                        "Id": username,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-3",
+                        "NIST CSF V1.1 DE.AE-1",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST CSF V1.1 DE.CM-1",
+                        "NIST CSF V1.1 DE.CM-7",
+                        "NIST CSF V1.1 PR.PT-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 AU-12",
+                        "NIST SP 800-53 Rev. 4 CA-3",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 CA-9",
+                        "NIST SP 800-53 Rev. 4 CM-2",
+                        "NIST SP 800-53 Rev. 4 CM-3",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 PE-3",
+                        "NIST SP 800-53 Rev. 4 PE-6",
+                        "NIST SP 800-53 Rev. 4 PE-20",
+                        "NIST SP 800-53 Rev. 4 PL-8",
+                        "NIST SP 800-53 Rev. 4 SC-5",
+                        "NIST SP 800-53 Rev. 4 SC-7",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.1.1",
+                        "ISO 27001:2013 A.12.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.12.4.2",
+                        "ISO 27001:2013 A.12.4.3",
+                        "ISO 27001:2013 A.12.4.4",
+                        "ISO 27001:2013 A.12.7.1",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.2",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.16.1.7",
+                        "CIS Snowflake Foundations Benchmark V1.0 1.8"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
