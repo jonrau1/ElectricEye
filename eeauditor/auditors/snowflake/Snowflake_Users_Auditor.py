@@ -295,7 +295,7 @@ def snowflake_password_assigned_user_has_mfa_check(
                         "ISO 27001:2013 A.9.4.3",
                         "MITRE ATT&CK T1589",
                         "MITRE ATT&CK T1586",
-                        "CIS Snowflake Foundations Benchmark V1.0 1.4"
+                        "CIS Snowflake Foundations Benchmark V1.0.0 1.4"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -372,7 +372,7 @@ def snowflake_password_assigned_user_has_mfa_check(
                         "ISO 27001:2013 A.9.4.3",
                         "MITRE ATT&CK T1589",
                         "MITRE ATT&CK T1586",
-                        "CIS Snowflake Foundations Benchmark V1.0 1.4"
+                        "CIS Snowflake Foundations Benchmark V1.0.0 1.4"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -463,7 +463,7 @@ def snowflake_service_account_user_uses_keypair_check(
                         "ISO 27001:2013 A.9.4.3",
                         "MITRE ATT&CK T1589",
                         "MITRE ATT&CK T1586",
-                        "CIS Snowflake Foundations Benchmark V1.0 1.6"
+                        "CIS Snowflake Foundations Benchmark V1.0.0 1.6"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -540,7 +540,7 @@ def snowflake_service_account_user_uses_keypair_check(
                         "ISO 27001:2013 A.9.4.3",
                         "MITRE ATT&CK T1589",
                         "MITRE ATT&CK T1586",
-                        "CIS Snowflake Foundations Benchmark V1.0 1.6"
+                        "CIS Snowflake Foundations Benchmark V1.0.0 1.6"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -656,7 +656,7 @@ def snowflake_disable_users_without_last_90_day_login_check(
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Snowflake Foundations Benchmark V1.0 1.8"
+                        "CIS Snowflake Foundations Benchmark V1.0.0 1.8"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -749,7 +749,7 @@ def snowflake_disable_users_without_last_90_day_login_check(
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Snowflake Foundations Benchmark V1.0 1.8"
+                        "CIS Snowflake Foundations Benchmark V1.0.0 1.8"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},

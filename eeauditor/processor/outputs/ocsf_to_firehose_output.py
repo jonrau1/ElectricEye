@@ -359,20 +359,21 @@ class OcsfFirehoseOutput(object):
             )
 
             # Non-AWS checks have hardcoded "dummy" data for Account, Region, and Partition - set these to none
+            provider = finding["ProductFields"]["Provider"]
             partition = finding["Resources"][0]["Partition"]
             region = finding["ProductFields"]["AssetRegion"]
             accountId = finding["ProductFields"]["ProviderAccountId"]
 
-            if partition != "AWS" or partition == "not-aws":
+            if provider != "AWS" or partition == "not-aws":
                 partition = None
 
-            if partition == "AWS" and region == "us-placeholder-1":
+            if region == "us-placeholder-1":
                 region = None
 
             if region == "aws-global":
                 region = "us-east-1"
 
-            if partition == "AWS" and accountId == "000000000000":
+            if accountId == "000000000000":
                 accountId = None
 
             eventTime = self.iso8061_to_epochseconds(finding["CreatedAt"])
