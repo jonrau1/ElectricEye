@@ -564,7 +564,7 @@ def snowflake_disable_users_without_last_90_day_login_check(
 
         # determine if there was a successful login in the last 90 days for users that are not disabled and have otherwise logged in
         passingCheck = True
-        if user["last_success_login"] and user["disabled"] is "false" and user["deleted_on"] is None:
+        if user["last_success_login"] and user["disabled"] == "false" and user["deleted_on"] is None:
             lastLogin = datetime.fromisoformat(user["last_success_login"])
             ninetyDaysAgo = datetime.now(UTC) - timedelta(days=90)
             if lastLogin > ninetyDaysAgo:
@@ -1416,7 +1416,7 @@ def snowflake_admin_password_users_yearly_password_rotation_check(
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "RESOLVED"
+                "RecordState": "ACTIVE"
             }
             yield finding
 
@@ -1595,5 +1595,163 @@ def snowflake_bypass_mfa_review_check(
                 "RecordState": "ACTIVE"
             }
             yield finding
+
+@registry.register_check("snowflake.users")
+def snowflake_limit_admin_users_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+) -> dict:
+    """[Snowflake.Users.9] Snowflake Accounts should have at least two admin users but less than ten"""
+    # ISO Time
+    iso8601Time = datetime.now(UTC).replace(tzinfo=timezone.utc).isoformat()
+    
+    # using the "is_admin" field to determine if the user is an admin, create a list comprehension to count the number of admins, if the count is less than 2 or greater than 10 this check will fail by changing the properAmountOfAdmins variable to False
+    properAmountOfAdmins = True
+    adminUsers = [user for user in get_snowflake_users(cache, snowflakeCursor) if user["is_admin"] is True and user["deleted_on"] is None]
+    adminCount = len(adminUsers)
+    if adminCount < 2 or adminCount > 10:
+        properAmountOfAdmins = False
+
+    # B64 encode all of the details for the Asset
+    assetJson = json.dumps(adminUsers,default=str).encode("utf-8")
+    assetB64 = base64.b64encode(assetJson)
+
+    # this is a passing check
+    if properAmountOfAdmins is True:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{snowflakeAccountId}/snowflake-account-limted-admins-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": snowflakeAccountId,
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[Snowflake.Users.9] Snowflake Accounts should have at least two admin users but less than ten",
+            "Description": f"Snowflake account {snowflakeAccountId} has more than two users with admin roles and less than ten. ORGADMIN, SECURITYADMIN, ACCOUNTADMIN, and SYSADMIN are the built-in Snowflake admin roles. This check does not account for custom assigned roles, only the built-in Snowflake admin roles. Following the principle of least privilege that prescribes limiting user's privileges to those that are strictly required to do their jobs, the admin roles should be assigned to a limited number of designated users (e.g., less than 10, but at least 2 to ensure that access can be recovered if one ACCOUNTAMIN user is having login difficulties).",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For information on best practices for users in Snowflake refer to the community post Snowflake Security Overview and Best Practices in the Snowflake Community Portal.",
+                    "Url": "https://community.snowflake.com/s/article/Snowflake-Security-Overview-and-Best-Practices?mkt_tok=MjUyLVJGTy0yMjcAAAGTVPcnsobib0St0CwRwVZ4sfwHPicq12DnL_MX_bz-yG4OgkADmIh6ll3PcRhIqFeezBwdFSNL-ipp9vJHUV6hRiKUK2b-0f5_HGpkwz7pTG2_w6cO9Q"
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Snowflake",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": snowflakeAccountId,
+                "AssetRegion": snowflakeRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Snowflake Account",
+                "AssetComponent": "Account"
+            },
+            "Resources": [
+                {
+                    "Type": "SnowflakeAccount",
+                    "Id": snowflakeAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.AC-4",
+                    "NIST SP 800-53 Rev. 4 AC-2",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 AC-5",
+                    "NIST SP 800-53 Rev. 4 AC-6",
+                    "NIST SP 800-53 Rev. 4 AC-16",
+                    "AICPA TSC CC6.3",
+                    "ISO 27001:2013 A.6.1.2",
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.2.3",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "MITRE ATT&CK T1210",
+                    "MITRE ATT&CK T1570",
+                    "MITRE ATT&CK T1021.007",
+                    "MITRE ATT&CK T1020",
+                    "MITRE ATT&CK T1048",
+                    "MITRE ATT&CK T1567",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 1.10"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+    # this is a failing check
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{snowflakeAccountId}/snowflake-account-limted-admins-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": snowflakeAccountId,
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "LOW"},
+            "Confidence": 99,
+            "Title": "[Snowflake.Users.9] Snowflake Accounts should have at least two admin users but less than ten",
+            "Description": f"Snowflake account {snowflakeAccountId} either has less than two admins or more than ten. ORGADMIN, SECURITYADMIN, ACCOUNTADMIN, and SYSADMIN are the built-in Snowflake admin roles. This check does not account for custom assigned roles, only the built-in Snowflake admin roles. Following the principle of least privilege that prescribes limiting user's privileges to those that are strictly required to do their jobs, the admin roles should be assigned to a limited number of designated users (e.g., less than 10, but at least 2 to ensure that access can be recovered if one ACCOUNTAMIN user is having login difficulties).",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For information on best practices for users in Snowflake refer to the community post Snowflake Security Overview and Best Practices in the Snowflake Community Portal.",
+                    "Url": "https://community.snowflake.com/s/article/Snowflake-Security-Overview-and-Best-Practices?mkt_tok=MjUyLVJGTy0yMjcAAAGTVPcnsobib0St0CwRwVZ4sfwHPicq12DnL_MX_bz-yG4OgkADmIh6ll3PcRhIqFeezBwdFSNL-ipp9vJHUV6hRiKUK2b-0f5_HGpkwz7pTG2_w6cO9Q"
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Snowflake",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": snowflakeAccountId,
+                "AssetRegion": snowflakeRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Snowflake Account",
+                "AssetComponent": "Account"
+            },
+            "Resources": [
+                {
+                    "Type": "SnowflakeAccount",
+                    "Id": snowflakeAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.AC-4",
+                    "NIST SP 800-53 Rev. 4 AC-2",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 AC-5",
+                    "NIST SP 800-53 Rev. 4 AC-6",
+                    "NIST SP 800-53 Rev. 4 AC-16",
+                    "AICPA TSC CC6.3",
+                    "ISO 27001:2013 A.6.1.2",
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.2.3",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "MITRE ATT&CK T1210",
+                    "MITRE ATT&CK T1570",
+                    "MITRE ATT&CK T1021.007",
+                    "MITRE ATT&CK T1020",
+                    "MITRE ATT&CK T1048",
+                    "MITRE ATT&CK T1567",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 1.10"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
 
 # EOF
