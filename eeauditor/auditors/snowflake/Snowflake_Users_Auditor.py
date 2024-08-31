@@ -67,7 +67,7 @@ def get_roles_for_user(username: str, snowflakeCursor: cursor.SnowflakeCursor) -
         logger.warn(f"no roles for the user: {username}")
     except snowerrors.ProgrammingError as spe:
         if "does not exist" in str(spe):
-            logger.warning("User %s is inactive or roles are unable to be retrieved.", username)
+            logger.warning("Snowflake User %s is inactive or roles are unable to be retrieved.", username)
     except Exception as e:
         logger.warning("Exception encounterd while trying to get roles for user %s: %s", username, e)
         return (list(), None)
@@ -102,7 +102,7 @@ def check_user_logon_without_mfa(username: str, snowflakeCursor: cursor.Snowflak
     try:
         q = snowflakeCursor.execute(query).fetchall()
     except Exception as e:
-        logger.warning("Exception encountered while trying to get logon history for user %s: %s", username, e)
+        logger.warning("Exception encountered while trying to get logon history for Snowflake user %s: %s", username, e)
         return (False, 0)
 
     if q:
@@ -206,7 +206,7 @@ def get_snowflake_users(cache: dict, snowflakeCursor: cursor.SnowflakeCursor) ->
                 }
             )
     except Exception as e:
-        logger.warning("Exception encountered while trying to get users: %s", e)
+        logger.warning("Exception encountered while trying to get Snowflake users: %s", e)
     
     cache["get_snowflake_users"] = snowflakeUsers
 
@@ -656,7 +656,8 @@ def snowflake_disable_users_without_last_90_day_login_check(
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Snowflake Foundations Benchmark V1.0.0 1.8"
+                        "CIS Snowflake Foundations Benchmark V1.0.0 1.8",
+                        "CIS Snowflake Foundations Benchmark V1.0.0 2.3"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -749,7 +750,8 @@ def snowflake_disable_users_without_last_90_day_login_check(
                         "ISO 27001:2013 A.14.2.7",
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
-                        "CIS Snowflake Foundations Benchmark V1.0.0 1.8"
+                        "CIS Snowflake Foundations Benchmark V1.0.0 1.8",
+                        "CIS Snowflake Foundations Benchmark V1.0.0 2.3"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -1066,6 +1068,355 @@ def snowflake_admin_default_role_check(
                 },
                 "Workflow": {"Status": "NEW"},
                 "RecordState": "ACTIVE"
+            }
+            yield finding
+
+@registry.register_check("snowflake.users")
+def snowflake_logins_without_mfa_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+) -> dict:
+    """[Snowflake.Users.6] Snowflake users should be monitored for logins without MFA"""
+    # ISO Time
+    iso8601Time = datetime.now(UTC).replace(tzinfo=timezone.utc).isoformat()
+    # Get all of the users
+    for user in get_snowflake_users(cache, snowflakeCursor):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(user,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        username = user["name"]
+
+        # Hey, we prepoulate the MFA status in the user object so we can just check it here
+        loggedInWithoutMfa = user["logged_on_without_mfa"]
+        timesLoggedInWithoutMfa = user["total_logons_without_mfa"]
+
+        # this is a passing check
+        if loggedInWithoutMfa is False and user["has_password"] is True and user["deleted_on"] is None:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{snowflakeAccountId}/{username}/snowflake-logins-without-mfa-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{snowflakeAccountId}/{username}",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Snowflake.Users.6] Snowflake users should be monitored for logins without MFA",
+                "Description": f"Snowflake user {username} has not logged in without MFA. This check does not take into account if users have *never* logged in nor does it take into account if users have MFA enabled. This check relies on data stored in the LOGON_HISTORY view and may not be up-to-date.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on MFA best practices for users in Snowflake refer to the community post Snowflake Security Overview and Best Practices in the Snowflake Community Portal.",
+                        "Url": "https://community.snowflake.com/s/article/Snowflake-Security-Overview-and-Best-Practices?mkt_tok=MjUyLVJGTy0yMjcAAAGTVPcnsobib0St0CwRwVZ4sfwHPicq12DnL_MX_bz-yG4OgkADmIh6ll3PcRhIqFeezBwdFSNL-ipp9vJHUV6hRiKUK2b-0f5_HGpkwz7pTG2_w6cO9Q"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Snowflake",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": snowflakeAccountId,
+                    "AssetRegion": snowflakeRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Snowflake Users",
+                    "AssetComponent": "User"
+                },
+                "Resources": [
+                    {
+                        "Type": "SnowflakeUser",
+                        "Id": username,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-3",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-6",
+                        "NIST SP 800-53 Rev. 4 IA-7",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 IA-9",
+                        "NIST SP 800-53 Rev. 4 IA-10",
+                        "NIST SP 800-53 Rev. 4 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3",
+                        "MITRE ATT&CK T1589",
+                        "MITRE ATT&CK T1586",
+                        "CIS Snowflake Foundations Benchmark V1.0.0 2.4"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+        # this is a failing check
+        if loggedInWithoutMfa is True and user["has_password"] is True and user["deleted_on"] is None:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{snowflakeAccountId}/{username}/snowflake-logins-without-mfa-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{snowflakeAccountId}/{username}",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[Snowflake.Users.6] Snowflake users should be monitored for logins without MFA",
+                "Description": f"Snowflake user {username} has logged in without MFA {timesLoggedInWithoutMfa} times. This check relies on data stored in the LOGON_HISTORY view and includes at least a year of logins, hence the lower severity level. Multi-factor authentication (MFA) is a security control used to add an additional layer of login security. It works by requiring the user to present two or more proofs (factors) of user identity. An MFA example would be requiring a password and a verification code delivered to the user's phone during user sign-in. MFA mitigates security threats of users creating weak passwords and user passwords being stolen or accidentally leaked. For more information on MFA best practices for users in Snowflake refer to the community post Snowflake Security Overview and Best Practices in the Snowflake Community Portal.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on MFA best practices for users in Snowflake refer to the community post Snowflake Security Overview and Best Practices in the Snowflake Community Portal.",
+                        "Url": "https://community.snowflake.com/s/article/Snowflake-Security-Overview-and-Best-Practices?mkt_tok=MjUyLVJGTy0yMjcAAAGTVPcnsobib0St0CwRwVZ4sfwHPicq12DnL_MX_bz-yG4OgkADmIh6ll3PcRhIqFeezBwdFSNL-ipp9vJHUV6hRiKUK2b-0f5_HGpkwz7pTG2_w6cO9Q"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Snowflake",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": snowflakeAccountId,
+                    "AssetRegion": snowflakeRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Snowflake Users",
+                    "AssetComponent": "User"
+                },
+                "Resources": [
+                    {
+                        "Type": "SnowflakeUser",
+                        "Id": username,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-3",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-6",
+                        "NIST SP 800-53 Rev. 4 IA-7",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 IA-9",
+                        "NIST SP 800-53 Rev. 4 IA-10",
+                        "NIST SP 800-53 Rev. 4 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3",
+                        "MITRE ATT&CK T1589",
+                        "MITRE ATT&CK T1586",
+                        "CIS Snowflake Foundations Benchmark V1.0.0 2.4"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+
+@registry.register_check("snowflake.users")
+def snowflake_admin_password_users_yearly_password_rotation_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+) -> dict:
+    """[Snowflake.Users.7] Snowflake users with any admin role assigned should have their password rotated yearly"""
+    # ISO Time
+    iso8601Time = datetime.now(UTC).replace(tzinfo=timezone.utc).isoformat()
+    # Get all of the users
+    for user in get_snowflake_users(cache, snowflakeCursor):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(user,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        username = user["name"]
+
+        # Use the "is_admin" field to determine if the user is an admin and the "password_last_set_time" field (ISO-8061) to determine if the password has been rotated in the last year
+        rotatedInLastYear = True
+        isAdmin = user["is_admin"]
+        passwordLastSetTime = datetime.fromisoformat(user["password_last_set_time"])
+        currentTime = datetime.now(UTC)
+        daysAgo = currentTime - timedelta(days=365)
+        if passwordLastSetTime < daysAgo:
+            rotatedInLastYear = False
+        
+        # this is a passing check
+        if rotatedInLastYear is True and isAdmin is True and user["has_password"] is True and user["deleted_on"] is None:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{snowflakeAccountId}/{username}/snowflake-admins-yearly-passowrd-rotation-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{snowflakeAccountId}/{username}",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Snowflake.Users.7] Snowflake users with any admin role assigned should have their password rotated yearly",
+                "Description": f"Snowflake user {username} has an admin role assigned and has rotated their password in the last year. This check does not account for custom assigned roles, only the built-in Snowflake admin roles: ACCOUNTADMIN, ORGADMIN, SECURITYADMIN, or SYSADMIN. This check also only checks if there is a password set for the user, as 'service accounts' do not have passwords and do not need to be rotated.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on security best practices for users in Snowflake refer to the community post Snowflake Security Overview and Best Practices in the Snowflake Community Portal.",
+                        "Url": "https://community.snowflake.com/s/article/Snowflake-Security-Overview-and-Best-Practices?mkt_tok=MjUyLVJGTy0yMjcAAAGTVPcnsobib0St0CwRwVZ4sfwHPicq12DnL_MX_bz-yG4OgkADmIh6ll3PcRhIqFeezBwdFSNL-ipp9vJHUV6hRiKUK2b-0f5_HGpkwz7pTG2_w6cO9Q"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Snowflake",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": snowflakeAccountId,
+                    "AssetRegion": snowflakeRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Snowflake Users",
+                    "AssetComponent": "User"
+                },
+                "Resources": [
+                    {
+                        "Type": "SnowflakeUser",
+                        "Id": username,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-3",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-6",
+                        "NIST SP 800-53 Rev. 4 IA-7",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 IA-9",
+                        "NIST SP 800-53 Rev. 4 IA-10",
+                        "NIST SP 800-53 Rev. 4 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3",
+                        "MITRE ATT&CK T1589",
+                        "MITRE ATT&CK T1586"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+        # this is a failing check
+        if rotatedInLastYear is False and isAdmin is True and user["has_password"] is True and user["deleted_on"] is None:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{snowflakeAccountId}/{username}/snowflake-admins-yearly-passowrd-rotation-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{snowflakeAccountId}/{username}",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[Snowflake.Users.7] Snowflake users with any admin role assigned should have their password rotated yearly",
+                "Description": f"Snowflake user {username} has an admin role assigned and has not rotated their password in the last year. This check does not account for custom assigned roles, only the built-in Snowflake admin roles: ACCOUNTADMIN, ORGADMIN, SECURITYADMIN, or SYSADMIN. This check also only checks if there is a password set for the user, as 'service accounts' do not have passwords and do not need to be rotated. Password rotation is a security best practice that helps prevent unauthorized access to systems and data. For more information on security best practices for users in Snowflake refer to the community post Snowflake Security Overview and Best Practices in the Snowflake Community Portal.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on security best practices for users in Snowflake refer to the community post Snowflake Security Overview and Best Practices in the Snowflake Community Portal.",
+                        "Url": "https://community.snowflake.com/s/article/Snowflake-Security-Overview-and-Best-Practices?mkt_tok=MjUyLVJGTy0yMjcAAAGTVPcnsobib0St0CwRwVZ4sfwHPicq12DnL_MX_bz-yG4OgkADmIh6ll3PcRhIqFeezBwdFSNL-ipp9vJHUV6hRiKUK2b-0f5_HGpkwz7pTG2_w6cO9Q"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Snowflake",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": snowflakeAccountId,
+                    "AssetRegion": snowflakeRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Snowflake Users",
+                    "AssetComponent": "User"
+                },
+                "Resources": [
+                    {
+                        "Type": "SnowflakeUser",
+                        "Id": username,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-3",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-6",
+                        "NIST SP 800-53 Rev. 4 IA-7",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 IA-9",
+                        "NIST SP 800-53 Rev. 4 IA-10",
+                        "NIST SP 800-53 Rev. 4 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3",
+                        "MITRE ATT&CK T1589",
+                        "MITRE ATT&CK T1586"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "RESOLVED"
             }
             yield finding
 
