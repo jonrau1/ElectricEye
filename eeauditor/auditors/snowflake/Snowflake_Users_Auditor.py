@@ -26,7 +26,8 @@ from check_register import CheckRegister
 import base64
 import json
 
-logger = logging.getLogger("AwsEc2Auditor")
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("SnowflakeUserAuditor")
 
 registry = CheckRegister()
 
@@ -225,7 +226,7 @@ def snowflake_password_assigned_user_has_mfa_check(
         assetB64 = base64.b64encode(assetJson)
         username = user["name"]
         # this is a passing check
-        if user["ext_authn_duo"] is True and user["has_password"] is True:
+        if user["ext_authn_duo"] is True and user["has_password"] is True and user["deleted_on"] is None:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{snowflakeAccountId}/{username}/password-user-mfa-check",
@@ -301,7 +302,8 @@ def snowflake_password_assigned_user_has_mfa_check(
                 "RecordState": "ARCHIVED"
             }
             yield finding
-        else:
+        # this is a failing check
+        if user["ext_authn_duo"] is False and user["has_password"] is True and user["deleted_on"] is None:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{snowflakeAccountId}/{username}/password-user-mfa-check",
@@ -392,7 +394,7 @@ def snowflake_service_account_user_uses_keypair_check(
         assetB64 = base64.b64encode(assetJson)
         username = user["name"]
         # this is a passing check
-        if user["has_rsa_public_key"] is True and user["has_password"] is False:
+        if user["has_rsa_public_key"] is True and user["has_password"] is False and user["deleted_on"] is None:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{snowflakeAccountId}/{username}/service-account-user-rsa-keypair-check",
@@ -469,7 +471,7 @@ def snowflake_service_account_user_uses_keypair_check(
             }
             yield finding
         # this is a failing check
-        else:
+        if user["has_rsa_public_key"] is False and user["has_password"] is False and user["deleted_on"] is None:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{snowflakeAccountId}/{username}/service-account-user-rsa-keypair-check",
@@ -562,7 +564,7 @@ def snowflake_disable_users_without_last_90_day_login_check(
 
         # determine if there was a successful login in the last 90 days for users that are not disabled and have otherwise logged in
         passingCheck = True
-        if user["last_success_login"] and user["disabled"] is False:
+        if user["last_success_login"] and user["disabled"] is False and user["deleted_on"] is None:
             lastLogin = datetime.fromisoformat(user["last_success_login"])
             ninetyDaysAgo = datetime.now(UTC) - timedelta(days=90)
             if lastLogin > ninetyDaysAgo:

@@ -30,6 +30,7 @@ from azure.identity import ClientSecretCredential
 from azure.mgmt.resource.subscriptions import SubscriptionClient
 import snowflake.connector as snowconn
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("CloudUtils")
 
 # These Constants define legitimate values for certain parameters within the external_providers.toml file
@@ -838,6 +839,7 @@ class CloudConfig(object):
             raise e
 
         # This allows us to return a dictionary instead of tuples
+        logger.info("Connected to Snowflake successfully.")
         cur = conn.cursor(snowconn.DictCursor)
 
         return conn, cur

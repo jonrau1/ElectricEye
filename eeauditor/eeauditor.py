@@ -31,6 +31,7 @@ from check_register import CheckRegister
 from cloud_utils import CloudConfig
 from pluginbase import PluginBase
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("EEAuditor")
 
 here = path.abspath(path.dirname(__file__))
@@ -366,10 +367,10 @@ class EEAuditor(object):
                             ):
                                 if finding is not None:
                                     yield finding
-                        except Exception:
-                            logger.warn(
-                                "Failed to execute check %s with traceback %s",
-                                checkName, format_exc()
+                        except Exception as e:
+                            logger.warning(
+                                "Failed to execute check %s with exception: %s",
+                                checkName, e
                             )
                 # optional sleep if specified - defaults to 0 seconds
                 sleep(delay)
@@ -383,6 +384,8 @@ class EEAuditor(object):
         region = "us-placeholder-1"
         account = "000000000000"
         partition = "not-aws"
+
+        logger.info("Oracle Cloud Infrastructure assessment has started.")
 
         for serviceName, checkList in self.registry.checks.items():
             # Pass the Cache at the "serviceName" level aka Plugin
@@ -412,10 +415,10 @@ class EEAuditor(object):
                         ):
                             if finding is not None:
                                 yield finding
-                    except Exception:
-                        logger.warn(
-                            "Failed to execute check %s with traceback %s",
-                            checkName, format_exc()
+                    except Exception as e:
+                        logger.warning(
+                            "Failed to execute check %s with exception: %s",
+                            checkName, e
                         )
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
@@ -429,6 +432,8 @@ class EEAuditor(object):
         region = "us-placeholder-1"
         account = "000000000000"
         partition = "not-aws"
+
+        logger.info("Microsoft Azure assessment has started.")
 
         for azSubId in self.azureSubscriptions:
             for serviceName, checkList in self.registry.checks.items():
@@ -456,10 +461,10 @@ class EEAuditor(object):
                             ):
                                 if finding is not None:
                                     yield finding
-                        except Exception:
-                            logger.warn(
-                                "Failed to execute check %s with traceback %s",
-                                checkName, format_exc()
+                        except Exception as e:
+                            logger.warning(
+                                "Failed to execute check %s with exception: %s",
+                                checkName, e
                             )
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
@@ -473,6 +478,8 @@ class EEAuditor(object):
         region = "us-placeholder-1"
         account = "000000000000"
         partition = "not-aws"
+
+        logger.info("M365 assessment has started.")
 
         for serviceName, checkList in self.registry.checks.items():
             # Pass the Cache at the "serviceName" level aka Plugin
@@ -501,10 +508,10 @@ class EEAuditor(object):
                         ):
                             if finding is not None:
                                 yield finding
-                    except Exception:
-                        logger.warn(
-                            "Failed to execute check %s with traceback %s",
-                            checkName, format_exc()
+                    except Exception as e:
+                        logger.warning(
+                            "Failed to execute check %s with exception: %s",
+                            checkName, e
                         )
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
@@ -519,6 +526,8 @@ class EEAuditor(object):
         region = "us-placeholder-1"
         account = "000000000000"
         partition = "not-aws"
+
+        logger.info("Salesforce assessment has started.")
 
         for serviceName, checkList in self.registry.checks.items():
             # Pass the Cache at the "serviceName" level aka Plugin
@@ -549,10 +558,10 @@ class EEAuditor(object):
                         ):
                             if finding is not None:
                                 yield finding
-                    except Exception:
-                        logger.warn(
-                            "Failed to execute check %s with traceback %s",
-                            checkName, format_exc()
+                    except Exception as e:
+                        logger.warning(
+                            "Failed to execute check %s with exception: %s",
+                            checkName, e
                         )
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
@@ -566,6 +575,8 @@ class EEAuditor(object):
         region = "us-placeholder-1"
         account = "000000000000"
         partition = "not-aws"
+
+        logger.info("Snowflake assessment has started.")
 
         for serviceName, checkList in self.registry.checks.items():
             # Pass the Cache at the "serviceName" level aka Plugin
@@ -593,10 +604,10 @@ class EEAuditor(object):
                         ):
                             if finding is not None:
                                 yield finding
-                    except Exception:
-                        logger.warn(
-                            "Failed to execute check %s with traceback %s",
-                            checkName, format_exc()
+                    except Exception as e:
+                        logger.warning(
+                            "Failed to execute check %s with exception: %s",
+                            checkName, e
                         )
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
@@ -605,9 +616,10 @@ class EEAuditor(object):
         curClose = self.snowflakeCursor.close()
         connClose = self.snowflakeConnection.close()
 
-        print(curClose, connClose)
-
-        logger.info("Snowflake connection and cursor closed.")
+        if curClose is True and connClose is None:
+            logger.info("Snowflake connection and cursor closed.")
+        else:
+            logger.warning("Failed to close Snowflake connection and/or cursor.")
 
     # Called from eeauditor/controller.py run_auditor()
     def run_non_aws_checks(self, pluginName=None, delay=0):
@@ -642,10 +654,10 @@ class EEAuditor(object):
                         ):
                             if finding is not None:
                                 yield finding
-                    except Exception:
-                        logger.warn(
-                            "Failed to execute check %s with traceback %s",
-                            checkName, format_exc()
+                    except Exception as e:
+                        logger.warning(
+                            "Failed to execute check %s with exception: %s",
+                            checkName, e
                         )
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
