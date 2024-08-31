@@ -1420,4 +1420,180 @@ def snowflake_admin_password_users_yearly_password_rotation_check(
             }
             yield finding
 
+@registry.register_check("snowflake.users")
+def snowflake_bypass_mfa_review_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+) -> dict:
+    """[Snowflake.Users.8] Snowflake users allowed to bypass MFA should be reviewed"""
+    # ISO Time
+    iso8601Time = datetime.now(UTC).replace(tzinfo=timezone.utc).isoformat()
+    # Get all of the users
+    for user in get_snowflake_users(cache, snowflakeCursor):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(user,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        username = user["name"]
+
+        # Use the "bypass_mfa_until" field (ISO-8061) to determine if the user is allowed to bypass MFA by checking if the date is in the future - only perform this check for password users with MFA enabled
+        mfaBypass = False
+        if user["ext_authn_duo"] is True and user["has_password"] is True:
+            if user["bypass_mfa_until"] is not None:
+                bypassMfaUntil = datetime.fromisoformat(user["bypass_mfa_until"])
+                currentTime = datetime.now(UTC)
+                if bypassMfaUntil > currentTime:
+                    mfaBypass = True
+        
+        # this is a passing check
+        if mfaBypass is False and user["deleted_on"] is None:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{snowflakeAccountId}/{username}/snowflake-user-mfa-bypass-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{snowflakeAccountId}/{username}",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Snowflake.Users.8] Snowflake users allowed to bypass MFA should be reviewed",
+                "Description": f"Snowflake user {username} is not allowed to bypass MFA or they do not have MFA or a Password enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on managing MFA and bypass for users in Snowflake refer to the Managing MFA for an account and users section of the Snowflake Documentation Portal.",
+                        "Url": "https://docs.snowflake.com/en/user-guide/security-mfa"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Snowflake",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": snowflakeAccountId,
+                    "AssetRegion": snowflakeRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Snowflake Users",
+                    "AssetComponent": "User"
+                },
+                "Resources": [
+                    {
+                        "Type": "SnowflakeUser",
+                        "Id": username,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-3",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-6",
+                        "NIST SP 800-53 Rev. 4 IA-7",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 IA-9",
+                        "NIST SP 800-53 Rev. 4 IA-10",
+                        "NIST SP 800-53 Rev. 4 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3",
+                        "MITRE ATT&CK T1589",
+                        "MITRE ATT&CK T1586"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+        # this is a failing check
+        if mfaBypass is True and user["deleted_on"] is None:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{snowflakeAccountId}/{username}/snowflake-user-mfa-bypass-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{snowflakeAccountId}/{username}",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[Snowflake.Users.8] Snowflake users allowed to bypass MFA should be reviewed",
+                "Description": f"Snowflake user {username} has MFA assigned and is allowed to bypass MFA. When MFA is enabled, users are required to provide two or more verification factors to access their account. Allowing users to bypass MFA can increase the risk of unauthorized access to your Snowflake account. While there are some administrative reasons to bypass MFA, these users should be reviewed to ensure that they are not a security risk.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on managing MFA and bypass for users in Snowflake refer to the Managing MFA for an account and users section of the Snowflake Documentation Portal.",
+                        "Url": "https://docs.snowflake.com/en/user-guide/security-mfa"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Snowflake",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": snowflakeAccountId,
+                    "AssetRegion": snowflakeRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Snowflake Users",
+                    "AssetComponent": "User"
+                },
+                "Resources": [
+                    {
+                        "Type": "SnowflakeUser",
+                        "Id": username,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-3",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-6",
+                        "NIST SP 800-53 Rev. 4 IA-7",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 IA-9",
+                        "NIST SP 800-53 Rev. 4 IA-10",
+                        "NIST SP 800-53 Rev. 4 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3",
+                        "MITRE ATT&CK T1589",
+                        "MITRE ATT&CK T1586"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+
 # EOF
