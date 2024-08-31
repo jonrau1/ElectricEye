@@ -564,7 +564,7 @@ def snowflake_disable_users_without_last_90_day_login_check(
 
         # determine if there was a successful login in the last 90 days for users that are not disabled and have otherwise logged in
         passingCheck = True
-        if user["last_success_login"] and user["disabled"] is False and user["deleted_on"] is None:
+        if user["last_success_login"] and user["disabled"] is "false" and user["deleted_on"] is None:
             lastLogin = datetime.fromisoformat(user["last_success_login"])
             ninetyDaysAgo = datetime.now(UTC) - timedelta(days=90)
             if lastLogin > ninetyDaysAgo:
@@ -585,7 +585,7 @@ def snowflake_disable_users_without_last_90_day_login_check(
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "Snowflake users that have not logged in within the last 90 days should be disabled",
-                "Description": f"Snowflake user {username} is either disabled or has logged in within the last 90 days.",
+                "Description": f"Snowflake user {username} is either disabled, deleted, or has logged in within the last 90 days.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on user management best practices for users in Snowflake refer to the community post Snowflake Security Overview and Best Practices in the Snowflake Community Portal.",
@@ -750,6 +750,318 @@ def snowflake_disable_users_without_last_90_day_login_check(
                         "ISO 27001:2013 A.15.2.1",
                         "ISO 27001:2013 A.16.1.7",
                         "CIS Snowflake Foundations Benchmark V1.0.0 1.8"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+
+@registry.register_check("snowflake.users")
+def snowflake_accountadmins_have_email_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+) -> dict:
+    """[Snowflake.Users.4] Snowflake users assigned the ACCOUNTADMIN role should have an email address assigned"""
+    # ISO Time
+    iso8601Time = datetime.now(UTC).replace(tzinfo=timezone.utc).isoformat()
+    # Get all of the users
+    for user in get_snowflake_users(cache, snowflakeCursor):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(user,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        username = user["name"]
+        # pre-check email, the shit can be properly null or stupid sauce fr fr
+        hasEmail = True
+        if user["email"] is None or user["email"] == "":
+            hasEmail = False
+        # this is a passing check
+        if "ACCOUNTADMIN" in user["assigned_roles"] and hasEmail is True and user["has_password"] is True and user["deleted_on"] is None:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{snowflakeAccountId}/{username}/accountadmin-role-users-have-email-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{snowflakeAccountId}/{username}",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Snowflake.Users.4] Snowflake users assigned the ACCOUNTADMIN role should have an email address assigned",
+                "Description": f"Snowflake user {username} has the ACCOUNTADMIN role assigned and has an email addressed assigned as well. This only checks for the presence of an email for users that also have a password, since 'service accounts' do not have passwords and do not need an email address.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on assinging emails the the rationale for ACCOUNTADMINS to have emails refer to the Access control considerations section of the Snowflake Documentation Portal.",
+                        "Url": "https://docs.snowflake.com/en/user-guide/security-access-control-considerations"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Snowflake",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": snowflakeAccountId,
+                    "AssetRegion": snowflakeRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Snowflake Users",
+                    "AssetComponent": "User"
+                },
+                "Resources": [
+                    {
+                        "Type": "SnowflakeUser",
+                        "Id": username,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-3",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-6",
+                        "NIST SP 800-53 Rev. 4 IA-7",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 IA-9",
+                        "NIST SP 800-53 Rev. 4 IA-10",
+                        "NIST SP 800-53 Rev. 4 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3",
+                        "MITRE ATT&CK T1589",
+                        "MITRE ATT&CK T1586",
+                        "CIS Snowflake Foundations Benchmark V1.0.0 1.11"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+        # this is a failing check
+        if "ACCOUNTADMIN" in user["assigned_roles"] and hasEmail is False and user["has_password"] is True and user["deleted_on"] is None:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{snowflakeAccountId}/{username}/accountadmin-role-users-have-email-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{snowflakeAccountId}/{username}",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[Snowflake.Users.4] Snowflake users assigned the ACCOUNTADMIN role should have an email address assigned",
+                "Description": f"Snowflake user {username} has the ACCOUNTADMIN role assigned and does not have an email addressed assigned. Every Snowflake user can be assigned an email address. The email addresses are then used by Snowflake features like notification integration, resource monitor and support cases to deliver email notifications to Snowflake users. In trial Snowflake accounts these email addresses are used for password reset functionality. The email addresses assigned to ACCOUNTADMIN users are used by Snowflake to notify administrators about important events related to their accounts. For example, ACCOUNTADMIN users are notified about impending expiration of SAML2 certificates or SCIM access tokens. If users with the ACCOUNTADMIN role are not assigned working email addresses that are being monitored and if SAML2 certificate used in SSO integration is not proactively renewed, expiration of SAML2 certificate may break the SSO authentication flow. Similarly, uncaught expiration of SCIM access token may break the SCIM integration. This only checks for the presence of an email for users that also have a password, since 'service accounts' do not have passwords and do not need an email address. For more information on user management best practices refer to the Snowflake documentation.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on assinging emails the the rationale for ACCOUNTADMINS to have emails refer to the Access control considerations section of the Snowflake Documentation Portal.",
+                        "Url": "https://docs.snowflake.com/en/user-guide/security-access-control-considerations"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Snowflake",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": snowflakeAccountId,
+                    "AssetRegion": snowflakeRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Snowflake Users",
+                    "AssetComponent": "User"
+                },
+                "Resources": [
+                    {
+                        "Type": "SnowflakeUser",
+                        "Id": username,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-3",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-6",
+                        "NIST SP 800-53 Rev. 4 IA-7",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 IA-9",
+                        "NIST SP 800-53 Rev. 4 IA-10",
+                        "NIST SP 800-53 Rev. 4 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3",
+                        "MITRE ATT&CK T1589",
+                        "MITRE ATT&CK T1586",
+                        "CIS Snowflake Foundations Benchmark V1.0.0 1.11"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+
+@registry.register_check("snowflake.users")
+def snowflake_admin_default_role_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+) -> dict:
+    """[Snowflake.Users.5] Snowflake users should not be assigned the ACCOUNTADMIN or SECURITYADMIN role as the default role"""
+    # ISO Time
+    iso8601Time = datetime.now(UTC).replace(tzinfo=timezone.utc).isoformat()
+    # Get all of the users
+    for user in get_snowflake_users(cache, snowflakeCursor):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(user,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        username = user["name"]
+        # this is a passing check
+        if user["default_role"] not in ["ACCOUNTADMIN","SECURITYADMIN"] or user["default_role"] is None and user["deleted_on"] is None:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{snowflakeAccountId}/{username}/snowflake-admin-default-role-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{snowflakeAccountId}/{username}",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Snowflake.Users.5] Snowflake users should not be assigned the ACCOUNTADMIN or SECURITYADMIN role as the default role",
+                "Description": f"Snowflake user {username} does has not have the ACCOUNTADMIN nor the SECURITYADMIN role as their default role.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on assinging default roles and the rationale for not assigning ACCOUNTADMIN or SECURITYADMIN as the default rolerefer to the Avoid using the ACCOUNTADMIN role to create objects section of the Snowflake Documentation Portal.",
+                        "Url": "https://docs.snowflake.com/en/user-guide/security-access-control-considerations#avoid-using-the-accountadmin-role-to-create-objects"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Snowflake",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": snowflakeAccountId,
+                    "AssetRegion": snowflakeRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Snowflake Users",
+                    "AssetComponent": "User"
+                },
+                "Resources": [
+                    {
+                        "Type": "SnowflakeUser",
+                        "Id": username,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "CIS Snowflake Foundations Benchmark V1.0.0 1.12"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+        # this is a failing check
+        if user["default_role"] in ["ACCOUNTADMIN","SECURITYADMIN"] and user["deleted_on"] is None:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{snowflakeAccountId}/{username}/snowflake-admin-default-role-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{snowflakeAccountId}/{username}",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[Snowflake.Users.5] Snowflake users should not be assigned the ACCOUNTADMIN or SECURITYADMIN role as the default role",
+                "Description": f"Snowflake user {username} has either the ACCOUNTADMIN or SECURITYADMIN role as their default role. The ACCOUNTADMIN system role is the most powerful role in a Snowflake account and is intended for performing initial setup and managing account-level objects. SECURITYADMIN role can trivially escalate their privileges to that of ACCOUNTADMIN. Neither of these roles should be used for performing daily non-administrative tasks in a Snowflake account. Instead, users should be assigned custom roles containing only those privileges that are necessary for successfully completing their job responsibilities. When ACCOUNTADMIN is not set as a default user role, it forces account administrators to explicitly change their role to ACCOUNTADMIN each time they log in. This can help make account administrators aware of the purpose of roles in the system, prevent them from inadvertently using the ACCOUNTADMIN role for non-administrative tasks, and encourage them to change to the appropriate role for a given task. Same logic applies to the SECURITYADMIN role. For more information on user management best practices refer to the Snowflake documentation.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on assinging default roles and the rationale for not assigning ACCOUNTADMIN or SECURITYADMIN as the default rolerefer to the Avoid using the ACCOUNTADMIN role to create objects section of the Snowflake Documentation Portal.",
+                        "Url": "https://docs.snowflake.com/en/user-guide/security-access-control-considerations#avoid-using-the-accountadmin-role-to-create-objects"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Snowflake",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": snowflakeAccountId,
+                    "AssetRegion": snowflakeRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Snowflake Users",
+                    "AssetComponent": "User"
+                },
+                "Resources": [
+                    {
+                        "Type": "SnowflakeUser",
+                        "Id": username,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "CIS Snowflake Foundations Benchmark V1.0.0 1.12"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
