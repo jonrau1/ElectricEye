@@ -1723,4 +1723,313 @@ def snowflake_account_password_length_check(
             }
             yield finding
 
+@registry.register_check("snowflake.account")
+def snowflake_monitor_session_keep_alive_commands_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+) -> dict:
+    """[Snowflake.Account.11] Snowflake Accounts should be monitored for users extending their sessions"""
+    # ISO Time
+    iso8601Time = datetime.now(UTC).replace(tzinfo=timezone.utc).isoformat()
+    
+    query = """
+    SELECT DISTINCT session_id FROM SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY
+    WHERE query_type = 'ALTER_SESSION'
+    AND query_text ilike '%CLIENT_SESSION_KEEP_ALIVE%TRUE%'
+    AND query_text not ilike '%CLIENT_SESSION_KEEP_ALIVE_HEARTBEAT_FREQUENCY%'
+    """
+
+    # execute the CIS query, works pretty well actually...this SHOULDN'T return anything for it to pass
+    q = snowflakeCursor.execute(query).fetchall()
+
+    # B64 encode all of the details for the Asset
+    assetJson = json.dumps(q,default=str).encode("utf-8")
+    assetB64 = base64.b64encode(assetJson)
+
+    # this is a passing check
+    if not q:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{snowflakeAccountId}/snowflake-session-timeout-keep-alive-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": snowflakeAccountId,
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[Snowflake.Account.11] Snowflake Accounts should be monitored for users extending their sessions",
+            "Description": f"Snowflake account {snowflakeAccountId} does not have any users extending their sessions.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For information on best practices on sessions in Snowflake refer to the Snowflake Sessions & Session Policies section of the Snowflake Documentation Portal.",
+                    "Url": "https://docs.snowflake.com/en/user-guide/session-policies#considerations"
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Snowflake",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": snowflakeAccountId,
+                "AssetRegion": snowflakeRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Snowflake Account",
+                "AssetComponent": "Account"
+            },
+            "Resources": [
+                {
+                    "Type": "SnowflakeAccount",
+                    "Id": snowflakeAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 ID.BE-5",
+                    "NIST CSF V1.1 PR.DS-4",
+                    "NIST CSF V1.1 PR.PT-5",
+                    "NIST SP 800-53 Rev. 4 AU-4",
+                    "NIST SP 800-53 Rev. 4 CP-2",
+                    "NIST SP 800-53 Rev. 4 CP-7",
+                    "NIST SP 800-53 Rev. 4 CP-8",
+                    "NIST SP 800-53 Rev. 4 CP-11",
+                    "NIST SP 800-53 Rev. 4 CP-13",
+                    "NIST SP 800-53 Rev. 4 PL-8",
+                    "NIST SP 800-53 Rev. 4 SA-14",
+                    "NIST SP 800-53 Rev. 4 SC-5",
+                    "NIST SP 800-53 Rev. 4 SC-6",
+                    "AICPA TSC CC3.1",
+                    "AICPA TSC A1.1",
+                    "AICPA TSC A1.2",
+                    "ISO 27001:2013 A.11.1.4",
+                    "ISO 27001:2013 A.12.3.1",
+                    "ISO 27001:2013 A.17.1.1",
+                    "ISO 27001:2013 A.17.1.2",
+                    "ISO 27001:2013 A.17.2.1"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+    # this is a failing check
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{snowflakeAccountId}/snowflake-session-timeout-keep-alive-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": snowflakeAccountId,
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "LOW"},
+            "Confidence": 99,
+            "Title": "[Snowflake.Account.11] Snowflake Accounts should be monitored for users extending their sessions",
+            "Description": f"Snowflake account {snowflakeAccountId} has at least one user extending their session. If a client supports the CLIENT_SESSION_KEEP_ALIVE option and the option is set to TRUE, the client preserves the Snowflake session indefinitely as long as the connection to Snowflake is active. Otherwise, if the option is set to FALSE, the session ends after 4 hours. When possible, avoid using this option since it can result in many open sessions and place a greater demand on resources which can lead to a performance degradation. In rarer cases, this can become a security risk if a session is hijacked due to a further downstream vulnerability. For more information refer to the remediation section.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For information on best practices on sessions in Snowflake refer to the Snowflake Sessions & Session Policies section of the Snowflake Documentation Portal.",
+                    "Url": "https://docs.snowflake.com/en/user-guide/session-policies#considerations"
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Snowflake",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": snowflakeAccountId,
+                "AssetRegion": snowflakeRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Snowflake Account",
+                "AssetComponent": "Account"
+            },
+            "Resources": [
+                {
+                    "Type": "SnowflakeAccount",
+                    "Id": snowflakeAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "RESOLVED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 ID.BE-5",
+                    "NIST CSF V1.1 PR.DS-4",
+                    "NIST CSF V1.1 PR.PT-5",
+                    "NIST SP 800-53 Rev. 4 AU-4",
+                    "NIST SP 800-53 Rev. 4 CP-2",
+                    "NIST SP 800-53 Rev. 4 CP-7",
+                    "NIST SP 800-53 Rev. 4 CP-8",
+                    "NIST SP 800-53 Rev. 4 CP-11",
+                    "NIST SP 800-53 Rev. 4 CP-13",
+                    "NIST SP 800-53 Rev. 4 PL-8",
+                    "NIST SP 800-53 Rev. 4 SA-14",
+                    "NIST SP 800-53 Rev. 4 SC-5",
+                    "NIST SP 800-53 Rev. 4 SC-6",
+                    "AICPA TSC CC3.1",
+                    "AICPA TSC A1.1",
+                    "AICPA TSC A1.2",
+                    "ISO 27001:2013 A.11.1.4",
+                    "ISO 27001:2013 A.12.3.1",
+                    "ISO 27001:2013 A.17.1.1",
+                    "ISO 27001:2013 A.17.1.2",
+                    "ISO 27001:2013 A.17.2.1"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+
+@registry.register_check("snowflake.account")
+def snowflake_monitor_session_keep_alive_commands_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+) -> dict:
+    """[Snowflake.Account.12] Snowflake Accounts should have a network policy enabled"""
+    # ISO Time
+    iso8601Time = datetime.now(UTC).replace(tzinfo=timezone.utc).isoformat()
+    
+    query = "SELECT * FROM SNOWFLAKE.ACCOUNT_USAGE.NETWORK_POLICIES"
+
+    # if this is empty it is a failing check
+    q = snowflakeCursor.execute(query).fetchall()
+
+    # B64 encode all of the details for the Asset
+    assetJson = json.dumps(q,default=str).encode("utf-8")
+    assetB64 = base64.b64encode(assetJson)
+
+    # this is a passing check
+    if not q:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{snowflakeAccountId}/snowflake-account-network-policy-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": snowflakeAccountId,
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[Snowflake.Account.12] Snowflake Accounts should have a network policy enabled",
+            "Description": f"Snowflake account {snowflakeAccountId} has at least one network policy. This check does not evaluate the actual contents of the network policy, only that one exists.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For information on best practices for network security and creating Network Policies in Snowflake refer to the Controlling network traffic with network policies section of the Snowflake Documentation Portal.",
+                    "Url": "https://docs.snowflake.com/en/user-guide/network-policies"
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Snowflake",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": snowflakeAccountId,
+                "AssetRegion": snowflakeRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Snowflake Account",
+                "AssetComponent": "Account"
+            },
+            "Resources": [
+                {
+                    "Type": "SnowflakeAccount",
+                    "Id": snowflakeAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.AC-3",
+                    "NIST SP 800-53 Rev. 4 AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-17",
+                    "NIST SP 800-53 Rev. 4 AC-19",
+                    "NIST SP 800-53 Rev. 4 AC-20",
+                    "NIST SP 800-53 Rev. 4 SC-15",
+                    "AICPA TSC CC6.6",
+                    "ISO 27001:2013 A.6.2.1",
+                    "ISO 27001:2013 A.6.2.2",
+                    "ISO 27001:2013 A.11.2.6",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.13.2.1",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 3.1"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+    # this is a failing check
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{snowflakeAccountId}/snowflake-account-network-policy-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": snowflakeAccountId,
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "LOW"},
+            "Confidence": 99,
+            "Title": "[Snowflake.Account.12] Snowflake Accounts should have a network policy enabled",
+            "Description": f"Snowflake account {snowflakeAccountId} does not have a network policy. This check does not evaluate the actual contents of the network policy, only that one exists. Snowflake network policies are used to control network traffic to and from your Snowflake account. Network policies are defined using a set of rules that specify the conditions under which network traffic is allowed or denied. For more information refer to the remediation section.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For information on best practices for network security and creating Network Policies in Snowflake refer to the Controlling network traffic with network policies section of the Snowflake Documentation Portal.",
+                    "Url": "https://docs.snowflake.com/en/user-guide/network-policies"
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Snowflake",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": snowflakeAccountId,
+                "AssetRegion": snowflakeRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Snowflake Account",
+                "AssetComponent": "Account"
+            },
+            "Resources": [
+                {
+                    "Type": "SnowflakeAccount",
+                    "Id": snowflakeAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.AC-3",
+                    "NIST SP 800-53 Rev. 4 AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-17",
+                    "NIST SP 800-53 Rev. 4 AC-19",
+                    "NIST SP 800-53 Rev. 4 AC-20",
+                    "NIST SP 800-53 Rev. 4 SC-15",
+                    "AICPA TSC CC6.6",
+                    "ISO 27001:2013 A.6.2.1",
+                    "ISO 27001:2013 A.6.2.2",
+                    "ISO 27001:2013 A.11.2.6",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.13.2.1",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 3.1"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+
 # EOF
