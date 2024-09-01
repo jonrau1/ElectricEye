@@ -21,7 +21,6 @@
 import logging
 from datetime import datetime, timezone, UTC
 from snowflake.connector import cursor
-import snowflake.connector.errors as snowerrors
 from check_register import CheckRegister
 import base64
 import json
@@ -136,7 +135,9 @@ def snowflake_account_sso_enabled_check(
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.7.1.1",
                     "ISO 27001:2013 A.9.2.1",
-                    "CIS Snowflake Foundations Benchmark V1.0.0 1.1"
+                    "CIS Snowflake Foundations Benchmark V1.0.0 1.1",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.3",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.5"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -203,7 +204,9 @@ def snowflake_account_sso_enabled_check(
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.7.1.1",
                     "ISO 27001:2013 A.9.2.1",
-                    "CIS Snowflake Foundations Benchmark V1.0.0 1.1"
+                    "CIS Snowflake Foundations Benchmark V1.0.0 1.1",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.3",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.5"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -292,7 +295,10 @@ def snowflake_account_scim_enabled_check(
                     "ISO 27001:2013 A.17.1.1",
                     "ISO 27001:2013 A.17.1.2",
                     "ISO 27001:2013 A.17.2.1",
-                    "CIS Snowflake Foundations Benchmark V1.0.0 1.2"
+                    "CIS Snowflake Foundations Benchmark V1.0.0 1.2",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.3",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.5",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.7"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -364,7 +370,10 @@ def snowflake_account_scim_enabled_check(
                     "ISO 27001:2013 A.17.1.1",
                     "ISO 27001:2013 A.17.1.2",
                     "ISO 27001:2013 A.17.2.1",
-                    "CIS Snowflake Foundations Benchmark V1.0.0 1.2"
+                    "CIS Snowflake Foundations Benchmark V1.0.0 1.2",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.3",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.5",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.7"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -455,7 +464,8 @@ def snowflake_admin_15min_session_timeout_check(
                     "ISO 27001:2013 A.12.4.1",
                     "ISO 27001:2013 A.12.4.3",
                     "ISO 27001:2013 A.16.1.5",
-                    "CIS Snowflake Foundations Benchmark V1.0.0 1.9"
+                    "CIS Snowflake Foundations Benchmark V1.0.0 1.9",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.1"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -525,7 +535,8 @@ def snowflake_admin_15min_session_timeout_check(
                     "ISO 27001:2013 A.12.4.1",
                     "ISO 27001:2013 A.12.4.3",
                     "ISO 27001:2013 A.16.1.5",
-                    "CIS Snowflake Foundations Benchmark V1.0.0 1.9"
+                    "CIS Snowflake Foundations Benchmark V1.0.0 1.9",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.1"
                 ]
             },
             "Workflow": {"Status": "NEW"},
@@ -574,7 +585,7 @@ def snowflake_built_in_admin_roles_not_in_custom_role_check(
             "Description": f"Snowflake account {snowflakeAccountId} does not use SECURITYADMIN and/or ACCOUNTADMIN roles within custom roles.",
             "Remediation": {
                 "Recommendation": {
-                    "Text": "For information on best practices for setting up custom roles and general access control in Snowflake refer to the Overview of Access Control of the Snowflake Documentation Portal.",
+                    "Text": "For information on best practices for setting up custom roles and general access control in Snowflake refer to the Overview of Access Control section of the Snowflake Documentation Portal.",
                     "Url": "https://docs.snowflake.com/en/user-guide/security-access-control-overview"
                 }
             },
@@ -612,7 +623,9 @@ def snowflake_built_in_admin_roles_not_in_custom_role_check(
                     "ISO 27001:2013 A.9.2.3",
                     "ISO 27001:2013 A.9.4.1",
                     "ISO 27001:2013 A.9.4.4",
-                    "CIS Snowflake Foundations Benchmark V1.0.0 1.13"
+                    "CIS Snowflake Foundations Benchmark V1.0.0 1.13",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.1",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.2"
                 ]
             },
             "Workflow": {"Status": "RESOLVED"},
@@ -637,7 +650,7 @@ def snowflake_built_in_admin_roles_not_in_custom_role_check(
             "Description": f"Snowflake account {snowflakeAccountId} uses SECURITYADMIN and/or ACCOUNTADMIN roles within custom roles. The principle of least privilege requires that every identity is only given privileges that are necessary to complete its tasks. The ACCOUNTADMIN system role is the most powerful role in a Snowflake account and is intended for performing initial setup and managing account-level objects. SECURITYADMIN role can trivially escalate their privileges to that of ACCOUNTADMIN. Neither of these roles should be used for performing daily non-administrative tasks in a Snowflake account. Granting ACCOUNTADMIN role to any custom role effectively elevates privileges of that role to the ACCOUNTADMIN role privileges. Roles that include the ACCOUNTADMIN role can then be mistakenly used in access grants that do not require ACCOUNTADMIN privileges thus violating the principle of least privilege and increasing the attack surface. The same logic applies to the SECURITYADMIN role. For more information refer to the remediation section.",
             "Remediation": {
                 "Recommendation": {
-                    "Text": "For information on best practices for setting up custom roles and general access control in Snowflake refer to the Overview of Access Control of the Snowflake Documentation Portal.",
+                    "Text": "For information on best practices for setting up custom roles and general access control in Snowflake refer to the Overview of Access Control section of the Snowflake Documentation Portal.",
                     "Url": "https://docs.snowflake.com/en/user-guide/security-access-control-overview"
                 }
             },
@@ -675,7 +688,701 @@ def snowflake_built_in_admin_roles_not_in_custom_role_check(
                     "ISO 27001:2013 A.9.2.3",
                     "ISO 27001:2013 A.9.4.1",
                     "ISO 27001:2013 A.9.4.4",
-                    "CIS Snowflake Foundations Benchmark V1.0.0 1.13"
+                    "CIS Snowflake Foundations Benchmark V1.0.0 1.13",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.1",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.2"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+
+@registry.register_check("snowflake.account")
+def snowflake_tasks_not_owned_by_admins_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+) -> dict:
+    """[Snowflake.Account.5] Snowflake tasks should not be owned by ACCOUNTADMIN or SECURITYADMIN roles"""
+    # ISO Time
+    iso8601Time = datetime.now(UTC).replace(tzinfo=timezone.utc).isoformat()
+    
+    query = """
+    SELECT NAME AS STORED_PROCEDURE_NAME, GRANTED_TO, GRANTEE_NAME AS ROLE_NAME, PRIVILEGE FROM SNOWFLAKE.ACCOUNT_USAGE.GRANTS_TO_ROLES WHERE GRANTED_ON = 'TASK' AND DELETED_ON IS NULL AND GRANTED_TO = 'ROLE' AND PRIVILEGE = 'OWNERSHIP' AND GRANTEE_NAME IN ('ACCOUNTADMIN' , 'SECURITYADMIN')
+    """
+    # as long as this returns an empty list, it's a pass
+    q = snowflakeCursor.execute(query).fetchall()
+    
+    # B64 encode all of the details for the Asset
+    assetJson = json.dumps(q,default=str).encode("utf-8")
+    assetB64 = base64.b64encode(assetJson)
+
+    # this is a passing check
+    if not q:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{snowflakeAccountId}/snowflake-tasks-owned-by-default-admin-roles-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": snowflakeAccountId,
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[Snowflake.Account.5] Snowflake tasks should not be owned by ACCOUNTADMIN or SECURITYADMIN roles",
+            "Description": f"Snowflake account {snowflakeAccountId} does not have any tasks owned by SECURITYADMIN and/or ACCOUNTADMIN roles. This check does not take into account tasks owned by custom roles using the ACCOUNTADMIN or SECURITYADMIN roles.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For information on managing Snowflake Task ownership and general security best practices in Snowflake refer to the Manage task graph ownership section of the Snowflake Documentation Portal.",
+                    "Url": "https://docs.snowflake.com/en/user-guide/tasks-graphs#label-task-dag-ownership"
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Snowflake",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": snowflakeAccountId,
+                "AssetRegion": snowflakeRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Snowflake Account",
+                "AssetComponent": "Account"
+            },
+            "Resources": [
+                {
+                    "Type": "SnowflakeAccount",
+                    "Id": snowflakeAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-2",
+                    "NIST SP 800-53 Rev. 4 IA-1",
+                    "NIST SP 800-53 Rev. 4 IA-2",
+                    "NIST SP 800-53 Rev. 4 IA-3",
+                    "NIST SP 800-53 Rev. 4 IA-4",
+                    "NIST SP 800-53 Rev. 4 IA-5",
+                    "NIST SP 800-53 Rev. 4 IA-6",
+                    "NIST SP 800-53 Rev. 4 IA-7",
+                    "NIST SP 800-53 Rev. 4 IA-8",
+                    "NIST SP 800-53 Rev. 4 IA-9",
+                    "NIST SP 800-53 Rev. 4 IA-10",
+                    "NIST SP 800-53 Rev. 4 IA-11",
+                    "AICPA TSC CC6.1",
+                    "AICPA TSC CC6.2",
+                    "ISO 27001:2013 A.9.2.1",
+                    "ISO 27001:2013 A.9.2.2",
+                    "ISO 27001:2013 A.9.2.3",
+                    "ISO 27001:2013 A.9.2.4",
+                    "ISO 27001:2013 A.9.2.6",
+                    "ISO 27001:2013 A.9.3.1",
+                    "ISO 27001:2013 A.9.4.2",
+                    "ISO 27001:2013 A.9.4.3",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 1.14",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.1",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.2"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+    # this is a failing check
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{snowflakeAccountId}/snowflake-tasks-owned-by-default-admin-roles-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": snowflakeAccountId,
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "LOW"},
+            "Confidence": 99,
+            "Title": "[Snowflake.Account.5] Snowflake tasks should not be owned by ACCOUNTADMIN or SECURITYADMIN roles",
+            "Description": f"Snowflake account {snowflakeAccountId} has at least one task owned by SECURITYADMIN and/or ACCOUNTADMIN roles. The ACCOUNTADMIN system role is the most powerful role in a Snowflake account and is intended for performing initial setup and managing account-level objects. SECURITYADMIN role can trivially escalate their privileges to that of ACCOUNTADMIN. Neither of these roles should be used for running Snowflake tasks. A task should be running using a custom role containing only those privileges that are necessary for successful execution of the task. Snowflake executes tasks with the privileges of the task owner. The role that has OWNERSHIP privilege on the task owns the task. To avoid granting a task inappropriate privileges, the OWNERSHIP privilege on the task run as owner should be assigned to a custom role containing only those privileges that are necessary for successful execution of the task. This check does not take into account tasks owned by custom roles using the ACCOUNTADMIN or SECURITYADMIN roles. For more information refer to the remediation section.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For information on managing Snowflake Task ownership and general security best practices in Snowflake refer to the Manage task graph ownership section of the Snowflake Documentation Portal.",
+                    "Url": "https://docs.snowflake.com/en/user-guide/tasks-graphs#label-task-dag-ownership"
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Snowflake",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": snowflakeAccountId,
+                "AssetRegion": snowflakeRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Snowflake Account",
+                "AssetComponent": "Account"
+            },
+            "Resources": [
+                {
+                    "Type": "SnowflakeAccount",
+                    "Id": snowflakeAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-2",
+                    "NIST SP 800-53 Rev. 4 IA-1",
+                    "NIST SP 800-53 Rev. 4 IA-2",
+                    "NIST SP 800-53 Rev. 4 IA-3",
+                    "NIST SP 800-53 Rev. 4 IA-4",
+                    "NIST SP 800-53 Rev. 4 IA-5",
+                    "NIST SP 800-53 Rev. 4 IA-6",
+                    "NIST SP 800-53 Rev. 4 IA-7",
+                    "NIST SP 800-53 Rev. 4 IA-8",
+                    "NIST SP 800-53 Rev. 4 IA-9",
+                    "NIST SP 800-53 Rev. 4 IA-10",
+                    "NIST SP 800-53 Rev. 4 IA-11",
+                    "AICPA TSC CC6.1",
+                    "AICPA TSC CC6.2",
+                    "ISO 27001:2013 A.9.2.1",
+                    "ISO 27001:2013 A.9.2.2",
+                    "ISO 27001:2013 A.9.2.3",
+                    "ISO 27001:2013 A.9.2.4",
+                    "ISO 27001:2013 A.9.2.6",
+                    "ISO 27001:2013 A.9.3.1",
+                    "ISO 27001:2013 A.9.4.2",
+                    "ISO 27001:2013 A.9.4.3",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 1.14",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.1",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.2"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+
+@registry.register_check("snowflake.account")
+def snowflake_tasks_not_running_with_admin_privs_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+) -> dict:
+    """[Snowflake.Account.6] Snowflake tasks should not run with ACCOUNTADMIN or SECURITYADMIN role privileges"""
+    # ISO Time
+    iso8601Time = datetime.now(UTC).replace(tzinfo=timezone.utc).isoformat()
+    
+    query = """
+    SELECT NAME AS STORED_PROCEDURE_NAME, GRANTED_TO, GRANTEE_NAME AS ROLE_NAME, PRIVILEGE FROM SNOWFLAKE.ACCOUNT_USAGE.GRANTS_TO_ROLES WHERE GRANTED_ON = 'TASK' AND DELETED_ON IS NULL AND GRANTED_TO = 'ROLE' AND GRANTEE_NAME IN ('ACCOUNTADMIN' , 'SECURITYADMIN')
+    """
+    # as usual, as long as this returns an empty list, it's a pass
+    q = snowflakeCursor.execute(query).fetchall()
+    
+    # B64 encode all of the details for the Asset
+    assetJson = json.dumps(q,default=str).encode("utf-8")
+    assetB64 = base64.b64encode(assetJson)
+
+    # this is a passing check
+    if not q:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{snowflakeAccountId}/snowflake-tasks-run-with-admin-privileges-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": snowflakeAccountId,
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[Snowflake.Account.6] Snowflake tasks should not run with ACCOUNTADMIN or SECURITYADMIN role privileges",
+            "Description": f"Snowflake account {snowflakeAccountId} does not have any tasks that run with ACCOUNTADMIN or SECURITYADMIN role privileges. This check does not take into account tasks running with custom roles using the ACCOUNTADMIN or SECURITYADMIN roles.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For information on managing Snowflake Task ownership and general security best practices in Snowflake refer to the Manage task graph ownership section of the Snowflake Documentation Portal.",
+                    "Url": "https://docs.snowflake.com/en/user-guide/tasks-graphs#label-task-dag-ownership"
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Snowflake",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": snowflakeAccountId,
+                "AssetRegion": snowflakeRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Snowflake Account",
+                "AssetComponent": "Account"
+            },
+            "Resources": [
+                {
+                    "Type": "SnowflakeAccount",
+                    "Id": snowflakeAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-2",
+                    "NIST SP 800-53 Rev. 4 IA-1",
+                    "NIST SP 800-53 Rev. 4 IA-2",
+                    "NIST SP 800-53 Rev. 4 IA-3",
+                    "NIST SP 800-53 Rev. 4 IA-4",
+                    "NIST SP 800-53 Rev. 4 IA-5",
+                    "NIST SP 800-53 Rev. 4 IA-6",
+                    "NIST SP 800-53 Rev. 4 IA-7",
+                    "NIST SP 800-53 Rev. 4 IA-8",
+                    "NIST SP 800-53 Rev. 4 IA-9",
+                    "NIST SP 800-53 Rev. 4 IA-10",
+                    "NIST SP 800-53 Rev. 4 IA-11",
+                    "AICPA TSC CC6.1",
+                    "AICPA TSC CC6.2",
+                    "ISO 27001:2013 A.9.2.1",
+                    "ISO 27001:2013 A.9.2.2",
+                    "ISO 27001:2013 A.9.2.3",
+                    "ISO 27001:2013 A.9.2.4",
+                    "ISO 27001:2013 A.9.2.6",
+                    "ISO 27001:2013 A.9.3.1",
+                    "ISO 27001:2013 A.9.4.2",
+                    "ISO 27001:2013 A.9.4.3",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 1.15",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.1",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.2"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+    # this is a failing check
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{snowflakeAccountId}/snowflake-tasks-run-with-admin-privileges-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": snowflakeAccountId,
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[Snowflake.Account.6] Snowflake tasks should not run with ACCOUNTADMIN or SECURITYADMIN role privileges",
+            "Description": f"Snowflake account {snowflakeAccountId} has at least one task that runs with ACCOUNTADMIN or SECURITYADMIN role privileges. The ACCOUNTADMIN system role is the most powerful role in a Snowflake account and is intended for performing initial setup and managing account-level objects. SECURITYADMIN role can trivially escalate their privileges to that of ACCOUNTADMIN. Neither of these roles should be used for running Snowflake tasks. A task should be running using a custom role containing only those privileges that are necessary for successful execution of the task. If a threat actor finds a way to influence or hijack the task execution flow, they may be able to exploit privileges given to the task. In the case of an ACCOUNTADMIN or SECURITYADMIN roles, that may lead to a full account takeover. Additionally, a mistake in the task implementation coupled with excessive privileges may lead to a reliability incident, e.g. accidentally dropping database objects. This check does not take into account tasks running with custom roles using the ACCOUNTADMIN or SECURITYADMIN roles.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For information on managing Snowflake Task ownership and general security best practices in Snowflake refer to the Manage task graph ownership section of the Snowflake Documentation Portal.",
+                    "Url": "https://docs.snowflake.com/en/user-guide/tasks-graphs#label-task-dag-ownership"
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Snowflake",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": snowflakeAccountId,
+                "AssetRegion": snowflakeRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Snowflake Account",
+                "AssetComponent": "Account"
+            },
+            "Resources": [
+                {
+                    "Type": "SnowflakeAccount",
+                    "Id": snowflakeAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-2",
+                    "NIST SP 800-53 Rev. 4 IA-1",
+                    "NIST SP 800-53 Rev. 4 IA-2",
+                    "NIST SP 800-53 Rev. 4 IA-3",
+                    "NIST SP 800-53 Rev. 4 IA-4",
+                    "NIST SP 800-53 Rev. 4 IA-5",
+                    "NIST SP 800-53 Rev. 4 IA-6",
+                    "NIST SP 800-53 Rev. 4 IA-7",
+                    "NIST SP 800-53 Rev. 4 IA-8",
+                    "NIST SP 800-53 Rev. 4 IA-9",
+                    "NIST SP 800-53 Rev. 4 IA-10",
+                    "NIST SP 800-53 Rev. 4 IA-11",
+                    "AICPA TSC CC6.1",
+                    "AICPA TSC CC6.2",
+                    "ISO 27001:2013 A.9.2.1",
+                    "ISO 27001:2013 A.9.2.2",
+                    "ISO 27001:2013 A.9.2.3",
+                    "ISO 27001:2013 A.9.2.4",
+                    "ISO 27001:2013 A.9.2.6",
+                    "ISO 27001:2013 A.9.3.1",
+                    "ISO 27001:2013 A.9.4.2",
+                    "ISO 27001:2013 A.9.4.3",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 1.15",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.1",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.2"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+
+@registry.register_check("snowflake.account")
+def snowflake_stored_procs_not_owned_by_admins_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+) -> dict:
+    """[Snowflake.Account.7] Snowflake stored procedures should not run with ACCOUNTADMIN or SECURITYADMIN role privileges"""
+    # ISO Time
+    iso8601Time = datetime.now(UTC).replace(tzinfo=timezone.utc).isoformat()
+    
+    query = """
+    SELECT * FROM SNOWFLAKE.ACCOUNT_USAGE.PROCEDURES WHERE DELETED IS NULL AND PROCEDURE_OWNER IN ('ACCOUNTADMIN','SECURITYADMIN')
+    """
+    # as usual, as long as this returns an empty list, it's a pass
+    q = snowflakeCursor.execute(query).fetchall()
+    
+    # B64 encode all of the details for the Asset
+    assetJson = json.dumps(q,default=str).encode("utf-8")
+    assetB64 = base64.b64encode(assetJson)
+
+    # this is a passing check
+    if not q:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{snowflakeAccountId}/snowflake-stored-procs-owned-by-default-admin-roles-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": snowflakeAccountId,
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[Snowflake.Account.7] Snowflake stored procedures should not run with ACCOUNTADMIN or SECURITYADMIN role privileges",
+            "Description": f"Snowflake account {snowflakeAccountId} does not have any stored procedures that are owned by ACCOUNTADMIN or SECURITYADMIN roles. This check does not take into account tasks running with custom roles using the ACCOUNTADMIN or SECURITYADMIN roles.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For information on managing Snowflake Stored Procedure ownership and general security best practices in Snowflake refer to the Understanding caller's rights and owner's rights stored procedures section of the Snowflake Documentation Portal.",
+                    "Url": "https://docs.snowflake.com/en/developer-guide/stored-procedure/stored-procedures-rights"
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Snowflake",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": snowflakeAccountId,
+                "AssetRegion": snowflakeRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Snowflake Account",
+                "AssetComponent": "Account"
+            },
+            "Resources": [
+                {
+                    "Type": "SnowflakeAccount",
+                    "Id": snowflakeAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-2",
+                    "NIST SP 800-53 Rev. 4 IA-1",
+                    "NIST SP 800-53 Rev. 4 IA-2",
+                    "NIST SP 800-53 Rev. 4 IA-3",
+                    "NIST SP 800-53 Rev. 4 IA-4",
+                    "NIST SP 800-53 Rev. 4 IA-5",
+                    "NIST SP 800-53 Rev. 4 IA-6",
+                    "NIST SP 800-53 Rev. 4 IA-7",
+                    "NIST SP 800-53 Rev. 4 IA-8",
+                    "NIST SP 800-53 Rev. 4 IA-9",
+                    "NIST SP 800-53 Rev. 4 IA-10",
+                    "NIST SP 800-53 Rev. 4 IA-11",
+                    "AICPA TSC CC6.1",
+                    "AICPA TSC CC6.2",
+                    "ISO 27001:2013 A.9.2.1",
+                    "ISO 27001:2013 A.9.2.2",
+                    "ISO 27001:2013 A.9.2.3",
+                    "ISO 27001:2013 A.9.2.4",
+                    "ISO 27001:2013 A.9.2.6",
+                    "ISO 27001:2013 A.9.3.1",
+                    "ISO 27001:2013 A.9.4.2",
+                    "ISO 27001:2013 A.9.4.3",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 1.16",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.1",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.2"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+    # this is a failing check
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{snowflakeAccountId}/snowflake-stored-procs-owned-by-default-admin-roles-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": snowflakeAccountId,
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "LOW"},
+            "Confidence": 99,
+            "Title": "[Snowflake.Account.7] Snowflake stored procedures should not run with ACCOUNTADMIN or SECURITYADMIN role privileges",
+            "Description": f"Snowflake account {snowflakeAccountId} does not have any stored procedures that are owned by ACCOUNTADMIN or SECURITYADMIN roles. Snowflake executes stored procedures with the privileges of the stored procedure owner or the caller. Role that has OWNERSHIP privilege on the stored procedure owns it. To avoid granting a stored procedure inappropriate privileges, the OWNERSHIP privilege on the stored procedure run as owner should be assigned to a custom role containing only those privileges that are necessary for successful execution of the stored procedure. If a threat actor finds a way to influence or hijack the stored procedure execution flow, they may be able to exploit privileges given to the stored procedure. In the case of an ACCOUNTADMIN or SECURITYADMIN roles, that may lead to a full account takeover. Additionally, a mistake in the stored procedure implementation coupled with excessive privileges may lead to a reliability incident, e.g. accidentally dropping database objects. This check does not take into account tasks running with custom roles using the ACCOUNTADMIN or SECURITYADMIN roles. For more information refer to the remediation section.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For information on managing Snowflake Stored Procedure ownership and general security best practices in Snowflake refer to the Understanding caller's rights and owner's rights stored procedures section of the Snowflake Documentation Portal.",
+                    "Url": "https://docs.snowflake.com/en/developer-guide/stored-procedure/stored-procedures-rights"
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Snowflake",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": snowflakeAccountId,
+                "AssetRegion": snowflakeRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Snowflake Account",
+                "AssetComponent": "Account"
+            },
+            "Resources": [
+                {
+                    "Type": "SnowflakeAccount",
+                    "Id": snowflakeAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-2",
+                    "NIST SP 800-53 Rev. 4 IA-1",
+                    "NIST SP 800-53 Rev. 4 IA-2",
+                    "NIST SP 800-53 Rev. 4 IA-3",
+                    "NIST SP 800-53 Rev. 4 IA-4",
+                    "NIST SP 800-53 Rev. 4 IA-5",
+                    "NIST SP 800-53 Rev. 4 IA-6",
+                    "NIST SP 800-53 Rev. 4 IA-7",
+                    "NIST SP 800-53 Rev. 4 IA-8",
+                    "NIST SP 800-53 Rev. 4 IA-9",
+                    "NIST SP 800-53 Rev. 4 IA-10",
+                    "NIST SP 800-53 Rev. 4 IA-11",
+                    "AICPA TSC CC6.1",
+                    "AICPA TSC CC6.2",
+                    "ISO 27001:2013 A.9.2.1",
+                    "ISO 27001:2013 A.9.2.2",
+                    "ISO 27001:2013 A.9.2.3",
+                    "ISO 27001:2013 A.9.2.4",
+                    "ISO 27001:2013 A.9.2.6",
+                    "ISO 27001:2013 A.9.3.1",
+                    "ISO 27001:2013 A.9.4.2",
+                    "ISO 27001:2013 A.9.4.3",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 1.16",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.1",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.2"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+
+@registry.register_check("snowflake.account")
+def snowflake_stored_procs_not_running_with_admin_privs_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+) -> dict:
+    """[Snowflake.Account.8] Snowflake stored procedures should not run with ACCOUNTADMIN or SECURITYADMIN role privileges"""
+    # ISO Time
+    iso8601Time = datetime.now(UTC).replace(tzinfo=timezone.utc).isoformat()
+    
+    query = """
+    SELECT NAME AS STORED_PROCEDURE_NAME, GRANTED_TO, GRANTEE_NAME AS ROLE_NAME FROM SNOWFLAKE.ACCOUNT_USAGE.GRANTS_TO_ROLES WHERE GRANTED_ON = 'PROCEDURE' AND DELETED_ON IS NULL AND GRANTED_TO = 'ROLE' AND GRANTEE_NAME IN ('ACCOUNTADMIN' , 'SECURITYADMIN');
+    """
+    # as usual, as long as this returns an empty list, it's a pass
+    q = snowflakeCursor.execute(query).fetchall()
+    
+    # B64 encode all of the details for the Asset
+    assetJson = json.dumps(q,default=str).encode("utf-8")
+    assetB64 = base64.b64encode(assetJson)
+
+    # this is a passing check
+    if not q:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{snowflakeAccountId}/snowflake-stored-procs-run-with-admin-privileges-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": snowflakeAccountId,
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[Snowflake.Account.8] Snowflake stored procedures should not run with ACCOUNTADMIN or SECURITYADMIN role privileges",
+            "Description": f"Snowflake account {snowflakeAccountId} does not have any stored procedures that run with ACCOUNTADMIN or SECURITYADMIN role privileges. This check does not take into account stored procedures running with custom roles using the ACCOUNTADMIN or SECURITYADMIN roles.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For information on managing Snowflake Stored Procedure ownership and general security best practices in Snowflake refer to the Understanding caller's rights and owner's rights stored procedures section of the Snowflake Documentation Portal.",
+                    "Url": "https://docs.snowflake.com/en/developer-guide/stored-procedure/stored-procedures-rights"
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Snowflake",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": snowflakeAccountId,
+                "AssetRegion": snowflakeRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Snowflake Account",
+                "AssetComponent": "Account"
+            },
+            "Resources": [
+                {
+                    "Type": "SnowflakeAccount",
+                    "Id": snowflakeAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-2",
+                    "NIST SP 800-53 Rev. 4 IA-1",
+                    "NIST SP 800-53 Rev. 4 IA-2",
+                    "NIST SP 800-53 Rev. 4 IA-3",
+                    "NIST SP 800-53 Rev. 4 IA-4",
+                    "NIST SP 800-53 Rev. 4 IA-5",
+                    "NIST SP 800-53 Rev. 4 IA-6",
+                    "NIST SP 800-53 Rev. 4 IA-7",
+                    "NIST SP 800-53 Rev. 4 IA-8",
+                    "NIST SP 800-53 Rev. 4 IA-9",
+                    "NIST SP 800-53 Rev. 4 IA-10",
+                    "NIST SP 800-53 Rev. 4 IA-11",
+                    "AICPA TSC CC6.1",
+                    "AICPA TSC CC6.2",
+                    "ISO 27001:2013 A.9.2.1",
+                    "ISO 27001:2013 A.9.2.2",
+                    "ISO 27001:2013 A.9.2.3",
+                    "ISO 27001:2013 A.9.2.4",
+                    "ISO 27001:2013 A.9.2.6",
+                    "ISO 27001:2013 A.9.3.1",
+                    "ISO 27001:2013 A.9.4.2",
+                    "ISO 27001:2013 A.9.4.3",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 1.17",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.1",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.2"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+    # this is a failing check
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{snowflakeAccountId}/snowflake-stored-procs-run-with-admin-privileges-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": snowflakeAccountId,
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "LOW"},
+            "Confidence": 99,
+            "Title": "[Snowflake.Account.8] Snowflake stored procedures should not run with ACCOUNTADMIN or SECURITYADMIN role privileges",
+            "Description": f"Snowflake account {snowflakeAccountId} has at least one stored procedure that runs with ACCOUNTADMIN or SECURITYADMIN role privileges. Snowflake stored procedures should not run with the ACCOUNTADMIN or SECURITYADMIN roles. Instead, stored procedures should be run using a custom role containing only those privileges that are necessary for successful execution of the stored procedure. If a threat actor finds a way to influence or hijack the stored procedure execution flow, they may be able to exploit privileges given to the stored procedure. In the case of an ACCOUNTADMIN or SECURITYADMIN roles, that may lead to a full account takeover. Additionally, a mistake in the stored procedure implementation coupled with excessive privileges may lead to a reliability incident, e.g. accidentally dropping database objects. This check does not take into account stored procedures running with custom roles using the ACCOUNTADMIN or SECURITYADMIN roles. For more information refer to the remediation section.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For information on managing Snowflake Stored Procedure ownership and general security best practices in Snowflake refer to the Understanding caller's rights and owner's rights stored procedures section of the Snowflake Documentation Portal.",
+                    "Url": "https://docs.snowflake.com/en/developer-guide/stored-procedure/stored-procedures-rights"
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Snowflake",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": snowflakeAccountId,
+                "AssetRegion": snowflakeRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Snowflake Account",
+                "AssetComponent": "Account"
+            },
+            "Resources": [
+                {
+                    "Type": "SnowflakeAccount",
+                    "Id": snowflakeAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-2",
+                    "NIST SP 800-53 Rev. 4 IA-1",
+                    "NIST SP 800-53 Rev. 4 IA-2",
+                    "NIST SP 800-53 Rev. 4 IA-3",
+                    "NIST SP 800-53 Rev. 4 IA-4",
+                    "NIST SP 800-53 Rev. 4 IA-5",
+                    "NIST SP 800-53 Rev. 4 IA-6",
+                    "NIST SP 800-53 Rev. 4 IA-7",
+                    "NIST SP 800-53 Rev. 4 IA-8",
+                    "NIST SP 800-53 Rev. 4 IA-9",
+                    "NIST SP 800-53 Rev. 4 IA-10",
+                    "NIST SP 800-53 Rev. 4 IA-11",
+                    "AICPA TSC CC6.1",
+                    "AICPA TSC CC6.2",
+                    "ISO 27001:2013 A.9.2.1",
+                    "ISO 27001:2013 A.9.2.2",
+                    "ISO 27001:2013 A.9.2.3",
+                    "ISO 27001:2013 A.9.2.4",
+                    "ISO 27001:2013 A.9.2.6",
+                    "ISO 27001:2013 A.9.3.1",
+                    "ISO 27001:2013 A.9.4.2",
+                    "ISO 27001:2013 A.9.4.3",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 1.17",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.1",
+                    "CIS Snowflake Foundations Benchmark V1.0.0 2.2"
                 ]
             },
             "Workflow": {"Status": "NEW"},
