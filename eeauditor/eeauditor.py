@@ -22,7 +22,6 @@ import logging
 from os import path
 from functools import partial
 from inspect import getfile
-import sys
 from time import sleep
 from traceback import format_exc
 import json

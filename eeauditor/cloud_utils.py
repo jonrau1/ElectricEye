@@ -43,7 +43,7 @@ class CloudConfig(object):
     for use in EEAuditor when running ElectricEye Auditors and Check
     """
 
-    def __init__(self, assessmentTarget, tomlPath):
+    def __init__(self, assessmentTarget: str, tomlPath: str | None):
         if tomlPath is None:
             here = path.abspath(path.dirname(__file__))
             tomlFile = f"{here}/external_providers.toml"
@@ -120,7 +120,7 @@ class CloudConfig(object):
         # GCP
         if assessmentTarget == "GCP":
             # Process ["gcp_project_ids"]
-            gcpProjects = data["regions_and_accounts"]["gcp"]["gcp_project_ids"]
+            gcpProjects = list(data["regions_and_accounts"]["gcp"]["gcp_project_ids"])
             if not gcpProjects:
                 logger.error("No GCP Projects were provided in [regions_and_accounts.gcp.gcp_project_ids].")
                 sys.exit(2)
@@ -148,10 +148,10 @@ class CloudConfig(object):
             ociValues = data["regions_and_accounts"]["oci"]
 
             # Retrieve the OCIDs for Tenancy & User and the Region ID along with a list of Compartment OCIDs
-            ociTenancyId = ociValues["oci_tenancy_ocid"]
-            ociUserId = ociValues["oci_user_ocid"]
-            ociRegionName = ociValues["oci_region_name"]
-            ociCompartments = ociValues["oci_compartment_ocids"]
+            ociTenancyId = str(ociValues["oci_tenancy_ocid"])
+            ociUserId = str(ociValues["oci_user_ocid"])
+            ociRegionName = str(ociValues["oci_region_name"])
+            ociCompartments = list(ociValues["oci_compartment_ocids"])
             # Process the [credentials.oci]
             ociUserApiKeyFingerprint = data["credentials"]["oci"]["oci_user_api_key_fingerprint_value"]
             ociUserApiKeyPemValue = data["credentials"]["oci"]["oci_user_api_key_private_key_pem_contents_value"]
@@ -532,7 +532,7 @@ class CloudConfig(object):
                 )
 
             # Retrieve cursor and connector
-            snowflakeCursorConn = self.connectToSnowflake()
+            snowflakeCursorConn = self.create_snowflake_cursor()
 
             self.snowflakeConnection = snowflakeCursorConn[0]
             self.snowflakeCursor = snowflakeCursorConn[1]
@@ -824,7 +824,7 @@ class CloudConfig(object):
 
         return azureSubscriptionIds
 
-    def connectToSnowflake(self) -> tuple[snowconn.connection.SnowflakeConnection, snowconn.cursor.SnowflakeCursor]:
+    def create_snowflake_cursor(self) -> tuple[snowconn.connection.SnowflakeConnection, snowconn.cursor.SnowflakeCursor]:
         """
         Returns a Snowflake cursor object for a given warehouse
         """
