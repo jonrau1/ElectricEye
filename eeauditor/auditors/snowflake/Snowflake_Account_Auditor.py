@@ -66,7 +66,7 @@ def snowflake_account_sso_enabled_check(
     # ISO Time
     iso8601Time = datetime.now(UTC).replace(tzinfo=timezone.utc).isoformat()
     
-    payload = cache.get("get_snowflake_security_integrations")
+    payload = get_snowflake_security_integrations(cache, snowflakeCursor)
 
     ssoCheck = [integ for integ in payload if "saml" in str(integ["type"]).lower() or "oauth" in str(integ["type"]).lower()]
 
@@ -222,7 +222,7 @@ def snowflake_account_scim_enabled_check(
     # ISO Time
     iso8601Time = datetime.now(UTC).replace(tzinfo=timezone.utc).isoformat()
     
-    payload = cache.get("get_snowflake_security_integrations")
+    payload = get_snowflake_security_integrations(cache, snowflakeCursor)
 
     scimCheck = [integ for integ in payload if str(integ["type"]).lower() == "scim"]
 
@@ -1389,5 +1389,338 @@ def snowflake_stored_procs_not_running_with_admin_privs_check(
             "RecordState": "ACTIVE"
         }
         yield finding
+
+@registry.register_check("snowflake.account")
+def snowflake_account_password_policy_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+) -> dict:
+    """[Snowflake.Account.9] Snowflake Accounts should configure a password policy"""
+    # ISO Time
+    iso8601Time = datetime.now(UTC).replace(tzinfo=timezone.utc).isoformat()
+    
+    payload = get_snowflake_password_policy(cache, snowflakeCursor)
+
+    # B64 encode all of the details for the Asset
+    assetJson = json.dumps(payload,default=str).encode("utf-8")
+    assetB64 = base64.b64encode(assetJson)
+
+    # this is a passing check
+    if payload:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{snowflakeAccountId}/snowflake-account-password-policy-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": snowflakeAccountId,
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[Snowflake.Account.9] Snowflake Accounts should configure a password policy",
+            "Description": f"Snowflake account {snowflakeAccountId} has at least one password policy configured.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For information on best practices for user management and password policies in Snowflake refer to the User management section of the Snowflake Documentation Portal.",
+                    "Url": "https://docs.snowflake.com/en/user-guide/admin-user-management"
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Snowflake",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": snowflakeAccountId,
+                "AssetRegion": snowflakeRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Snowflake Account",
+                "AssetComponent": "Account"
+            },
+            "Resources": [
+                {
+                    "Type": "SnowflakeAccount",
+                    "Id": snowflakeAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-2",
+                    "NIST SP 800-53 Rev. 4 IA-1",
+                    "NIST SP 800-53 Rev. 4 IA-2",
+                    "NIST SP 800-53 Rev. 4 IA-3",
+                    "NIST SP 800-53 Rev. 4 IA-4",
+                    "NIST SP 800-53 Rev. 4 IA-5",
+                    "NIST SP 800-53 Rev. 4 IA-6",
+                    "NIST SP 800-53 Rev. 4 IA-7",
+                    "NIST SP 800-53 Rev. 4 IA-8",
+                    "NIST SP 800-53 Rev. 4 IA-9",
+                    "NIST SP 800-53 Rev. 4 IA-10",
+                    "NIST SP 800-53 Rev. 4 IA-11",
+                    "AICPA TSC CC6.1",
+                    "AICPA TSC CC6.2",
+                    "ISO 27001:2013 A.9.2.1",
+                    "ISO 27001:2013 A.9.2.2",
+                    "ISO 27001:2013 A.9.2.3",
+                    "ISO 27001:2013 A.9.2.4",
+                    "ISO 27001:2013 A.9.2.6",
+                    "ISO 27001:2013 A.9.3.1",
+                    "ISO 27001:2013 A.9.4.2",
+                    "ISO 27001:2013 A.9.4.3"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+    # this is a failing check
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{snowflakeAccountId}/snowflake-account-password-policy-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": snowflakeAccountId,
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[Snowflake.Account.9] Snowflake Accounts should configure a password policy",
+            "Description": f"Snowflake account {snowflakeAccountId} does not have a password policy configured. A password policy specifies the requirements that must be met to create and reset a password to authenticate to Snowflake. Beyond a strong password policy, Snowflake also supports multi-factor authentication (MFA) for additional security. A password policy should be configured to enforce strong password requirements, such as minimum length, complexity, and expiration. For more information on password policies in Snowflake refer to the User management section of the Snowflake Documentation Portal.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For information on best practices for user management and password policies in Snowflake refer to the User management section of the Snowflake Documentation Portal.",
+                    "Url": "https://docs.snowflake.com/en/user-guide/admin-user-management"
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Snowflake",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": snowflakeAccountId,
+                "AssetRegion": snowflakeRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Snowflake Account",
+                "AssetComponent": "Account"
+            },
+            "Resources": [
+                {
+                    "Type": "SnowflakeAccount",
+                    "Id": snowflakeAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-2",
+                    "NIST SP 800-53 Rev. 4 IA-1",
+                    "NIST SP 800-53 Rev. 4 IA-2",
+                    "NIST SP 800-53 Rev. 4 IA-3",
+                    "NIST SP 800-53 Rev. 4 IA-4",
+                    "NIST SP 800-53 Rev. 4 IA-5",
+                    "NIST SP 800-53 Rev. 4 IA-6",
+                    "NIST SP 800-53 Rev. 4 IA-7",
+                    "NIST SP 800-53 Rev. 4 IA-8",
+                    "NIST SP 800-53 Rev. 4 IA-9",
+                    "NIST SP 800-53 Rev. 4 IA-10",
+                    "NIST SP 800-53 Rev. 4 IA-11",
+                    "AICPA TSC CC6.1",
+                    "AICPA TSC CC6.2",
+                    "ISO 27001:2013 A.9.2.1",
+                    "ISO 27001:2013 A.9.2.2",
+                    "ISO 27001:2013 A.9.2.3",
+                    "ISO 27001:2013 A.9.2.4",
+                    "ISO 27001:2013 A.9.2.6",
+                    "ISO 27001:2013 A.9.3.1",
+                    "ISO 27001:2013 A.9.4.2",
+                    "ISO 27001:2013 A.9.4.3"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+
+@registry.register_check("snowflake.account")
+def snowflake_account_password_length_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+) -> dict:
+    """[Snowflake.Account.10] Snowflake password policies should enforce a minimum password length of at least 14 characters"""
+    # ISO Time
+    iso8601Time = datetime.now(UTC).replace(tzinfo=timezone.utc).isoformat()
+    
+    for policy in get_snowflake_password_policy(cache, snowflakeCursor):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(policy,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        pwPolicyName = policy.get("NAME")
+
+        # Evaluate min length only from "PASSWORD_MIN_LENGTH" key to set policy passing
+        pwPolicyPasses = False
+        if policy.get("PASSWORD_MIN_LENGTH") >= 14:
+            pwPolicyPasses = True
+
+        # this is a passing check
+        if pwPolicyPasses is True:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{snowflakeAccountId}/{pwPolicyName}/snowflake-account-password-length-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": snowflakeAccountId,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Snowflake.Account.10] Snowflake password policies should enforce a minimum password length of at least 14 characters",
+                "Description": f"Snowflake password policy {pwPolicyName} requires at least 14 characters for the minimum password length.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on best practices for user management and password policies in Snowflake refer to the User management section of the Snowflake Documentation Portal.",
+                        "Url": "https://docs.snowflake.com/en/user-guide/admin-user-management"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Snowflake",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": snowflakeAccountId,
+                    "AssetRegion": snowflakeRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "Snowflake Password Policy",
+                    "AssetComponent": "Policy"
+                },
+                "Resources": [
+                    {
+                        "Type": "SnowflakePasswordPolicy",
+                        "Id": pwPolicyName,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-3",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-6",
+                        "NIST SP 800-53 Rev. 4 IA-7",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 IA-9",
+                        "NIST SP 800-53 Rev. 4 IA-10",
+                        "NIST SP 800-53 Rev. 4 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3",
+                        "CIS Snowflake Foundations Benchmark V1.0.0 1.5"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+        # this is a failing check
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{snowflakeAccountId}/{pwPolicyName}/snowflake-account-password-length-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": snowflakeAccountId,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[Snowflake.Account.10] Snowflake password policies should enforce a minimum password length of at least 14 characters",
+                "Description": f"Snowflake password policy {pwPolicyName} does not require at least 14 characters for the minimum password length. Snowflake supports setting a password policy for your Snowflake account and for individual users. Only one password policy can be set at any given time for your Snowflake account or a user. If a password policy exists for the Snowflake account and another password policy is set for a user in the same Snowflake account, the user-level password policy takes precedence over the account-level password policy. While Snowflake recommends configuring SSO authentication for users and ensuring that SSO users do not have a password set, there may be exceptions when users still need to log in with a password (e.g., setting up a break-glass user with password login to recover from SSO outages). For those few users that still need to have a password, setting a password policy can help ensure that, throughout subsequent password changes, the passwords used remain complex and therefore harder to guess or brute-force. For more information refer to the remediation section.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on best practices for user management and password policies in Snowflake refer to the User management section of the Snowflake Documentation Portal.",
+                        "Url": "https://docs.snowflake.com/en/user-guide/admin-user-management"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Snowflake",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": snowflakeAccountId,
+                    "AssetRegion": snowflakeRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "Snowflake Password Policy",
+                    "AssetComponent": "Policy"
+                },
+                "Resources": [
+                    {
+                        "Type": "SnowflakePasswordPolicy",
+                        "Id": pwPolicyName,
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-2",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-3",
+                        "NIST SP 800-53 Rev. 4 IA-4",
+                        "NIST SP 800-53 Rev. 4 IA-5",
+                        "NIST SP 800-53 Rev. 4 IA-6",
+                        "NIST SP 800-53 Rev. 4 IA-7",
+                        "NIST SP 800-53 Rev. 4 IA-8",
+                        "NIST SP 800-53 Rev. 4 IA-9",
+                        "NIST SP 800-53 Rev. 4 IA-10",
+                        "NIST SP 800-53 Rev. 4 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3",
+                        "CIS Snowflake Foundations Benchmark V1.0.0 1.5"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
 
 # EOF
