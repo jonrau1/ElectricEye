@@ -45,7 +45,7 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 
 ## Workflow
 
-![Architecture](./screenshots/ElectricEyeAnimated.gif)
+![Architecture](./screenshots/electrice_eye_architecture.jpg)
 
 ## Quick Run Down :running: :running:
 
