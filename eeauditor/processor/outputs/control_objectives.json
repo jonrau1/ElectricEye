@@ -16224,8 +16224,24 @@
         "ControlDescription": "Ensure monitoring and alerting exist for ACCOUNTADMIN and SECURITYADMIN role grants"
     },
     {
+        "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 2.2",
+        "ControlDescription": "Ensure monitoring and alerting exist for MANAGE GRANTS privilege grants"
+    },
+    {
+        "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 2.3",
+        "ControlDescription": "Ensure monitoring and alerting exist for password sign-ins of SSO users"
+    },
+    {
         "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 2.4",
         "ControlDescription": "Ensure monitoring and alerting exist for password sign-in without MFA"
+    },
+    {
+        "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 2.5",
+        "ControlDescription": "Ensure monitoring and alerting exist for creation, update and deletion of security integrations"
+    },
+    {
+        "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 2.6",
+        "ControlDescription": "Ensure monitoring and alerting exist for changes to network policies and associated objects"
     },
     {
         "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 2.7",
