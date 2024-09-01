@@ -13,13 +13,13 @@ This documentation is all about Outputs supported by ElectricEye and how to conf
 - [Normalized JSON Output](#json-normalized-output)
 - [Cloud Asset Management JSON Output](#json-cloud-asset-management-cam-output)
 - [Open Cyber Security Format (OCSF) V1.1.0 Output](#open-cyber-security-format-ocsf-v110-output)
+- [Open Cyber Security Format (OCSF) V1.4.0 Output](#open-cyber-security-format-ocsf-v140-output)
 - [CSV Output](#csv-output)
 - [AWS Security Hub Output](#aws-security-hub-output)
 - [MongoDB & AWS DocumentDB Output](#mongodb--aws-documentdb-output)
 - [Cloud Asset Management MongoDB & AWS DocumentDB Output](#mongodb--aws-documentdb-cloud-asset-management-cam-output)
 - [PostgreSQL Output](#postgresql-output)
 - [Cloud Asset Management PostgreSQL Output](#postgresql-cloud-asset-management-cam-output)
-- [Firemon Cloud Defense (DisruptOps) Output](#firemon-cloud-defense-disruptops-output)
 - [Amazon Simple Queue Service (SQS) Output](#amazon-simple-queue-service-sqs-output)
 - [Slack Output](#slack-output)
 - [Open Cybersecurity Format (OCSF) -> Amazon Kinesis Data Firehose](#open-cybersecurity-format-ocsf---amazon-kinesis-data-firehose)
@@ -34,7 +34,7 @@ To review the list of possible Output providers, use the following ElectricEye c
 
 ```bash
 $ python3 eeauditor/controller.py --list-options
-['amazon_sqs', 'cam_json', 'cam_mongodb', 'cam_postgresql', 'csv', 'firemon_cloud_defense', 'html', 'html_compliance', 'json', 'json_normalized', 'mongodb', 'ocsf_kdf', 'ocsf_stdout', 'ocsf_v1_1_0', 'postgresql', 'sechub', 'slack', 'stdout']
+['amazon_sqs', 'cam_json', 'cam_mongodb', 'cam_postgresql', 'csv', 'html', 'html_compliance', 'json', 'json_normalized', 'mongodb', 'ocsf_kdf', 'ocsf_stdout', 'ocsf_v1_1_0', 'ocsf_v1_4_0', 'postgresql', 'sechub', 'slack', 'stdout']
 ```
 
 #### IMPORTANT NOTE!! You can specify multiple Outputs by providing the `-o` or `--outputs` argument multiple times, for instance: `python3 eeauditor/controller.py -t AWS -o json -o csv -o postgresql`
@@ -104,192 +104,11 @@ For example, if you just want to have a "pretty-printed" JSON output you could u
 $ python3 eeauditor/controller.py -t AWS -c ebs_volume_encryption_check -o ocsf_stdout | grep 'SchemaVersion' | jq . -r
 ```
 
-The OCSF V1.1.0 Output selection will convert all ElectricEye findings into the OCSF format (in JSON) which is a normalized and standardized security-centric data model, well-suited to ingestion in Data Lakes and Data Lake Houses built upon Amazon Security Lake, AWS Glue Data Catalog, Snowflake, Apache Iceberg, Google BigQuery, and more. The Event Class used for this finding is [`compliance_finding [2003]`](https://schema.ocsf.io/1.1.0/classes/compliance_finding?extensions=)
+The OCSF V1.4.0 Output selection will convert all ElectricEye findings into the OCSF format (in JSON) which is a normalized and standardized security-centric data model, well-suited to ingestion in Data Lakes and Data Lake Houses built upon Amazon Security Lake, AWS Glue Data Catalog, Snowflake, Apache Iceberg, Google BigQuery, and more. The Event Class used for this finding is [`compliance_finding [2003]`](https://schema.ocsf.io/1.4.0/classes/compliance_finding?extensions=)
 
 This Output will provide the `ProductFields.AssetDetails` information.
 
 To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o ocsf_stdout` you can also choose to *not* specify `-o` at all as it is the default Output.
-
-### OCSF `stdout` Output
-
-```json
-{
-    "activity_id": 1,
-    "activity_name": "Create",
-    "category_name": "Findings",
-    "category_uid": 2,
-    "class_name": "Compliance Finding",
-    "class_uid": 2003,
-    "confidence_score": 99,
-    "severity": "Medium",
-    "severity_id": 99,
-    "status": "New",
-    "status_id": 1,
-    "time": 1709090374,
-    "type_name": "Compliance Finding: Create",
-    "type_uid": 200301,
-    "metadata": {
-        "uid": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/Databases/azure-defender-for-cloud-databases-plan-enabled-check",
-        "correlation_uid": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/Databases/azure-defender-for-cloud-databases-plan-enabled-check",
-        "version": "1.1.0",
-        "product": {
-            "name": "ElectricEye",
-            "version": "3.0",
-            "url_string": "https://github.com/jonrau1/ElectricEye",
-            "vendor_name": "ElectricEye"
-        },
-        "profiles": [
-            "cloud"
-        ]
-    },
-    "cloud": {
-        "provider": "Azure",
-        "region": "azure-global",
-        "account": {
-            "uid": "0000aaa-1234-bbb-dddd-example123",
-            "type": "Azure",
-            "type_uid": 99
-        }
-    },
-    "observables": [
-        {
-            "name": "cloud.account.uid",
-            "type": "Resource UID",
-            "type_id": 10,
-            "value": "0000aaa-1234-bbb-dddd-example123"
-        },
-        {
-            "name": "resource.uid",
-            "type": "Resource UID",
-            "type_id": 10,
-            "value": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/Databases"
-        }
-    ],
-    "compliance": {
-        "requirements": [
-            "AICPA TSC CC7.2",
-            "CIS Critical Security Controls V8 8.11",
-            "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.3",
-            "CMMC 2.0 AU.L2-3.3.5",
-            "CSA Cloud Controls Matrix V4.0 LOG-05",
-            "CSA Cloud Controls Matrix V4.0 LOG-13",
-            "Equifax SCF V1.0 CM-CS-14",
-            "FBI CJIS Security Policy V5.9 5.3.2.1",
-            "FBI CJIS Security Policy V5.9 5.3.2.2",
-            "FBI CJIS Security Policy V5.9 5.3.4",
-            "FBI CJIS Security Policy V5.9 5.4.1",
-            "FBI CJIS Security Policy V5.9 5.4.3",
-            "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(1)(ii)(D)",
-            "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.312(b)",
-            "ISO 27001:2013 A.12.4.1",
-            "ISO 27001:2013 A.16.1.1",
-            "ISO 27001:2013 A.16.1.4",
-            "ISO 27001:2022 A5.25",
-            "MITRE ATT&CK T1210",
-            "NERC Critical Infrastructure Protection CIP-007-6, Requirement R4 Part 4.4",
-            "NIST CSF V1.1 DE.AE-2",
-            "NIST SP 800-171 Rev. 2 3.3.3",
-            "NIST SP 800-171 Rev. 2 3.3.5",
-            "NIST SP 800-53 Rev. 4 AU-6",
-            "NIST SP 800-53 Rev. 4 CA-7",
-            "NIST SP 800-53 Rev. 4 IR-4",
-            "NIST SP 800-53 Rev. 4 SI-4",
-            "NIST SP 800-53 Rev. 5 AU-6",
-            "NIST SP 800-53 Rev. 5 AU-6(1)",
-            "NZISM V3.5 16.6.14. Event log auditing (CID:2034)",
-            "PCI-DSS V4.0 10.4.1",
-            "PCI-DSS V4.0 10.4.1.1",
-            "PCI-DSS V4.0 10.4.2",
-            "PCI-DSS V4.0 10.4.3",
-            "UK NCSC Cyber Assessment Framework V3.1 C1.c"
-        ],
-        "control": "Azure.DefenderForCloud.3",
-        "standards": [
-            "AICPA TSC",
-            "CIS Critical Security Controls V8",
-            "CMMC 2.0",
-            "CSA Cloud Controls Matrix V4.0",
-            "Equifax SCF V1.0",
-            "FBI CJIS Security Policy V5.9",
-            "HIPAA Security Rule 45 CFR Part 164 Subpart C",
-            "ISO 27001:2013",
-            "ISO 27001:2022",
-            "MITRE ATT&CK",
-            "NERC Critical Infrastructure Protection",
-            "NIST CSF V1.1",
-            "NIST SP 800-171 Rev. 2",
-            "NIST SP 800-53 Rev. 4",
-            "NIST SP 800-53 Rev. 5",
-            "NZISM V3.5",
-            "PCI-DSS V4.0",
-            "UK NCSC Cyber Assessment Framework V3.1"
-        ],
-        "status": "Fail",
-        "status_id": 3
-    },
-    "finding_info": {
-        "created_time": 1709090374,
-        "desc": "Microsoft Defender for Databases plan is not enabled in Subscription 0000aaa-1234-bbb-dddd-example123 because at least one of the four plans is on free tier. Defender for Databases in Microsoft Defender for Cloud allows you to protect your entire database estate with attack detection and threat response for the most popular database types in Azure. Defender for Cloud provides protection for the database engines and for data types, according to their attack surface and security risks: Defender for Azure SQL, SQL Server Machines, Open Source Relational DBs, and Azure Cosmos DBs. Refer to the remediation instructions if this configuration is not intended.",
-        "first_seen_time": 1709090374,
-        "modified_time": 1709090374,
-        "product_uid": "arn:aws:securityhub:us-gov-east-1:123456789012:product/123456789012/default",
-        "title": "[Azure.DefenderForCloud.3] Microsoft Defender for Databases plan should be enabled on your subscription",
-        "types": [
-            "Software and Configuration Checks"
-        ],
-        "uid": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/Databases/azure-defender-for-cloud-databases-plan-enabled-check"
-    },
-    "remediation": {
-        "desc": "For more information on the Defender for Databases plan and deployments refer to the Protect your databases with Defender for Databases section of the Azure Security Microsoft Defender for Cloud documentation.",
-        "references": [
-            "https://learn.microsoft.com/en-us/azure/defender-for-cloud/tutorial-enable-databases-plan"
-        ]
-    },
-    "resource": {
-        "data": [
-            {
-                "id": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/SqlServers",
-                "name": "SqlServers",
-                "type": "Microsoft.Security/pricings",
-                "pricing_tier": "Free",
-                "free_trial_remaining_time": "P30D"
-            },
-            {
-                "id": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/SqlServerVirtualMachines",
-                "name": "SqlServerVirtualMachines",
-                "type": "Microsoft.Security/pricings",
-                "pricing_tier": "Free",
-                "free_trial_remaining_time": "P30D"
-            },
-            {
-                "id": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/OpenSourceRelationalDatabases",
-                "name": "OpenSourceRelationalDatabases",
-                "type": "Microsoft.Security/pricings",
-                "pricing_tier": "Free",
-                "free_trial_remaining_time": "P30D"
-            },
-            {
-                "id": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/CosmosDbs",
-                "name": "CosmosDbs",
-                "type": "Microsoft.Security/pricings",
-                "pricing_tier": "Free",
-                "free_trial_remaining_time": "P30D"
-            }
-        ],
-        "cloud_partition": null,
-        "region": "azure-global",
-        "type": "Microsoft Defender for Cloud",
-        "uid": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/Databases"
-    },
-    "unmapped": {
-        "provider_type": "CSP",
-        "asset_class": "Security Services",
-        "asset_component": "Microsoft Defender for Databases",
-        "workflow_status": "NEW",
-        "record_state": "ACTIVE"
-    }
-}
-```
 
 ## HTML Output
 
@@ -883,6 +702,14 @@ To use this Output include the following arguments in your ElectricEye CLI: `pyt
 }
 ```
 
+## Open Cyber Security Format (OCSF) V1.4.0 Output
+
+The OCSF V1.4.0 Output selection will convert all ElectricEye findings into the OCSF format (in JSON) which is a normalized and standardized security-centric data model, well-suited to ingestion in Data Lakes and Data Lake Houses built upon Amazon Security Lake, AWS Glue Data Catalog, Snowflake, Apache Iceberg, Google BigQuery, and more. The Event Class used for this finding is [`compliance_finding [2003]`](https://schema.ocsf.io/1.4.0/classes/compliance_finding?extensions=)
+
+This Output will provide the `ProductFields.AssetDetails` information, it is mapped within `resources.[].data`.
+
+To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o ocsf_v1_4_0`
+
 ## MongoDB & AWS DocumentDB Output
 
 The MongoDB Output selection will write all ElectricEye findings to a MongoDB database or to an AWS DocumentDB Instance/Cluster along with the `ProductFields.AssetDetails` using `pymongo`. To facilitate mutable records being written to a Collection, ElectricEye will duplicate the ASFF `Id` (the finding's GUID) into the MongoDB `_id` field and write all records sequentially using the `update_one(upsert=True)` method within `pymongo`. This is written with a filter to replace the entire record where and existing `_id` is located.
@@ -1217,22 +1044,6 @@ Note that the TOML configurations are exactly the same as the normal [PostgreSQL
 )
 ```
 
-## Firemon Cloud Defense (DisruptOps) Output
-
-The Firemon Cloud Defense Output selection will all ElectricEye findings to a Cloud Defense (DisruptOps) endpoint using `requests`, the `AssetDetails` will be stripped off. A Pro license for Cloud Defense is required for API Access, best effort is made to respect throttling limitations and `4xx` HTTP Codes. ElectricEye will sleep on `429` and will raise an `Exception` on other `4xx` codes.
-
-This Output *will not* provide the `ProductFields.AssetDetails` information.
-
-To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o postgresql`
-
-#### NOTE! This Output used to be `-o dops` which has been replaced fully with `-o firemon_cloud_defense`
-
-Additionally, values within the `[outputs.postgresql]` section of the TOML file *must be provided* for this integration to work.
-
-- **`firemon_cloud_defense_client_id_value`**: This variable should be set to the Client ID for your FireMon Cloud Defense tenant. This ID is used to authenticate with the FireMon Cloud Defense API. The location where these credentials are stored should match the value of the `global.credentials_location` variable, which specifies the location of the credentials for all integrations.
-
-- **`firemon_cloud_defense_api_key_value`**: This variable should be set to the API Key for your FireMon Cloud Defense tenant. This key is used to authenticate with the FireMon Cloud Defense API. The location where these credentials are stored should match the value of the `global.credentials_location` variable, which specifies the location of the credentials for all integrations.
-
 ## Amazon Simple Queue Service (SQS) Output
 
 **IMPORTANT NOTE**: This requires `sqs:SendMessage` IAM permissions!
@@ -1334,7 +1145,7 @@ An example of the "Findings" output.
 
 ![SlackFindings](../../screenshots/outputs/slack_findings_output.jpg)
 
-## Open Cybersecurity Format (OCSF) -> Amazon Kinesis Data Firehose
+## Open Cybersecurity Format (OCSF) -> Amazon Data Data Firehose
 
 **IMPORTANT NOTE**: This requires `firehose:PutRecordBatch` IAM permissions!
 

@@ -1889,7 +1889,7 @@ def snowflake_monitor_session_keep_alive_commands_check(
         yield finding
 
 @registry.register_check("snowflake.account")
-def snowflake_monitor_session_keep_alive_commands_check(
+def snowflake_network_policy_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
 ) -> dict:
     """[Snowflake.Account.12] Snowflake Accounts should have a network policy enabled"""

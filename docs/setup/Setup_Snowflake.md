@@ -4,6 +4,11 @@ This documentation is dedicated to using ElectricEye for evaluation of Snowflake
 
 ## Table of Contents
 
+- [Setting up Snowflake Permissions](#setting-up-snowflake-permissions)
+- [Configuring TOML](#configuring-toml)
+- [Use ElectricEye for Snowflake](#use-electriceye-for-snowflake)
+- [Snowflake Checks & Services](#snowflake-checks--services)
+
 ## Setting up Snowflake Permissions
 
 Snowflake's principal identity construct is a User - these can represent regular Users, those created using Single Sign-On (SSO) and SCIM, and can also represent 'service accounts' meant for machine-to-machine connectivity.
@@ -104,24 +109,26 @@ These are the following services and checks performed by each Auditor, there are
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
-| Snowflake_Users_Auditor | Snowflake user | XXXXXXXXXXXXXXXXXXX |
-| Snowflake_Users_Auditor | Snowflake user | XXXXXXXXXXXXXXXXXXX |
-| Snowflake_Users_Auditor | Snowflake user | XXXXXXXXXXXXXXXXXXX |
-| Snowflake_Users_Auditor | Snowflake user | XXXXXXXXXXXXXXXXXXX |
-| Snowflake_Users_Auditor | Snowflake user | XXXXXXXXXXXXXXXXXXX |
-| Snowflake_Users_Auditor | Snowflake user | XXXXXXXXXXXXXXXXXXX |
-| Snowflake_Users_Auditor | Snowflake user | XXXXXXXXXXXXXXXXXXX |
-| Snowflake_Users_Auditor | Snowflake user | XXXXXXXXXXXXXXXXXXX |
-| Snowflake_Users_Auditor | Snowflake account | XXXXXXXXXXXXXXXXXXX |
-| Snowflake_Account_Auditor | Snowflake account | XXXXXXXXXXXXXXXXXXX |
-| Snowflake_Account_Auditor | Snowflake account | XXXXXXXXXXXXXXXXXXX |
-| Snowflake_Account_Auditor | Snowflake account | XXXXXXXXXXXXXXXXXXX |
-| Snowflake_Account_Auditor | Snowflake account | XXXXXXXXXXXXXXXXXXX |
-| Snowflake_Account_Auditor | Snowflake account | XXXXXXXXXXXXXXXXXXX |
-| Snowflake_Account_Auditor | Snowflake account | XXXXXXXXXXXXXXXXXXX |
-| Snowflake_Account_Auditor | Snowflake account | XXXXXXXXXXXXXXXXXXX |
-| Snowflake_Account_Auditor | Snowflake account | XXXXXXXXXXXXXXXXXXX |
-| Snowflake_Account_Auditor | Snowflake account | XXXXXXXXXXXXXXXXXXX |
-| Snowflake_Account_Auditor | Snowflake password policy | XXXXXXXXXXXXXXXXXXX |
-| Snowflake_Account_Auditor | Snowflake account | XXXXXXXXXXXXXXXXXXX |
-| Snowflake_Account_Auditor | Snowflake account | XXXXXXXXXXXXXXXXXXX |
+| Snowflake_Users_Auditor | Snowflake user | Password assigned users should use MFA |
+| Snowflake_Users_Auditor | Snowflake user | Service account users (without a password) should have an RSA Private Key |
+| Snowflake_Users_Auditor | Snowflake user | Snowflake users who have not logged in within 90 days should be disabled |
+| Snowflake_Users_Auditor | Snowflake user | Snowflake admin users should have an email |
+| Snowflake_Users_Auditor | Snowflake user | Snowflake users should not have built-in admin roles as their default role |
+| Snowflake_Users_Auditor | Snowflake user | Snowflake password users should be monitored for logging in without MFA |
+| Snowflake_Users_Auditor | Snowflake user | Snowflake admin users should rotate their passwords yearly |
+| Snowflake_Users_Auditor | Snowflake user | Snowflake users allowed to bypass MFA should be reviewed |
+| Snowflake_Users_Auditor | Snowflake account | Snowflake accounts should have at least 2, but less than 10, admins |
+| Snowflake_Account_Auditor | Snowflake account | Snowflake accounts should be configured to use SSO |
+| Snowflake_Account_Auditor | Snowflake account | Snowflake accounts should be configured to use SCIM |
+| Snowflake_Account_Auditor | Snowflake account | Snowflake accounts should have 15 minute or less session timeouts set for admins |
+| Snowflake_Account_Auditor | Snowflake account | Snowflake custom roles should not use built-in admin roles |
+| Snowflake_Account_Auditor | Snowflake account | Snowflake tasks shouldn't be owned by admins |
+| Snowflake_Account_Auditor | Snowflake account | Snowflake tasks shouldn't run with admin privileges |
+| Snowflake_Account_Auditor | Snowflake account | Snowflake stored procedures shouldn't be owned by admins |
+| Snowflake_Account_Auditor | Snowflake account | Snowflake stored procedures shouldn't run with admin privileges |
+| Snowflake_Account_Auditor | Snowflake account | Snowflake accounts should have a password policy |
+| Snowflake_Account_Auditor | Snowflake password policy | Snowflake password policies should require 14 character minimum length for passwords |
+| Snowflake_Account_Auditor | Snowflake account | Snowflake users should be monitored for altering their session timeouts |
+| Snowflake_Account_Auditor | Snowflake account | Snowflake accounts should use a network policy |
+
+Continue to check this section for information on active, retired, and renamed checks or using the `--list-checks` command in the CLI!
