@@ -296,20 +296,6 @@ title = "ElectricEye Configuration"
 
         postgresql_port = 5432
 
-    [outputs.firemon_cloud_defense] # This takes place of the former DisruptOps ("dops") values, but the integration is largely the same
-
-        # Client ID for your Firemon Cloud Defense (formerly known as DisruptOps (dops)) tenant - this location must match 
-        # the value of `global. credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable 
-        # should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
-
-        firemon_cloud_defense_client_id_value = ""
-
-        # API Key for your Firemon Cloud Defense (formerly known as DisruptOps (dops)) tenant - this location must match 
-        # the value of `global. credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable 
-        # should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
-
-        firemon_cloud_defense_api_key_value = ""
-
     [outputs.mongodb] # This unifies the old "docdb" output to account for local MongoDB and AWS DocumentDB
 
         # This value indicates whether or not you are using a password for your MongoDB deployment (which you should). If
