@@ -60,7 +60,7 @@ def get_snowflake_password_policy(cache: dict, snowflakeCursor: cursor.Snowflake
 
 @registry.register_check("snowflake.account")
 def snowflake_account_sso_enabled_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor, serviceAccountExemptions: list[str]
 ) -> dict:
     """[Snowflake.Account.1] Snowflake Accounts have Single Sign-On (SSO) enabled"""
     # ISO Time
@@ -216,7 +216,7 @@ def snowflake_account_sso_enabled_check(
 
 @registry.register_check("snowflake.account")
 def snowflake_account_scim_enabled_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor, serviceAccountExemptions: list[str]
 ) -> dict:
     """[Snowflake.Account.2] Snowflake Accounts have SCIM enabled"""
     # ISO Time
@@ -383,7 +383,7 @@ def snowflake_account_scim_enabled_check(
 
 @registry.register_check("snowflake.account")
 def snowflake_admin_15min_session_timeout_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor, serviceAccountExemptions: list[str]
 ) -> dict:
     """[Snowflake.Account.3] Snowflake Accounts should ensure that admins roles have a 15 minute session timeout"""
     # ISO Time
@@ -546,7 +546,7 @@ def snowflake_admin_15min_session_timeout_check(
 
 @registry.register_check("snowflake.account")
 def snowflake_built_in_admin_roles_not_in_custom_role_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor, serviceAccountExemptions: list[str]
 ) -> dict:
     """[Snowflake.Account.4] Snowflake custom roles should not use built-in admin roles"""
     # ISO Time
@@ -700,7 +700,7 @@ def snowflake_built_in_admin_roles_not_in_custom_role_check(
 
 @registry.register_check("snowflake.account")
 def snowflake_tasks_not_owned_by_admins_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor, serviceAccountExemptions: list[str]
 ) -> dict:
     """[Snowflake.Account.5] Snowflake tasks should not be owned by ACCOUNTADMIN or SECURITYADMIN roles"""
     # ISO Time
@@ -873,7 +873,7 @@ def snowflake_tasks_not_owned_by_admins_check(
 
 @registry.register_check("snowflake.account")
 def snowflake_tasks_not_running_with_admin_privs_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor, serviceAccountExemptions: list[str]
 ) -> dict:
     """[Snowflake.Account.6] Snowflake tasks should not run with ACCOUNTADMIN or SECURITYADMIN role privileges"""
     # ISO Time
@@ -1046,7 +1046,7 @@ def snowflake_tasks_not_running_with_admin_privs_check(
 
 @registry.register_check("snowflake.account")
 def snowflake_stored_procs_not_owned_by_admins_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor, serviceAccountExemptions: list[str]
 ) -> dict:
     """[Snowflake.Account.7] Snowflake stored procedures should not run with ACCOUNTADMIN or SECURITYADMIN role privileges"""
     # ISO Time
@@ -1219,7 +1219,7 @@ def snowflake_stored_procs_not_owned_by_admins_check(
 
 @registry.register_check("snowflake.account")
 def snowflake_stored_procs_not_running_with_admin_privs_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor, serviceAccountExemptions: list[str]
 ) -> dict:
     """[Snowflake.Account.8] Snowflake stored procedures should not run with ACCOUNTADMIN or SECURITYADMIN role privileges"""
     # ISO Time
@@ -1392,7 +1392,7 @@ def snowflake_stored_procs_not_running_with_admin_privs_check(
 
 @registry.register_check("snowflake.account")
 def snowflake_account_password_policy_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor, serviceAccountExemptions: list[str]
 ) -> dict:
     """[Snowflake.Account.9] Snowflake Accounts should configure a password policy"""
     # ISO Time
@@ -1555,7 +1555,7 @@ def snowflake_account_password_policy_check(
 
 @registry.register_check("snowflake.account")
 def snowflake_account_password_length_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor, serviceAccountExemptions: list[str]
 ) -> dict:
     """[Snowflake.Account.10] Snowflake password policies should enforce a minimum password length of at least 14 characters"""
     # ISO Time
@@ -1725,7 +1725,7 @@ def snowflake_account_password_length_check(
 
 @registry.register_check("snowflake.account")
 def snowflake_monitor_session_keep_alive_commands_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor, serviceAccountExemptions: list[str]
 ) -> dict:
     """[Snowflake.Account.11] Snowflake Accounts should be monitored for users extending their sessions"""
     # ISO Time
@@ -1890,7 +1890,7 @@ def snowflake_monitor_session_keep_alive_commands_check(
 
 @registry.register_check("snowflake.account")
 def snowflake_network_policy_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor, serviceAccountExemptions: list[str]
 ) -> dict:
     """[Snowflake.Account.12] Snowflake Accounts should have a network policy enabled"""
     # ISO Time

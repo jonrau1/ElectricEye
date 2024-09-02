@@ -499,6 +499,7 @@ class CloudConfig(object):
             snowflakeAccountId = str(snowflakeTomlValues["snowflake_account_id"])
             snowflakeWarehouseName = str(snowflakeTomlValues["snowflake_warehouse_name"])
             snowflakeRegion = str(snowflakeTomlValues["snowflake_region"])
+            serviceAccountExemptions = list(snowflakeTomlValues["snowflake_service_account_exemptions"])
 
             if any(
                 # Check to make sure none of the variables pulled from TOML are emtpy
@@ -514,6 +515,7 @@ class CloudConfig(object):
             self.snowflakeAccountId = snowflakeAccountId
             self.snowflakeWarehouseName = snowflakeWarehouseName
             self.snowflakeRegion = snowflakeRegion
+            self.serviceAccountExemptions = serviceAccountExemptions
 
             # Retrieve value for Snowflake Password from the TOML, AWS SSM or AWS Secrets Manager
             if self.credentialsLocation == "CONFIG_FILE":

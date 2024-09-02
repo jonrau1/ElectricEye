@@ -214,7 +214,7 @@ def get_snowflake_users(cache: dict, snowflakeCursor: cursor.SnowflakeCursor) ->
 
 @registry.register_check("snowflake.users")
 def snowflake_password_assigned_user_has_mfa_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor, serviceAccountExemptions: list[str]
 ) -> dict:
     """[Snowflake.Users.1] Snowflake users with passwords should have MFA enabled"""
     # ISO Time
@@ -303,7 +303,7 @@ def snowflake_password_assigned_user_has_mfa_check(
             }
             yield finding
         # this is a failing check
-        if user["ext_authn_duo"] is False and user["has_password"] is True and user["deleted_on"] is None:
+        if user["ext_authn_duo"] is False and user["has_password"] is True and user["deleted_on"] is None and user not in serviceAccountExemptions:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{snowflakeAccountId}/{username}/password-user-mfa-check",
@@ -382,7 +382,7 @@ def snowflake_password_assigned_user_has_mfa_check(
 
 @registry.register_check("snowflake.users")
 def snowflake_service_account_user_uses_keypair_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor, serviceAccountExemptions: list[str]
 ) -> dict:
     """[Snowflake.Users.2] Snowflake 'service account' users should use RSA key pairs for authentication"""
     # ISO Time
@@ -550,7 +550,7 @@ def snowflake_service_account_user_uses_keypair_check(
 
 @registry.register_check("snowflake.users")
 def snowflake_disable_users_without_last_90_day_login_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor, serviceAccountExemptions: list[str]
 ) -> dict:
     """[Snowflake.Users.3] Snowflake users that have not logged in within the last 90 days should be disabled"""
     # ISO Time
@@ -761,7 +761,7 @@ def snowflake_disable_users_without_last_90_day_login_check(
 
 @registry.register_check("snowflake.users")
 def snowflake_accountadmins_have_email_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor, serviceAccountExemptions: list[str]
 ) -> dict:
     """[Snowflake.Users.4] Snowflake users assigned the ACCOUNTADMIN role should have an email address assigned"""
     # ISO Time
@@ -854,7 +854,7 @@ def snowflake_accountadmins_have_email_check(
             }
             yield finding
         # this is a failing check
-        if "ACCOUNTADMIN" in user["assigned_roles"] and hasEmail is False and user["has_password"] is True and user["deleted_on"] is None:
+        if "ACCOUNTADMIN" in user["assigned_roles"] and hasEmail is False and user["has_password"] is True and user["deleted_on"] is None and user not in serviceAccountExemptions:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{snowflakeAccountId}/{username}/accountadmin-role-users-have-email-check",
@@ -933,7 +933,7 @@ def snowflake_accountadmins_have_email_check(
 
 @registry.register_check("snowflake.users")
 def snowflake_admin_default_role_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor, serviceAccountExemptions: list[str]
 ) -> dict:
     """[Snowflake.Users.5] Snowflake users should not be assigned the ACCOUNTADMIN or SECURITYADMIN role as the default role"""
     # ISO Time
@@ -1008,7 +1008,7 @@ def snowflake_admin_default_role_check(
             }
             yield finding
         # this is a failing check
-        if user["default_role"] in ["ACCOUNTADMIN","SECURITYADMIN"] and user["deleted_on"] is None:
+        if user["default_role"] in ["ACCOUNTADMIN","SECURITYADMIN"] and user["deleted_on"] is None and user not in serviceAccountExemptions:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{snowflakeAccountId}/{username}/snowflake-admin-default-role-check",
@@ -1073,7 +1073,7 @@ def snowflake_admin_default_role_check(
 
 @registry.register_check("snowflake.users")
 def snowflake_logins_without_mfa_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor, serviceAccountExemptions: list[str]
 ) -> dict:
     """[Snowflake.Users.6] Snowflake users should be monitored for logins without MFA"""
     # ISO Time
@@ -1167,7 +1167,7 @@ def snowflake_logins_without_mfa_check(
             }
             yield finding
         # this is a failing check
-        if loggedInWithoutMfa is True and user["has_password"] is True and user["deleted_on"] is None:
+        if loggedInWithoutMfa is True and user["has_password"] is True and user["deleted_on"] is None and user not in serviceAccountExemptions:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{snowflakeAccountId}/{username}/snowflake-logins-without-mfa-check",
@@ -1246,7 +1246,7 @@ def snowflake_logins_without_mfa_check(
 
 @registry.register_check("snowflake.users")
 def snowflake_admin_password_users_yearly_password_rotation_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor, serviceAccountExemptions: list[str]
 ) -> dict:
     """[Snowflake.Users.7] Snowflake users with any admin role assigned should have their password rotated yearly"""
     # ISO Time
@@ -1422,7 +1422,7 @@ def snowflake_admin_password_users_yearly_password_rotation_check(
 
 @registry.register_check("snowflake.users")
 def snowflake_bypass_mfa_review_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor, serviceAccountExemptions: list[str]
 ) -> dict:
     """[Snowflake.Users.8] Snowflake users allowed to bypass MFA should be reviewed"""
     # ISO Time
@@ -1520,7 +1520,7 @@ def snowflake_bypass_mfa_review_check(
             }
             yield finding
         # this is a failing check
-        if mfaBypass is True and user["deleted_on"] is None:
+        if mfaBypass is True and user["deleted_on"] is None and user not in serviceAccountExemptions:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{snowflakeAccountId}/{username}/snowflake-user-mfa-bypass-check",
@@ -1598,7 +1598,7 @@ def snowflake_bypass_mfa_review_check(
 
 @registry.register_check("snowflake.users")
 def snowflake_limit_admin_users_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, snowflakeAccountId: str, snowflakeRegion: str, snowflakeCursor: cursor.SnowflakeCursor, serviceAccountExemptions: list[str]
 ) -> dict:
     """[Snowflake.Users.9] Snowflake Accounts should have at least two admin users but less than ten"""
     # ISO Time

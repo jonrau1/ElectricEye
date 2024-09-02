@@ -123,6 +123,7 @@ class EEAuditor(object):
             self.snowflakeRegion = utils.snowflakeRegion
             self.snowflakeCursor = utils.snowflakeCursor
             self.snowflakeConnection = utils.snowflakeConnection
+            self.serviceAccountExemptions = utils.serviceAccountExemptions
         # Google Workspace
         if assessmentTarget == "GoogleWorkspace":
             searchPath = "./auditors/google_workspace"
@@ -599,7 +600,8 @@ class EEAuditor(object):
                             awsPartition=partition,
                             snowflakeAccountId=self.snowflakeAccountId,
                             snowflakeRegion=self.snowflakeRegion,
-                            snowflakeCursor=self.snowflakeCursor
+                            snowflakeCursor=self.snowflakeCursor,
+                            serviceAccountExemptions=self.serviceAccountExemptions
                         ):
                             if finding is not None:
                                 yield finding
