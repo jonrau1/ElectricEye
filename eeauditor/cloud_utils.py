@@ -842,6 +842,17 @@ class CloudConfig(object):
         logger.info("Connected to Snowflake successfully.")
         cur = conn.cursor(snowconn.DictCursor)
 
+        # Use the warehouse provided, this is a required step if a custom role is used to catch if the custom role was not given a grant to the warehouse
+        try:
+            war = cur.execute(f"use warehouse {self.snowflakeWarehouseName}").fetchall()
+            logger.info("Using warehouse %s. %s", self.snowflakeWarehouseName, war)
+        except snowconn.errors.ProgrammingError as e:
+            logger.error(
+                "Failed to use warehouse %s: %s",
+                self.snowflakeWarehouseName, e
+            )
+            raise e
+
         return conn, cur
 
 ## EOF

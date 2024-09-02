@@ -13,15 +13,42 @@ This documentation is dedicated to using ElectricEye for evaluation of Snowflake
 
 Snowflake's principal identity construct is a User - these can represent regular Users, those created using Single Sign-On (SSO) and SCIM, and can also represent 'service accounts' meant for machine-to-machine connectivity.
 
-ElectricEye supports both Password-based and X509-based authentication - either using a password for a 'service account' or a RSA private key and passphrase - the former is much easier, the latter does require saving the certificate to a local file (it will be generated). You can decided to use whichever option you want in the TOML configuration file.
+ElectricEye uses Password-based authentication with a 'service account', in the future, RSA private key authentication may be considered.
 
-The steps are largely the same for both.
+ElectricEye only queries data in the `SNOWFLAKE` Database and within the `ACCOUNT_USAGE` schema, the following steps will guide you through creating a Custom role, providing `GRANTS` to the required Database and Schema, and creating a new user.
 
-1. In your Snowflake Account, navigate to ... create user
+**NOTE** - The following steps should be performed using an `ACCOUNTADMIN` or a similarly permissioned User + Role combo that is allowed to create users, create roles, and manage grants.
 
-2. Assign a Password, Admin accounts should use Emails so consider that if you'll simply give this use ACCOUNTADMIN...
+1. From the Snowflake console navigate to **Admin** -> **Users & Roles** -> select the **Roles** tab at the top of the window -> select the **+ Role** option at the top-right of the window as shown below.
 
-3. To create an RSA Private Key for you
+![Step 1](../../screenshots/setup/snowflake/step1.JPG)
+
+2. Enter a **Name** (like `EE_AUDITOR`) and **Comment** while ignoring the **Grant to role** option and select **Create Role** as shown below.
+
+![Step 2](../../screenshots/setup/snowflake/step2.JPG)
+
+3. Navigate to **Projects** -> **Worksheets** -> and create a new **SQL Worksheet** from the creation toggle at the top right of the screen as shown below.
+
+![Step 3](../../screenshots/setup/snowflake/step3.JPG)
+
+4. Run each of the following SQL commands sequentially within the Worksheet. Do note that the `GRANT IMPORTED PRIVILEGES` grant allows your custom role access to the entire `SNOWFLAKE` database and should be done with care. Ensure you change the name of your Role -- `EE_AUDITOR` is used in this case -- if you used a different name for you role.
+
+```sql
+use role ACCOUNTADMIN
+GRANT IMPORTED PRIVILEGES ON DATABASE SNOWFLAKE TO ROLE EE_AUDITOR;
+GRANT SELECT ON all tables IN SCHEMA SNOWFLAKE.ACCOUNT_USAGE TO ROLE EE_AUDITOR;
+GRANT USAGE ON WAREHOUSE COMPUTE_WH TO ROLE EE_AUDITOR;
+```
+
+5. Navigate back to **Admin** -> **Users & Roles** -> select the **Users** tab at the top of the window -> select the **+ User** option at the top-right of the window as shown below.
+
+![Step 5](../../screenshots/setup/snowflake/step5.JPG)
+
+6. Provide a **User Name**, **Password**, and an optional **Comment**. As this is a "service account" deselect the option to **Force user to change password on first time login**. Under `Advanced User Options`, assign your custom role as the **Default Role**, select a **Default Warehouse**, and select **Create User** as shown below.
+
+![Step 6](../../screenshots/setup/snowflake/step6.JPG)
+
+Now that you have setup your Role, Grants, and new "service account" User - you can proceed to the next step to configure the TOML.
 
 ## Configuring TOML
 
@@ -37,13 +64,13 @@ To configure the TOML file, you need to modify the values of the variables in th
 
 - `snowflake_password_value`: The location (or actual contents) of the Password for the User specified in `snowflake_account_id` this location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter.
 
+> It's important to note that this setting is a sensitive credential, and as such, its value should be stored in a secure manner that matches the location specified in the `[global]` section's `credentials_location` setting. For example, if `credentials_location` is set to `"AWS_SSM"`, then the Snowflake_service_account_json_payload_value should be the name of an AWS Systems Manager Parameter Store SecureString parameter that contains the contents of the Snowflake service account key JSON file.
+
 - `snowflake_account_id`: The Account ID for your Snowflake Account, this is found in the URL when you login to your Snowflake Account, e.g., VULEDAR-MR69420.
 
 - `snowflake_warehouse_name`: The name of the warehouse you use for querying data in Snowflake, this should be a warehouse that has the ability to run queries
 
 - `snowflake_region`: The Region of your Snowflake Account, this is found in the URL when you login to your Snowflake Account, e.g., us-east-1
-
-> It's important to note that this setting is a sensitive credential, and as such, its value should be stored in a secure manner that matches the location specified in the `[global]` section's `credentials_location` setting. For example, if `credentials_location` is set to `"AWS_SSM"`, then the Snowflake_service_account_json_payload_value should be the name of an AWS Systems Manager Parameter Store SecureString parameter that contains the contents of the Snowflake service account key JSON file.
 
 ## Use ElectricEye for Snowflake
 
@@ -79,25 +106,25 @@ pip3 install --user -r requirements.txt
 
 4. Use the Controller to conduct different kinds of Assessments.
 
-    - 3A. Retrieve all options for the Controller.
+    - 4A. Retrieve all options for the Controller.
 
     ```bash
     python3 eeauditor/controller.py --help
     ```
 
-    - 3B. Evaluate your entire Snowflake Account.
+    - 4B. Evaluate your entire Snowflake Account.
 
     ```bash
     python3 eeauditor/controller.py -t Snowflake
     ```
 
-    - 3C. Evaluate your Snowflake environment against a specifc Auditor (runs all Checks within the Auditor).
+    - 4C. Evaluate your Snowflake environment against a specifc Auditor (runs all Checks within the Auditor).
 
     ```bash
     python3 eeauditor/controller.py -t Snowflake -a Snowflake_Account_Auditor
     ```
 
-    - 3D. Evaluate your Snowflake environment against a specific Check within any Auditor, it is ***not required*** to specify the Auditor name as well. The below examples runs the "[Snowflake.Account.9] Snowflake Accounts should configure a password policy" check.
+    - 4D. Evaluate your Snowflake environment against a specific Check within any Auditor, it is ***not required*** to specify the Auditor name as well. The below examples runs the "[Snowflake.Account.9] Snowflake Accounts should configure a password policy" check.
 
     ```bash
     python3 eeauditor/controller.py -t Snowflake -c snowflake_account_password_policy_check
