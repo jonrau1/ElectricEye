@@ -24,25 +24,25 @@ from eeauditor import EEAuditor
 from processor.main import get_providers, process_findings
 from os import environ
 
-def print_controls(assessmentTarget, auditorName=None, tomlPath=None, useToml=True):
-    app = EEAuditor(assessmentTarget, tomlPath)
+def print_controls(assessmentTarget, args, useToml, auditorName=None, tomlPath=None):
+    app = EEAuditor(assessmentTarget, args, useToml, tomlPath, )
 
     app.load_plugins(auditorName)
         
     app.print_controls_json()
 
-def print_checks(assessmentTarget, auditorName=None, tomlPath=None, useToml=True):
-    app = EEAuditor(assessmentTarget, tomlPath)
+def print_checks(assessmentTarget, args, useToml, auditorName=None, tomlPath=None):
+    app = EEAuditor(assessmentTarget, args, useToml, tomlPath, )
 
     app.load_plugins(auditorName)
         
     app.print_checks_md()
 
-def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, outputs=None, outputFile="", tomlPath=None, useToml=True):
+def run_auditor(assessmentTarget, args, useToml, auditorName=None, pluginName=None, delay=0, outputs=None, outputFile="", tomlPath=None):
     if not outputs:
         outputs = ["stdout"]
     
-    app = EEAuditor(assessmentTarget, tomlPath, useToml=True)
+    app = EEAuditor(assessmentTarget, args, useToml, tomlPath, )
 
     app.load_plugins(auditorName)
     # Per-target calls - ensure you use the right run_*_checks*() function
@@ -176,8 +176,21 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
 @click.option(
     "-ut",
     "--use-toml",
-    default=True,
+    default="True",
+    type=click.Choice(
+        [
+            "True",
+            "False"
+        ],
+        case_sensitive=True
+    ),
     help="Set to False to disable the use of the TOML file for external providers, defaults to True. THIS IS AN EXPERIMENTAL FEATURE"
+)
+# EXPERIMENTAL: Supply arguments in a stringified dictionary format
+@click.option(
+    "--args",
+    default=None,
+    help="""Supply arguments in a dictionary format, e.g., '{"credentials_location": "CONFIG_FILE","snowflake_username": "ELECTRIC_EYE"}'. THIS IS AN EXPERIMENTAL FEATURE"""
 )
 
 def main(
@@ -191,13 +204,15 @@ def main(
     list_checks,
     list_controls,
     toml_path,
-    use_toml
+    use_toml,
+    args
 ):
     if list_controls:
         print_controls(
             assessmentTarget=target_provider,
+            args=args,
             tomlPath=toml_path,
-            useToml=use_toml
+            useToml=use_toml,
         )
         sys.exit(0)
 
@@ -212,13 +227,15 @@ def main(
     if list_checks:
         print_checks(
             assessmentTarget=target_provider,
+            args=args,
             tomlPath=toml_path,
-            useToml=use_toml
+            useToml=use_toml,
         )
         sys.exit(0)
 
     run_auditor(
         assessmentTarget=target_provider,
+        args=args,
         auditorName=auditor_name,
         pluginName=check_name,
         delay=delay,
@@ -230,3 +247,5 @@ def main(
 
 if __name__ == "__main__":
     main(sys.argv[1:])
+
+# EOF
