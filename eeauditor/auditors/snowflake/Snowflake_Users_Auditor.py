@@ -303,7 +303,7 @@ def snowflake_password_assigned_user_has_mfa_check(
             }
             yield finding
         # this is a failing check
-        if user["ext_authn_duo"] is False and user["has_password"] is True and user["deleted_on"] is None and user not in serviceAccountExemptions:
+        if user["ext_authn_duo"] is False and user["has_password"] is True and user["deleted_on"] is None and username not in serviceAccountExemptions:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{snowflakeAccountId}/{username}/password-user-mfa-check",
@@ -854,7 +854,7 @@ def snowflake_accountadmins_have_email_check(
             }
             yield finding
         # this is a failing check
-        if "ACCOUNTADMIN" in user["assigned_roles"] and hasEmail is False and user["has_password"] is True and user["deleted_on"] is None and user not in serviceAccountExemptions:
+        if "ACCOUNTADMIN" in user["assigned_roles"] and hasEmail is False and user["has_password"] is True and user["deleted_on"] is None and username not in serviceAccountExemptions:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{snowflakeAccountId}/{username}/accountadmin-role-users-have-email-check",
@@ -1008,7 +1008,7 @@ def snowflake_admin_default_role_check(
             }
             yield finding
         # this is a failing check
-        if user["default_role"] in ["ACCOUNTADMIN","SECURITYADMIN"] and user["deleted_on"] is None and user not in serviceAccountExemptions:
+        if user["default_role"] in ["ACCOUNTADMIN","SECURITYADMIN"] and user["deleted_on"] is None and username not in serviceAccountExemptions:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{snowflakeAccountId}/{username}/snowflake-admin-default-role-check",
@@ -1167,7 +1167,7 @@ def snowflake_logins_without_mfa_check(
             }
             yield finding
         # this is a failing check
-        if loggedInWithoutMfa is True and user["has_password"] is True and user["deleted_on"] is None and user not in serviceAccountExemptions:
+        if loggedInWithoutMfa is True and user["has_password"] is True and user["deleted_on"] is None and username not in serviceAccountExemptions:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{snowflakeAccountId}/{username}/snowflake-logins-without-mfa-check",
@@ -1520,7 +1520,7 @@ def snowflake_bypass_mfa_review_check(
             }
             yield finding
         # this is a failing check
-        if mfaBypass is True and user["deleted_on"] is None and user not in serviceAccountExemptions:
+        if mfaBypass is True and user["deleted_on"] is None and username not in serviceAccountExemptions:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{snowflakeAccountId}/{username}/snowflake-user-mfa-bypass-check",

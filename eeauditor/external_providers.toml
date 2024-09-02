@@ -256,7 +256,7 @@ title = "ElectricEye Configuration"
 
         snowflake_region = ""
 
-        # The Usernames of "Service Accounts" created in Snowflake, this will optionally exempt these Usernames from being audited against the following checks: snowflake_password_assigned_user_has_mfa_check, snowflake_accountadmins_have_email_check, snowflake_admin_default_role_check, snowflake_logins_without_mfa_check, snowflake_bypass_mfa_review_check
+        # OPTIONAL! The Usernames of "Service Accounts" created in Snowflake, this will optionally exempt these Usernames from being audited against the following checks: snowflake_password_assigned_user_has_mfa_check, snowflake_accountadmins_have_email_check, snowflake_admin_default_role_check, snowflake_logins_without_mfa_check, snowflake_bypass_mfa_review_check
 
         snowflake_service_account_usernames = []
 

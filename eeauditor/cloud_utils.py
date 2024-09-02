@@ -499,7 +499,7 @@ class CloudConfig(object):
             snowflakeAccountId = str(snowflakeTomlValues["snowflake_account_id"])
             snowflakeWarehouseName = str(snowflakeTomlValues["snowflake_warehouse_name"])
             snowflakeRegion = str(snowflakeTomlValues["snowflake_region"])
-            serviceAccountExemptions = list(snowflakeTomlValues["snowflake_service_account_exemptions"])
+            serviceAccountExemptions = list(snowflakeTomlValues["snowflake_service_account_usernames"])
 
             if any(
                 # Check to make sure none of the variables pulled from TOML are emtpy

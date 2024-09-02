@@ -31,7 +31,7 @@ ElectricEye only queries data in the `SNOWFLAKE` Database and within the `ACCOUN
 
 ![Step 3](../../screenshots/setup/snowflake/step3.JPG)
 
-4. Run each of the following SQL commands sequentially within the Worksheet. Do note that the `GRANT IMPORTED PRIVILEGES` grant allows your custom role access to the entire `SNOWFLAKE` database and should be done with care. Ensure you change the name of your Role -- `EE_AUDITOR` is used in this case -- if you used a different name for you role.
+4. Run each of the following SQL commands sequentially within the Worksheet. Do note that the `GRANT IMPORTED PRIVILEGES` grant allows your custom role access to the entire `SNOWFLAKE` database and should be done with care. Ensure you change the name of your Role -- `EE_AUDITOR` is used in this case -- if you used a different name for you role. Likewise, change to name of the Warehouse -- `COMPUTE_WH` is used in this case -- if you have a different warehouse.
 
 ```sql
 use role ACCOUNTADMIN
@@ -71,6 +71,8 @@ To configure the TOML file, you need to modify the values of the variables in th
 - `snowflake_warehouse_name`: The name of the warehouse you use for querying data in Snowflake, this should be a warehouse that has the ability to run queries
 
 - `snowflake_region`: The Region of your Snowflake Account, this is found in the URL when you login to your Snowflake Account, e.g., us-east-1
+
+- `snowflake_service_account_usernames`: The Usernames of "Service Accounts" created in Snowflake, this will optionally exempt these Usernames from being audited against the following checks: **snowflake_password_assigned_user_has_mfa_check**, **snowflake_accountadmins_have_email_check**, **snowflake_admin_default_role_check**, **snowflake_logins_without_mfa_check**, and **snowflake_bypass_mfa_review_check**
 
 ## Use ElectricEye for Snowflake
 
