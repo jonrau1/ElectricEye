@@ -24,25 +24,25 @@ from eeauditor import EEAuditor
 from processor.main import get_providers, process_findings
 from os import environ
 
-def print_controls(assessmentTarget, auditorName=None, tomlPath=None):
+def print_controls(assessmentTarget, auditorName=None, tomlPath=None, useToml=True):
     app = EEAuditor(assessmentTarget, tomlPath)
 
     app.load_plugins(auditorName)
         
     app.print_controls_json()
 
-def print_checks(assessmentTarget, auditorName=None):
-    app = EEAuditor(assessmentTarget)
+def print_checks(assessmentTarget, auditorName=None, tomlPath=None, useToml=True):
+    app = EEAuditor(assessmentTarget, tomlPath)
 
     app.load_plugins(auditorName)
         
     app.print_checks_md()
 
-def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, outputs=None, outputFile="", tomlPath=None):
+def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, outputs=None, outputFile="", tomlPath=None, useToml=True):
     if not outputs:
         outputs = ["stdout"]
     
-    app = EEAuditor(assessmentTarget, tomlPath)
+    app = EEAuditor(assessmentTarget, tomlPath, useToml=True)
 
     app.load_plugins(auditorName)
     # Per-target calls - ensure you use the right run_*_checks*() function
@@ -172,6 +172,13 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
     default=None,
     help="The full path to the TOML file used for configure e.g., ~/path/to/mydir/external_providers.toml. If this value is not provided the default path of ElectricEye/eeauditor/external_providers.toml is used."
 )
+# Use TOML
+@click.option(
+    "-ut",
+    "--use-toml",
+    default=True,
+    help="Set to False to disable the use of the TOML file for external providers, defaults to True. THIS IS AN EXPERIMENTAL FEATURE"
+)
 
 def main(
     target_provider,
@@ -183,12 +190,14 @@ def main(
     list_options,
     list_checks,
     list_controls,
-    toml_path
+    toml_path,
+    use_toml
 ):
     if list_controls:
         print_controls(
             assessmentTarget=target_provider,
-            tomlPath=toml_path
+            tomlPath=toml_path,
+            useToml=use_toml
         )
         sys.exit(0)
 
@@ -202,7 +211,9 @@ def main(
 
     if list_checks:
         print_checks(
-            assessmentTarget=target_provider
+            assessmentTarget=target_provider,
+            tomlPath=toml_path,
+            useToml=use_toml
         )
         sys.exit(0)
 
@@ -213,7 +224,8 @@ def main(
         delay=delay,
         outputs=outputs,
         outputFile=output_file,
-        tomlPath=toml_path
+        tomlPath=toml_path,
+        useToml=use_toml
     )
 
 if __name__ == "__main__":

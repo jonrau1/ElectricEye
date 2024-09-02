@@ -42,7 +42,7 @@ class EEAuditor(object):
     credentials and cross-boundary configurations, and runs Checks and yields results back to controller.py CLI
     """
 
-    def __init__(self, assessmentTarget, tomlPath=None, searchPath=None):
+    def __init__(self, assessmentTarget, tomlPath=None, searchPath=None, useToml=True):
         # each check must be decorated with the @registry.register_check("cache_name")
         # to be discovered during plugin loading.
         self.registry = CheckRegister()
@@ -54,7 +54,7 @@ class EEAuditor(object):
         # AWS
         if assessmentTarget == "AWS":
             searchPath = "./auditors/aws"
-            utils = CloudConfig(assessmentTarget, tomlPath)
+            utils = CloudConfig(assessmentTarget, tomlPath, useToml)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.awsAccountTargets = utils.awsAccountTargets
             self.awsRegionsSelection = utils.awsRegionsSelection
@@ -62,13 +62,13 @@ class EEAuditor(object):
         # GCP
         if assessmentTarget == "GCP":
             searchPath = "./auditors/gcp"
-            utils = CloudConfig(assessmentTarget, tomlPath)
+            utils = CloudConfig(assessmentTarget, tomlPath, useToml)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.gcpProjectIds = utils.gcp_project_ids
         # OCI
         if assessmentTarget == "OCI":
             searchPath = "./auditors/oci"
-            utils = CloudConfig(assessmentTarget, tomlPath)
+            utils = CloudConfig(assessmentTarget, tomlPath, useToml)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.ociTenancyId = utils.ociTenancyId
             self.ociUserId = utils.ociUserId
@@ -78,14 +78,14 @@ class EEAuditor(object):
         # Azure
         if assessmentTarget == "Azure":
             searchPath = "./auditors/azure"
-            utils = CloudConfig(assessmentTarget, tomlPath)
+            utils = CloudConfig(assessmentTarget, tomlPath, useToml)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.azureSubscriptions = utils.azureSubscriptions
             self.azureCredentials = utils.azureCredentials
         # Alibaba
         if assessmentTarget == "Alibaba":
             searchPath = "./auditors/alibabacloud"
-            utils = CloudConfig(assessmentTarget, tomlPath)
+            utils = CloudConfig(assessmentTarget, tomlPath, useToml)
         
         ###################################
         # SOFTWARE-AS-A-SERVICE PROVIDERS #
@@ -93,11 +93,11 @@ class EEAuditor(object):
         # Servicenow
         if assessmentTarget == "Servicenow":
             searchPath = "./auditors/servicenow"
-            utils = CloudConfig(assessmentTarget, tomlPath)
+            utils = CloudConfig(assessmentTarget, tomlPath, useToml)
         # M365
         if assessmentTarget == "M365":
             searchPath = "./auditors/m365"
-            utils = CloudConfig(assessmentTarget, tomlPath)
+            utils = CloudConfig(assessmentTarget, tomlPath, useToml)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.m365TenantLocation = utils.m365TenantLocation
             self.m365ClientId = utils.m365ClientId
@@ -106,7 +106,7 @@ class EEAuditor(object):
         # Salesforce
         if assessmentTarget == "Salesforce":
             searchPath = "./auditors/salesforce"
-            utils = CloudConfig(assessmentTarget, tomlPath)
+            utils = CloudConfig(assessmentTarget, tomlPath, useToml)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.salesforceAppClientId = utils.salesforceAppClientId
             self.salesforceAppClientSecret = utils.salesforceAppClientSecret
@@ -117,7 +117,7 @@ class EEAuditor(object):
         # Snowflake
         if assessmentTarget == "Snowflake":
             searchPath = "./auditors/snowflake"
-            utils = CloudConfig(assessmentTarget, tomlPath)
+            utils = CloudConfig(assessmentTarget, tomlPath, useToml)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.snowflakeAccountId = utils.snowflakeAccountId
             self.snowflakeRegion = utils.snowflakeRegion
@@ -127,7 +127,7 @@ class EEAuditor(object):
         # Google Workspace
         if assessmentTarget == "GoogleWorkspace":
             searchPath = "./auditors/google_workspace"
-            utils = CloudConfig(assessmentTarget, tomlPath)
+            utils = CloudConfig(assessmentTarget, tomlPath, useToml)
 
         # Search path for Auditors
         self.source = self.plugin_base.make_plugin_source(
@@ -701,5 +701,5 @@ class EEAuditor(object):
                 controlPrinter.append(description)
 
         print(json.dumps(controlPrinter,indent=4))
-
+        
 # EOF

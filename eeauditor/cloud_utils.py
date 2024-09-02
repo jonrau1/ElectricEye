@@ -43,29 +43,31 @@ class CloudConfig(object):
     for use in EEAuditor when running ElectricEye Auditors and Check
     """
 
-    def __init__(self, assessmentTarget: str, tomlPath: str | None):
-        if tomlPath is None:
-            here = path.abspath(path.dirname(__file__))
-            tomlFile = f"{here}/external_providers.toml"
-        else:
-            tomlFile = tomlPath
+    def __init__(self, assessmentTarget: str, tomlPath: str | None, useToml: bool):
+        if useToml is True:
+            if tomlPath is None:
+                here = path.abspath(path.dirname(__file__))
+                tomlFile = f"{here}/external_providers.toml"
+            else:
+                tomlFile = tomlPath
 
-        with open(tomlFile, "rb") as f:
-            data = tomload(f)
+            with open(tomlFile, "rb") as f:
+                data = tomload(f)
 
-        # From TOML [global]
-        if data["global"]["aws_multi_account_target_type"] not in AWS_MULTI_ACCOUNT_TARGET_TYPE_CHOICES:
-            logger.error("Invalid option for [global.aws_multi_account_target_type].")
-            sys.exit(2)
-        self.awsMultiAccountTargetType = data["global"]["aws_multi_account_target_type"]
+            # From TOML [global]
+            if data["global"]["aws_multi_account_target_type"] not in AWS_MULTI_ACCOUNT_TARGET_TYPE_CHOICES:
+                logger.error("Invalid option for [global.aws_multi_account_target_type].")
+                sys.exit(2)
+            self.awsMultiAccountTargetType = data["global"]["aws_multi_account_target_type"]
 
-        if data["global"]["credentials_location"] not in CREDENTIALS_LOCATION_CHOICES:
-            logger.error(
-                "Invalid option for [global.credentials_location]. Must be one of %s.",
-                CREDENTIALS_LOCATION_CHOICES
-            )
-            sys.exit(2)
-        self.credentialsLocation = data["global"]["credentials_location"]
+            if data["global"]["credentials_location"] not in CREDENTIALS_LOCATION_CHOICES:
+                logger.error(
+                    "Invalid option for [global.credentials_location]. Must be one of %s.",
+                    CREDENTIALS_LOCATION_CHOICES
+                )
+                sys.exit(2)
+                
+            self.credentialsLocation = data["global"]["credentials_location"]
 
         ##################################
         # PUBLIC CLOUD SERVICE PROVIDERS #
