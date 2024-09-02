@@ -112,20 +112,20 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
     "-a",
     "--auditor-name",
     default="",
-    help="Specify which Auditor you want to run by using its name NOT INCLUDING .py. Defaults to ALL Auditors"
+    help="Specify which Auditor you want to run by using its name NOT INCLUDING .py. . Use the --list-checks arg to receive a list. Defaults to ALL Auditors"
 )
 # Run Specific Check
 @click.option(
     "-c",
     "--check-name",
     default="",
-    help="A specific Check in a specific Auditor you want to run, this correlates to the function name. Defaults to ALL Checks")
+    help="A specific Check in a specific Auditor you want to run, this correlates to the function name. Use the --list-checks arg to receive a list. Defaults to ALL Checks")
 # Delay
 @click.option(
     "-d", 
     "--delay", 
     default=0, 
-    help="Time in seconds to sleep between Auditors being ran, defaults to 0"
+    help="Time in seconds to sleep between Auditors being ran, defaults to 0. Use this argument to avoid rate limiting"
 )
 # Outputs
 @click.option(
@@ -138,6 +138,7 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
 )
 # Output File Name
 @click.option(
+    "-of",
     "--output-file",
     default="output", 
     show_default=True, 
@@ -145,24 +146,28 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
 )
 # List Output Options
 @click.option(
+    "-lo",
     "--list-options",
     is_flag=True,
     help="Lists all valid Output options"
 )
 # List Checks
 @click.option(
+    "-lch",
     "--list-checks",
     is_flag=True,
-    help="Prints a table of Auditors, Checks, and Check descriptions to stdout - use this for -a or -c args"
+    help="Prints a table of Auditors, Checks, and Check descriptions to stdout - use this command for help with populating -a (Auditor selection) or -c (Check selection) args"
 )
 # Controls (Description)
 @click.option(
+    "-lco",
     "--list-controls",
     is_flag=True,
-    help="Lists all ElectricEye Controls (e.g. Check Titles) for an Assessment Target"
+    help="Lists all ElectricEye controls - that is to say: the Check Titles - for an Assessment Target"
 )
 # TOML Path
 @click.option(
+    "-tp",
     "--toml-path",
     default=None,
     help="The full path to the TOML file used for configure e.g., ~/path/to/mydir/external_providers.toml. If this value is not provided the default path of ElectricEye/eeauditor/external_providers.toml is used."

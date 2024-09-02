@@ -80,31 +80,33 @@ Options:
                                   target provider to avoid any errors. e.g.,
                                   -t AWS -a Amazon_APGIW_Auditor
   -a, --auditor-name TEXT         Specify which Auditor you want to run by
-                                  using its name NOT INCLUDING .py. Defaults
-                                  to ALL Auditors
+                                  using its name NOT INCLUDING .py. . Use the
+                                  --list-checks arg to receive a list.
+                                  Defaults to ALL Auditors
   -c, --check-name TEXT           A specific Check in a specific Auditor you
                                   want to run, this correlates to the function
-                                  name. Defaults to ALL Checks
+                                  name. Use the --list-checks arg to receive a
+                                  list. Defaults to ALL Checks
   -d, --delay INTEGER             Time in seconds to sleep between Auditors
-                                  being ran, defaults to 0
+                                  being ran, defaults to 0. Use this argument
+                                  to avoid rate limiting
   -o, --outputs TEXT              A list of Outputs (files, APIs, databases,
                                   ChatOps) to send ElectricEye Findings,
                                   specify multiple with additional arguments:
                                   -o csv -o postgresql -o slack  [default:
                                   ocsf_stdout]
-  --output-file TEXT              For file outputs such as JSON and CSV, the
+  -of, --output-file TEXT         For file outputs such as JSON and CSV, the
                                   name of the file, DO NOT SPECIFY .file_type
                                   [default: output]
-  --list-options                  Lists all valid Output options
-  --list-checks                   Prints a table of Auditors, Checks, and
-                                  Check descriptions to stdout - use this for
-                                  -a or -c args
-  --create-insights               Create AWS Security Hub Insights for
-                                  ElectricEye. This only needs to be done once
-                                  per Account per Region for Security Hub
-  --list-controls                 Lists all ElectricEye Controls (e.g. Check
-                                  Titles) for an Assessment Target
-  --toml-path TEXT                The full path to the TOML file used for
+  -lo, --list-options             Lists all valid Output options
+  -lch, --list-checks             Prints a table of Auditors, Checks, and
+                                  Check descriptions to stdout - use this
+                                  command for help with populating -a (Auditor
+                                  selection) or -c (Check selection) args
+  -lco, --list-controls           Lists all ElectricEye controls - that is to
+                                  say: the Check Titles - for an Assessment
+                                  Target
+  -tp, --toml-path TEXT           The full path to the TOML file used for
                                   configure e.g.,
                                   ~/path/to/mydir/external_providers.toml. If
                                   this value is not provided the default path
