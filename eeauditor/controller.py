@@ -20,13 +20,12 @@
 
 import sys
 import click
-from insights import create_sechub_insights
 from eeauditor import EEAuditor
 from processor.main import get_providers, process_findings
 from os import environ
 
-def print_controls(assessmentTarget, auditorName=None):
-    app = EEAuditor(assessmentTarget)
+def print_controls(assessmentTarget, auditorName=None, tomlPath=None):
+    app = EEAuditor(assessmentTarget, tomlPath)
 
     app.load_plugins(auditorName)
         
@@ -156,12 +155,6 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
     is_flag=True,
     help="Prints a table of Auditors, Checks, and Check descriptions to stdout - use this for -a or -c args"
 )
-# Insights
-@click.option(
-    "--create-insights",
-    is_flag=True,
-    help="Create AWS Security Hub Insights for ElectricEye. This only needs to be done once per Account per Region for Security Hub",
-)
 # Controls (Description)
 @click.option(
     "--list-controls",
@@ -184,13 +177,13 @@ def main(
     output_file,
     list_options,
     list_checks,
-    create_insights,
     list_controls,
     toml_path
 ):
     if list_controls:
         print_controls(
-            assessmentTarget=target_provider
+            assessmentTarget=target_provider,
+            tomlPath=toml_path
         )
         sys.exit(0)
 
@@ -206,10 +199,6 @@ def main(
         print_checks(
             assessmentTarget=target_provider
         )
-        sys.exit(0)
-
-    if create_insights:
-        create_sechub_insights()
         sys.exit(0)
 
     run_auditor(

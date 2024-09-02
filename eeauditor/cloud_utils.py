@@ -507,7 +507,7 @@ class CloudConfig(object):
                     snowflakeUsername, snowflakePasswordValue, snowflakeAccountId, snowflakeWarehouseName, snowflakeRegion
                     ]
                 ):
-                logger.error(f"One of your Salesforce TOML entries in [credentials.salesforce] is empty!")
+                logger.error(f"One of your Snowflake TOML entries in [credentials.snowflake] is empty!")
                 sys.exit(2)
 
             # Parse non-confidential values to environ
