@@ -30,7 +30,7 @@ COPY requirements-docker.txt /tmp/requirements-docker.txt
 RUN \
     apk update && \
     apk add --no-cache python3 postgresql-libs && \
-    apk add --no-cache --virtual .build-deps gcc zlib-dev python3-dev musl-dev postgresql-dev && \
+    apk add --no-cache --virtual .build-deps g++ gcc zlib-dev python3-dev musl-dev postgresql-dev && \
     python3 -m venv /opt/venv && \
     source /opt/venv/bin/activate && \
     python3 -m ensurepip && \

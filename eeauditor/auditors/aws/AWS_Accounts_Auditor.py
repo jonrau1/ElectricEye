@@ -18,9 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
+import logging
 from check_register import CheckRegister
 import datetime
 import botocore
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("AwsAccountAuditor")
 
 registry = CheckRegister()
 
@@ -63,7 +67,8 @@ def get_account_alternate_contacts(cache, session):
         accountAlternateContacts.append("SECURITY")
         cache["get_account_alternate_contacts"] = accountAlternateContacts
         return cache["get_account_alternate_contacts"]
-    except botocore.exceptions.ClientError as error:
+    except botocore.exceptions.ClientError as err:
+        logger.warning("Could not get account alternate contacts: %s", err)
         return {}
 
 @registry.register_check("account")

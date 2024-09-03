@@ -256,7 +256,7 @@ python3 eeauditor/controller.py -t AWS -a ElectricEye_AttackSurface_OCI_Auditor 
 
 ## Oracle Cloud Infrastructure Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **221 Checks** across **18 Auditors** that support the secure configuration of **25 services/components**
+These are the following services and checks performed by each Auditor, there are currently **221 Checks** across **18 Auditors** that support the secure configuration of **25 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|

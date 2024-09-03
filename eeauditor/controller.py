@@ -20,46 +20,56 @@
 
 import sys
 import click
-from insights import create_sechub_insights
 from eeauditor import EEAuditor
 from processor.main import get_providers, process_findings
 from os import environ
 
-def print_controls(assessmentTarget, auditorName=None):
-    app = EEAuditor(assessmentTarget)
+def print_controls(assessmentTarget, args, useToml, auditorName=None, tomlPath=None):
+    app = EEAuditor(assessmentTarget, args, useToml, tomlPath)
 
     app.load_plugins(auditorName)
         
     app.print_controls_json()
 
-def print_checks(assessmentTarget, auditorName=None):
-    app = EEAuditor(assessmentTarget)
+def print_checks(assessmentTarget, args, useToml, auditorName=None, tomlPath=None):
+    app = EEAuditor(assessmentTarget, args, useToml, tomlPath)
 
     app.load_plugins(auditorName)
         
     app.print_checks_md()
 
-def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, outputs=None, outputFile="", tomlPath=None):
+def run_auditor(assessmentTarget, args, useToml, auditorName=None, pluginName=None, delay=0, outputs=None, outputFile="", tomlPath=None):
     if not outputs:
         outputs = ["stdout"]
     
-    app = EEAuditor(assessmentTarget, tomlPath)
+    app = EEAuditor(assessmentTarget, args, useToml, tomlPath)
 
     app.load_plugins(auditorName)
     # Per-target calls - ensure you use the right run_*_checks*() function
+    
+    # Amazon Web Services
     if assessmentTarget == "AWS":
         findings = list(app.run_aws_checks(pluginName=pluginName, delay=delay))
-    elif assessmentTarget == "GCP":
+    # Google Cloud Platform
+    if assessmentTarget == "GCP":
         findings = list(app.run_gcp_checks(pluginName=pluginName, delay=delay))
-    elif assessmentTarget == "OCI":
+    # Oracle Cloud Infrastructure
+    if assessmentTarget == "OCI":
         findings = list(app.run_oci_checks(pluginName=pluginName, delay=delay))
-    elif assessmentTarget == "Azure":
+    # Microsoft Azure
+    if assessmentTarget == "Azure":
         findings = list(app.run_azure_checks(pluginName=pluginName, delay=delay))
-    elif assessmentTarget == "M365":
+    # Microsoft 365
+    if assessmentTarget == "M365":
         findings = list(app.run_m365_checks(pluginName=pluginName, delay=delay))
-    elif assessmentTarget == "Salesforce":
+    # Salesforce
+    if assessmentTarget == "Salesforce":
         findings = list(app.run_salesforce_checks(pluginName=pluginName, delay=delay))
-    else:
+    # Snowflake
+    if assessmentTarget == "Snowflake":
+        findings = list(app.run_snowflake_checks(pluginName=pluginName, delay=delay))
+    # ServiceNow
+    if assessmentTarget == "ServiceNow":
         findings = list(app.run_non_aws_checks(pluginName=pluginName, delay=delay))
 
     print(f"Done running Checks for {assessmentTarget}")
@@ -90,31 +100,32 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
             "GCP",
             "Servicenow",
             "M365",
-            "Salesforce"
+            "Salesforce",
+            "Snowflake"
         ],
         case_sensitive=True
     ),
-    help="CSP or SaaS Vendor Assessment Target, ensure that any -a or -c arg maps to your target provider e.g., -t AWS -a Amazon_APGIW_Auditor"
+    help="Public cloud or SaaS assessment target, ensure that any -a or -c arg maps to your target provider to avoid any errors. e.g., -t AWS -a Amazon_APGIW_Auditor"
 )
 # Run Specific Auditor
 @click.option(
     "-a",
     "--auditor-name",
     default="",
-    help="Specify which Auditor you want to run by using its name NOT INCLUDING .py. Defaults to ALL Auditors"
+    help="Specify which Auditor you want to run by using its name NOT INCLUDING .py. . Use the --list-checks arg to receive a list. Defaults to ALL Auditors"
 )
 # Run Specific Check
 @click.option(
     "-c",
     "--check-name",
     default="",
-    help="A specific Check in a specific Auditor you want to run, this correlates to the function name. Defaults to ALL Checks")
+    help="A specific Check in a specific Auditor you want to run, this correlates to the function name. Use the --list-checks arg to receive a list. Defaults to ALL Checks")
 # Delay
 @click.option(
     "-d", 
     "--delay", 
     default=0, 
-    help="Time in seconds to sleep between Auditors being ran, defaults to 0"
+    help="Time in seconds to sleep between Auditors being ran, defaults to 0. Use this argument to avoid rate limiting"
 )
 # Outputs
 @click.option(
@@ -127,6 +138,7 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
 )
 # Output File Name
 @click.option(
+    "-of",
     "--output-file",
     default="output", 
     show_default=True, 
@@ -134,33 +146,51 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
 )
 # List Output Options
 @click.option(
+    "-lo",
     "--list-options",
     is_flag=True,
     help="Lists all valid Output options"
 )
 # List Checks
 @click.option(
+    "-lch",
     "--list-checks",
     is_flag=True,
-    help="Prints a table of Auditors, Checks, and Check descriptions to stdout - use this for -a or -c args"
-)
-# Insights
-@click.option(
-    "--create-insights",
-    is_flag=True,
-    help="Create AWS Security Hub Insights for ElectricEye. This only needs to be done once per Account per Region for Security Hub",
+    help="Prints a table of Auditors, Checks, and Check descriptions to stdout - use this command for help with populating -a (Auditor selection) or -c (Check selection) args"
 )
 # Controls (Description)
 @click.option(
+    "-lco",
     "--list-controls",
     is_flag=True,
-    help="Lists all ElectricEye Controls (e.g. Check Titles) for an Assessment Target"
+    help="Lists all ElectricEye controls - that is to say: the Check Titles - for an Assessment Target"
 )
 # TOML Path
 @click.option(
+    "-tp",
     "--toml-path",
     default=None,
     help="The full path to the TOML file used for configure e.g., ~/path/to/mydir/external_providers.toml. If this value is not provided the default path of ElectricEye/eeauditor/external_providers.toml is used."
+)
+# Use TOML
+@click.option(
+    "-ut",
+    "--use-toml",
+    default="True",
+    type=click.Choice(
+        [
+            "True",
+            "False"
+        ],
+        case_sensitive=True
+    ),
+    help="Set to False to disable the use of the TOML file for external providers, defaults to True. THIS IS AN EXPERIMENTAL FEATURE!"
+)
+# EXPERIMENTAL: Supply arguments in a stringified dictionary format
+@click.option(
+    "--args",
+    default=None,
+    help="Supply arguments in a stringified dictionary format, e.g., '{\"credentials_location\": \"CONFIG_FILE\", \"snowflake_username\": \"ELECTRIC_EYE\"}'. THIS IS AN EXPERIMENTAL FEATURE!"
 )
 
 def main(
@@ -172,13 +202,17 @@ def main(
     output_file,
     list_options,
     list_checks,
-    create_insights,
     list_controls,
-    toml_path
+    toml_path,
+    use_toml,
+    args
 ):
     if list_controls:
         print_controls(
-            assessmentTarget=target_provider
+            assessmentTarget=target_provider,
+            args=args,
+            tomlPath=toml_path,
+            useToml=use_toml,
         )
         sys.exit(0)
 
@@ -192,23 +226,26 @@ def main(
 
     if list_checks:
         print_checks(
-            assessmentTarget=target_provider
+            assessmentTarget=target_provider,
+            args=args,
+            tomlPath=toml_path,
+            useToml=use_toml,
         )
-        sys.exit(0)
-
-    if create_insights:
-        create_sechub_insights()
         sys.exit(0)
 
     run_auditor(
         assessmentTarget=target_provider,
+        args=args,
         auditorName=auditor_name,
         pluginName=check_name,
         delay=delay,
         outputs=outputs,
         outputFile=output_file,
-        tomlPath=toml_path
+        tomlPath=toml_path,
+        useToml=use_toml
     )
 
 if __name__ == "__main__":
     main(sys.argv[1:])
+
+# EOF

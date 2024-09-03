@@ -18,42 +18,71 @@
 #specific language governing permissions and limitations
 #under the License.
 
+import logging
 import datetime
 from check_register import CheckRegister
+from botocore.exceptions import ClientError
 import base64
 import json
+
+logging.getLogger().setLevel(logging.INFO)
+logger = logging.getLogger("AwsGlueAuditor")
 
 registry = CheckRegister()
 
 def list_crawlers(cache, session):
     glue = session.client("glue")
+
     response = cache.get("list_crawlers")
+
     if response:
         return response
+    
     cache["list_crawlers"] = glue.list_crawlers()
     return cache["list_crawlers"]
+
+def get_data_catalog_encryption_settings(cache, session):
+    glue = session.client("glue")
+
+    response = cache.get("get_data_catalog_encryption_settings")
+
+    if response:
+        return response
+    
+    cache["get_data_catalog_encryption_settings"] = glue.get_data_catalog_encryption_settings()
+    return cache["get_data_catalog_encryption_settings"]
 
 @registry.register_check("glue")
 def crawler_s3_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Glue.1] AWS Glue crawler security configurations should enable Amazon S3 encryption"""
     glue = session.client("glue")
-    crawler = list_crawlers(cache, session)
-    myCrawlers = crawler["CrawlerNames"]
-    for crawlers in myCrawlers:
-        crawlerName = str(crawlers)
+    crawlers = list_crawlers(cache, session)["CrawlerNames"]
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+
+    for crawler in crawlers:
+        crawlerName = crawler
         crawlerArn = f"arn:{awsPartition}:glue:{awsRegion}:{awsAccountId}:crawler/{crawlerName}"
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        response = glue.get_crawler(Name=crawlerName)
+        response = glue.get_crawler(Name=crawler)
+
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
+        
+        crawlerS3Encryption = True
         try:
             sec = glue.get_security_configuration(Name=response["Crawler"]["CrawlerSecurityConfiguration"])
-            s3EncryptionCheck = str(sec["SecurityConfiguration"]["EncryptionConfiguration"]["S3Encryption"][0]["S3EncryptionMode"])
-        except KeyError:
-            s3EncryptionCheck = "DISABLED"
-        if s3EncryptionCheck == "DISABLED":
+            sec["SecurityConfiguration"]["EncryptionConfiguration"]["S3Encryption"][0]["S3EncryptionMode"]
+        except ClientError as ce:
+            crawlerS3Encryption = False
+            logger.warning("Failed to get security configuration for crawler %s: %s", crawler, ce)
+        except KeyError as ke:
+            crawlerS3Encryption = False
+            logger.warning("Failed to get security configuration for crawler %s: %s", crawler, ke)
+
+
+        # this is a failing check
+        if crawlerS3Encryption is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": crawlerArn + "/glue-crawler-s3-encryption-check",
@@ -67,7 +96,7 @@ def crawler_s3_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "HIGH"},
+                "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[Glue.1] AWS Glue crawler security configurations should enable Amazon S3 encryption",
                 "Description": "AWS Glue crawler "
@@ -484,7 +513,7 @@ def crawler_job_bookmark_encryption_check(cache: dict, session, awsAccountId: st
                         "NIST SP 800-53 Rev. 4 SC-12",
                         "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.8.2.3"
                     ],
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -495,286 +524,280 @@ def crawler_job_bookmark_encryption_check(cache: dict, session, awsAccountId: st
 @registry.register_check("glue")
 def glue_data_catalog_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Glue.4] AWS Glue data catalogs should be encrypted at rest"""
-    glue = session.client("glue")
+    response = get_data_catalog_encryption_settings(cache, session)
     catalogArn = f"arn:{awsPartition}:glue:{awsRegion}:{awsAccountId}:catalog"
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    # B64 encode all of the details for the Asset
+    assetJson = json.dumps(response,default=str).encode("utf-8")
+    assetB64 = base64.b64encode(assetJson)
+
+    catalogEncrypted = True
     try:
-        response = glue.get_data_catalog_encryption_settings()
-        # B64 encode all of the details for the Asset
-        assetJson = json.dumps(response,default=str).encode("utf-8")
-        assetB64 = base64.b64encode(assetJson)
-        try:
-            catalogEncryptionCheck = str(response["DataCatalogEncryptionSettings"]["EncryptionAtRest"]["CatalogEncryptionMode"])
-        except KeyError:
-            catalogEncryptionCheck = "DISABLED"
-        if catalogEncryptionCheck == "DISABLED":
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": catalogArn + "/glue-data-catalog-encryption-check",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": catalogArn,
-                "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices",
-                    "Effects/Data Exposure",
+        response["DataCatalogEncryptionSettings"]["EncryptionAtRest"]["CatalogEncryptionMode"]
+    except KeyError:
+        catalogEncrypted = False
+    
+    # this is a failing check
+    if catalogEncrypted is False:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": catalogArn + "/glue-data-catalog-encryption-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": catalogArn,
+            "AwsAccountId": awsAccountId,
+            "Types": [
+                "Software and Configuration Checks/AWS Security Best Practices",
+                "Effects/Data Exposure",
+            ],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "MEDIUM"},
+            "Confidence": 99,
+            "Title": "[Glue.4] AWS Glue data catalogs should be encrypted at rest",
+            "Description": "The AWS Glue data catalog for account "
+            + awsAccountId
+            + " is not encrypted. You can enable or disable encryption settings for the entire Data Catalog. In the process, you specify an AWS KMS key that is automatically used when objects, such as tables, databases, partitions, table versions, connections and/or user-defined functions, are written to the Data Catalog. Refer to the remediation instructions if this configuration is not intended",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information on data catalog encryption refer to the Encrypting Your Data Catalog section of the AWS Glue Developer Guide",
+                    "Url": "https://docs.aws.amazon.com/glue/latest/dg/encrypt-glue-data-catalog.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Analytics",
+                "AssetService": "AWS Glue",
+                "AssetComponent": "Data Catalog"
+            },
+            "Resources": [
+                {
+                    "Type": "AwsGlueDataCatalog",
+                    "Id": catalogArn,
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.DS-1",
+                    "NIST SP 800-53 Rev. 4 MP-8",
+                    "NIST SP 800-53 Rev. 4 SC-12",
+                    "NIST SP 800-53 Rev. 4 SC-28",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.8.2.3",
                 ],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "HIGH"},
-                "Confidence": 99,
-                "Title": "[Glue.4] AWS Glue data catalogs should be encrypted at rest",
-                "Description": "The AWS Glue data catalog for account "
-                + awsAccountId
-                + " is not encrypted. You can enable or disable encryption settings for the entire Data Catalog. In the process, you specify an AWS KMS key that is automatically used when objects, such as tables, databases, partitions, table versions, connections and/or user-defined functions, are written to the Data Catalog. Refer to the remediation instructions if this configuration is not intended",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "For more information on data catalog encryption refer to the Encrypting Your Data Catalog section of the AWS Glue Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/glue/latest/dg/encrypt-glue-data-catalog.html",
-                    }
-                },
-                "ProductFields": {
-                    "ProductName": "ElectricEye",
-                    "Provider": "AWS",
-                    "ProviderType": "CSP",
-                    "ProviderAccountId": awsAccountId,
-                    "AssetRegion": awsRegion,
-                    "AssetDetails": assetB64,
-                    "AssetClass": "Analytics",
-                    "AssetService": "AWS Glue",
-                    "AssetComponent": "Data Catalog"
-                },
-                "Resources": [
-                    {
-                        "Type": "AwsGlueDataCatalog",
-                        "Id": catalogArn,
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                    }
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE",
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": catalogArn + "/glue-data-catalog-encryption-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": catalogArn,
+            "AwsAccountId": awsAccountId,
+            "Types": [
+                "Software and Configuration Checks/AWS Security Best Practices",
+                "Effects/Data Exposure",
+            ],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[Glue.4] AWS Glue data catalogs should be encrypted at rest",
+            "Description": "The AWS Glue data catalog for account "
+            + awsAccountId
+            + " is encrypted.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information on data catalog encryption refer to the Encrypting Your Data Catalog section of the AWS Glue Developer Guide",
+                    "Url": "https://docs.aws.amazon.com/glue/latest/dg/encrypt-glue-data-catalog.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Analytics",
+                "AssetService": "AWS Glue",
+                "AssetComponent": "Data Catalog"
+            },
+            "Resources": [
+                {
+                    "Type": "AwsGlueDataCatalog",
+                    "Id": catalogArn,
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.DS-1",
+                    "NIST SP 800-53 Rev. 4 MP-8",
+                    "NIST SP 800-53 Rev. 4 SC-12",
+                    "NIST SP 800-53 Rev. 4 SC-28",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.8.2.3",
                 ],
-                "Compliance": {
-                    "Status": "FAILED",
-                    "RelatedRequirements": [
-                        "NIST CSF V1.1 PR.DS-1",
-                        "NIST SP 800-53 Rev. 4 MP-8",
-                        "NIST SP 800-53 Rev. 4 SC-12",
-                        "NIST SP 800-53 Rev. 4 SC-28",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3",
-                    ],
-                },
-                "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
-            }
-            yield finding
-        else:
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": catalogArn + "/glue-data-catalog-encryption-check",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": catalogArn,
-                "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices",
-                    "Effects/Data Exposure",
-                ],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "INFORMATIONAL"},
-                "Confidence": 99,
-                "Title": "[Glue.4] AWS Glue data catalogs should be encrypted at rest",
-                "Description": "The AWS Glue data catalog for account "
-                + awsAccountId
-                + " is encrypted.",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "For more information on data catalog encryption refer to the Encrypting Your Data Catalog section of the AWS Glue Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/glue/latest/dg/encrypt-glue-data-catalog.html",
-                    }
-                },
-                "ProductFields": {
-                    "ProductName": "ElectricEye",
-                    "Provider": "AWS",
-                    "ProviderType": "CSP",
-                    "ProviderAccountId": awsAccountId,
-                    "AssetRegion": awsRegion,
-                    "AssetDetails": assetB64,
-                    "AssetClass": "Analytics",
-                    "AssetService": "AWS Glue",
-                    "AssetComponent": "Data Catalog"
-                },
-                "Resources": [
-                    {
-                        "Type": "AwsGlueDataCatalog",
-                        "Id": catalogArn,
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                    }
-                ],
-                "Compliance": {
-                    "Status": "PASSED",
-                    "RelatedRequirements": [
-                        "NIST CSF V1.1 PR.DS-1",
-                        "NIST SP 800-53 Rev. 4 MP-8",
-                        "NIST SP 800-53 Rev. 4 SC-12",
-                        "NIST SP 800-53 Rev. 4 SC-28",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3",
-                    ],
-                },
-                "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
-            }
-            yield finding
-    except Exception as e:
-        if str(e) == '"CrawlerSecurityConfiguration"':
-            pass
-        else:
-            print(e)
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED",
+        }
+        yield finding
 
 @registry.register_check("glue")
 def glue_data_catalog_password_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Glue.5] AWS Glue data catalogs should be configured to encrypt connection passwords"""
-    glue = session.client("glue")
+    response = get_data_catalog_encryption_settings(cache, session)
     catalogArn = f"arn:{awsPartition}:glue:{awsRegion}:{awsAccountId}:catalog"
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    # B64 encode all of the details for the Asset
+    assetJson = json.dumps(response,default=str).encode("utf-8")
+    assetB64 = base64.b64encode(assetJson)
+
+    passwordEncryptionCheck = True
     try:
-        response = glue.get_data_catalog_encryption_settings()
-        # B64 encode all of the details for the Asset
-        assetJson = json.dumps(response,default=str).encode("utf-8")
-        assetB64 = base64.b64encode(assetJson)
-        try:
-            passwordEncryptionCheck = str(response["DataCatalogEncryptionSettings"]["ConnectionPasswordEncryption"]["ReturnConnectionPasswordEncrypted"])
-        except:
-            passwordEncryptionCheck = "False"
-        if passwordEncryptionCheck == "False":
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": catalogArn + "/glue-data-catalog-password-encryption-check",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": catalogArn,
-                "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices",
-                    "Effects/Data Exposure",
+        response["DataCatalogEncryptionSettings"]["ConnectionPasswordEncryption"]["ReturnConnectionPasswordEncrypted"]
+    except KeyError:
+        passwordEncryptionCheck = False
+
+    # this is a failing check
+    if passwordEncryptionCheck is False:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": catalogArn + "/glue-data-catalog-password-encryption-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": catalogArn,
+            "AwsAccountId": awsAccountId,
+            "Types": [
+                "Software and Configuration Checks/AWS Security Best Practices",
+                "Effects/Data Exposure",
+            ],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "LOW"},
+            "Confidence": 99,
+            "Title": "[Glue.5] AWS Glue data catalogs should be configured to encrypt connection passwords",
+            "Description": "The AWS Glue data catalog for account "
+            + awsAccountId
+            + " is not configured to encrypt connection passwords. You can retrieve connection passwords in the AWS Glue Data Catalog by using the GetConnection and GetConnections API operations. These passwords are stored in the Data Catalog connection and are used when AWS Glue connects to a Java Database Connectivity (JDBC) data store. When the connection was created or updated, an option in the Data Catalog settings determined whether the password was encrypted. Refer to the remediation instructions if this configuration is not intended",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information on data catalog connection password encryption refer to the Encrypting Connection Passwords section of the AWS Glue Developer Guide",
+                    "Url": "https://docs.aws.amazon.com/glue/latest/dg/encrypt-connection-passwords.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Analytics",
+                "AssetService": "AWS Glue",
+                "AssetComponent": "Data Catalog"
+            },
+            "Resources": [
+                {
+                    "Type": "AwsGlueDataCatalog",
+                    "Id": catalogArn,
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.DS-1",
+                    "NIST SP 800-53 Rev. 4 MP-8",
+                    "NIST SP 800-53 Rev. 4 SC-12",
+                    "NIST SP 800-53 Rev. 4 SC-28",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.8.2.3",
                 ],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "HIGH"},
-                "Confidence": 99,
-                "Title": "[Glue.5] AWS Glue data catalogs should be configured to encrypt connection passwords",
-                "Description": "The AWS Glue data catalog for account "
-                + awsAccountId
-                + " is not configured to encrypt connection passwords. You can retrieve connection passwords in the AWS Glue Data Catalog by using the GetConnection and GetConnections API operations. These passwords are stored in the Data Catalog connection and are used when AWS Glue connects to a Java Database Connectivity (JDBC) data store. When the connection was created or updated, an option in the Data Catalog settings determined whether the password was encrypted. Refer to the remediation instructions if this configuration is not intended",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "For more information on data catalog connection password encryption refer to the Encrypting Connection Passwords section of the AWS Glue Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/glue/latest/dg/encrypt-connection-passwords.html",
-                    }
-                },
-                "ProductFields": {
-                    "ProductName": "ElectricEye",
-                    "Provider": "AWS",
-                    "ProviderType": "CSP",
-                    "ProviderAccountId": awsAccountId,
-                    "AssetRegion": awsRegion,
-                    "AssetDetails": assetB64,
-                    "AssetClass": "Analytics",
-                    "AssetService": "AWS Glue",
-                    "AssetComponent": "Data Catalog"
-                },
-                "Resources": [
-                    {
-                        "Type": "AwsGlueDataCatalog",
-                        "Id": catalogArn,
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                    }
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE",
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": catalogArn + "/glue-data-catalog-password-encryption-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": catalogArn,
+            "AwsAccountId": awsAccountId,
+            "Types": [
+                "Software and Configuration Checks/AWS Security Best Practices",
+                "Effects/Data Exposure",
+            ],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[Glue.5] AWS Glue data catalogs should be configured to encrypt connection passwords",
+            "Description": "The AWS Glue data catalog for account "
+            + awsAccountId
+            + " is configured to encrypt connection passwords.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information on data catalog connection password encryption refer to the Encrypting Connection Passwords section of the AWS Glue Developer Guide",
+                    "Url": "https://docs.aws.amazon.com/glue/latest/dg/encrypt-connection-passwords.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Analytics",
+                "AssetService": "AWS Glue",
+                "AssetComponent": "Data Catalog"
+            },
+            "Resources": [
+                {
+                    "Type": "AwsGlueDataCatalog",
+                    "Id": catalogArn,
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.DS-1",
+                    "NIST SP 800-53 Rev. 4 MP-8",
+                    "NIST SP 800-53 Rev. 4 SC-12",
+                    "NIST SP 800-53 Rev. 4 SC-28",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.8.2.3",
                 ],
-                "Compliance": {
-                    "Status": "FAILED",
-                    "RelatedRequirements": [
-                        "NIST CSF V1.1 PR.DS-1",
-                        "NIST SP 800-53 Rev. 4 MP-8",
-                        "NIST SP 800-53 Rev. 4 SC-12",
-                        "NIST SP 800-53 Rev. 4 SC-28",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3",
-                    ],
-                },
-                "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
-            }
-            yield finding
-        else:
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": catalogArn + "/glue-data-catalog-password-encryption-check",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": catalogArn,
-                "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices",
-                    "Effects/Data Exposure",
-                ],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "INFORMATIONAL"},
-                "Confidence": 99,
-                "Title": "[Glue.5] AWS Glue data catalogs should be configured to encrypt connection passwords",
-                "Description": "The AWS Glue data catalog for account "
-                + awsAccountId
-                + " is configured to encrypt connection passwords.",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "For more information on data catalog connection password encryption refer to the Encrypting Connection Passwords section of the AWS Glue Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/glue/latest/dg/encrypt-connection-passwords.html",
-                    }
-                },
-                "ProductFields": {
-                    "ProductName": "ElectricEye",
-                    "Provider": "AWS",
-                    "ProviderType": "CSP",
-                    "ProviderAccountId": awsAccountId,
-                    "AssetRegion": awsRegion,
-                    "AssetDetails": assetB64,
-                    "AssetClass": "Analytics",
-                    "AssetService": "AWS Glue",
-                    "AssetComponent": "Data Catalog"
-                },
-                "Resources": [
-                    {
-                        "Type": "AwsGlueDataCatalog",
-                        "Id": catalogArn,
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                    }
-                ],
-                "Compliance": {
-                    "Status": "PASSED",
-                    "RelatedRequirements": [
-                        "NIST CSF V1.1 PR.DS-1",
-                        "NIST SP 800-53 Rev. 4 MP-8",
-                        "NIST SP 800-53 Rev. 4 SC-12",
-                        "NIST SP 800-53 Rev. 4 SC-28",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3",
-                    ],
-                },
-                "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
-            }
-            yield finding
-    except Exception as e:
-        if str(e) == '"CrawlerSecurityConfiguration"':
-            pass
-        else:
-            print(e)
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED",
+        }
+        yield finding
 
 @registry.register_check("glue")
 def glue_data_catalog_resource_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -946,3 +969,5 @@ def glue_data_catalog_resource_policy_check(cache: dict, session, awsAccountId: 
             yield finding
         else:
             print(e)
+
+# EOF

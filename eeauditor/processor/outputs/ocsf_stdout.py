@@ -58,16 +58,25 @@ SUPPORTED_FRAMEWORKS = [
     "CIS Amazon Web Services Foundations Benchmark V3.0",
     "MITRE ATT&CK",
     "CIS AWS Database Services Benchmark V1.0",
-    "CIS Microsoft Azure Foundations Benchmark V2.0.0"
+    "CIS Microsoft Azure Foundations Benchmark V2.0.0",
+    "CIS Snowflake Foundations Benchmark V1.0.0"
 ]
 
-class AsffOcsfNormalizedMapping(NamedTuple):
+class SeverityAccountTypeComplianceMapping(NamedTuple):
     severityId: int
     severity: str
     cloudAccountTypeId: int
     cloudAccountType: str
     complianceStatusId: int
     complianceStatus: str
+
+class ActivityStatusTypeMapping(NamedTuple):
+    activityId: int
+    activityName: str
+    statusId: int
+    status: str
+    typeUid: int
+    typeName: str
 
 here = path.abspath(path.dirname(__file__))
 with open(f"{here}/mapped_compliance_controls.json") as jsonfile:
@@ -146,7 +155,7 @@ class OcsfStdoutOutput(object):
         except KeyError:
             return []
         
-    def asff_to_ocsf_normalization(self, severityLabel: str, cloudProvider: str, complianceStatusLabel: str) -> AsffOcsfNormalizedMapping:
+    def compliance_finding_ocsf_normalization(self, severityLabel: str, cloudProvider: str, complianceStatusLabel: str) -> SeverityAccountTypeComplianceMapping:
         """
         Normalizes the following ASFF Severity, Cloud Account Provider, and Compliance values into OCSF
         """
@@ -196,13 +205,13 @@ class OcsfStdoutOutput(object):
             complianceStatusId = 99
             complianceStatus = complianceStatusLabel.lower().capitalize()
 
-        return AsffOcsfNormalizedMapping (
-            severityId,
-            severity,
-            acctTypeId,
-            acctType,
-            complianceStatusId,
-            complianceStatus
+        return SeverityAccountTypeComplianceMapping(
+            severityId=severityId,
+            severity=severity,
+            cloudAccountTypeId=acctTypeId,
+            cloudAccountType=acctType,
+            complianceStatusId=complianceStatusId,
+            complianceStatus=complianceStatus
         )
 
     def iso8061_to_epochseconds(self, iso8061: str) -> int:
@@ -210,7 +219,31 @@ class OcsfStdoutOutput(object):
         Converts ISO 8061 datetime into Epochseconds timestamp
         """
         return int(datetime.fromisoformat(iso8061).timestamp())
+
+    def record_state_to_status(self, recordState: str) -> ActivityStatusTypeMapping:
+        """
+        Maps ElectricEye RecordState to OCSF Status
+        """
+        if recordState == "ACTIVE":
+            return ActivityStatusTypeMapping(
+                activityId=1,
+                activityName="Create",
+                statusId=1,
+                status="New",
+                typeUid=200301,
+                typeName="Compliance Finding: Create"
+            )
         
+        if recordState == "ARCHIVED":
+            return ActivityStatusTypeMapping(
+                activityId=3,
+                activityName="Close",
+                statusId=4,
+                status="Resolved",
+                typeUid=200303,
+                typeName="Compliance Finding: Close"
+            )
+
     def ocsf_compliance_finding_mapping(self, findings: list) -> list:
         """
         Takes ElectricEye ASFF and outputs to OCSF v1.1.0 Compliance Finding (2003), returns a list of new findings
@@ -221,6 +254,9 @@ class OcsfStdoutOutput(object):
         logger.info("Mapping ASFF to OCSF")
 
         for finding in findings:
+            # Generate metadata.processed_time
+            timeNow = datetime.now().isoformat()
+            procssedTime = self.iso8061_to_epochseconds(timeNow)
 
             # check if the compliance.requirements start with the control frameworks and append the unique ones into a list for compliance.stnadards
             standard = []
@@ -230,55 +266,76 @@ class OcsfStdoutOutput(object):
                     if str(control).startswith(framework) and framework not in standard:
                         standard.append(framework)
 
-            asffToOcsf = self.asff_to_ocsf_normalization(
+            asffToOcsf = self.compliance_finding_ocsf_normalization(
                 severityLabel=finding["Severity"]["Label"],
                 cloudProvider=finding["ProductFields"]["Provider"],
                 complianceStatusLabel=finding["Compliance"]["Status"]
             )
 
-            if finding["ProductFields"]["Provider"] == "AWS":
-                partition = finding["Resources"][0]["Partition"]
-            else:
+            # Non-AWS checks have hardcoded "dummy" data for Account, Region, and Partition - set these to none
+            provider = finding["ProductFields"]["Provider"]
+            partition = finding["Resources"][0]["Partition"]
+            region = finding["ProductFields"]["AssetRegion"]
+            accountId = finding["ProductFields"]["ProviderAccountId"]
+
+            if provider != "AWS" or partition == "not-aws":
                 partition = None
+
+            if region == "us-placeholder-1":
+                region = None
+
+            if region == "aws-global":
+                region = "us-east-1"
+
+            if accountId == "000000000000":
+                accountId = None
+
+            eventTime = self.iso8061_to_epochseconds(finding["CreatedAt"])
+
+            recordState = finding["RecordState"]
+            recordStateMapping = self.record_state_to_status(recordState)
             
             ocsf = {
                 # Base Event data
-                "activity_id": 1,
-                "activity_name": "Create",
+                "activity_id": recordStateMapping.activityId,
+                "activity_name": recordStateMapping.activityName,
                 "category_name": "Findings",
                 "category_uid": 2,
                 "class_name": "Compliance Finding",
                 "class_uid": 2003,
                 "confidence_score": finding["Confidence"],
-                "severity": asffToOcsf[1],
-                "severity_id": asffToOcsf[0],
-                "status": "New",
-                "status_id": 1,
-                "time": self.iso8061_to_epochseconds(finding["CreatedAt"]),
-                "type_name": "Compliance Finding: Create",
-                "type_uid": 200301,
+                "severity": asffToOcsf.severity,
+                "severity_id": asffToOcsf.severityId,
+                "status": recordStateMapping.status,
+                "status_id": recordStateMapping.status,
+                "start_time": eventTime,
+                "time": eventTime,
+                "type_name": recordStateMapping.typeName,
+                "type_uid": recordStateMapping.typeUid,
                 # Profiles / Metadata
                 "metadata": {
                     "uid": finding["Id"],
                     "correlation_uid": finding["GeneratorId"],
-                    "version":"1.1.0",
+                    "log_provider": "ElectricEye",
+                    "logged_time": eventTime,
+                    "original_time": finding["CreatedAt"],
+                    "processed_time": procssedTime,
+                    "version":"1.4.0",
+                    "profiles":["cloud"],
                     "product": {
                         "name":"ElectricEye",
                         "version":"3.0",
                         "url_string":"https://github.com/jonrau1/ElectricEye",
                         "vendor_name":"ElectricEye"
                     },
-                    "profiles":[
-                        "cloud"
-                    ]
                 },
                 "cloud": {
                     "provider": finding["ProductFields"]["Provider"],
-                    "region": finding["ProductFields"]["AssetRegion"],
+                    "region": region,
                     "account": {
-                        "uid": finding["ProductFields"]["ProviderAccountId"],
-                        "type": asffToOcsf[3],
-                        "type_uid": asffToOcsf[2]
+                        "uid": accountId,
+                        "type": asffToOcsf.cloudAccountType,
+                        "type_uid": asffToOcsf.cloudAccountTypeId
                     }
                 },
                 # Observables
@@ -286,9 +343,9 @@ class OcsfStdoutOutput(object):
                     # Cloud Account (Project) UID
                     {
                         "name": "cloud.account.uid",
-                        "type": "Resource UID",
-                        "type_id": 10,
-                        "value": finding["ProductFields"]["ProviderAccountId"]
+                        "type": "Account UID",
+                        "type_id": 35,
+                        "value": accountId
                     },
                     # Resource UID
                     {
@@ -307,7 +364,7 @@ class OcsfStdoutOutput(object):
                     "status_id": asffToOcsf[4]
                 },
                 "finding_info": {
-                    "created_time": self.iso8061_to_epochseconds(finding["CreatedAt"]),
+                    "created_time": eventTime,
                     "desc": finding["Description"],
                     "first_seen_time": self.iso8061_to_epochseconds(finding["FirstObservedAt"]),
                     "modified_time": self.iso8061_to_epochseconds(finding["UpdatedAt"]),
@@ -320,13 +377,15 @@ class OcsfStdoutOutput(object):
                     "desc": finding["Remediation"]["Recommendation"]["Text"],
                     "references": [finding["Remediation"]["Recommendation"]["Url"]]
                 },
-                "resource": {
-                    "data": finding["ProductFields"]["AssetDetails"],
-                    "cloud_partition": partition,
-                    "region": finding["ProductFields"]["AssetRegion"],
-                    "type": finding["ProductFields"]["AssetService"],
-                    "uid": finding["Resources"][0]["Id"]
-                },
+                "resources": [
+                    {
+                        "data": finding["ProductFields"]["AssetDetails"],
+                        "cloud_partition": partition,
+                        "region": region,
+                        "type": finding["ProductFields"]["AssetService"],
+                        "uid": finding["Resources"][0]["Id"]
+                    }
+                ],
                 "unmapped": {
                     "provider_type": finding["ProductFields"]["ProviderType"],
                     "asset_class": finding["ProductFields"]["AssetClass"],

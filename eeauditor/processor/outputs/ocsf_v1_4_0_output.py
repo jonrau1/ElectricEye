@@ -27,7 +27,8 @@ import json
 from base64 import b64decode
 from datetime import datetime
 
-logger = logging.getLogger("OCSF_V1.1.0_Output")
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("OCSF_V1.4.0_Output")
 
 # NOTE TO SELF: Updated this and FAQ.md as new standards are added
 SUPPORTED_FRAMEWORKS = [
@@ -83,8 +84,8 @@ with open(f"{here}/mapped_compliance_controls.json") as jsonfile:
     CONTROLS_CROSSWALK = json.load(jsonfile)
 
 @ElectricEyeOutput
-class OcsfV110Output(object):
-    __provider__ = "ocsf_v1_1_0"
+class OcsfV140Output(object):
+    __provider__ = "ocsf_v1_4_0"
 
     def write_findings(self, findings: list, output_file: str, **kwargs):
         if len(findings) == 0:
@@ -92,7 +93,7 @@ class OcsfV110Output(object):
             sys.exit(0)
 
         logger.info(
-            "Writing %s OCSF Compliance Findings to JSON!",
+            "Converting %s findings into OCSF v1.4.0 events",
             len(findings)
         )
 
@@ -133,7 +134,7 @@ class OcsfV110Output(object):
         del decodedFindings
         
         # create output file based on inputs
-        jsonfile = f"{output_file}_ocsf_v1-1-0_compliance_findings.json"
+        jsonfile = f"{output_file}_ocsf_v1-4-0_events.json"
         logger.info(f"Output file named: {jsonfile}")
         
         with open(jsonfile, "w") as jsonfile:
@@ -158,7 +159,7 @@ class OcsfV110Output(object):
         except KeyError:
             return []
         
-    def asff_to_ocsf_normalization(self, severityLabel: str, cloudProvider: str, complianceStatusLabel: str) -> SeverityAccountTypeComplianceMapping:
+    def compliance_finding_ocsf_normalization(self, severityLabel: str, cloudProvider: str, complianceStatusLabel: str) -> SeverityAccountTypeComplianceMapping:
         """
         Normalizes the following ASFF Severity, Cloud Account Provider, and Compliance values into OCSF
         """
@@ -188,8 +189,26 @@ class OcsfV110Output(object):
             acctTypeId = 10
             acctType = "AWS Account"
         elif cloudProvider == "GCP":
-            acctTypeId = 5
-            acctType = "GCP Account"
+            acctTypeId = 11
+            acctType = "GCP Project"
+        elif cloudProvider == "OCI":
+            acctTypeId = 12
+            acctType = "OCI Compartment"
+        elif cloudProvider == "Azure":
+            acctTypeId = 13
+            acctType = "Azure Subscription"
+        elif cloudProvider == "Salesforce":
+            acctTypeId = 14
+            acctType = "Salesforce Account"
+        elif cloudProvider == "Google Workspace":
+            acctTypeId = 15
+            acctType = "Google Workspace"
+        elif cloudProvider == "ServiceNow":
+            acctTypeId = 16
+            acctType = "ServiceNow Instance"
+        elif cloudProvider == "M365":
+            acctTypeId = 17
+            acctType = "M365 Tenant"
         else:
             acctTypeId = 99
             acctType = cloudProvider
@@ -208,13 +227,13 @@ class OcsfV110Output(object):
             complianceStatusId = 99
             complianceStatus = complianceStatusLabel.lower().capitalize()
 
-        return (
-            severityId,
-            severity,
-            acctTypeId,
-            acctType,
-            complianceStatusId,
-            complianceStatus
+        return SeverityAccountTypeComplianceMapping(
+            severityId=severityId,
+            severity=severity,
+            cloudAccountTypeId=acctTypeId,
+            cloudAccountType=acctType,
+            complianceStatusId=complianceStatusId,
+            complianceStatus=complianceStatus
         )
 
     def iso8061_to_epochseconds(self, iso8061: str) -> int:
@@ -222,7 +241,7 @@ class OcsfV110Output(object):
         Converts ISO 8061 datetime into Epochseconds timestamp
         """
         return int(datetime.fromisoformat(iso8061).timestamp())
-
+    
     def record_state_to_status(self, recordState: str) -> ActivityStatusTypeMapping:
         """
         Maps ElectricEye RecordState to OCSF Status
@@ -257,6 +276,9 @@ class OcsfV110Output(object):
         logger.info("Mapping ASFF to OCSF")
 
         for finding in findings:
+            # Generate metadata.processed_time
+            timeNow = datetime.now().isoformat()
+            procssedTime = self.iso8061_to_epochseconds(timeNow)
 
             # check if the compliance.requirements start with the control frameworks and append the unique ones into a list for compliance.stnadards
             standard = []
@@ -266,7 +288,7 @@ class OcsfV110Output(object):
                     if str(control).startswith(framework) and framework not in standard:
                         standard.append(framework)
 
-            asffToOcsf = self.asff_to_ocsf_normalization(
+            asffToOcsf = self.compliance_finding_ocsf_normalization(
                 severityLabel=finding["Severity"]["Label"],
                 cloudProvider=finding["ProductFields"]["Provider"],
                 complianceStatusLabel=finding["Compliance"]["Status"]
@@ -316,16 +338,18 @@ class OcsfV110Output(object):
                 "metadata": {
                     "uid": finding["Id"],
                     "correlation_uid": finding["GeneratorId"],
-                    "version":"1.1.0",
+                    "log_provider": "ElectricEye",
+                    "logged_time": eventTime,
+                    "original_time": finding["CreatedAt"],
+                    "processed_time": procssedTime,
+                    "version":"1.4.0",
+                    "profiles":["cloud"],
                     "product": {
                         "name":"ElectricEye",
                         "version":"3.0",
                         "url_string":"https://github.com/jonrau1/ElectricEye",
                         "vendor_name":"ElectricEye"
                     },
-                    "profiles":[
-                        "cloud"
-                    ]
                 },
                 "cloud": {
                     "provider": finding["ProductFields"]["Provider"],
@@ -341,8 +365,8 @@ class OcsfV110Output(object):
                     # Cloud Account (Project) UID
                     {
                         "name": "cloud.account.uid",
-                        "type": "Resource UID",
-                        "type_id": 10,
+                        "type": "Account UID",
+                        "type_id": 35,
                         "value": accountId
                     },
                     # Resource UID
@@ -362,7 +386,7 @@ class OcsfV110Output(object):
                     "status_id": asffToOcsf[4]
                 },
                 "finding_info": {
-                    "created_time": self.iso8061_to_epochseconds(finding["CreatedAt"]),
+                    "created_time": eventTime,
                     "desc": finding["Description"],
                     "first_seen_time": self.iso8061_to_epochseconds(finding["FirstObservedAt"]),
                     "modified_time": self.iso8061_to_epochseconds(finding["UpdatedAt"]),
@@ -375,13 +399,15 @@ class OcsfV110Output(object):
                     "desc": finding["Remediation"]["Recommendation"]["Text"],
                     "references": [finding["Remediation"]["Recommendation"]["Url"]]
                 },
-                "resource": {
-                    "data": finding["ProductFields"]["AssetDetails"],
-                    "cloud_partition": partition,
-                    "region": region,
-                    "type": finding["ProductFields"]["AssetService"],
-                    "uid": finding["Resources"][0]["Id"]
-                },
+                "resources": [
+                    {
+                        "data": finding["ProductFields"]["AssetDetails"],
+                        "cloud_partition": partition,
+                        "region": region,
+                        "type": finding["ProductFields"]["AssetService"],
+                        "uid": finding["Resources"][0]["Id"]
+                    }
+                ],
                 "unmapped": {
                     "provider_type": finding["ProductFields"]["ProviderType"],
                     "asset_class": finding["ProductFields"]["AssetClass"],

@@ -18,6 +18,7 @@
 #specific language governing permissions and limitations
 #under the License.
 
+import logging
 import tomli
 import os
 import sys
@@ -29,6 +30,8 @@ import datetime
 from dateutil.parser import parse
 import base64
 import json
+
+logger = logging.getLogger("AwsEc2Auditor")
 
 SHODAN_HOSTS_URL = "https://api.shodan.io/shodan/host/"
 
@@ -175,7 +178,7 @@ def get_shodan_api_key(cache):
     credLocation = data["global"]["credentials_location"]
     shodanCredValue = data["global"]["shodan_api_key_value"]
     if credLocation not in validCredLocations:
-        print(f"Invalid option for [global.credLocation]. Must be one of {str(validCredLocations)}.")
+        logger.error("Invalid option for [global.credLocation]. Must be one of %s.", validCredLocations)
         sys.exit(2)
     if not shodanCredValue:
         apiKey = None
@@ -197,8 +200,8 @@ def get_shodan_api_key(cache):
                     Name=shodanCredValue,
                     WithDecryption=True
                 )["Parameter"]["Value"]
-            except ClientError as e:
-                print(f"Error retrieving API Key from SSM, skipping all Shodan checks, error: {e}")
+            except ClientError as err:
+                logger.warning("Error retrieving API Key from AWS Systems Manager Parameter Store, skipping all Shodan checks, error: %s", err)
                 apiKey = None
 
         # Retrieve the credential from AWS Secrets Manager
@@ -207,8 +210,8 @@ def get_shodan_api_key(cache):
                 apiKey = asm.get_secret_value(
                     SecretId=shodanCredValue,
                 )["SecretString"]
-            except ClientError as e:
-                print(f"Error retrieving API Key from ASM, skipping all Shodan checks, error: {e}")
+            except ClientError as err:
+                logger.warning("Error retrieving API Key from AWS Secrets Manager, skipping all Shodan checks, error: %s", err)
                 apiKey = None
         
     cache["get_shodan_api_key"] = apiKey

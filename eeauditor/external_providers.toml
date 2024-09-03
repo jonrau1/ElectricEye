@@ -232,6 +232,34 @@ title = "ElectricEye Configuration"
 
         salesforce_api_version = "v58.0"
 
+    [credentials.snowflake]
+
+        # Username for your Snowflake Account, this should be a user with the ability to read all tables and views in the default schemas
+        
+        snowflake_username = ""
+
+        # The location (or actual contents) of the Password for the User specified in `snowflake_account_id`
+        # this location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then
+        # the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+
+        snowflake_password_value = ""
+
+        # The Account ID for your Snowflake Account, this is found in the URL when you login to your Snowflake Account, e.g., VULEDAR-MR69420
+
+        snowflake_account_id = ""
+
+        # The name of the warehouse you use for querying data in Snowflake, this should be a warehouse that has the ability to run queries
+
+        snowflake_warehouse_name = ""
+
+        # The Region of your Snowflake Account, this is found in the URL when you login to your Snowflake Account, e.g., us-east-1
+
+        snowflake_region = ""
+
+        # OPTIONAL! The Usernames of "Service Accounts" created in Snowflake, this will optionally exempt these Usernames from being audited against the following checks: snowflake_password_assigned_user_has_mfa_check, snowflake_accountadmins_have_email_check, snowflake_admin_default_role_check, snowflake_logins_without_mfa_check, snowflake_bypass_mfa_review_check
+
+        snowflake_service_account_usernames = []
+
 [outputs]
 
     # ***IMPORTANT*** 
@@ -271,20 +299,6 @@ title = "ElectricEye Configuration"
         # The Port that your PostgreSQL database is running on, defaults to 5432
 
         postgresql_port = 5432
-
-    [outputs.firemon_cloud_defense] # This takes place of the former DisruptOps ("dops") values, but the integration is largely the same
-
-        # Client ID for your Firemon Cloud Defense (formerly known as DisruptOps (dops)) tenant - this location must match 
-        # the value of `global. credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable 
-        # should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
-
-        firemon_cloud_defense_client_id_value = ""
-
-        # API Key for your Firemon Cloud Defense (formerly known as DisruptOps (dops)) tenant - this location must match 
-        # the value of `global. credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable 
-        # should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
-
-        firemon_cloud_defense_api_key_value = ""
 
     [outputs.mongodb] # This unifies the old "docdb" output to account for local MongoDB and AWS DocumentDB
 
@@ -345,7 +359,7 @@ title = "ElectricEye Configuration"
 
         # Batch Size
 
-        amazon_sqs_batch_size = 10 # This must be an integer
+        amazon_sqs_batch_size = 1000 # This must be an integer
 
         # Queue Region
 

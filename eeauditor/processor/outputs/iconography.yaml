@@ -283,3 +283,12 @@
   ImageTag: <img src="https://raw.githubusercontent.com/Azure/Azure-Security-Center/master/.github/images/asc.png">
 - AssetService: Azure Application Insights
   ImageTag: <img src="https://code.benco.io/icon-collection/azure-icons/Application-Insights.svg">
+#############
+# SNOWFLAKE #
+#############
+- AssetService: Snowflake Users
+  ImageTag: <img src="https://iconography.electriceye.lol/Snowflake/snowflake_users2.svg">
+- AssetService: Snowflake Account
+  ImageTag: <img src="https://iconography.electriceye.lol/Snowflake/snowflake_account.svg">
+- AssetService: Snowflake Password Policy
+  ImageTag: <img src="https://iconography.electriceye.lol/Snowflake/snowflake_policy.svg">

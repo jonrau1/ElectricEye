@@ -45,7 +45,7 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 
 ## Workflow
 
-![Architecture](./screenshots/ElectricEyeAnimated.gif)
+![Architecture](./screenshots/electrice_eye_architecture.jpg)
 
 ## Quick Run Down :running: :running:
 
@@ -74,37 +74,39 @@ python3 eeauditor/controller.py --help
 Usage: controller.py [OPTIONS]
 
 Options:
-  -t, --target-provider [AWS|Azure|OCI|GCP|Servicenow|M365|Salesforce]        
-                                  CSP or SaaS Vendor Assessment Target, ensure
-                                  that any -a or -c arg maps to your target   
-                                  provider e.g., -t AWS -a
-                                  Amazon_APGIW_Auditor
-  -a, --auditor-name TEXT         Specify which Auditor you want to run by    
-                                  using its name NOT INCLUDING .py. Defaults  
-                                  to ALL Auditors
-  -c, --check-name TEXT           A specific Check in a specific Auditor you  
+  -t, --target-provider [AWS|Azure|OCI|GCP|Servicenow|M365|Salesforce|Snowflake]
+                                  Public cloud or SaaS assessment target,
+                                  ensure that any -a or -c arg maps to your
+                                  target provider to avoid any errors. e.g.,
+                                  -t AWS -a Amazon_APGIW_Auditor
+  -a, --auditor-name TEXT         Specify which Auditor you want to run by
+                                  using its name NOT INCLUDING .py. . Use the
+                                  --list-checks arg to receive a list.
+                                  Defaults to ALL Auditors
+  -c, --check-name TEXT           A specific Check in a specific Auditor you
                                   want to run, this correlates to the function
-                                  name. Defaults to ALL Checks
-  -d, --delay INTEGER             Time in seconds to sleep between Auditors   
-                                  being ran, defaults to 0
-  -o, --outputs TEXT              A list of Outputs (files, APIs, databases,  
-                                  ChatOps) to send ElectricEye Findings,      
-                                  specify multiple with additional arguments: 
-                                  -o csv -o postgresql -o slack  [default:    
-                                  stdout]
-  --output-file TEXT              For file outputs such as JSON and CSV, the  
-                                  name of the file, DO NOT SPECIFY .file_type 
+                                  name. Use the --list-checks arg to receive a
+                                  list. Defaults to ALL Checks
+  -d, --delay INTEGER             Time in seconds to sleep between Auditors
+                                  being ran, defaults to 0. Use this argument
+                                  to avoid rate limiting
+  -o, --outputs TEXT              A list of Outputs (files, APIs, databases,
+                                  ChatOps) to send ElectricEye Findings,
+                                  specify multiple with additional arguments:
+                                  -o csv -o postgresql -o slack  [default:
+                                  ocsf_stdout]
+  -of, --output-file TEXT         For file outputs such as JSON and CSV, the
+                                  name of the file, DO NOT SPECIFY .file_type
                                   [default: output]
-  --list-options                  Lists all valid Output options
-  --list-checks                   Prints a table of Auditors, Checks, and     
-                                  Check descriptions to stdout - use this for 
-                                  -a or -c args
-  --create-insights               Create AWS Security Hub Insights for
-                                  ElectricEye. This only needs to be done once
-                                  per Account per Region for Security Hub
-  --list-controls                 Lists all ElectricEye Controls (e.g. Check
-                                  Titles) for an Assessment Target
-  --toml-path TEXT                The full path to the TOML file used for
+  -lo, --list-options             Lists all valid Output options
+  -lch, --list-checks             Prints a table of Auditors, Checks, and
+                                  Check descriptions to stdout - use this
+                                  command for help with populating -a (Auditor
+                                  selection) or -c (Check selection) args
+  -lco, --list-controls           Lists all ElectricEye controls - that is to
+                                  say: the Check Titles - for an Assessment
+                                  Target
+  -tp, --toml-path TEXT           The full path to the TOML file used for
                                   configure e.g.,
                                   ~/path/to/mydir/external_providers.toml. If
                                   this value is not provided the default path
@@ -135,11 +137,11 @@ The following Cloud Service Providers are on the Roadmap
 - [For ServiceNow](./docs/setup/Setup_ServiceNow.md)
 - [For Microsoft M365](./docs/setup/Setup_M365.md)
 - [For Salesforce](./docs/setup/Setup_Salesforce.md)
+- [For Snowflake](./docs/setup/Setup_Snowflake.md)
 
 The following SaaS Providers are on the Roadmap
 
 - [For Google Workspaces (*Coming Soon*)](./docs/setup/Setup_Google_Workspaces.md)
-- [For Snowflake (*Coming Soon*)](./docs/setup/Setup_Snowflake.md)
 
 ## Cloud Asset Management (CAM)
 
@@ -150,10 +152,10 @@ For more information on ElectricEye's CAM concept of operations and schema, refe
 In total there are:
 
 - **4** Supported Public CSPs: `AWS`, `GCP`, `OCI`, and `Azure`
-- **3** Supported SaaS Providers: `ServiceNow`, `M365`, and `Salesforce`
-- **1172** ElectricEye Checks
-- **174** Supported CSP & SaaS Asset Components across all Services
-- **131** ElectricEye Auditors
+- **4** Supported SaaS Providers: `ServiceNow`, `M365`, `Salesforce`, and `Snowflake`
+- **1193** ElectricEye Checks
+- **177** Supported CSP & SaaS Asset Components across all Services
+- **133** ElectricEye Auditors
 
 The tables of supported Services and Checks have been migrated to the respective per-Provider setup documentation linked above in [Configuring ElectricEye](#configuring-electriceye).
 

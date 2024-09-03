@@ -22,15 +22,14 @@ import logging
 from os import path
 from functools import partial
 from inspect import getfile
-import sys
 from time import sleep
-from traceback import format_exc
 import json
 from requests import get
 from check_register import CheckRegister
 from cloud_utils import CloudConfig
 from pluginbase import PluginBase
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("EEAuditor")
 
 here = path.abspath(path.dirname(__file__))
@@ -42,9 +41,8 @@ class EEAuditor(object):
     credentials and cross-boundary configurations, and runs Checks and yields results back to controller.py CLI
     """
 
-    def __init__(self, assessmentTarget, tomlPath=None, searchPath=None):
-        # each check must be decorated with the @registry.register_check("cache_name")
-        # to be discovered during plugin loading.
+    def __init__(self, assessmentTarget, args, useToml, tomlPath=None, searchPath=None):
+        # each check must be decorated with the @registry.register_check("cache_name") to be discovered during plugin loading.
         self.registry = CheckRegister()
         self.name = assessmentTarget
         self.plugin_base = PluginBase(package="electriceye")
@@ -54,7 +52,7 @@ class EEAuditor(object):
         # AWS
         if assessmentTarget == "AWS":
             searchPath = "./auditors/aws"
-            utils = CloudConfig(assessmentTarget, tomlPath)
+            utils = CloudConfig(assessmentTarget, tomlPath, useToml, args)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.awsAccountTargets = utils.awsAccountTargets
             self.awsRegionsSelection = utils.awsRegionsSelection
@@ -62,13 +60,13 @@ class EEAuditor(object):
         # GCP
         if assessmentTarget == "GCP":
             searchPath = "./auditors/gcp"
-            utils = CloudConfig(assessmentTarget, tomlPath)
+            utils = CloudConfig(assessmentTarget, tomlPath, useToml, args)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.gcpProjectIds = utils.gcp_project_ids
         # OCI
         if assessmentTarget == "OCI":
             searchPath = "./auditors/oci"
-            utils = CloudConfig(assessmentTarget, tomlPath)
+            utils = CloudConfig(assessmentTarget, tomlPath, useToml, args)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.ociTenancyId = utils.ociTenancyId
             self.ociUserId = utils.ociUserId
@@ -78,14 +76,14 @@ class EEAuditor(object):
         # Azure
         if assessmentTarget == "Azure":
             searchPath = "./auditors/azure"
-            utils = CloudConfig(assessmentTarget, tomlPath)
+            utils = CloudConfig(assessmentTarget, tomlPath, useToml, args)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.azureSubscriptions = utils.azureSubscriptions
             self.azureCredentials = utils.azureCredentials
         # Alibaba
         if assessmentTarget == "Alibaba":
             searchPath = "./auditors/alibabacloud"
-            utils = CloudConfig(assessmentTarget, tomlPath)
+            utils = CloudConfig(assessmentTarget, tomlPath, useToml, args)
         
         ###################################
         # SOFTWARE-AS-A-SERVICE PROVIDERS #
@@ -93,11 +91,11 @@ class EEAuditor(object):
         # Servicenow
         if assessmentTarget == "Servicenow":
             searchPath = "./auditors/servicenow"
-            utils = CloudConfig(assessmentTarget, tomlPath)
+            utils = CloudConfig(assessmentTarget, tomlPath, useToml, args)
         # M365
         if assessmentTarget == "M365":
             searchPath = "./auditors/m365"
-            utils = CloudConfig(assessmentTarget, tomlPath)
+            utils = CloudConfig(assessmentTarget, tomlPath, useToml, args)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.m365TenantLocation = utils.m365TenantLocation
             self.m365ClientId = utils.m365ClientId
@@ -106,7 +104,8 @@ class EEAuditor(object):
         # Salesforce
         if assessmentTarget == "Salesforce":
             searchPath = "./auditors/salesforce"
-            utils = CloudConfig(assessmentTarget, tomlPath)
+            utils = CloudConfig(assessmentTarget, tomlPath, useToml, args)
+            # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.salesforceAppClientId = utils.salesforceAppClientId
             self.salesforceAppClientSecret = utils.salesforceAppClientSecret
             self.salesforceApiUsername = utils.salesforceApiUsername
@@ -116,11 +115,17 @@ class EEAuditor(object):
         # Snowflake
         if assessmentTarget == "Snowflake":
             searchPath = "./auditors/snowflake"
-            utils = CloudConfig(assessmentTarget, tomlPath)
+            utils = CloudConfig(assessmentTarget, tomlPath, useToml, args)
+            # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
+            self.snowflakeAccountId = utils.snowflakeAccountId
+            self.snowflakeRegion = utils.snowflakeRegion
+            self.snowflakeCursor = utils.snowflakeCursor
+            self.snowflakeConnection = utils.snowflakeConnection
+            self.serviceAccountExemptions = utils.serviceAccountExemptions
         # Google Workspace
         if assessmentTarget == "GoogleWorkspace":
             searchPath = "./auditors/google_workspace"
-            utils = CloudConfig(assessmentTarget, tomlPath)
+            utils = CloudConfig(assessmentTarget, tomlPath, useToml, args)
 
         # Search path for Auditors
         self.source = self.plugin_base.make_plugin_source(
@@ -221,6 +226,7 @@ class EEAuditor(object):
         """
         Runs AWS Auditors across all TOML-specified Accounts and Regions in a specific Partition
         """
+        import boto3
 
         # "Global" Auditors that should only need to be ran once per Account
         globalAuditors = ["cloudfront", "globalaccelerator", "iam", "health", "support", "account", "s3"]
@@ -233,28 +239,36 @@ class EEAuditor(object):
         )
 
         for account in self.awsAccountTargets:
-
             # This list will contain the "global" services so they're not run multiple times
             globalAuditorsCompleted = []
 
             for region in self.awsRegionsSelection:
+                # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
+                partition = CloudConfig.check_aws_partition(region)
+                # attempt to use current session creds
+                if self.electricEyeRoleName is None or self.electricEyeRoleName == "":
+                    session = boto3.Session(region_name=region)
+                    logger.info(
+                        "Using current session credentials for Account %s in region %s",
+                        account, region
+                    )
+                # Setup Boto3 Session with STS AssumeRole
+                else:    
+                    session = CloudConfig.create_aws_session(
+                        account,
+                        partition,
+                        region,
+                        self.electricEyeRoleName
+                    )
+                    logger.info(
+                        "Using STS AssumeRole credentials for Account %s in region %s",
+                        account, region
+                    )
+
                 for serviceName, checkList in self.registry.checks.items():
                     # Pass the Cache at the "serviceName" level aka Plugin
                     auditorCache = {}
-                    # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
-                    partition = CloudConfig.check_aws_partition(region)
-                    # Setup Boto3 Session with STS AssumeRole
-                    if self.electricEyeRoleName is not None:
-                        session = CloudConfig.create_aws_session(
-                            account,
-                            partition,
-                            region,
-                            self.electricEyeRoleName
-                        )
-                    # attempt to use current session creds
-                    else:
-                        import boto3
-                        session = boto3.Session(region_name=region)
+
                     # Check service availability, not always accurate
                     if self.check_service_endpoint_availability(endpointData, partition, serviceName, region) is False:
                         logger.info(
@@ -304,22 +318,23 @@ class EEAuditor(object):
                         ):
                             try:
                                 logger.info(
-                                    "Executing Check %s for Account %s in region %s",
+                                    "Executing AWS Check %s for Account %s in region %s",
                                     checkName, account, region
                                 )
+
                                 for finding in check(
                                     cache=auditorCache,
                                     session=session,
                                     awsAccountId=account,
                                     awsRegion=region,
-                                    awsPartition=partition,
+                                    awsPartition=partition
                                 ):
                                     if finding is not None:
                                         yield finding
-                            except Exception:
-                                logger.warn(
-                                    "Failed to execute check %s with traceback %s",
-                                    checkName, format_exc()
+                            except Exception as e:
+                                logger.warning(
+                                    "Failed to execute check %s with exception: %s",
+                                    checkName, e
                                 )
                         
             # optional sleep if specified - defaults to 0 seconds
@@ -360,10 +375,10 @@ class EEAuditor(object):
                             ):
                                 if finding is not None:
                                     yield finding
-                        except Exception:
-                            logger.warn(
-                                "Failed to execute check %s with traceback %s",
-                                checkName, format_exc()
+                        except Exception as e:
+                            logger.warning(
+                                "Failed to execute check %s with exception: %s",
+                                checkName, e
                             )
                 # optional sleep if specified - defaults to 0 seconds
                 sleep(delay)
@@ -377,6 +392,8 @@ class EEAuditor(object):
         region = "us-placeholder-1"
         account = "000000000000"
         partition = "not-aws"
+
+        logger.info("Oracle Cloud Infrastructure assessment has started.")
 
         for serviceName, checkList in self.registry.checks.items():
             # Pass the Cache at the "serviceName" level aka Plugin
@@ -406,10 +423,10 @@ class EEAuditor(object):
                         ):
                             if finding is not None:
                                 yield finding
-                    except Exception:
-                        logger.warn(
-                            "Failed to execute check %s with traceback %s",
-                            checkName, format_exc()
+                    except Exception as e:
+                        logger.warning(
+                            "Failed to execute check %s with exception: %s",
+                            checkName, e
                         )
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
@@ -423,6 +440,8 @@ class EEAuditor(object):
         region = "us-placeholder-1"
         account = "000000000000"
         partition = "not-aws"
+
+        logger.info("Microsoft Azure assessment has started.")
 
         for azSubId in self.azureSubscriptions:
             for serviceName, checkList in self.registry.checks.items():
@@ -450,10 +469,10 @@ class EEAuditor(object):
                             ):
                                 if finding is not None:
                                     yield finding
-                        except Exception:
-                            logger.warn(
-                                "Failed to execute check %s with traceback %s",
-                                checkName, format_exc()
+                        except Exception as e:
+                            logger.warning(
+                                "Failed to execute check %s with exception: %s",
+                                checkName, e
                             )
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
@@ -467,6 +486,8 @@ class EEAuditor(object):
         region = "us-placeholder-1"
         account = "000000000000"
         partition = "not-aws"
+
+        logger.info("M365 assessment has started.")
 
         for serviceName, checkList in self.registry.checks.items():
             # Pass the Cache at the "serviceName" level aka Plugin
@@ -495,10 +516,10 @@ class EEAuditor(object):
                         ):
                             if finding is not None:
                                 yield finding
-                    except Exception:
-                        logger.warn(
-                            "Failed to execute check %s with traceback %s",
-                            checkName, format_exc()
+                    except Exception as e:
+                        logger.warning(
+                            "Failed to execute check %s with exception: %s",
+                            checkName, e
                         )
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
@@ -514,6 +535,8 @@ class EEAuditor(object):
         account = "000000000000"
         partition = "not-aws"
 
+        logger.info("Salesforce assessment has started.")
+
         for serviceName, checkList in self.registry.checks.items():
             # Pass the Cache at the "serviceName" level aka Plugin
             auditorCache = {}
@@ -526,7 +549,7 @@ class EEAuditor(object):
                 ):
                     try:
                         logger.info(
-                            "Executing Check %s for Salesforce instance",
+                            "Executing Check %s for Salesforce",
                             checkName
                         )
                         for finding in check(
@@ -543,13 +566,69 @@ class EEAuditor(object):
                         ):
                             if finding is not None:
                                 yield finding
-                    except Exception:
-                        logger.warn(
-                            "Failed to execute check %s with traceback %s",
-                            checkName, format_exc()
+                    except Exception as e:
+                        logger.warning(
+                            "Failed to execute check %s with exception: %s",
+                            checkName, e
                         )
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
+
+    # Called from eeauditor/controller.py run_auditor()
+    def run_snowflake_checks(self, pluginName=None, delay=0):
+        """
+        Runs Snowflake Auditors using Username and Password for a given Warehouse
+        """
+        # hardcode the region and account for non-AWS checks
+        region = "us-placeholder-1"
+        account = "000000000000"
+        partition = "not-aws"
+
+        logger.info("Snowflake assessment has started.")
+
+        for serviceName, checkList in self.registry.checks.items():
+            # Pass the Cache at the "serviceName" level aka Plugin
+            auditorCache = {}
+            for checkName, check in checkList.items():
+                # if a specific check is requested, only run that one check
+                if (
+                    not pluginName
+                    or pluginName
+                    and pluginName == checkName
+                ):
+                    try:
+                        logger.info(
+                            "Executing Check %s for Snowflake",
+                            checkName
+                        )
+                        for finding in check(
+                            cache=auditorCache,
+                            awsAccountId=account,
+                            awsRegion=region,
+                            awsPartition=partition,
+                            snowflakeAccountId=self.snowflakeAccountId,
+                            snowflakeRegion=self.snowflakeRegion,
+                            snowflakeCursor=self.snowflakeCursor,
+                            serviceAccountExemptions=self.serviceAccountExemptions
+                        ):
+                            if finding is not None:
+                                yield finding
+                    except Exception as e:
+                        logger.warning(
+                            "Failed to execute check %s with exception: %s",
+                            checkName, e
+                        )
+            # optional sleep if specified - defaults to 0 seconds
+            sleep(delay)
+
+        # close the connection to the Snowflake Warehouse
+        curClose = self.snowflakeCursor.close()
+        connClose = self.snowflakeConnection.close()
+
+        if curClose is True and connClose is None:
+            logger.info("Snowflake connection and cursor closed.")
+        else:
+            logger.warning("Failed to close Snowflake connection and/or cursor.")
 
     # Called from eeauditor/controller.py run_auditor()
     def run_non_aws_checks(self, pluginName=None, delay=0):
@@ -584,10 +663,10 @@ class EEAuditor(object):
                         ):
                             if finding is not None:
                                 yield finding
-                    except Exception:
-                        logger.warn(
-                            "Failed to execute check %s with traceback %s",
-                            checkName, format_exc()
+                    except Exception as e:
+                        logger.warning(
+                            "Failed to execute check %s with exception: %s",
+                            checkName, e
                         )
             # optional sleep if specified - defaults to 0 seconds
             sleep(delay)
@@ -630,5 +709,5 @@ class EEAuditor(object):
                 controlPrinter.append(description)
 
         print(json.dumps(controlPrinter,indent=4))
-
+        
 # EOF
