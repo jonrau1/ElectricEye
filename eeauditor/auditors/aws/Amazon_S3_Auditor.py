@@ -779,12 +779,14 @@ def aws_s3_bucket_policy_check(cache: dict, session, awsAccountId: str, awsRegio
         assetB64 = base64.b64encode(assetJson)
         bucketName = buckets["Name"]
         s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
+        
+        bucketHasPolicy = True
         # Check to see if there is a policy at all
         try:
             s3.get_bucket_policy(Bucket=bucketName)
-            bucketHasPolicy = True
         except ClientError:
             bucketHasPolicy = False
+        
         # this is a failing check
         if bucketHasPolicy is False:
             finding = {

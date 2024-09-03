@@ -23,8 +23,9 @@ from os import path
 from functools import partial
 from inspect import getfile
 from time import sleep
-from traceback import format_exc
 import json
+import boto3
+from traceback import format_exc
 from requests import get
 from check_register import CheckRegister
 from cloud_utils import CloudConfig
@@ -240,28 +241,36 @@ class EEAuditor(object):
         )
 
         for account in self.awsAccountTargets:
-
             # This list will contain the "global" services so they're not run multiple times
             globalAuditorsCompleted = []
 
             for region in self.awsRegionsSelection:
+                # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
+                partition = CloudConfig.check_aws_partition(region)
+                # attempt to use current session creds
+                if self.electricEyeRoleName is None or self.electricEyeRoleName == "":
+                    session = boto3.Session(region_name=region)
+                    logger.info(
+                        "Using current session credentials for Account %s in region %s",
+                        account, region
+                    )
+                # Setup Boto3 Session with STS AssumeRole
+                else:    
+                    session = CloudConfig.create_aws_session(
+                        account,
+                        partition,
+                        region,
+                        self.electricEyeRoleName
+                    )
+                    logger.info(
+                        "Using STS AssumeRole credentials for Account %s in region %s",
+                        account, region
+                    )
+
                 for serviceName, checkList in self.registry.checks.items():
                     # Pass the Cache at the "serviceName" level aka Plugin
                     auditorCache = {}
-                    # Dervice the Partition ID from the AWS Region - needed for ASFF & service availability checks
-                    partition = CloudConfig.check_aws_partition(region)
-                    # Setup Boto3 Session with STS AssumeRole
-                    if self.electricEyeRoleName is not None:
-                        session = CloudConfig.create_aws_session(
-                            account,
-                            partition,
-                            region,
-                            self.electricEyeRoleName
-                        )
-                    # attempt to use current session creds
-                    else:
-                        import boto3
-                        session = boto3.Session(region_name=region)
+
                     # Check service availability, not always accurate
                     if self.check_service_endpoint_availability(endpointData, partition, serviceName, region) is False:
                         logger.info(
@@ -310,22 +319,29 @@ class EEAuditor(object):
                             and pluginName == checkName
                         ):
                             try:
+                                if session is None:
+                                    raise ValueError("Session is None, cannot run checks.")
+
                                 logger.info(
                                     "Executing Check %s for Account %s in region %s",
                                     checkName, account, region
                                 )
-                                for finding in check(
+
+                                checkEval = check(
                                     cache=auditorCache,
                                     session=session,
                                     awsAccountId=account,
                                     awsRegion=region,
-                                    awsPartition=partition,
-                                ):
+                                    awsPartition=partition
+                                )
+                                for finding in checkEval:
                                     if finding is not None:
                                         yield finding
+                                    else:
+                                        continue
                             except Exception:
-                                logger.warn(
-                                    "Failed to execute check %s with traceback %s",
+                                logger.warning(
+                                    "Failed to execute check %s with exception: %s",
                                     checkName, format_exc()
                                 )
                         

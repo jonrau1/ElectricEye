@@ -25,14 +25,14 @@ from processor.main import get_providers, process_findings
 from os import environ
 
 def print_controls(assessmentTarget, args, useToml, auditorName=None, tomlPath=None):
-    app = EEAuditor(assessmentTarget, args, useToml, tomlPath, )
+    app = EEAuditor(assessmentTarget, args, useToml, tomlPath)
 
     app.load_plugins(auditorName)
         
     app.print_controls_json()
 
 def print_checks(assessmentTarget, args, useToml, auditorName=None, tomlPath=None):
-    app = EEAuditor(assessmentTarget, args, useToml, tomlPath, )
+    app = EEAuditor(assessmentTarget, args, useToml, tomlPath)
 
     app.load_plugins(auditorName)
         
@@ -42,7 +42,7 @@ def run_auditor(assessmentTarget, args, useToml, auditorName=None, pluginName=No
     if not outputs:
         outputs = ["stdout"]
     
-    app = EEAuditor(assessmentTarget, args, useToml, tomlPath, )
+    app = EEAuditor(assessmentTarget, args, useToml, tomlPath)
 
     app.load_plugins(auditorName)
     # Per-target calls - ensure you use the right run_*_checks*() function
@@ -68,8 +68,8 @@ def run_auditor(assessmentTarget, args, useToml, auditorName=None, pluginName=No
     # Snowflake
     if assessmentTarget == "Snowflake":
         findings = list(app.run_snowflake_checks(pluginName=pluginName, delay=delay))
-    # ServiceNow, and some other shit, probably
-    else:
+    # ServiceNow
+    if assessmentTarget == "ServiceNow":
         findings = list(app.run_non_aws_checks(pluginName=pluginName, delay=delay))
 
     print(f"Done running Checks for {assessmentTarget}")
@@ -184,13 +184,13 @@ def run_auditor(assessmentTarget, args, useToml, auditorName=None, pluginName=No
         ],
         case_sensitive=True
     ),
-    help="Set to False to disable the use of the TOML file for external providers, defaults to True. THIS IS AN EXPERIMENTAL FEATURE"
+    help="Set to False to disable the use of the TOML file for external providers, defaults to True. THIS IS AN EXPERIMENTAL FEATURE!"
 )
 # EXPERIMENTAL: Supply arguments in a stringified dictionary format
 @click.option(
     "--args",
     default=None,
-    help="""Supply arguments in a dictionary format, e.g., '{"credentials_location": "CONFIG_FILE","snowflake_username": "ELECTRIC_EYE"}'. THIS IS AN EXPERIMENTAL FEATURE"""
+    help="Supply arguments in a stringified dictionary format, e.g., '{\"credentials_location\": \"CONFIG_FILE\", \"snowflake_username\": \"ELECTRIC_EYE\"}'. THIS IS AN EXPERIMENTAL FEATURE!"
 )
 
 def main(

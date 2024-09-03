@@ -879,7 +879,61 @@ class CloudConfig(object):
                 "The credentials_location argument was not provided: %s", ke
             )
             sys.exit(2)
+        
+        # AWS
+        if assessmentTarget == "AWS":
+            sts = boto3.client("sts")
+            # First process the global "aws_multi_account_target_type" and "aws_account_targets" args
+            try:
+                awsMultiAccountTargetType = str(args.get("aws_multi_account_target_type"))
+                awsAccountTargets = list(args.get("aws_account_targets"))
+                awsRegionsSelection = list(args.get("aws_regions_selection"))
+                electricEyeRoleName = args.get("aws_electric_eye_iam_role_name")
+            except KeyError as ke:
+                logger.error(
+                    "One of the required global AWS arguments was not provided: %s", ke
+                )
+                sys.exit(2)
+            # Process account targets based on the multi-account target type
+            if awsMultiAccountTargetType == "Accounts":
+                if not awsAccountTargets:
+                    self.awsAccountTargets = [sts.get_caller_identity()["Account"]]
+                else:
+                    self.awsAccountTargets = awsAccountTargets
+            if awsMultiAccountTargetType == "OU":
+                if not awsAccountTargets:
+                    logger.error("OU was specified but targets were not specified.")
+                    sys.exit(2)
+                # Regex to check for Valid OUs
+                ouIdRegex = compile(r"^ou-[0-9a-z]{4,32}-[a-z0-9]{8,32}$")
+                for ou in awsAccountTargets:
+                    if not ouIdRegex.match(ou):
+                        logger.error(f"Invalid Organizational Unit ID {ou}.")
+                        sys.exit(2)
+                self.awsAccountTargets = self.get_aws_accounts_from_organizational_units(awsAccountTargets)
+            if awsMultiAccountTargetType == "Organization":
+                self.awsAccountTargets = self.get_aws_accounts_from_organization()
+            
+            # Process aws_regions_selection
+            awsRegions = self.get_aws_regions()
+            if not awsRegionsSelection:
+                self.awsRegionsSelection = [boto3.Session().region_name]
+            else:
+                if "All" in awsRegionsSelection or "all" in awsRegionsSelection:
+                    self.awsRegionsSelection = awsRegions
+                else:
+                    # Validation check
+                    self.awsRegionsSelection = [a for a in awsRegionsSelection if a in awsRegions]            
+            # Process ["aws_electric_eye_iam_role_name"]
+            if electricEyeRoleName is None or electricEyeRoleName == "":
+                logger.warning(
+                    "A value for ['aws_electric_eye_iam_role_name'] was not provided. Will attempt to use current session credentials, this will likely fail if you're attempting to assess another AWS account."
+                )
+                self.electricEyeRoleName = None
 
+            self.electricEyeRoleName = electricEyeRoleName
+
+        # Snowflake
         if assessmentTarget == "Snowflake":
             try:
                 self.snowflakeUsername = str(args.get("snowflake_username"))
