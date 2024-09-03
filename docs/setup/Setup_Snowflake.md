@@ -52,6 +52,8 @@ Now that you have setup your Role, Grants, and new "service account" User - you 
 
 ## Configuring TOML
 
+> **EXPERIMENTAL**: Using the arguments `-ut` False and `--args` you can provide an escaped JSON object containing the below values instead of using the TOML. For example: `python .\eeauditor\controller.py -t Snowflake -ut False --args '{\"credentials_location\": \"CONFIG_FILE\",\"snowflake_username\": \"EXAMPLE\",\"snowflake_password_value\" : \"EXAMPLE\",\"snowflake_account_id\": \"EXAMPLE\",\"snowflake_warehouse_name\": \"EXAMPLE\",\"snowflake_region\": \"EXAMPLE\",\"snowflake_service_account_usernames\": [\"EXAMPLE\", \"EXAMPLE\"]}'`
+
 This section explains how to configure ElectricEye using a TOML configuration file. The configuration file contains settings for credentials, regions, accounts, and global settings and is located [here](../../eeauditor/external_providers.toml).
 
 To configure the TOML file, you need to modify the values of the variables in the `[global]`, `[regions_and_accounts.oci]`, and `[credentials.oci]` sections of the file. Here's an overview of the key variables you need to configure:
@@ -106,27 +108,27 @@ pip3 install -r requirements.txt
 pip3 install --user -r requirements.txt
 ```
 
-4. Use the Controller to conduct different kinds of Assessments.
+4. Use the Controller to conduct different kinds of Assessments. Ensure you use the `-tp` / `--toml-path` argument if you have a custom TOML configuration file.
 
-    - 4A. Retrieve all options for the Controller.
+- 4A. Retrieve all options for the Controller.
 
     ```bash
     python3 eeauditor/controller.py --help
     ```
 
-    - 4B. Evaluate your entire Snowflake Account.
+- 4B. Evaluate your entire Snowflake Account.
 
     ```bash
     python3 eeauditor/controller.py -t Snowflake
     ```
 
-    - 4C. Evaluate your Snowflake environment against a specifc Auditor (runs all Checks within the Auditor).
+- 4C. Evaluate your Snowflake environment against a specifc Auditor (runs all Checks within the Auditor).
 
     ```bash
     python3 eeauditor/controller.py -t Snowflake -a Snowflake_Account_Auditor
     ```
 
-    - 4D. Evaluate your Snowflake environment against a specific Check within any Auditor, it is ***not required*** to specify the Auditor name as well. The below examples runs the "[Snowflake.Account.9] Snowflake Accounts should configure a password policy" check.
+- 4D. Evaluate your Snowflake environment against a specific Check within any Auditor, it is ***not required*** to specify the Auditor name as well. The below examples runs the "[Snowflake.Account.9] Snowflake Accounts should configure a password policy" check.
 
     ```bash
     python3 eeauditor/controller.py -t Snowflake -c snowflake_account_password_policy_check

@@ -36,6 +36,8 @@ The easiest way to set up this Role and permissions is either creating a StackSe
 
 ## Configuring TOML
 
+> **EXPERIMENTAL**: Using the arguments `-ut` False and `--args` you can provide an escaped JSON object containing the below values instead of using the TOML. For example: `python .\eeauditor\controller.py -ut False --args '{\"credentials_location\": \"CONFIG_FILE\",\"aws_multi_account_target_type\": \"Accounts\",\"aws_account_targets\": [],\"aws_regions_selection\": [],\"aws_electric_eye_iam_role_name\": \"\"}'` will evaluate your current Region and Account for AWS.
+
 This section explains how to configure ElectricEye using a TOML configuration file. The configuration file contains settings for credentials, regions, accounts, and global settings and is located [here](../../eeauditor/external_providers.toml).
 
 To configure the TOML file, you need to modify the values of the variables in the `[global]` and `[regions_and_accounts.aws]` sections of the file. Here's an overview of the key variables you need to configure:
@@ -112,25 +114,25 @@ pip3 install --user -r requirements.txt
 
 5. Use the Controller to conduct different kinds of Assessments.
 
-    - 5A. Retrieve all options for the Controller.
+- 5A. Retrieve all options for the Controller.
 
     ```bash
     python3 eeauditor/controller.py --help
     ```
 
-    - 5B. Evaluate your entire AWS environment.
+- 5B. Evaluate your entire AWS environment.
 
     ```bash
     python3 eeauditor/controller.py -t AWS
     ```
 
-    - 5C. Evaluate your AWS environment against a specifc Auditor (runs all Checks within the Auditor).
+- 5C. Evaluate your AWS environment against a specifc Auditor (runs all Checks within the Auditor).
 
     ```bash
     python3 eeauditor/controller.py -t AWS -a AWS_IAM_Auditor
     ```
 
-    - 5D. Evaluate your AWS environment against a specific Check within any Auditor, it is ***not required*** to specify the Auditor name as well. The below examples runs the `[Athena.1] Athena workgroups should be configured to enforce query result encryption` check.
+- 5D. Evaluate your AWS environment against a specific Check within any Auditor, it is ***not required*** to specify the Auditor name as well. The below examples runs the `[Athena.1] Athena workgroups should be configured to enforce query result encryption` check.
 
     ```bash
     python3 eeauditor/controller.py -t AWS -c athena_workgroup_encryption_check
