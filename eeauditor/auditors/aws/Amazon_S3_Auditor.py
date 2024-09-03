@@ -1015,6 +1015,7 @@ def aws_s3_bucket_access_logging_check(cache: dict, session, awsAccountId: str, 
         assetB64 = base64.b64encode(assetJson)
         bucketName = buckets["Name"]
         s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
+        
         # attempt to get server access logging
         try:
             s3.get_bucket_logging(Bucket=bucketName)["LoggingEnabled"]
@@ -1023,6 +1024,7 @@ def aws_s3_bucket_access_logging_check(cache: dict, session, awsAccountId: str, 
             bucketServerLogging = False
         except KeyError:
             bucketServerLogging = False
+        
         # this is a passing check
         if bucketServerLogging is True:
             finding = {
@@ -1224,6 +1226,7 @@ def s3_account_level_block(cache: dict, session, awsAccountId: str, awsRegion: s
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(blocker,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
+        
         # If they're all True it's good
         if (
             blocker["BlockPublicAcls"]
@@ -1234,7 +1237,7 @@ def s3_account_level_block(cache: dict, session, awsAccountId: str, awsRegion: s
             accountPublicBlock = True
         else:
             accountPublicBlock = False
-    except Exception:
+    except ClientError or Exception:
         accountPublicBlock = False
         assetB64 = None
 
@@ -1486,7 +1489,7 @@ def aws_s3_bucket_deny_http_access_check(cache: dict, session, awsAccountId: str
             blockHttpObjectAccess = False
         
         # This is a failing check
-        if blockHttpObjectAccess is not True:
+        if blockHttpObjectAccess is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{s3Arn}/s3-bucket-block-insecure-http-access-check",

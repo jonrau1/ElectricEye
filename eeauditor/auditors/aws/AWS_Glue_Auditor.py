@@ -18,10 +18,15 @@
 #specific language governing permissions and limitations
 #under the License.
 
+import logging
 import datetime
 from check_register import CheckRegister
+from botocore.exceptions import ClientError
 import base64
 import json
+
+logging.getLogger().setLevel(logging.INFO)
+logger = logging.getLogger("AwsGlueAuditor")
 
 registry = CheckRegister()
 
@@ -51,23 +56,33 @@ def get_data_catalog_encryption_settings(cache, session):
 def crawler_s3_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Glue.1] AWS Glue crawler security configurations should enable Amazon S3 encryption"""
     glue = session.client("glue")
-    crawler = list_crawlers(cache, session)
-    myCrawlers = crawler["CrawlerNames"]
-    for crawlers in myCrawlers:
-        crawlerName = str(crawlers)
+    crawlers = list_crawlers(cache, session)["CrawlerNames"]
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+
+    for crawler in crawlers:
+        crawlerName = crawler
         crawlerArn = f"arn:{awsPartition}:glue:{awsRegion}:{awsAccountId}:crawler/{crawlerName}"
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        response = glue.get_crawler(Name=crawlerName)
+        response = glue.get_crawler(Name=crawler)
+
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
+        
+        crawlerS3Encryption = True
         try:
             sec = glue.get_security_configuration(Name=response["Crawler"]["CrawlerSecurityConfiguration"])
-            s3EncryptionCheck = str(sec["SecurityConfiguration"]["EncryptionConfiguration"]["S3Encryption"][0]["S3EncryptionMode"])
-        except KeyError:
-            s3EncryptionCheck = "DISABLED"
-        if s3EncryptionCheck == "DISABLED":
+            sec["SecurityConfiguration"]["EncryptionConfiguration"]["S3Encryption"][0]["S3EncryptionMode"]
+        except ClientError as ce:
+            crawlerS3Encryption = False
+            logger.warning("Failed to get security configuration for crawler %s: %s", crawler, ce)
+        except KeyError as ke:
+            crawlerS3Encryption = False
+            logger.warning("Failed to get security configuration for crawler %s: %s", crawler, ke)
+
+
+        # this is a failing check
+        if crawlerS3Encryption is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": crawlerArn + "/glue-crawler-s3-encryption-check",
@@ -81,7 +96,7 @@ def crawler_s3_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "HIGH"},
+                "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[Glue.1] AWS Glue crawler security configurations should enable Amazon S3 encryption",
                 "Description": "AWS Glue crawler "
