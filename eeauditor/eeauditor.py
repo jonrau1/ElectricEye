@@ -24,8 +24,6 @@ from functools import partial
 from inspect import getfile
 from time import sleep
 import json
-import boto3
-from traceback import format_exc
 from requests import get
 from check_register import CheckRegister
 from cloud_utils import CloudConfig
@@ -229,6 +227,7 @@ class EEAuditor(object):
         """
         Runs AWS Auditors across all TOML-specified Accounts and Regions in a specific Partition
         """
+        import boto3
 
         # "Global" Auditors that should only need to be ran once per Account
         globalAuditors = ["cloudfront", "globalaccelerator", "iam", "health", "support", "account", "s3"]
@@ -319,30 +318,24 @@ class EEAuditor(object):
                             and pluginName == checkName
                         ):
                             try:
-                                if session is None:
-                                    raise ValueError("Session is None, cannot run checks.")
-
                                 logger.info(
-                                    "Executing Check %s for Account %s in region %s",
+                                    "Executing AWS Check %s for Account %s in region %s",
                                     checkName, account, region
                                 )
 
-                                checkEval = check(
+                                for finding in check(
                                     cache=auditorCache,
                                     session=session,
                                     awsAccountId=account,
                                     awsRegion=region,
                                     awsPartition=partition
-                                )
-                                for finding in checkEval:
+                                ):
                                     if finding is not None:
                                         yield finding
-                                    else:
-                                        continue
-                            except Exception:
+                            except Exception as e:
                                 logger.warning(
                                     "Failed to execute check %s with exception: %s",
-                                    checkName, format_exc()
+                                    checkName, e
                                 )
                         
             # optional sleep if specified - defaults to 0 seconds
