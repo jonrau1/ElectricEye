@@ -42,8 +42,7 @@ class EEAuditor(object):
     """
 
     def __init__(self, assessmentTarget, args, useToml, tomlPath=None, searchPath=None):
-        # each check must be decorated with the @registry.register_check("cache_name")
-        # to be discovered during plugin loading.
+        # each check must be decorated with the @registry.register_check("cache_name") to be discovered during plugin loading.
         self.registry = CheckRegister()
         self.name = assessmentTarget
         self.plugin_base = PluginBase(package="electriceye")
