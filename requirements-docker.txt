@@ -5,7 +5,7 @@ detect-secrets==1.5.0
 google-api-python-client>=2.88.0
 oci>=2.104.0
 pluginbase==1.0.1
-psycopg2-binary<=2.9.9
+psycopg2-binary<=2.9.10
 pymongo>=4.6.1
 pysnow>=0.7.17
 python3-nmap>=1.6.0
