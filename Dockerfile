@@ -21,7 +21,7 @@
 # latest hash as of 27 AUG 2024 - Alpine 3.20.2
 # https://hub.docker.com/layers/library/alpine/3.20.2/images/sha256-eddacbc7e24bf8799a4ed3cdcfa50d4b88a323695ad80f317b6629883b2c2a78?context=explore
 # use as builder image to pull in required deps
-FROM alpine@sha256:beefdbd8a1da6d2915566fde36db9db0b524eb737fc57cd1367effd16dc0d06d AS builder
+FROM alpine@sha256:21dc6063fd678b478f57c0e13f47560d0ea4eeba26dfc947b2a4f81f686b9f45 AS builder
 
 ENV PYTHONUNBUFFERED=1
 
@@ -42,7 +42,7 @@ RUN \
 
 # latest hash as of 27 AUG 2024 - Alpine 3.20.2
 # https://hub.docker.com/layers/library/alpine/3.20.2/images/sha256-eddacbc7e24bf8799a4ed3cdcfa50d4b88a323695ad80f317b6629883b2c2a78?context=explore
-FROM alpine@sha256:beefdbd8a1da6d2915566fde36db9db0b524eb737fc57cd1367effd16dc0d06d as electriceye
+FROM alpine@sha256:21dc6063fd678b478f57c0e13f47560d0ea4eeba26dfc947b2a4f81f686b9f45 as electriceye
 
 COPY --from=builder /usr /usr
 
