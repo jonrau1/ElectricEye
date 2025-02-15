@@ -22,7 +22,7 @@ To configure the TOML file, you need to modify the values of the variables in th
 
 - `gcp_project_ids`: Set this variable to specify a list of GCP Project IDs, ensure you only specify the GCP Projects which the Service Account specified in `gcp_service_account_json_payload_value` has access to.
 
-- `gcp_service_account_json_payload_value`: This variable is used to specify the contents of the Google Cloud Platform (GCP) service account key JSON file that ElectricEye should use to authenticate to GCP. The contents of the JSON file should be provided as a string, and the entire string should be assigned to the `gcp_service_account_json_payload_value` setting.
+- `gcp_service_account_json_payload_value`: This variable is used to specify the contents of the Google Cloud Platform (GCP) service account key JSON file that ElectricEye should use to authenticate to GCP. If `credentials_location` is set to `CONFIG_FILE` you should paste the entire contents of the Service Account JSON within triple single-quotes (`'''`) otherwise the newline characters (`\n`) will cause an issue within the TOML.
 
 It's important to note that this setting is a sensitive credential, and as such, its value should be stored in a secure manner that matches the location specified in the `[global]` section's `credentials_location` setting. For example, if `credentials_location` is set to `"AWS_SSM"`, then the gcp_service_account_json_payload_value should be the name of an AWS Systems Manager Parameter Store SecureString parameter that contains the contents of the GCP service account key JSON file.
 

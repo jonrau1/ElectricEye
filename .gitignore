@@ -12,3 +12,4 @@ eeauditor/processor/outputs/*.html
 LOCAL_external_providers.toml
 output.json
 output_ocsf_v1-4-0_events.json
+gcp_cred.json

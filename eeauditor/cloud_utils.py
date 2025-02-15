@@ -126,7 +126,7 @@ class CloudConfig(object):
             # GCP
             if assessmentTarget == "GCP":
                 # Process ["gcp_project_ids"]
-                gcpProjects = list(data["regions_and_accounts"]["gcp"]["gcp_project_ids"])
+                gcpProjects: list = data["regions_and_accounts"]["gcp"]["gcp_project_ids"]
                 if not gcpProjects:
                     logger.error("No GCP Projects were provided in [regions_and_accounts.gcp.gcp_project_ids].")
                     sys.exit(2)
