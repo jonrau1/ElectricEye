@@ -30,7 +30,7 @@ registry = CheckRegister()
 # Instantiate a NMAP scanner for TCP scans to define ports
 nmap = nmap3.NmapScanTechniques()
 
-def get_compute_engine_instances(cache: dict, gcpProjectId: str):
+def get_compute_engine_instances(cache: dict, gcpProjectId: str, gcpCredentials):
     '''
     AggregatedList result provides Zone information as well as every single Instance in a Project
     '''
@@ -39,7 +39,7 @@ def get_compute_engine_instances(cache: dict, gcpProjectId: str):
     
     results = []
 
-    compute = googleapiclient.discovery.build('compute', 'v1')
+    compute = googleapiclient.discovery.build('compute', 'v1', credentials=gcpCredentials)
 
     aggResult = compute.instances().aggregatedList(project=gcpProjectId).execute()
 
@@ -79,11 +79,11 @@ def scan_host(hostIp, assetName, assetComponent):
         results = None
 
 @registry.register_check("gce")
-def gce_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def gce_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str, gcpCredentials):
     """[AttackSurface.GCP.GCE.{checkIdNumber}] Google Compute Engine VM instances should not be publicly reachable on {serviceName}"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for gce in get_compute_engine_instances(cache, gcpProjectId):
+    for gce in get_compute_engine_instances(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(gce,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)

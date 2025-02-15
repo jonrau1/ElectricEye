@@ -26,7 +26,7 @@ import json
 
 registry = CheckRegister()
 
-def get_cloudsql_dbs(cache, gcpProjectId):
+def get_cloudsql_dbs(cache, gcpProjectId, gcpCredentials):
     """
     AggregatedList result provides Zone information as well as every single Instance in a Project
     """
@@ -35,7 +35,7 @@ def get_cloudsql_dbs(cache, gcpProjectId):
         return response
 
     # CloudSQL requires SQL Admin API - also doesnt need an aggregatedList
-    service = googleapiclient.discovery.build('sqladmin', 'v1beta4')
+    service = googleapiclient.discovery.build('sqladmin', 'v1beta4', credentials=gcpCredentials)
     instances = service.instances().list(project=gcpProjectId).execute()
 
     if instances:
@@ -45,13 +45,13 @@ def get_cloudsql_dbs(cache, gcpProjectId):
         return {}
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_public_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
+def cloudsql_instance_public_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId, gcpCredentials):
     """
     [GCP.CloudSQL.1] CloudSQL Instances should not be publicly reachable
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+    for csql in get_cloudsql_dbs(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(csql,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -293,13 +293,13 @@ def cloudsql_instance_public_check(cache, awsAccountId, awsRegion, awsPartition,
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_standard_backup_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
+def cloudsql_instance_standard_backup_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId, gcpCredentials):
     """
     [GCP.CloudSQL.2] CloudSQL Instances should have automated backups configured
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+    for csql in get_cloudsql_dbs(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(csql,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -483,13 +483,13 @@ def cloudsql_instance_standard_backup_check(cache, awsAccountId, awsRegion, awsP
             yield finding 
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_mysql_pitr_backup_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
+def cloudsql_instance_mysql_pitr_backup_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId, gcpCredentials):
     """
     [GCP.CloudSQL.3] CloudSQL MySQL Instances with mission-critical workloads should have point-in-time recovery (PITR) configured
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+    for csql in get_cloudsql_dbs(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(csql,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -678,13 +678,13 @@ def cloudsql_instance_mysql_pitr_backup_check(cache, awsAccountId, awsRegion, aw
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_psql_pitr_backup_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
+def cloudsql_instance_psql_pitr_backup_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId, gcpCredentials):
     """
     [GCP.CloudSQL.4] CloudSQL PostgreSQL Instances with mission-critical workloads should have point-in-time recovery (PITR) configured
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+    for csql in get_cloudsql_dbs(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(csql,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -873,13 +873,13 @@ def cloudsql_instance_psql_pitr_backup_check(cache, awsAccountId, awsRegion, aws
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_private_network_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
+def cloudsql_instance_private_network_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId, gcpCredentials):
     """
     [GCP.CloudSQL.5] CloudSQL Instances should use private networks
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+    for csql in get_cloudsql_dbs(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(csql,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -1039,13 +1039,13 @@ def cloudsql_instance_private_network_check(cache, awsAccountId, awsRegion, awsP
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_private_gcp_services_connection_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
+def cloudsql_instance_private_gcp_services_connection_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId, gcpCredentials):
     """
     [GCP.CloudSQL.6] CloudSQL Instances using private networks should enable GCP private services access
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+    for csql in get_cloudsql_dbs(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(csql,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -1201,13 +1201,13 @@ def cloudsql_instance_private_gcp_services_connection_check(cache, awsAccountId,
                 yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_password_policy_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
+def cloudsql_instance_password_policy_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId, gcpCredentials):
     """
     [GCP.CloudSQL.7] CloudSQL Instances should have a password policy enabled
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+    for csql in get_cloudsql_dbs(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(csql,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -1390,13 +1390,13 @@ def cloudsql_instance_password_policy_check(cache, awsAccountId, awsRegion, awsP
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_password_min_length_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
+def cloudsql_instance_password_min_length_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId, gcpCredentials):
     """
     [GCP.CloudSQL.8] CloudSQL Instances should have a password minimum length requirement defined
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+    for csql in get_cloudsql_dbs(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(csql,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -1580,13 +1580,13 @@ def cloudsql_instance_password_min_length_check(cache, awsAccountId, awsRegion, 
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_password_reuse_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
+def cloudsql_instance_password_reuse_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId, gcpCredentials):
     """
     [GCP.CloudSQL.9] CloudSQL Instances should have a password reuse interval defined
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+    for csql in get_cloudsql_dbs(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(csql,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -1770,13 +1770,13 @@ def cloudsql_instance_password_reuse_check(cache, awsAccountId, awsRegion, awsPa
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_password_username_block_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
+def cloudsql_instance_password_username_block_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId, gcpCredentials):
     """
     [GCP.CloudSQL.10] CloudSQL Instances should be configured to disallow the username from being part of the password
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+    for csql in get_cloudsql_dbs(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(csql,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -1959,13 +1959,13 @@ def cloudsql_instance_password_username_block_check(cache, awsAccountId, awsRegi
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_password_change_interval_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
+def cloudsql_instance_password_change_interval_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId, gcpCredentials):
     """
     [GCP.CloudSQL.11] CloudSQL Instances should have a password change interval defined
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+    for csql in get_cloudsql_dbs(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(csql,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -2149,13 +2149,13 @@ def cloudsql_instance_password_change_interval_check(cache, awsAccountId, awsReg
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_storage_autoresize_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
+def cloudsql_instance_storage_autoresize_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId, gcpCredentials):
     """
     [GCP.CloudSQL.12] CloudSQL Instances should have automatic storage increase enabled
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+    for csql in get_cloudsql_dbs(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(csql,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -2332,13 +2332,13 @@ def cloudsql_instance_storage_autoresize_check(cache, awsAccountId, awsRegion, a
             yield finding 
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_deletion_protection_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
+def cloudsql_instance_deletion_protection_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId, gcpCredentials):
     """
     [GCP.CloudSQL.13] CloudSQL Instances should have deletion protection enabled
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+    for csql in get_cloudsql_dbs(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(csql,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -2523,13 +2523,13 @@ def cloudsql_instance_deletion_protection_check(cache, awsAccountId, awsRegion, 
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_query_insights_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
+def cloudsql_instance_query_insights_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId, gcpCredentials):
     """
     [GCP.CloudSQL.14] CloudSQL Instances should have query insights enabled
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+    for csql in get_cloudsql_dbs(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(csql,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -2703,13 +2703,13 @@ def cloudsql_instance_query_insights_check(cache, awsAccountId, awsRegion, awsPa
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_tls_enforcement_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId):
+def cloudsql_instance_tls_enforcement_check(cache, awsAccountId, awsRegion, awsPartition, gcpProjectId, gcpCredentials):
     """
     [GCP.CloudSQL.15] CloudSQL Instances should enforce SSL/TLS connectivity
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+    for csql in get_cloudsql_dbs(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(csql,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
