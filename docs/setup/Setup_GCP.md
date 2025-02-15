@@ -32,16 +32,19 @@ Refer [here](#gcp-multi-project-service-account-support) for information on addi
 
 1. Enable the following APIs for all GCP Projects you wish to assess with ElectricEye.
 
-> - Compute Engine API
-> - Cloud SQL Admin API
-> - Cloud Logging API
-> - OS Config API
-> - Service Networking API
+- Compute Engine API
+- Cloud SQL Admin API
+- Cloud Logging API
+- OS Config API
+- Service Networking API
+- BigQuery API
 
 2. Create a **Service Account** with the following permissions per Project you want to assess with ElectricEye (**Note**: In the future, Organizations will be supported for GCP, you can instead create a single **Service Account** and add it's Email into all of your other Projects)
 
-> - Security Reviewer
-> - Project Viewer
+- Security Reviewer
+- Viewer
+- BigQuery Data Viewer
+- BigQuery Metadata Viewer
 
 #### NOTE: For evaluating multiple GCP Projects, you only need ONE Service Account, refer to [GCP Multi-Project Service Account Support](#gcp-multi-project-service-account-support) for more information on adding permissions to other Projects.
 
