@@ -63,6 +63,7 @@ class EEAuditor(object):
             utils = CloudConfig(assessmentTarget, tomlPath, useToml, args)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.gcpProjectIds = utils.gcpProjectIds
+            self.gcpCredentials = utils.gcpCredentials
         # OCI
         if assessmentTarget == "OCI":
             searchPath = "./auditors/oci"
@@ -371,7 +372,8 @@ class EEAuditor(object):
                                 awsAccountId=account,
                                 awsRegion=region,
                                 awsPartition=partition,
-                                gcpProjectId=project
+                                gcpProjectId=project,
+                                gcpCredentials=self.gcpCredentials
                             ):
                                 if finding is not None:
                                     yield finding
