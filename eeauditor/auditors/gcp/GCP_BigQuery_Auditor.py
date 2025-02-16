@@ -57,7 +57,7 @@ def get_bigquery_tables(cache: dict, gcpProjectId, gcpCredentials) -> list[dict]
     
 @registry.register_check("gcp.bigquery")
 def bigquery_table_updated_within_90_days_check(cache: dict, awsAccountId, awsRegion, awsPartition, gcpProjectId, gcpCredentials):
-    """[BigQuery.1] BigQuery Tables that have not been modified in 90 days should be reviewed"""
+    """[GCP.BigQuery.1] BigQuery Tables that have not been modified in 90 days should be reviewed"""
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.UTC).replace(tzinfo=datetime.timezone.utc).isoformat()
     # Loop the datasets
@@ -90,7 +90,7 @@ def bigquery_table_updated_within_90_days_check(cache: dict, awsAccountId, awsRe
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[BigQuery.1] BigQuery Tables that have not been modified in 90 days should be reviewed",
+                "Title": "[GCP.BigQuery.1] BigQuery Tables that have not been modified in 90 days should be reviewed",
                 "Description": f"BigQuery table {tableId} has not been modified in 90 days. This may be an unused resource that can be deleted, especially if there is not any business use case to keeping the table operational. Review you internal policies and usage logs, as well as potentially sensitive or critical information, to make the determination if the table should be deleted. Refer to the remediation instructions if keeping the table is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -156,7 +156,7 @@ def bigquery_table_updated_within_90_days_check(cache: dict, awsAccountId, awsRe
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[BigQuery.1] BigQuery Tables that have not been modified in 90 days should be reviewed",
+                "Title": "[GCP.BigQuery.1] BigQuery Tables that have not been modified in 90 days should be reviewed",
                 "Description": f"BigQuery table {tableId} has been modified within the last 90 days. Periodically review your BigQuery tables to ensure they are still needed and that the data is still relevant. Refer to the remediation instructions if keeping the table is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -202,6 +202,144 @@ def bigquery_table_updated_within_90_days_check(cache: dict, awsAccountId, awsRe
                         "ISO 27001:2013 A.8.1.1",
                         "ISO 27001:2013 A.8.1.2",
                         "ISO 27001:2013 A.12.5.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("gcp.bigquery")
+def bigquery_table_custom_cmek_check(cache: dict, awsAccountId, awsRegion, awsPartition, gcpProjectId, gcpCredentials):
+    """[GCP.BigQuery.2] BigQuery Tables should be encrypted with a customer-managed encryption key (CMEK)"""
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.UTC).replace(tzinfo=datetime.timezone.utc).isoformat()
+    # Loop the datasets
+    for table in get_bigquery_tables(cache, gcpProjectId, gcpCredentials):
+        fullTableId = table["id"]
+        tableId = table["tableReference"]["tableId"]
+        assetJson = json.dumps(table,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        # this is a failing check
+        if table.get("encryptionConfiguration", {}).get("kmsKeyName", "") == "":
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{fullTableId}/bigquery-table-custom-cmek-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{fullTableId}/bigquery-table-custom-cmek-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[GCP.BigQuery.2] BigQuery Tables should be encrypted with a customer-managed encryption key (CMEK)",
+                "Description": f"BigQuery table {tableId} is not encrypted with a customer-managed encryption key (CMEK). By default, BigQuery encrypts all data before it is written to disk, and decrypts it when read by an authorized user. This process is transparent to users. However, you can choose to use your own encryption keys instead of the default Google-managed keys. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on CMEK refer to the Customer-managed encryption keys for BigQuery entry in the Google Cloud documentation.",
+                        "Url": "https://cloud.google.com/bigquery/docs/customer-managed-encryption"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": table["location"],
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Google Cloud BigQuery",
+                    "AssetComponent": f"Table"
+                },
+                "Resources": [
+                    {
+                        "Type": "GCP::BigQuery::Table",
+                        "Id": fullTableId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "ProjectId": gcpProjectId,
+                                "TableId": table["tableReference"]["tableId"],
+                                "DatasetId": table["tableReference"]["datasetId"]
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        # this is a passing check
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{fullTableId}/bigquery-table-custom-cmek-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{fullTableId}/bigquery-table-custom-cmek-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[GCP.BigQuery.2] BigQuery Tables should be encrypted with a customer-managed encryption key (CMEK)",
+                "Description": f"BigQuery table {tableId} is encrypted with a customer-managed encryption key (CMEK). By default, BigQuery encrypts all data before it is written to disk, and decrypts it when read by an authorized user. This process is transparent to users. However, you can choose to use your own encryption keys instead of the default Google-managed keys. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on CMEK refer to the Customer-managed encryption keys for BigQuery entry in the Google Cloud documentation.",
+                        "Url": "https://cloud.google.com/bigquery/docs/customer-managed-encryption"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": table["location"],
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Google Cloud BigQuery",
+                    "AssetComponent": f"Table"
+                },
+                "Resources": [
+                    {
+                        "Type": "GCP::BigQuery::Table",
+                        "Id": fullTableId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "ProjectId": gcpProjectId,
+                                "TableId": table["tableReference"]["tableId"],
+                                "DatasetId": table["tableReference"]["datasetId"]
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
