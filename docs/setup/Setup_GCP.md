@@ -153,10 +153,13 @@ done
 
 ## GCP Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **53 Checks** across **3 Auditors** that support the secure configuration of **2 services/components**
+These are the following services and checks perform by each Auditor, there are currently **56 Checks** across **5 Auditors** that support the secure configuration of **4 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
+| GCP_BigQuery_Auditor | BigQuery table | Has the table been updated in the last 90 days |
+| GCP_BigQuery_Auditor | BigQuery table | Do tables use CMEKs for encryption |
+| GCP_IAM_Auditor | Service Account | Are user-managed keys in use (lol, yes, at least one!) |
 | GCP_ComputeEngine_Auditor | GCE VM Instance | Is deletion protection enabled |
 | GCP_ComputeEngine_Auditor | GCE VM Instance | Is IP forwarding disabled |
 | GCP_ComputeEngine_Auditor | GCE VM Instance | Is auto-restart enabled |
