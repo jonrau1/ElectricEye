@@ -26,7 +26,7 @@ import json
 
 registry = CheckRegister()
 
-def get_compute_engine_instances(cache: dict, gcpProjectId: str):
+def get_compute_engine_instances(cache: dict, gcpProjectId: str, gcpCredentials):
     '''
     AggregatedList result provides Zone information as well as every single Instance in a Project
     '''
@@ -35,7 +35,7 @@ def get_compute_engine_instances(cache: dict, gcpProjectId: str):
     
     results = []
 
-    compute = googleapiclient.discovery.build('compute', 'v1')
+    compute = googleapiclient.discovery.build('compute', 'v1', credentials=gcpCredentials)
 
     aggResult = compute.instances().aggregatedList(project=gcpProjectId).execute()
 
@@ -60,13 +60,13 @@ def get_compute_engine_instances(cache: dict, gcpProjectId: str):
     return results
 
 @registry.register_check("gce")
-def gce_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def gce_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str, gcpCredentials):
     """
     [GCP.GCE.1] Google Compute Engine VM instances should have deletion protection enabled
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for gce in get_compute_engine_instances(cache, gcpProjectId):
+    for gce in get_compute_engine_instances(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(gce,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -254,13 +254,13 @@ def gce_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRe
             yield finding
 
 @registry.register_check("gce")
-def gce_instance_ip_forwarding_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def gce_instance_ip_forwarding_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str, gcpCredentials):
     """
     [GCP.GCE.2] Google Compute Engine VM instances should not have IP forwarding enabled
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for gce in get_compute_engine_instances(cache, gcpProjectId):
+    for gce in get_compute_engine_instances(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(gce,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -422,13 +422,13 @@ def gce_instance_ip_forwarding_check(cache: dict, awsAccountId: str, awsRegion: 
             yield finding
 
 @registry.register_check("gce")
-def gce_instance_auto_restart_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def gce_instance_auto_restart_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str, gcpCredentials):
     """
     [GCP.GCE.3] Google Compute Engine VM instances should have automatic restart enabled
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for gce in get_compute_engine_instances(cache, gcpProjectId):
+    for gce in get_compute_engine_instances(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(gce,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -608,13 +608,13 @@ def gce_instance_auto_restart_check(cache: dict, awsAccountId: str, awsRegion: s
             yield finding
 
 @registry.register_check("gce")
-def gce_instance_secure_boot_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def gce_instance_secure_boot_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str, gcpCredentials):
     """
     [GCP.GCE.4] Google Compute Engine VM instances should have Secure Boot enabled
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for gce in get_compute_engine_instances(cache, gcpProjectId):
+    for gce in get_compute_engine_instances(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(gce,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -770,13 +770,13 @@ def gce_instance_secure_boot_check(cache: dict, awsAccountId: str, awsRegion: st
             yield finding
 
 @registry.register_check("gce")
-def gce_instance_vtpm_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def gce_instance_vtpm_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str, gcpCredentials):
     """
     [GCP.GCE.5] Google Compute Engine VM instances should have Virtual Trusted Platform Module enabled
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for gce in get_compute_engine_instances(cache, gcpProjectId):
+    for gce in get_compute_engine_instances(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(gce,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -932,13 +932,13 @@ def gce_instance_vtpm_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
             yield finding
 
 @registry.register_check("gce")
-def gce_instance_integrity_mon_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def gce_instance_integrity_mon_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str, gcpCredentials):
     """
     [GCP.GCE.6] Google Compute Engine VM instances should have Integrity Monitoring enabled
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for gce in get_compute_engine_instances(cache, gcpProjectId):
+    for gce in get_compute_engine_instances(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(gce,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -1094,13 +1094,13 @@ def gce_instance_integrity_mon_check(cache: dict, awsAccountId: str, awsRegion: 
             yield finding
 
 @registry.register_check("gce")
-def gce_instance_siip_auto_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def gce_instance_siip_auto_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str, gcpCredentials):
     """
     [GCP.GCE.7] Google Compute Engine VM instances should be configured to auto-update the Shielded Instance Integrity Auto-learn Policy
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for gce in get_compute_engine_instances(cache, gcpProjectId):
+    for gce in get_compute_engine_instances(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(gce,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -1256,13 +1256,13 @@ def gce_instance_siip_auto_update_check(cache: dict, awsAccountId: str, awsRegio
             yield finding
 
 @registry.register_check("gce")
-def gce_instance_confidential_compute_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def gce_instance_confidential_compute_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str, gcpCredentials):
     """
     [GCP.GCE.8] Google Compute Engine VM instances containing sensitive data or high-security workloads should enable Confidential Computing
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for gce in get_compute_engine_instances(cache, gcpProjectId):
+    for gce in get_compute_engine_instances(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(gce,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -1432,14 +1432,14 @@ def gce_instance_confidential_compute_update_check(cache: dict, awsAccountId: st
             yield finding
 
 @registry.register_check("gce")
-def gce_instance_serial_port_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def gce_instance_serial_port_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str, gcpCredentials):
     """
     [GCP.GCE.9] Google Compute Engine VM instances should not enabled serial port access
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    compute = googleapiclient.discovery.build('compute', 'v1')
+    compute = googleapiclient.discovery.build('compute', 'v1', credentials=gcpCredentials)
 
-    for gce in get_compute_engine_instances(cache, gcpProjectId):
+    for gce in get_compute_engine_instances(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(gce,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -1614,14 +1614,14 @@ def gce_instance_serial_port_access_check(cache: dict, awsAccountId: str, awsReg
             yield finding
 
 @registry.register_check("gce")
-def gce_instance_oslogon_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def gce_instance_oslogon_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str, gcpCredentials):
     """
     [GCP.GCE.10] Google Compute Engine Linux VM instances should be configured to be accessed using OS Logon
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    compute = googleapiclient.discovery.build('compute', 'v1')
+    compute = googleapiclient.discovery.build('compute', 'v1', credentials=gcpCredentials)
 
-    for gce in get_compute_engine_instances(cache, gcpProjectId):
+    for gce in get_compute_engine_instances(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(gce,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -1785,14 +1785,14 @@ def gce_instance_oslogon_access_check(cache: dict, awsAccountId: str, awsRegion:
                 yield finding
 
 @registry.register_check("gce")
-def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str, gcpCredentials):
     """
     [GCP.GCE.11] Google Compute Engine Linux VM instances should be configured to be accessed using OS Logon with 2FA
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    compute = googleapiclient.discovery.build('compute', 'v1')
+    compute = googleapiclient.discovery.build('compute', 'v1', credentials=gcpCredentials)
 
-    for gce in get_compute_engine_instances(cache, gcpProjectId):
+    for gce in get_compute_engine_instances(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(gce,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -1993,14 +1993,14 @@ def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsReg
                 yield finding
 
 @registry.register_check("gce")
-def gce_instance_block_proj_ssh_keys_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def gce_instance_block_proj_ssh_keys_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str, gcpCredentials):
     """
     [GCP.GCE.12] Google Compute Engine VM instances should block access from Project-wide SSH Keys
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    compute = googleapiclient.discovery.build('compute', 'v1')
+    compute = googleapiclient.discovery.build('compute', 'v1', credentials=gcpCredentials)
 
-    for gce in get_compute_engine_instances(cache, gcpProjectId):
+    for gce in get_compute_engine_instances(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(gce,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -2179,13 +2179,13 @@ def gce_instance_block_proj_ssh_keys_check(cache: dict, awsAccountId: str, awsRe
             yield finding
 
 @registry.register_check("gce")
-def gce_instance_public_ip_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def gce_instance_public_ip_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str, gcpCredentials):
     """
     [GCP.GCE.13] Google Compute Engine VM instances should not be publicly reachable
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for gce in get_compute_engine_instances(cache, gcpProjectId):
+    for gce in get_compute_engine_instances(cache, gcpProjectId, gcpCredentials):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(gce,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)

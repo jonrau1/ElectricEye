@@ -16250,5 +16250,9 @@
     {
         "ControlTitle": "CIS Snowflake Foundations Benchmark V1.0.0 3.1",
         "ControlDescription": "Ensure that an account-level network policy has been configured to only allow access from trusted IP addresses"
+    },
+    {
+        "ControlTitle": "CIS Google Cloud Platform Foundation Benchmark V2.0 1.4",
+        "ControlDescription": "Ensure That There Are Only GCP-Managed Service Account Keys for Each Service Account"
     }
 ]

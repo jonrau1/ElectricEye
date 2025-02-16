@@ -22,7 +22,7 @@ To configure the TOML file, you need to modify the values of the variables in th
 
 - `gcp_project_ids`: Set this variable to specify a list of GCP Project IDs, ensure you only specify the GCP Projects which the Service Account specified in `gcp_service_account_json_payload_value` has access to.
 
-- `gcp_service_account_json_payload_value`: This variable is used to specify the contents of the Google Cloud Platform (GCP) service account key JSON file that ElectricEye should use to authenticate to GCP. The contents of the JSON file should be provided as a string, and the entire string should be assigned to the `gcp_service_account_json_payload_value` setting.
+- `gcp_service_account_json_payload_value`: This variable is used to specify the contents of the Google Cloud Platform (GCP) service account key JSON file that ElectricEye should use to authenticate to GCP. If `credentials_location` is set to `CONFIG_FILE` you should paste the entire contents of the Service Account JSON within triple single-quotes (`'''`) otherwise the newline characters (`\n`) will cause an issue within the TOML.
 
 It's important to note that this setting is a sensitive credential, and as such, its value should be stored in a secure manner that matches the location specified in the `[global]` section's `credentials_location` setting. For example, if `credentials_location` is set to `"AWS_SSM"`, then the gcp_service_account_json_payload_value should be the name of an AWS Systems Manager Parameter Store SecureString parameter that contains the contents of the GCP service account key JSON file.
 
@@ -32,16 +32,19 @@ Refer [here](#gcp-multi-project-service-account-support) for information on addi
 
 1. Enable the following APIs for all GCP Projects you wish to assess with ElectricEye.
 
-> - Compute Engine API
-> - Cloud SQL Admin API
-> - Cloud Logging API
-> - OS Config API
-> - Service Networking API
+- Compute Engine API
+- Cloud SQL Admin API
+- Cloud Logging API
+- OS Config API
+- Service Networking API
+- BigQuery API
 
 2. Create a **Service Account** with the following permissions per Project you want to assess with ElectricEye (**Note**: In the future, Organizations will be supported for GCP, you can instead create a single **Service Account** and add it's Email into all of your other Projects)
 
-> - Security Reviewer
-> - Project Viewer
+- Security Reviewer
+- Viewer
+- BigQuery Data Viewer
+- BigQuery Metadata Viewer
 
 #### NOTE: For evaluating multiple GCP Projects, you only need ONE Service Account, refer to [GCP Multi-Project Service Account Support](#gcp-multi-project-service-account-support) for more information on adding permissions to other Projects.
 
@@ -150,10 +153,13 @@ done
 
 ## GCP Checks & Services
 
-These are the following services and checks perform by each Auditor, there are currently **53 Checks** across **3 Auditors** that support the secure configuration of **2 services/components**
+These are the following services and checks perform by each Auditor, there are currently **56 Checks** across **5 Auditors** that support the secure configuration of **4 services/components**
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
+| GCP_BigQuery_Auditor | BigQuery table | Has the table been updated in the last 90 days |
+| GCP_BigQuery_Auditor | BigQuery table | Do tables use CMEKs for encryption |
+| GCP_IAM_Auditor | Service Account | Are user-managed keys in use (lol, yes, at least one!) |
 | GCP_ComputeEngine_Auditor | GCE VM Instance | Is deletion protection enabled |
 | GCP_ComputeEngine_Auditor | GCE VM Instance | Is IP forwarding disabled |
 | GCP_ComputeEngine_Auditor | GCE VM Instance | Is auto-restart enabled |

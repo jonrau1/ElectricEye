@@ -153,9 +153,9 @@ In total there are:
 
 - **4** Supported Public CSPs: `AWS`, `GCP`, `OCI`, and `Azure`
 - **4** Supported SaaS Providers: `ServiceNow`, `M365`, `Salesforce`, and `Snowflake`
-- **1193** ElectricEye Checks
-- **177** Supported CSP & SaaS Asset Components across all Services
-- **133** ElectricEye Auditors
+- **1196** ElectricEye Checks
+- **179** Supported CSP & SaaS Asset Components across all Services
+- **135** ElectricEye Auditors
 
 The tables of supported Services and Checks have been migrated to the respective per-Provider setup documentation linked above in [Configuring ElectricEye](#configuring-electriceye).
 
@@ -389,6 +389,8 @@ The controls frameworks that ElectricEye supports is always being updated as new
 - CIS Amazon Web Services Foundations Benchmark V2.0
 - CIS Amazon Web Services Foundations Benchmark V3.0
 - CIS Microsoft Azure Foundations Benchmark V2.0.0
+- CIS Snowflake Foundations Benchmark V1.0.0
+- CIS Google Cloud Platform Foundation Benchmark V2.0
 
 ## Repository Security
 

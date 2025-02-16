@@ -26,6 +26,7 @@ from os import environ, path, chmod
 from re import compile
 import json
 from botocore.exceptions import ClientError
+from google.oauth2 import service_account
 from azure.identity import ClientSecretCredential
 from azure.mgmt.resource.subscriptions import SubscriptionClient
 import snowflake.connector as snowconn
@@ -126,7 +127,7 @@ class CloudConfig(object):
             # GCP
             if assessmentTarget == "GCP":
                 # Process ["gcp_project_ids"]
-                gcpProjects = list(data["regions_and_accounts"]["gcp"]["gcp_project_ids"])
+                gcpProjects: list = data["regions_and_accounts"]["gcp"]["gcp_project_ids"]
                 if not gcpProjects:
                     logger.error("No GCP Projects were provided in [regions_and_accounts.gcp.gcp_project_ids].")
                     sys.exit(2)
@@ -147,7 +148,7 @@ class CloudConfig(object):
                         gcpCred,
                         "gcp_service_account_json_payload_value"
                     )
-                self.setup_gcp_credentials(self.gcpServiceAccountJsonPayloadValue)
+                self.gcpCredentials = self.setup_gcp_credentials(self.gcpServiceAccountJsonPayloadValue)
             
             # Oracle Cloud Infrastructure (OCI)
             if assessmentTarget == "OCI":
@@ -759,31 +760,20 @@ class CloudConfig(object):
 
     def setup_gcp_credentials(self, credentialValue) -> None:
         """
-        The Python Google Client SDK defaults to checking for credentials in the "GOOGLE_APPLICATION_CREDENTIALS"
-        environment variable. This can be the location of a GCP Service Account (SA) Key which is stored in a JSON file.
-        ElectricEye utilizes Service Accounts and provides multi-Project support by virtue of the Email of an SA added
-        to those Projects as an IAM Role Binding Member will proper Roles (Viewer & Security Reviewer) added.
-
-        This function simply takes the value of the TOML configuration ["gcp_service_account_json_payload_value"] derived 
-        by this overall Class (CloudConfig), writes it to a JSON file, and specifies that location as the environment variable "GOOGLE_APPLICATION_CREDENTIALS"
+        Takes the credential value derived from the TOML file and creates a GCP credential object that can be passed to EEAuditor
         """
-        here = path.abspath(path.dirname(__file__))
-        credentials_file_path = path.join(here, 'gcp_cred.json')
+        credentials = json.loads(credentialValue)
 
-        # Attempt to parse the credential value and write it to a file
+        # Create a GCP credential object from the JSON payload
         try:
-            credentials = json.loads(credentialValue)
-            with open(credentials_file_path, 'w') as jsonfile:
-                json.dump(credentials, jsonfile, indent=2)
-                chmod(credentials_file_path, 0o600)  # Set file to be readable and writable only by the owner
-        except json.JSONDecodeError as e:
+            gcpCredentials = service_account.Credentials.from_service_account_info(credentials)
+        except Exception as e:
             logger.error(
-                "Failed to parse GCP credentials JSON: %s", e
+                "Error encountered attempting to create GCP credentials from JSON payload: %s", e
             )
-            raise e
+            sys.exit(2)
 
-        logger.info("%s saved to environment variable", credentials_file_path)
-        environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_file_path
+        return gcpCredentials
 
     def setup_oci_credentials(self, credentialValue) -> None:
         """
