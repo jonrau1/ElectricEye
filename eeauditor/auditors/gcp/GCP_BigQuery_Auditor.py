@@ -63,6 +63,7 @@ def bigquery_table_updated_within_90_days_check(cache: dict, awsAccountId, awsRe
     # Loop the datasets
     for table in get_bigquery_tables(cache, gcpProjectId, gcpCredentials):
         fullTableId = table["id"]
+        tableId = table["tableReference"]["tableId"]
         assetJson = json.dumps(table,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         modifyCheckFail = False
@@ -87,14 +88,14 @@ def bigquery_table_updated_within_90_days_check(cache: dict, awsAccountId, awsRe
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "LOW"},
+                "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[BigQuery.1] BigQuery Tables that have not been modified in 90 days should be reviewed",
-                "Description": f"BigQuery Table {table['tableReference']['tableId']} in Dataset {table['tableReference']['datasetId']} in Project {gcpProjectId} has not been modified in 90 days. This may be an unused resource that can be deleted.",
+                "Description": f"BigQuery table {tableId} has not been modified in 90 days. This may be an unused resource that can be deleted, especially if there is not any business use case to keeping the table operational. Review you internal policies and usage logs, as well as potentially sensitive or critical information, to make the determination if the table should be deleted. Refer to the remediation instructions if keeping the table is not intended.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For more information on BigQuery best practices refer to the BigQuery Best Practices documentation",
-                        "Url": "https://cloud.google.com/bigquery/docs/best-practices-performance-overview"
+                        "Text": "For more information on BigQuery best practices for backing up tables refer to the Backup & Disaster Recovery strategies for BigQuery entry in the Google Cloud blog.",
+                        "Url": "https://cloud.google.com/blog/topics/developers-practitioners/backup-disaster-recovery-strategies-bigquery"
                     }
                 },
                 "ProductFields": {
@@ -127,10 +128,14 @@ def bigquery_table_updated_within_90_days_check(cache: dict, awsAccountId, awsRe
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.AC-1",
-                        "NIST SP 800-53 AC-1",
-                        "AICPA TSC CC6.6",
-                        "ISO 27001:2013 A.8.1.1"
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -152,11 +157,11 @@ def bigquery_table_updated_within_90_days_check(cache: dict, awsAccountId, awsRe
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[BigQuery.1] BigQuery Tables that have not been modified in 90 days should be reviewed",
-                "Description": f"BigQuery Table {table['tableReference']['tableId']} in Dataset {table['tableReference']['datasetId']} in Project {gcpProjectId} has been modified within the last 90 days.",
+                "Description": f"BigQuery table {tableId} has been modified within the last 90 days. Periodically review your BigQuery tables to ensure they are still needed and that the data is still relevant. Refer to the remediation instructions if keeping the table is not intended.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For more information on BigQuery best practices refer to the BigQuery Best Practices documentation",
-                        "Url": "https://cloud.google.com/bigquery/docs/best-practices-performance-overview"
+                        "Text": "For more information on BigQuery best practices for backing up tables refer to the Backup & Disaster Recovery strategies for BigQuery entry in the Google Cloud blog.",
+                        "Url": "https://cloud.google.com/blog/topics/developers-practitioners/backup-disaster-recovery-strategies-bigquery"
                     }
                 },
                 "ProductFields": {
@@ -189,10 +194,14 @@ def bigquery_table_updated_within_90_days_check(cache: dict, awsAccountId, awsRe
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.AC-1",
-                        "NIST SP 800-53 AC-1",
-                        "AICPA TSC CC6.6",
-                        "ISO 27001:2013 A.8.1.1"
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
