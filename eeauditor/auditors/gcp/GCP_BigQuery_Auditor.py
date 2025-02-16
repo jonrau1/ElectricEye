@@ -111,7 +111,7 @@ def bigquery_table_updated_within_90_days_check(cache: dict, awsAccountId, awsRe
                 },
                 "Resources": [
                     {
-                        "Type": "GCP::BigQuery::Table",
+                        "Type": "GcpBigQueryTable",
                         "Id": fullTableId,
                         "Partition": awsPartition,
                         "Region": awsRegion,
@@ -177,7 +177,7 @@ def bigquery_table_updated_within_90_days_check(cache: dict, awsAccountId, awsRe
                 },
                 "Resources": [
                     {
-                        "Type": "GCP::BigQuery::Table",
+                        "Type": "GcpBigQueryTable",
                         "Id": fullTableId,
                         "Partition": awsPartition,
                         "Region": awsRegion,
@@ -255,7 +255,7 @@ def bigquery_table_custom_cmek_check(cache: dict, awsAccountId, awsRegion, awsPa
                 },
                 "Resources": [
                     {
-                        "Type": "GCP::BigQuery::Table",
+                        "Type": "GcpBigQueryTable",
                         "Id": fullTableId,
                         "Partition": awsPartition,
                         "Region": awsRegion,
@@ -318,7 +318,7 @@ def bigquery_table_custom_cmek_check(cache: dict, awsAccountId, awsRegion, awsPa
                 },
                 "Resources": [
                     {
-                        "Type": "GCP::BigQuery::Table",
+                        "Type": "GcpBigQueryTable",
                         "Id": fullTableId,
                         "Partition": awsPartition,
                         "Region": awsRegion,
