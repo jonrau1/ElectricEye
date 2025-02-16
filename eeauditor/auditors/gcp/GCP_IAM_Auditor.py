@@ -55,9 +55,9 @@ def get_service_account_keys(serviceAccountEmail: str, gcpCredentials) -> list[d
 
     return serviceAccountKeys
 
-@registry.register_check("gcp.serviceaccounts")
+@registry.register_check("gcp.iam")
 def gcp_service_account_no_user_managed_keys_check(cache: dict, awsAccountId, awsRegion, awsPartition, gcpProjectId, gcpCredentials):
-    """[GCP.ServiceAccounts.1] Ensure that there are not user-managed keys for service accounts"""
+    """[GCP.IAM.1] Ensure that there are not user-managed keys for service accounts"""
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.UTC).replace(tzinfo=datetime.timezone.utc).isoformat()
     # Loop the datasets
@@ -89,7 +89,7 @@ def gcp_service_account_no_user_managed_keys_check(cache: dict, awsAccountId, aw
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[GCP.ServiceAccounts.1] Ensure that there are not user-managed keys for service accounts",
+                "Title": "[GCP.IAM.1] Ensure that there are not user-managed keys for service accounts",
                 "Description": f"GCP Service Account {displayName} (Unique ID: {serviceAccountId}) contains at least one user-managed key. User managed service accounts should not have user-managed keys, Anyone who has access to the keys will be able to access resources through the service account. GCP-managed keys are used by Cloud Platform services such as App Engine and Compute Engine. These keys cannot be downloaded. Google will keep the keys and automatically rotate them on an approximately weekly basis. User-managed keys are created, downloadable, and managed by users. They expire 10 years from creation. Even with key owner precautions, keys can be easily leaked by common development malpractices like checking keys into the source code or leaving them in the Downloads directory, or accidentally leaving them on support blogs/channels. It is rather ironic to include this check, given that I require the usage of Service Account keys after, better to be safe than sorry I guess! Refer to the remediation instructions if keeping the table is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -174,7 +174,7 @@ def gcp_service_account_no_user_managed_keys_check(cache: dict, awsAccountId, aw
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[GCP.ServiceAccounts.1] Ensure that there are not user-managed keys for service accounts",
+                "Title": "[GCP.IAM.1] Ensure that there are not user-managed keys for service accounts",
                 "Description": f"GCP Service Account {displayName} (Unique ID: {serviceAccountId}) does not contain any user-managed keys.",
                 "Remediation": {
                     "Recommendation": {

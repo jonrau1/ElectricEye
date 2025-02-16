@@ -194,6 +194,14 @@
   ImageTag: <img src="https://iconography.electriceye.lol/GCP/cloud_sql/cloud_sql.svg">
 - AssetService: Google Compute Engine
   ImageTag: <img src="https://iconography.electriceye.lol/GCP/compute_engine/compute_engine.svg">
+- AssetService: Google Kubernetes Engine
+  ImageTag: <img src="https://iconography.electriceye.lol/GCP/google_kubernetes_engine/google_kubernetes_engine.svg">
+- AssetService: Google Cloud Storage
+  ImageTag: <img src="https://iconography.electriceye.lol/GCP/cloud_storage/cloud_storage.svg">
+- AssetService: Google Cloud IAM
+  ImageTag: <img src="https://iconography.electriceye.lol/GCP/identity_and_access_management/identity_and_access_management.svg">
+- AssetService: Google Cloud BigQuery
+  ImageTag: <img src="https://iconography.electriceye.lol/GCP/bigquery/bigquery.svg">
 ##############
 # SERVICENOW #
 ##############
