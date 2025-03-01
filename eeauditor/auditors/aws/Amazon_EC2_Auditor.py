@@ -233,7 +233,10 @@ def ec2_imdsv2_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
         subnetId = i["SubnetId"]
         vpcId = i["VpcId"]
         try:
-            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
+            if i.get("BlockDeviceMappings") and isinstance(i["BlockDeviceMappings"], list) and len(i["BlockDeviceMappings"]) > 0:
+               instanceLaunchedAt = i["BlockDeviceMappings"][0].get("Ebs", {}).get("AttachTime", i["LaunchTime"])
+            else: 
+                instanceLaunchedAt = i["LaunchTime"]
         except KeyError:
             instanceLaunchedAt = i["LaunchTime"]
         # Check specific metadata
@@ -471,6 +474,7 @@ def ec2_imdsv2_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                 }
                 yield finding
         else:
+            print(f"Skipping instance {instanceId} as HttpEndpoint is not enabled")
             continue
 
 @registry.register_check("ec2")
@@ -489,7 +493,10 @@ def ec2_secure_enclave_check(cache: dict, session, awsAccountId: str, awsRegion:
         subnetId = i["SubnetId"]
         vpcId = i["VpcId"]
         try:
-            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
+            if i.get("BlockDeviceMappings") and isinstance(i["BlockDeviceMappings"], list) and len(i["BlockDeviceMappings"]) > 0:
+               instanceLaunchedAt = i["BlockDeviceMappings"][0].get("Ebs", {}).get("AttachTime", i["LaunchTime"])
+            else: 
+                instanceLaunchedAt = i["LaunchTime"]
         except KeyError:
             instanceLaunchedAt = i["LaunchTime"]
         # Check specific metadata
@@ -670,7 +677,10 @@ def ec2_public_facing_check(cache: dict, session, awsAccountId: str, awsRegion: 
         subnetId = i["SubnetId"]
         vpcId = i["VpcId"]
         try:
-            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
+            if i.get("BlockDeviceMappings") and isinstance(i["BlockDeviceMappings"], list) and len(i["BlockDeviceMappings"]) > 0:
+               instanceLaunchedAt = i["BlockDeviceMappings"][0].get("Ebs", {}).get("AttachTime", i["LaunchTime"])
+            else: 
+                instanceLaunchedAt = i["LaunchTime"]
         except KeyError:
             instanceLaunchedAt = i["LaunchTime"]
         # Check specific metadata
@@ -844,7 +854,10 @@ def ec2_source_dest_verification_check(cache: dict, session, awsAccountId: str, 
         subnetId = i["SubnetId"]
         vpcId = i["VpcId"]
         try:
-            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
+            if i.get("BlockDeviceMappings") and isinstance(i["BlockDeviceMappings"], list) and len(i["BlockDeviceMappings"]) > 0:
+               instanceLaunchedAt = i["BlockDeviceMappings"][0].get("Ebs", {}).get("AttachTime", i["LaunchTime"])
+            else: 
+                instanceLaunchedAt = i["LaunchTime"]
         except KeyError:
             instanceLaunchedAt = i["LaunchTime"]
         # Check specific metadata
@@ -1154,7 +1167,10 @@ def ec2_ami_age_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
         subnetId = i["SubnetId"]
         vpcId = i["VpcId"]
         try:
-            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
+            if i.get("BlockDeviceMappings") and isinstance(i["BlockDeviceMappings"], list) and len(i["BlockDeviceMappings"]) > 0:
+               instanceLaunchedAt = i["BlockDeviceMappings"][0].get("Ebs", {}).get("AttachTime", i["LaunchTime"])
+            else: 
+                instanceLaunchedAt = i["LaunchTime"]
         except KeyError:
             instanceLaunchedAt = i["LaunchTime"]
         # Check specific metadata
@@ -1328,7 +1344,10 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
         subnetId = i["SubnetId"]
         vpcId = i["VpcId"]
         try:
-            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
+            if i.get("BlockDeviceMappings") and isinstance(i["BlockDeviceMappings"], list) and len(i["BlockDeviceMappings"]) > 0:
+               instanceLaunchedAt = i["BlockDeviceMappings"][0].get("Ebs", {}).get("AttachTime", i["LaunchTime"])
+            else: 
+                instanceLaunchedAt = i["LaunchTime"]
         except KeyError:
             instanceLaunchedAt = i["LaunchTime"]
         try:
@@ -1887,7 +1906,10 @@ def ec2_instance_ssm_managed_check(cache: dict, session, awsAccountId: str, awsR
         subnetId = i["SubnetId"]
         vpcId = i["VpcId"]
         try:
-            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
+            if i.get("BlockDeviceMappings") and isinstance(i["BlockDeviceMappings"], list) and len(i["BlockDeviceMappings"]) > 0:
+               instanceLaunchedAt = i["BlockDeviceMappings"][0].get("Ebs", {}).get("AttachTime", i["LaunchTime"])
+            else: 
+                instanceLaunchedAt = i["LaunchTime"]
         except KeyError:
             instanceLaunchedAt = i["LaunchTime"]
 
@@ -2042,7 +2064,10 @@ def ec2_instance_linux_latest_ssm_agent_check(cache: dict, session, awsAccountId
         subnetId = i["SubnetId"]
         vpcId = i["VpcId"]
         try:
-            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
+            if i.get("BlockDeviceMappings") and isinstance(i["BlockDeviceMappings"], list) and len(i["BlockDeviceMappings"]) > 0:
+               instanceLaunchedAt = i["BlockDeviceMappings"][0].get("Ebs", {}).get("AttachTime", i["LaunchTime"])
+            else: 
+                instanceLaunchedAt = i["LaunchTime"]
         except KeyError:
             instanceLaunchedAt = i["LaunchTime"]
         # Try to get the platform detail from EC2 directly
@@ -2205,7 +2230,10 @@ def ec2_instance_ssm_association_successful_check(cache: dict, session, awsAccou
         subnetId = i["SubnetId"]
         vpcId = i["VpcId"]
         try:
-            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
+            if i.get("BlockDeviceMappings") and isinstance(i["BlockDeviceMappings"], list) and len(i["BlockDeviceMappings"]) > 0:
+               instanceLaunchedAt = i["BlockDeviceMappings"][0].get("Ebs", {}).get("AttachTime", i["LaunchTime"])
+            else: 
+                instanceLaunchedAt = i["LaunchTime"]
         except KeyError:
             instanceLaunchedAt = i["LaunchTime"]
 
@@ -2364,7 +2392,10 @@ def ec2_instance_patch_manager_check(cache: dict, session, awsAccountId: str, aw
         subnetId = i["SubnetId"]
         vpcId = i["VpcId"]
         try:
-            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
+            if i.get("BlockDeviceMappings") and isinstance(i["BlockDeviceMappings"], list) and len(i["BlockDeviceMappings"]) > 0:
+               instanceLaunchedAt = i["BlockDeviceMappings"][0].get("Ebs", {}).get("AttachTime", i["LaunchTime"])
+            else: 
+                instanceLaunchedAt = i["LaunchTime"]
         except KeyError:
             instanceLaunchedAt = i["LaunchTime"]
         
@@ -2548,7 +2579,10 @@ def ec2_instance_scanned_by_inspector_check(cache: dict, session, awsAccountId: 
         subnetId = i["SubnetId"]
         vpcId = i["VpcId"]
         try:
-            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
+            if i.get("BlockDeviceMappings") and isinstance(i["BlockDeviceMappings"], list) and len(i["BlockDeviceMappings"]) > 0:
+               instanceLaunchedAt = i["BlockDeviceMappings"][0].get("Ebs", {}).get("AttachTime", i["LaunchTime"])
+            else: 
+                instanceLaunchedAt = i["LaunchTime"]
         except KeyError:
             instanceLaunchedAt = i["LaunchTime"]
 
@@ -2740,7 +2774,10 @@ def ec2_instance_exploitable_vulnerability_check(cache: dict, session, awsAccoun
         subnetId = i["SubnetId"]
         vpcId = i["VpcId"]
         try:
-            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
+            if i.get("BlockDeviceMappings") and isinstance(i["BlockDeviceMappings"], list) and len(i["BlockDeviceMappings"]) > 0:
+               instanceLaunchedAt = i["BlockDeviceMappings"][0].get("Ebs", {}).get("AttachTime", i["LaunchTime"])
+            else: 
+                instanceLaunchedAt = i["LaunchTime"]
         except KeyError:
             instanceLaunchedAt = i["LaunchTime"]
 
@@ -3074,7 +3111,10 @@ def public_ec2_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
         subnetId = i["SubnetId"]
         vpcId = i["VpcId"]
         try:
-            instanceLaunchedAt = i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"]
+            if i.get("BlockDeviceMappings") and isinstance(i["BlockDeviceMappings"], list) and len(i["BlockDeviceMappings"]) > 0:
+               instanceLaunchedAt = i["BlockDeviceMappings"][0].get("Ebs", {}).get("AttachTime", i["LaunchTime"])
+            else: 
+                instanceLaunchedAt = i["LaunchTime"]
         except KeyError:
             instanceLaunchedAt = i["LaunchTime"]
         try:
