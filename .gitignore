@@ -13,3 +13,76 @@ LOCAL_external_providers.toml
 output.json
 output_ocsf_v1-4-0_events.json
 gcp_cred.json
+
+# Testing related
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.tox/
+pytest_cache/
+
+# Claude settings
+.claude/*
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+.env
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.egg
+MANIFEST
+.eggs/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+.DS_Store
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+tmp/
+temp/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Unit test / coverage reports
+.nox/
+.coverage.*
+nosetests.xml
+test-results/
+junit.xml
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# Poetry - DO NOT ignore poetry.lock
+# poetry.lock is important for reproducible builds
