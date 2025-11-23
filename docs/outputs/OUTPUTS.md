@@ -7,13 +7,12 @@ This documentation is all about Outputs supported by ElectricEye and how to conf
 - [Key Considerations](#key-considerations)
 - [`stdout` Output](#stdout-output)
 - [OCSF `stdout` Output](#ocsf-stdout-output)
+- [OCSF Parquet Output](#ocsf-parquet-output)
 - [JSON Output](#json-output)
 - [HTML Output](#html-output)
 - [HTML Compliance Output](#html-compliance-output)
 - [Normalized JSON Output](#json-normalized-output)
 - [Cloud Asset Management JSON Output](#json-cloud-asset-management-cam-output)
-- [Open Cyber Security Format (OCSF) V1.1.0 Output](#open-cyber-security-format-ocsf-v110-output)
-- [Open Cyber Security Format (OCSF) V1.4.0 Output](#open-cyber-security-format-ocsf-v140-output)
 - [CSV Output](#csv-output)
 - [AWS Security Hub Output](#aws-security-hub-output)
 - [MongoDB & AWS DocumentDB Output](#mongodb--aws-documentdb-output)
@@ -34,7 +33,7 @@ To review the list of possible Output providers, use the following ElectricEye c
 
 ```bash
 $ python3 eeauditor/controller.py --list-options
-['amazon_sqs', 'cam_json', 'cam_mongodb', 'cam_postgresql', 'csv', 'html', 'html_compliance', 'json', 'json_normalized', 'mongodb', 'ocsf_kdf', 'ocsf_stdout', 'ocsf_v1_1_0', 'ocsf_v1_4_0', 'postgresql', 'sechub', 'slack', 'stdout']
+['amazon_sqs', 'cam_json', 'cam_mongodb', 'cam_postgresql', 'csv', 'html', 'html_compliance', 'json', 'json_normalized', 'mongodb', 'ocsf_kdf', 'ocsf_parquet', 'ocsf_stdout', 'postgresql', 'sechub', 'slack', 'stdout']
 ```
 
 #### IMPORTANT NOTE!! You can specify multiple Outputs by providing the `-o` or `--outputs` argument multiple times, for instance: `python3 eeauditor/controller.py -t AWS -o json -o csv -o postgresql`
@@ -96,19 +95,49 @@ $ python3 eeauditor/controller.py -t AWS -c ebs_volume_encryption_check -o stdou
 
 > **NOTE**: This is the default output option.
 
-All ElectricEye findings (including `AssetDetails`) in OCSF format are printed out to your terminal using `print(json.dumps(findings,default=str))`. As these are raw JSON objects, it can be used in conjunction with a `grep` statement as well as `jq` to query out specific keys within the ASFF as required.
+All ElectricEye findings (including `AssetDetails`) in OCSF V1.7.0 format are printed out to your terminal using `print(json.dumps(findings,default=str))`. As these are raw JSON objects, it can be used in conjunction with a `grep` statement as well as `jq` to query out specific keys within the OCSF schema as required.
 
-For example, if you just want to have a "pretty-printed" JSON output you could use the following command, the `grep 'SchemaVersion'` pipe ensures that only JSON objects from the findings are piped to `jq` and not the logging and exception information that is produced by Electriceye.
+For example, if you just want to have a "pretty-printed" JSON output you could use the following command, the `grep 'activity_id'` pipe ensures that only JSON objects from the findings are piped to `jq` and not the logging and exception information that is produced by ElectricEye.
 
 ```bash
-$ python3 eeauditor/controller.py -t AWS -c ebs_volume_encryption_check -o ocsf_stdout | grep 'SchemaVersion' | jq . -r
+$ python3 eeauditor/controller.py -t AWS -c ebs_volume_encryption_check -o ocsf_stdout | grep 'activity_id' | jq . -r
 ```
 
-The OCSF V1.4.0 Output selection will convert all ElectricEye findings into the OCSF format (in JSON) which is a normalized and standardized security-centric data model, well-suited to ingestion in Data Lakes and Data Lake Houses built upon Amazon Security Lake, AWS Glue Data Catalog, Snowflake, Apache Iceberg, Google BigQuery, and more. The Event Class used for this finding is [`compliance_finding [2003]`](https://schema.ocsf.io/1.4.0/classes/compliance_finding?extensions=)
+The OCSF stdout output converts all ElectricEye findings into the OCSF V1.7.0 format (in JSON) which is a normalized and standardized security-centric data model, well-suited to ingestion in Data Lakes and Data Lake Houses built upon Amazon Security Lake, AWS Glue Data Catalog, Snowflake, Apache Iceberg, Google BigQuery, and more. The Event Class used for this finding is [`compliance_finding [2003]`](https://schema.ocsf.io/1.7.0/classes/compliance_finding?extensions=)
 
-This Output will provide the `ProductFields.AssetDetails` information.
+This output includes several performance optimizations:
+- Dictionary-based lookups for severity, provider, and compliance status mappings (O(1) instead of O(n))
+- Set-based operations for control crosswalking
+- Single-pass decoding and control mapping
+- Pre-calculated processed time
+- Efficient standards extraction using set comprehension
+
+This Output will provide the `ProductFields.AssetDetails` information within the `resources.[].data` field.
 
 To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o ocsf_stdout` you can also choose to *not* specify `-o` at all as it is the default Output.
+
+## OCSF Parquet Output
+
+The OCSF Parquet output writes all ElectricEye findings in OCSF V1.7.0 format to an Apache Parquet file with Snappy compression. Parquet is a columnar storage format that is highly efficient for analytics workloads and is natively supported by most modern data platforms.
+
+This output is ideal for:
+- Data lake ingestion (Amazon S3, Azure Data Lake, Google Cloud Storage)
+- Analytics platforms (Amazon Athena, Google BigQuery, Snowflake, Databricks)
+- ETL pipelines (Apache Spark, Dask, Pandas)
+- Long-term storage with efficient compression (~50-70% size reduction)
+
+The Parquet output preserves all nested OCSF structures (metadata, cloud, observables, compliance, finding_info, remediation, resources, unmapped) as native nested columns, allowing for proper querying of nested fields in tools like:
+- AWS Athena (using dot notation: `metadata.uid`)
+- Apache Spark (using struct fields)
+- DuckDB (native nested type support)
+- BigQuery (STRUCT and ARRAY types)
+- Snowflake (VARIANT/OBJECT types)
+
+This output includes the same performance optimizations as the OCSF stdout output and provides the `ProductFields.AssetDetails` information within the `resources.[].data` field.
+
+To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o ocsf_parquet --output-file my_file_name_here`
+
+The output file will be named `{output_file}_ocsf_v1-7-0_events.parquet`
 
 ## HTML Output
 
@@ -513,202 +542,7 @@ To use this Output include the following arguments in your ElectricEye CLI: `pyt
 }
 ```
 
-## Open Cyber Security Format (OCSF) V1.1.0 Output
 
-The OCSF V1.1.0 Output selection will convert all ElectricEye findings into the OCSF format (in JSON) which is a normalized and standardized security-centric data model, well-suited to ingestion in Data Lakes and Data Lake Houses built upon Amazon Security Lake, AWS Glue Data Catalog, Snowflake, Apache Iceberg, Google BigQuery, and more. The Event Class used for this finding is [`compliance_finding [2003]`](https://schema.ocsf.io/1.1.0/classes/compliance_finding?extensions=)
-
-This Output will provide the `ProductFields.AssetDetails` information, it is mapped within `resource.data`.
-
-To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o ocsf_v1_1_0`
-
-### Example Open Cyber Security Format (OCSF) V1.1.0 Output
-
-```json
-{
-    "activity_id": 1,
-    "activity_name": "Create",
-    "category_name": "Findings",
-    "category_uid": 2,
-    "class_name": "Compliance Finding",
-    "class_uid": 2003,
-    "confidence_score": 99,
-    "severity": "Medium",
-    "severity_id": 99,
-    "status": "New",
-    "status_id": 1,
-    "time": 1709090374,
-    "type_name": "Compliance Finding: Create",
-    "type_uid": 200301,
-    "metadata": {
-        "uid": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/Databases/azure-defender-for-cloud-databases-plan-enabled-check",
-        "correlation_uid": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/Databases/azure-defender-for-cloud-databases-plan-enabled-check",
-        "version": "1.1.0",
-        "product": {
-            "name": "ElectricEye",
-            "version": "3.0",
-            "url_string": "https://github.com/jonrau1/ElectricEye",
-            "vendor_name": "ElectricEye"
-        },
-        "profiles": [
-            "cloud"
-        ]
-    },
-    "cloud": {
-        "provider": "Azure",
-        "region": "azure-global",
-        "account": {
-            "uid": "0000aaa-1234-bbb-dddd-example123",
-            "type": "Azure",
-            "type_uid": 99
-        }
-    },
-    "observables": [
-        {
-            "name": "cloud.account.uid",
-            "type": "Resource UID",
-            "type_id": 10,
-            "value": "0000aaa-1234-bbb-dddd-example123"
-        },
-        {
-            "name": "resource.uid",
-            "type": "Resource UID",
-            "type_id": 10,
-            "value": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/Databases"
-        }
-    ],
-    "compliance": {
-        "requirements": [
-            "AICPA TSC CC7.2",
-            "CIS Critical Security Controls V8 8.11",
-            "CIS Microsoft Azure Foundations Benchmark V2.0.0 2.1.3",
-            "CMMC 2.0 AU.L2-3.3.5",
-            "CSA Cloud Controls Matrix V4.0 LOG-05",
-            "CSA Cloud Controls Matrix V4.0 LOG-13",
-            "Equifax SCF V1.0 CM-CS-14",
-            "FBI CJIS Security Policy V5.9 5.3.2.1",
-            "FBI CJIS Security Policy V5.9 5.3.2.2",
-            "FBI CJIS Security Policy V5.9 5.3.4",
-            "FBI CJIS Security Policy V5.9 5.4.1",
-            "FBI CJIS Security Policy V5.9 5.4.3",
-            "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.308(a)(1)(ii)(D)",
-            "HIPAA Security Rule 45 CFR Part 164 Subpart C 164.312(b)",
-            "ISO 27001:2013 A.12.4.1",
-            "ISO 27001:2013 A.16.1.1",
-            "ISO 27001:2013 A.16.1.4",
-            "ISO 27001:2022 A5.25",
-            "MITRE ATT&CK T1210",
-            "NERC Critical Infrastructure Protection CIP-007-6, Requirement R4 Part 4.4",
-            "NIST CSF V1.1 DE.AE-2",
-            "NIST SP 800-171 Rev. 2 3.3.3",
-            "NIST SP 800-171 Rev. 2 3.3.5",
-            "NIST SP 800-53 Rev. 4 AU-6",
-            "NIST SP 800-53 Rev. 4 CA-7",
-            "NIST SP 800-53 Rev. 4 IR-4",
-            "NIST SP 800-53 Rev. 4 SI-4",
-            "NIST SP 800-53 Rev. 5 AU-6",
-            "NIST SP 800-53 Rev. 5 AU-6(1)",
-            "NZISM V3.5 16.6.14. Event log auditing (CID:2034)",
-            "PCI-DSS V4.0 10.4.1",
-            "PCI-DSS V4.0 10.4.1.1",
-            "PCI-DSS V4.0 10.4.2",
-            "PCI-DSS V4.0 10.4.3",
-            "UK NCSC Cyber Assessment Framework V3.1 C1.c"
-        ],
-        "control": "Azure.DefenderForCloud.3",
-        "standards": [
-            "AICPA TSC",
-            "CIS Critical Security Controls V8",
-            "CMMC 2.0",
-            "CSA Cloud Controls Matrix V4.0",
-            "Equifax SCF V1.0",
-            "FBI CJIS Security Policy V5.9",
-            "HIPAA Security Rule 45 CFR Part 164 Subpart C",
-            "ISO 27001:2013",
-            "ISO 27001:2022",
-            "MITRE ATT&CK",
-            "NERC Critical Infrastructure Protection",
-            "NIST CSF V1.1",
-            "NIST SP 800-171 Rev. 2",
-            "NIST SP 800-53 Rev. 4",
-            "NIST SP 800-53 Rev. 5",
-            "NZISM V3.5",
-            "PCI-DSS V4.0",
-            "UK NCSC Cyber Assessment Framework V3.1"
-        ],
-        "status": "Fail",
-        "status_id": 3
-    },
-    "finding_info": {
-        "created_time": 1709090374,
-        "desc": "Microsoft Defender for Databases plan is not enabled in Subscription 0000aaa-1234-bbb-dddd-example123 because at least one of the four plans is on free tier. Defender for Databases in Microsoft Defender for Cloud allows you to protect your entire database estate with attack detection and threat response for the most popular database types in Azure. Defender for Cloud provides protection for the database engines and for data types, according to their attack surface and security risks: Defender for Azure SQL, SQL Server Machines, Open Source Relational DBs, and Azure Cosmos DBs. Refer to the remediation instructions if this configuration is not intended.",
-        "first_seen_time": 1709090374,
-        "modified_time": 1709090374,
-        "product_uid": "arn:aws:securityhub:us-gov-east-1:123456789012:product/123456789012/default",
-        "title": "[Azure.DefenderForCloud.3] Microsoft Defender for Databases plan should be enabled on your subscription",
-        "types": [
-            "Software and Configuration Checks"
-        ],
-        "uid": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/Databases/azure-defender-for-cloud-databases-plan-enabled-check"
-    },
-    "remediation": {
-        "desc": "For more information on the Defender for Databases plan and deployments refer to the Protect your databases with Defender for Databases section of the Azure Security Microsoft Defender for Cloud documentation.",
-        "references": [
-            "https://learn.microsoft.com/en-us/azure/defender-for-cloud/tutorial-enable-databases-plan"
-        ]
-    },
-    "resource": {
-        "data": [
-            {
-                "id": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/SqlServers",
-                "name": "SqlServers",
-                "type": "Microsoft.Security/pricings",
-                "pricing_tier": "Free",
-                "free_trial_remaining_time": "P30D"
-            },
-            {
-                "id": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/SqlServerVirtualMachines",
-                "name": "SqlServerVirtualMachines",
-                "type": "Microsoft.Security/pricings",
-                "pricing_tier": "Free",
-                "free_trial_remaining_time": "P30D"
-            },
-            {
-                "id": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/OpenSourceRelationalDatabases",
-                "name": "OpenSourceRelationalDatabases",
-                "type": "Microsoft.Security/pricings",
-                "pricing_tier": "Free",
-                "free_trial_remaining_time": "P30D"
-            },
-            {
-                "id": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/CosmosDbs",
-                "name": "CosmosDbs",
-                "type": "Microsoft.Security/pricings",
-                "pricing_tier": "Free",
-                "free_trial_remaining_time": "P30D"
-            }
-        ],
-        "cloud_partition": null,
-        "region": "azure-global",
-        "type": "Microsoft Defender for Cloud",
-        "uid": "/subscriptions/0000aaa-1234-bbb-dddd-example123/providers/Microsoft.Security/pricings/Databases"
-    },
-    "unmapped": {
-        "provider_type": "CSP",
-        "asset_class": "Security Services",
-        "asset_component": "Microsoft Defender for Databases",
-        "workflow_status": "NEW",
-        "record_state": "ACTIVE"
-    }
-}
-```
-
-## Open Cyber Security Format (OCSF) V1.4.0 Output
-
-The OCSF V1.4.0 Output selection will convert all ElectricEye findings into the OCSF format (in JSON) which is a normalized and standardized security-centric data model, well-suited to ingestion in Data Lakes and Data Lake Houses built upon Amazon Security Lake, AWS Glue Data Catalog, Snowflake, Apache Iceberg, Google BigQuery, and more. The Event Class used for this finding is [`compliance_finding [2003]`](https://schema.ocsf.io/1.4.0/classes/compliance_finding?extensions=)
-
-This Output will provide the `ProductFields.AssetDetails` information, it is mapped within `resources.[].data`.
-
-To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o ocsf_v1_4_0`
 
 ## MongoDB & AWS DocumentDB Output
 
@@ -1149,11 +983,18 @@ An example of the "Findings" output.
 
 **IMPORTANT NOTE**: This requires `firehose:PutRecordBatch` IAM permissions!
 
-This output will send whichever the most up-to-date version of OCSF that ElectricEye supports to Kinesis Data Firehose, as of 4 FEB 2024 that is OCSF V1.1.0 mapped into Compliance Findings. Kinesis Data Firehouse is an extremely high-throughput data streaming service on AWS that allows you to batch several 100 events per second to select locations such as Snowflake, Splunk, Amazon S3, Datadog, OpenSearch Service, and more. You can configure buffering which allows your records to be batch-written to locations, this is helpful for building data lakes on AWS as you can ensure you have as big as a file as you can to keep the overall amount of files low. Additionally, you can configure dynamic partitioning in certain platforms to craft Hive-like partitions (e.g., `year=YYYY/month=MM/day=DD` and so on), additionally for certain locations you can automatically transform the data into the Apache Parquet columnar binary format or use AWS Lambda to perform Extraction-Loading-Transformation (ELT) to the records.
+This output will send OCSF V1.7.0 Compliance Findings to Amazon Kinesis Data Firehose. Kinesis Data Firehose is an extremely high-throughput data streaming service on AWS that allows you to batch several 100 events per second to select locations such as Snowflake, Splunk, Amazon S3, Datadog, OpenSearch Service, and more. You can configure buffering which allows your records to be batch-written to locations, this is helpful for building data lakes on AWS as you can ensure you have as big as a file as you can to keep the overall amount of files low. Additionally, you can configure dynamic partitioning in certain platforms to craft Hive-like partitions (e.g., `year=YYYY/month=MM/day=DD` and so on), additionally for certain locations you can automatically transform the data into the Apache Parquet columnar binary format or use AWS Lambda to perform Extraction-Loading-Transformation (ELT) to the records.
 
 As an added bonus, this is well suited for adding a custom CSPM, EASM & SSPM source into your Amazon Security Lake or Snowflake Data Cloud!
 
-This Output will provide the `ProductFields.AssetDetails` information.
+This output includes the same performance optimizations as the OCSF stdout output:
+- Dictionary-based lookups for severity, provider, and compliance status mappings
+- Set-based operations for control crosswalking
+- Single-pass decoding and control mapping
+- Pre-calculated processed time
+- Efficient standards extraction
+
+This Output will provide the `ProductFields.AssetDetails` information within the `resources.[].data` field.
 
 To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o ocsf_kdf`
 
