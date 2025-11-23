@@ -312,7 +312,7 @@ class OcsfStdoutOutput(object):
                     "logged_time": eventTime,
                     "original_time": finding["CreatedAt"],
                     "processed_time": processedTime,
-                    "version":"1.4.0",
+                    "version":"1.7.0",
                     "profiles":["cloud"],
                     "product": {
                         "name":"ElectricEye",
