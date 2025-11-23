@@ -23,7 +23,7 @@ import boto3
 from tomli import load as tomload
 import sys
 from os import environ, path, chmod
-from re import compile
+from re import compile, Pattern
 import json
 from botocore.exceptions import ClientError
 from google.oauth2 import service_account
@@ -31,6 +31,7 @@ from azure.identity import ClientSecretCredential
 from azure.mgmt.resource.subscriptions import SubscriptionClient
 import snowflake.connector as snowconn
 from functools import lru_cache
+from typing import Optional, Dict, Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("CloudUtils")
@@ -40,7 +41,7 @@ AWS_MULTI_ACCOUNT_TARGET_TYPE_CHOICES = ["Accounts", "OU", "Organization"]
 CREDENTIALS_LOCATION_CHOICES = ["AWS_SSM", "AWS_SECRETS_MANAGER", "CONFIG_FILE"]
 
 # Compile regex once at module level for performance
-OU_ID_REGEX = compile(r"^ou-[0-9a-z]{4,32}-[a-z0-9]{8,32}$")
+OU_ID_REGEX: Pattern[str] = compile(r"^ou-[0-9a-z]{4,32}-[a-z0-9]{8,32}$")
 
 class CloudConfig(object):
     """
@@ -54,10 +55,10 @@ class CloudConfig(object):
     - Pagination support for AWS Organizations APIs
     """
 
-    def __init__(self, assessmentTarget: str, tomlPath: str | None, useToml: str, args: str | None):
+    def __init__(self, assessmentTarget: str, tomlPath: Optional[str], useToml: str, args: Optional[str]) -> None:
         # Initialize client cache for performance
-        self._boto3_clients = {}
-        self._aws_caller_identity = None
+        self._boto3_clients: Dict[str, Any] = {}
+        self._aws_caller_identity: Optional[Dict[str, Any]] = None
         if useToml == "True":
             if tomlPath is None:
                 here = path.abspath(path.dirname(__file__))
@@ -562,7 +563,7 @@ class CloudConfig(object):
         if useToml == "False":
             self.process_non_toml_args(assessmentTarget, args)
 
-    def _get_boto3_client(self, service_name: str, region_name: str = None):
+    def _get_boto3_client(self, service_name: str, region_name: Optional[str] = None) -> Any:
         """
         Get or create a cached boto3 client
         
@@ -578,7 +579,7 @@ class CloudConfig(object):
         
         return self._boto3_clients[cache_key]
     
-    def _get_aws_caller_identity(self):
+    def _get_aws_caller_identity(self) -> Dict[str, Any]:
         """
         Get cached AWS caller identity to avoid repeated API calls
         
@@ -614,7 +615,7 @@ class CloudConfig(object):
             sys.exit(2)
 
     @lru_cache(maxsize=1)
-    def get_aws_regions(self):
+    def get_aws_regions(self) -> tuple[str, ...]:
         """
         Uses EC2 DescribeRegions API to get a list of opted-in AWS Regions
         
@@ -634,7 +635,7 @@ class CloudConfig(object):
 
         return tuple(regions)  # Return tuple for hashability with lru_cache
     
-    def get_credential_from_aws_ssm(self, value, configurationName) -> str:
+    def get_credential_from_aws_ssm(self, value: str, configurationName: str) -> str:
         """
         Retrieves a TOML variable from AWS Systems Manager Parameter Store and returns it
         
@@ -664,7 +665,7 @@ class CloudConfig(object):
         
         return credential
     
-    def get_credential_from_aws_secrets_manager(self, value, configurationName) -> str:
+    def get_credential_from_aws_secrets_manager(self, value: str, configurationName: str) -> str:
         """
         Retrieves a TOML variable from AWS Secrets Manager and returns it
         
@@ -716,7 +717,7 @@ class CloudConfig(object):
 
         return accounts
 
-    def get_aws_accounts_from_organizational_units(self, targets) -> list[str]:
+    def get_aws_accounts_from_organizational_units(self, targets: list[str]) -> list[str]:
         """
         Uses Organizations ListAccountsForParent API to get a list of "ACTIVE" AWS Accounts for specified OUs
         
@@ -748,6 +749,7 @@ class CloudConfig(object):
         return accounts
 
     # This function is called outside of this Class
+    @staticmethod
     def create_aws_session(account: str, partition: str, region: str, roleName: str) -> boto3.Session:
         """
         Creates a Boto3 Session by assuming a given AWS IAM Role
@@ -821,7 +823,8 @@ class CloudConfig(object):
             return "aws"
 
     # This function is called outside of this Class
-    def get_aws_support_eligibility(session) -> bool:
+    @staticmethod
+    def get_aws_support_eligibility(session: boto3.Session) -> bool:
         support = session.client("support")
 
         try:
@@ -839,7 +842,8 @@ class CloudConfig(object):
         return supportEligible
 
     # This function is called outside of this Class
-    def get_aws_shield_advanced_eligibility(session) -> bool:
+    @staticmethod
+    def get_aws_shield_advanced_eligibility(session: boto3.Session) -> bool:
         shield = session.client("shield")
 
         try:
@@ -856,7 +860,7 @@ class CloudConfig(object):
 
         return shieldEligible
 
-    def setup_gcp_credentials(self, credentialValue) -> None:
+    def setup_gcp_credentials(self, credentialValue: str) -> service_account.Credentials:
         """
         Takes the credential value derived from the TOML file and creates a GCP credential object that can be passed to EEAuditor
         """
@@ -873,7 +877,7 @@ class CloudConfig(object):
 
         return gcpCredentials
 
-    def setup_oci_credentials(self, credentialValue) -> None:
+    def setup_oci_credentials(self, credentialValue: str) -> None:
         """
         Oracle Cloud Python SDK Config object can be created and requires the path to a PEM file, we can save the PEM
         contents to a file and save the location to an environment variable to be used
@@ -904,7 +908,7 @@ class CloudConfig(object):
 
         return azureCredentials
 
-    def retrieve_azure_subscriptions_for_service_principal(self, azureCredentials: ClientSecretCredential) -> list:
+    def retrieve_azure_subscriptions_for_service_principal(self, azureCredentials: ClientSecretCredential) -> list[str]:
         """
         """
         azureSubscriptionsClient = SubscriptionClient(azureCredentials)
@@ -955,7 +959,7 @@ class CloudConfig(object):
 
         return conn, cur
 
-    def process_non_toml_args(self, assessmentTarget: str, args: dict) -> None:
+    def process_non_toml_args(self, assessmentTarget: str, args: Dict[str, Any]) -> None:
         """
         Process any additional arguments passed to the script that are not in the TOML file
         """
