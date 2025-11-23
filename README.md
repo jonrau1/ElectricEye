@@ -6,7 +6,7 @@
 
 ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring supporting 100s of services and evaluations to harden your CSP & SaaS environments with controls mapped to over 20 industry, regulatory, and best practice controls frameworks.
 
-![VulnScan](https://github.com/jonrau1/ElectricEye/actions/workflows/sbom-vulns.yml/badge.svg)  ![CodeQL](https://github.com/jonrau1/ElectricEye/actions/workflows/codeql-analysis.yml/badge.svg) ![EcrBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-ecr-public.yml/badge.svg) ![OcrBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-ocr-public.yml/badge.svg) ![DockerHubBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-docker-hub.yml/badge.svg)
+![VulnScan](https://github.com/jonrau1/ElectricEye/actions/workflows/sbom-vulns.yml/badge.svg)  ![CodeQL](https://github.com/jonrau1/ElectricEye/actions/workflows/codeql-analysis.yml/badge.svg) ![EcrBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-ecr-public.yml/badge.svg) ![DockerHubBuild](https://github.com/jonrau1/ElectricEye/actions/workflows/push-docker-hub.yml/badge.svg)
 
 <p>
   <a href="https://hub.docker.com/r/electriceye/electriceye"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/electriceye/electriceye"></a>
@@ -171,7 +171,7 @@ The tables of supported Services and Checks have been migrated to the respective
 
 ## ElectricEye on Docker
 
-After configuring ElectricEye for your environment(s) using the [TOML configuration](./eeauditor/external_providers.toml), you can instead utilize Docker to run ElectricEye which have images maintained on ECR Public, Oracle Cloud Container Registry (OCR), and Docker Hub. You can read more about the security assurance activities [here](#repository-security), in the future more Registries and image signing will be utilized.
+After configuring ElectricEye for your environment(s) using the [TOML configuration](./eeauditor/external_providers.toml), you can instead utilize Docker to run ElectricEye which have images maintained on ECR Public and Docker Hub. You can read more about the security assurance activities [here](#repository-security), in the future more Registries and image signing will be utilized.
 
 ### Building Images
 
@@ -189,11 +189,9 @@ From here you can push to your repository of choice, be sure to change the tag f
 
 You can also pull an ElectricEye image from the various repositories, a `latest` image tag will always be pushed alongside an image tagged with the SHA hash of the workflow `${{ github.sha }}` and can be viewed within the various GitHub Action Workflows within the `Print Image` step.
 
-To pull from the various repositories, use these commands, you can replace `latest` as you see fit. The dependencies within ElectricEye stay relatively stable until a new cloud or major integration is added. Check the Pull Requests for more information to be sure.
+To pull from the repositories, use these commands, you can replace `latest` as you see fit. The dependencies within ElectricEye stay relatively stable until a new cloud or major integration is added. Check the Pull Requests for more information to be sure.
 
 - Amazon Elastic Container Registry (ECR) Public: `docker pull public.ecr.aws/t4o3u7t2/electriceye:latest` 
-
-- Oracle Cloud Infrastructure Registry (OCIR): `docker pull iad.ocir.io/idudmagprsdi/electriceye:latest`
 
 - Docker Hub: `docker pull electriceye/electriceye`
 
