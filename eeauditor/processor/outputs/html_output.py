@@ -50,50 +50,53 @@ class HtmlProvider(object):
 
         tableStructures = self.generate_table_structure(activeTable)
 
-        mainTable = tableStructures[0]
+        # Use list to build table rows, then join once at the end (much faster than string concatenation)
+        table_parts = [tableStructures[0]]
+        
+        # Severity class mapping for O(1) lookup
+        severity_classes = {
+            "CRITICAL": "critical",
+            "HIGH": "high",
+            "MEDIUM": "medium",
+            "LOW": "low",
+            "INFORMATIONAL": "informational"
+        }
+        
         for row in activeTable:
             # Pull out row details
             findingId = row["Id"]
             createdAt = row["CreatedAt"]
+            
             # Assign dynamic Paragraph CSS class depending on finding sev
             severity = row["Severity"]
-            if severity == "CRITICAL":
-                severity = f'<p class="severity critical">{severity}</p>'
-            elif severity == "HIGH":
-                severity = f'<p class="severity high">{severity}</p>'
-            elif severity == "MEDIUM":
-                severity = f'<p class="severity medium">{severity}</p>'
-            elif severity == "LOW":
-                severity = f'<p class="severity low">{severity}</p>'
-            elif severity == "INFORMATIONAL":
-                severity = f'<p class="severity informational">{severity}</p>'
+            severity_class = severity_classes.get(severity, "informational")
+            severity_html = f'<p class="severity {severity_class}">{severity}</p>'
+            
             title = row["Title"]
             description = row["Description"]
             provider = row["Provider"]
             providerAcctId = row["ProviderAccountId"]
             assetRegion = row["AssetRegion"]
             assetClass = row["AssetClass"]
+            
             # Attempt to get the IMG tag of a service
             assetService = row["AssetService"]
             serviceImg = self.get_image_tag(assetService)
-            if serviceImg == None:
-                assetServiceTd = f"<td>{assetService}</td>"
-            else:
-                assetServiceTd = f'<td>{serviceImg} \n {assetService}</td>'
+            assetServiceTd = f"<td>{assetService}</td>" if serviceImg is None else f'<td>{serviceImg} \n {assetService}</td>'
+            
             assetComponent = row["AssetComponent"]
             resourceId = row["ResourceId"]
             recordState = row["RecordState"]
+            
             complianceStatus = row["ComplianceStatus"]
-            if complianceStatus == "PASSED":
-                complianceStatus = f'<p class="compliance passed">{complianceStatus}</p>'
-            elif complianceStatus == "FAILED":
-                complianceStatus = f'<p class="compliance failed">{complianceStatus}</p>'
+            compliance_class = "passed" if complianceStatus == "PASSED" else "failed"
+            compliance_html = f'<p class="compliance {compliance_class}">{complianceStatus}</p>'
 
-            newTd = f'''
+            table_parts.append(f'''
                 <tr>
                     <td>{findingId}</td>
                     <td>{createdAt}</td>
-                    <td>{severity}</td>
+                    <td>{severity_html}</td>
                     <td>{title}</td>
                     <td>{description}</td>
                     <td>{provider}</td>
@@ -104,13 +107,15 @@ class HtmlProvider(object):
                     <td>{assetComponent}</td>
                     <td>{resourceId}</td>
                     <td>{recordState}</td>
-                    <td>{complianceStatus}</td>
+                    <td>{compliance_html}</td>
                 </tr>
-                '''
-            mainTable += newTd
+                ''')
         
         # Close out the table
-        mainTable += tableStructures[1]
+        table_parts.append(tableStructures[1])
+        
+        # Join all parts once (much faster than repeated concatenation)
+        mainTable = ''.join(table_parts)
 
         html = f"""
             <html lang="en" title="ElectricEye Executive Report">
@@ -423,35 +428,59 @@ class HtmlProvider(object):
 
         # Total
         totalFindings = len(processedData)
-        # Compliance Passed v Failed
-        totalPassed = [finding for finding in processedData if finding["ComplianceStatus"] == "PASSED"]
-        totalFailed = [finding for finding in processedData if finding["ComplianceStatus"] == "FAILED"]
+        
+        # Initialize counters and sets
+        totalPassed = 0
+        totalFailed = 0
+        criticalsFindings = 0
+        highFindings = 0
+        mediumFindings = 0
+        lowFindings = 0
+        infoFindings = 0
+        
+        # Use sets for O(1) lookups and automatic deduplication
+        uniqueResource = set()
+        uniqueClasses = set()
+        uniqueServices = set()
+        uniqueComponents = set()
+        uniqueAccounts = set()
+        uniqueRegions = set()
+        
+        # Single pass through data
+        for finding in processedData:
+            # Compliance status
+            if finding["ComplianceStatus"] == "PASSED":
+                totalPassed += 1
+            else:
+                totalFailed += 1
+            
+            # Severity counts
+            severity = finding["Severity"]
+            if severity == "CRITICAL":
+                criticalsFindings += 1
+            elif severity == "HIGH":
+                highFindings += 1
+            elif severity == "MEDIUM":
+                mediumFindings += 1
+            elif severity == "LOW":
+                lowFindings += 1
+            elif severity == "INFORMATIONAL":
+                infoFindings += 1
+            
+            # Collect unique values
+            uniqueResource.add(finding.get("ResourceId"))
+            uniqueClasses.add(finding.get("AssetClass"))
+            uniqueServices.add(finding.get("AssetService"))
+            uniqueComponents.add(finding.get("AssetComponent"))
+            uniqueAccounts.add(finding.get("ProviderAccountId"))
+            uniqueRegions.add(finding.get("AssetRegion"))
 
-        passingPercentage = (len(totalPassed) / totalFindings) * 100
+        passingPercentage = (totalPassed / totalFindings) * 100
         roundedPercentage = f"{round(passingPercentage, 2)}%"
-        # Severity Status
-        criticalsFindings = [finding for finding in processedData if finding["Severity"] == "CRITICAL"]
-        highFindings = [finding for finding in processedData if finding["Severity"] == "HIGH"]
-        mediumFindings = [finding for finding in processedData if finding["Severity"] == "MEDIUM"]
-        lowFindings = [finding for finding in processedData if finding["Severity"] == "LOW"]
-        infoFindings = [finding for finding in processedData if finding["Severity"] == "INFORMATIONAL"]
-        # Resource IDs
-        #allResources = [d.get("ResourceId") for d in processedData]
-        uniqueResource = list(set(d.get("ResourceId") for d in processedData))
-        # Assets
-        #allServices = [d.get("AssetService") for d in processedData]
-        uniqueClasses = list(set(d.get("AssetClass") for d in processedData))
-        uniqueServices = list(set(d.get("AssetService") for d in processedData))
-        #allComponents = [d.get("AssetComponent") for d in processedData]
-        uniqueComponents = list(set(d.get("AssetComponent") for d in processedData))
-        # Accounts
-        uniqueAccounts = list(set(d.get("ProviderAccountId") for d in processedData))
-        # Regions
-        uniqueRegions = list(set(d.get("AssetRegion") for d in processedData))
 
         executiveReport = f'ElectricEye Auditors scanned {len(uniqueResource)} total Assets across {len(uniqueAccounts)} Provider Account(s) in {len(uniqueRegions)} Region(s)/Zone(s) \
-            and generated {totalFindings} Findings. Of all findings, {len(totalFailed)} failed and {len(totalPassed)} passed for an ElectricEye Findings Passing Score of {roundedPercentage}. \
-            Of these findings the severities are {len(criticalsFindings)} Critical, {len(highFindings)} High, {len(mediumFindings)} Medium, {len(lowFindings)} Low, and {len(infoFindings)} Informational. \
+            and generated {totalFindings} Findings. Of all findings, {totalFailed} failed and {totalPassed} passed for an ElectricEye Findings Passing Score of {roundedPercentage}. \
+            Of these findings the severities are {criticalsFindings} Critical, {highFindings} High, {mediumFindings} Medium, {lowFindings} Low, and {infoFindings} Informational. \
             There are {len(uniqueClasses)} Asset Classes (categories) across the Provider Accounts & Regions, comprising {len(uniqueServices)} distinct Asset Services and {len(uniqueComponents)} distinct \
             Asset Components. It is recommended to work backwards from resources with the highest amount of failed findings and Assets with important business- or mission-criticality.'
         
