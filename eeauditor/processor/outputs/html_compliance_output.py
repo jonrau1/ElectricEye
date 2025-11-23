@@ -67,7 +67,7 @@ class JsonProvider(object):
     __provider__ = "html_compliance"
 
     def write_findings(self, findings: list, output_file: str, **kwargs):
-        if len(findings) == 0:
+        if not findings:
             print("There are not any findings to write to file!")
             exit(0)
 
@@ -79,22 +79,18 @@ class JsonProvider(object):
         uniqueControls = self.get_unique_controls(processedFindings)
         # Gather and sort the control data enriched with aggregated asset information
         assetInfoAggregation = self.get_asset_information_per_control(processedFindings)
-        assetDataPerControl = []
-        for control, details in assetInfoAggregation.items():
-            controlAssetPayload = {"ControlId": control}
-            controlAssetPayload.update(details)
-            assetDataPerControl.append(controlAssetPayload)
+        
+        # Combine dict transformation and percentage calculation in one pass
+        assetDataPerControlWithPercentage = [
+            {
+                "ControlId": control,
+                **details,
+                "RawPassingScore": (passingPct := (details["PassingControls"] / details["ResourcesImpacted"]) * 100),
+                "PassingPercentage": f"{round(passingPct, 2)}%"
+            }
+            for control, details in assetInfoAggregation.items()
+        ]
 
-        # Do one more pass on the aggregated information and add a passing % per control
-        assetDataPerControlWithPercentage = []
-        for controlData in assetDataPerControl:
-            passingPercentage = (controlData["PassingControls"] / controlData["ResourcesImpacted"]) * 100
-            roundedPercentage = f"{round(passingPercentage, 2)}%"
-            controlData["RawPassingScore"] = passingPercentage
-            controlData["PassingPercentage"] = roundedPercentage
-            assetDataPerControlWithPercentage.append(controlData)
-
-        del assetDataPerControl
         # Get the aggregated pass/fail info per control
         controlsAggregation = self.generate_controls_aggregation(uniqueControls, processedFindings)
 
@@ -159,20 +155,16 @@ class JsonProvider(object):
         """
         This function returns a list of unique controls across all processed findings
         """
-
-        uniqueControls = []
-
-        for findings in processedFindings:
-            for controls in findings["ComplianceRelatedRequirements"]:
-
-                if controls not in uniqueControls:
-                    uniqueControls.append(controls)
-                else:
-                    continue
+        # Use set for O(1) lookups instead of O(n) list searches
+        uniqueControls = {
+            control
+            for finding in processedFindings
+            for control in finding["ComplianceRelatedRequirements"]
+        }
 
         print(f"{len(uniqueControls)} unique controls processed")
 
-        return uniqueControls
+        return list(uniqueControls)
 
     def get_asset_information_per_control(self, processedFindings):
         """
@@ -301,40 +293,31 @@ class JsonProvider(object):
 
         providerAssesed = processedFindings[0]["Provider"]
 
-        # Compliance Passed v Failed
-        totalPassed = [finding for finding in processedFindings if finding["ComplianceStatus"] == "PASSED"]
+        # Use sets for O(1) lookups and count passed in single pass
+        totalPassed = 0
+        regionsAssessed = set()
+        accountsAssessed = set()
+        assetClassesAssesed = set()
+        assetServicesAssessed = set()
+        assetComponentsAssessed = set()
+        uniqueResourcesIds = set()
 
-        passingPercentage = (len(totalPassed) / countFindings) * 100
+        # Single pass through findings
+        for finding in processedFindings:
+            if finding["ComplianceStatus"] == "PASSED":
+                totalPassed += 1
+            
+            regionsAssessed.add(finding["AssetRegion"])
+            accountsAssessed.add(finding["ProviderAccountId"])
+            assetClassesAssesed.add(finding["AssetClass"])
+            assetServicesAssessed.add(finding["AssetService"])
+            assetComponentsAssessed.add(finding["AssetComponent"])
+            uniqueResourcesIds.add(finding["AssetId"])
+
+        passingPercentage = (totalPassed / countFindings) * 100
         roundedPercentage = f"{round(passingPercentage, 2)}%"
 
-        regionsAssessed = []
-        accountsAssessed = []
-        assetClassesAssesed = []
-        assetServicesAssessed = []
-        assetComponentsAssessed = []
-        uniqueResourcesIds = []
-
-        # Append uniques into lists
-        for finding in processedFindings:
-            if finding["AssetRegion"] not in regionsAssessed:
-                regionsAssessed.append(finding["AssetRegion"])
-
-            if finding["ProviderAccountId"] not in accountsAssessed:
-                accountsAssessed.append(finding["ProviderAccountId"])
-
-            if finding["AssetClass"] not in assetClassesAssesed:
-                assetClassesAssesed.append(finding["AssetClass"])
-
-            if finding["AssetService"] not in assetServicesAssessed:
-                assetServicesAssessed.append(finding["AssetService"])
-
-            if finding["AssetComponent"] not in assetComponentsAssessed:
-                assetComponentsAssessed.append(finding["AssetComponent"])
-
-            if finding["AssetId"] not in uniqueResourcesIds:
-                uniqueResourcesIds.append(finding["AssetId"])
-
-        # Use len to get counts
+        # Get counts
         countRegionsAssessed = len(regionsAssessed)
         countAccountsAssessed = len(accountsAssessed)
         countAssetClassesAssesed = len(assetClassesAssesed)
@@ -343,11 +326,11 @@ class JsonProvider(object):
         countUniqueResourceIds = len(uniqueResourcesIds)
 
         # Use join to create sentences of certain lists
-        regionSentence = ", ".join(regionsAssessed)
-        accountSentence = ", ".join(accountsAssessed)
-        assetClassSentence = ", ".join(assetClassesAssesed)
-        assetServiceSentence = ", ".join(assetServicesAssessed)
-        assetComponentSentence = ", ".join(assetComponentsAssessed)
+        regionSentence = ", ".join(sorted(regionsAssessed))
+        accountSentence = ", ".join(sorted(accountsAssessed))
+        assetClassSentence = ", ".join(sorted(assetClassesAssesed))
+        assetServiceSentence = ", ".join(sorted(assetServicesAssessed))
+        assetComponentSentence = ", ".join(sorted(assetComponentsAssessed))
 
         summary = f"""
             ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management & Attack Surface Monitoring that supports 100s of services and evaluations to harden your public cloud & SaaS environments with controls mapped to several dozen control frameworks, standards, laws, and policies. Each Check within ElectricEye evaluates a specific component for a specific service for a specific Cloud Service Provider or SasS Vendor such as ensuring storage for a compute service is encrypted, or if a particular type of logging for a service is enabled. For each of those checks, several controls mapped to NIST CSF V1.1 are provided which are in turn mapped to other major frameworks which can aid in audit readiness or other internal audit or controls management exercises.</br> 
@@ -933,105 +916,85 @@ class JsonProvider(object):
         This function assembles an HTML Report of matplotlib SVGs and tables
         """
 
-        dateNow = str(datetime.utcnow()).split(".")[0].split(" ")[0]
+        dateNow = datetime.utcnow().strftime("%Y-%m-%d")
 
-        # Beginning of the HTML doc with sytlesheet
-        htmlPrefix = f'''
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <meta http-equiv="X-UA-Compatible" content="ie=edge">
-            <title>ElectricEye Compliance Status</title>
-        </head>
-        <style>
-            {self.generate_stylesheet()}
-        </style>
-        <body>
-        <section class="summary__header">
-            <figure>
-                <img src="https://raw.githubusercontent.com/jonrau1/ElectricEye/master/screenshots/logo.svg" class="summary__header__image">
-                <figcaption>ElectricEye Audit Readiness Report | {dateNow}</figcaption>
-            </figure>
-            <h4>{self.generate_executive_summary(processedFindings)}</h4>
-        </section>
-        '''
+        # Use list to build HTML parts, then join once at the end (much faster than string concatenation)
+        html_parts = [
+            '<html>\n<head>\n',
+            '<meta charset="UTF-8">\n',
+            '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n',
+            '<meta http-equiv="X-UA-Compatible" content="ie=edge">\n',
+            '<title>ElectricEye Compliance Status</title>\n',
+            '</head>\n<style>\n',
+            self.generate_stylesheet(),
+            '</style>\n<body>\n',
+            '<section class="summary__header">\n<figure>\n',
+            '<img src="https://raw.githubusercontent.com/jonrau1/ElectricEye/master/screenshots/logo.svg" class="summary__header__image">\n',
+            f'<figcaption>ElectricEye Audit Readiness Report | {dateNow}</figcaption>\n',
+            '</figure>\n<h4>',
+            self.generate_executive_summary(processedFindings),
+            '</h4>\n</section>\n'
+        ]
+        
         # Retrieve the info table contents and the SVG from matplotlib of the bar chart/pie chart for the compliance framework
         for visual in self.create_visuals(controlsAggregation, assetDataPerControl):
-            tableContents = visual[0]
-            svgImage = visual[1]
+            tableContents, svgImage, framework = visual
             # Generate the section header for a specified framework
-            frameworkHeader = self.framework_section_information_generator(visual[2])
+            frameworkHeader = self.framework_section_information_generator(framework)
 
-            html = f'''
-            {frameworkHeader}
-            <div class="chart__image">{svgImage}</div>
-            <section class="table__body">
-                <div class="compliance__info__table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Control Title</th>
-                            <th>Control Objective</th>
-                            <th>Control Passing Score</th>
-                            <th>Unique Asset Classes Impacted</th>
-                            <th>Unique Asset Services Impacted</th>
-                            <th>Unique Asset Components Impacted</th>
-                            <th>Total Check Evaluations in Scope</th>
-                            <th>Passing Checks</th>
-                            <th>Failing Checks</th>
-                        </tr>
-                    </thead>
-                <tbody>
-            '''
-            # Loop the contents of the table to add the rows
+            html_parts.extend([
+                frameworkHeader,
+                '\n<div class="chart__image">',
+                svgImage,
+                '</div>\n<section class="table__body">\n<div class="compliance__info__table">\n<table>\n<thead>\n<tr>\n',
+                '<th>Control Title</th>\n<th>Control Objective</th>\n<th>Control Passing Score</th>\n',
+                '<th>Unique Asset Classes Impacted</th>\n<th>Unique Asset Services Impacted</th>\n',
+                '<th>Unique Asset Components Impacted</th>\n<th>Total Check Evaluations in Scope</th>\n',
+                '<th>Passing Checks</th>\n<th>Failing Checks</th>\n',
+                '</tr>\n</thead>\n<tbody>\n'
+            ])
+            
+            # Build table rows efficiently
             for content in tableContents:
-                # Create a <p> with label depending on the "raw score" - 100.0 is the best and 0.0 is the worst.
-                percentage = content["PassingPercentage"]
                 rawScore = content["RawPassingScore"]
+                percentage = content["PassingPercentage"]
+                
+                # Determine score class
                 if rawScore >= 99.0:
-                    passingPercentage = f'<td><p class="score great">{percentage}</p></td>'
-                elif 70.0 < rawScore < 99.0:
-                    passingPercentage = f'<td><p class="score good">{percentage}</p></td>'
-                elif 40.0 < rawScore < 70.0:
-                    passingPercentage = f'<td><p class="score meh">{percentage}</p></td>'
-                elif 15.0 < rawScore < 40.0:
-                    passingPercentage = f'<td><p class="score bad">{percentage}</p></td>'
+                    score_class = "great"
+                elif rawScore > 70.0:
+                    score_class = "good"
+                elif rawScore > 40.0:
+                    score_class = "meh"
+                elif rawScore > 15.0:
+                    score_class = "bad"
                 else:
-                    passingPercentage = f'<td><p class="score reallybad">{percentage}</p></td>'
-                # Setup the table rows
-                newTd = f'''
-                    <tr>
-                        <td>{content["ControlTitle"]}</td>
-                        <td>{content["ControlDescription"]}</td>
-                        {passingPercentage}
-                        <td>{content["UniqueAssetClass"]}</td>
-                        <td>{content["UniqueAssetService"]}</td>
-                        <td>{content["UniqueAssetComponent"]}</td>
-                        <td>{content["ResourcesImpacted"]}</td>
-                        <td>{content["PassingControls"]}</td>
-                        <td>{content["FailingControls"]}</td>
-                    </tr>
-                '''
-                html += newTd
-            # Close the Table & Section
-            html += """
-                    </tbody>
-                </table> 
-            </section>
-            """
-            htmlPrefix += html
+                    score_class = "reallybad"
+                
+                html_parts.extend([
+                    '<tr>\n',
+                    f'<td>{content["ControlTitle"]}</td>\n',
+                    f'<td>{content["ControlDescription"]}</td>\n',
+                    f'<td><p class="score {score_class}">{percentage}</p></td>\n',
+                    f'<td>{content["UniqueAssetClass"]}</td>\n',
+                    f'<td>{content["UniqueAssetService"]}</td>\n',
+                    f'<td>{content["UniqueAssetComponent"]}</td>\n',
+                    f'<td>{content["ResourcesImpacted"]}</td>\n',
+                    f'<td>{content["PassingControls"]}</td>\n',
+                    f'<td>{content["FailingControls"]}</td>\n',
+                    '</tr>\n'
+                ])
+            
+            html_parts.append('</tbody>\n</table>\n</section>\n')
+        
         # Close the Body and HTML tags
-        htmlEnd = '''
-        <footer>Created by ElectricEye: https://github.com/jonrau1/ElectricEye</footer>
-        </body>
-        </html>
-        '''
+        html_parts.append('<footer>Created by ElectricEye: https://github.com/jonrau1/ElectricEye</footer>\n</body>\n</html>')
 
-        htmlPrefix += htmlEnd
+        # Join all parts once (much faster than repeated concatenation)
+        final_html = ''.join(html_parts)
 
         with open(f"{here}/{outputFile}_audit_readiness_report.html", "w") as f:
-            f.write(htmlPrefix)
+            f.write(final_html)
 
         print("Finished creating HTML report for audit readiness")
 
