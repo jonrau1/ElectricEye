@@ -20,7 +20,7 @@
 
 import logging
 from os import path
-from functools import partial
+from functools import partial, lru_cache
 from inspect import getfile
 from time import sleep
 import json
@@ -28,6 +28,7 @@ from requests import get
 from check_register import CheckRegister
 from cloud_utils import CloudConfig
 from pluginbase import PluginBase
+from typing import Optional, Dict, Any, Generator
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("EEAuditor")
@@ -41,7 +42,7 @@ class EEAuditor(object):
     credentials and cross-boundary configurations, and runs Checks and yields results back to controller.py CLI
     """
 
-    def __init__(self, assessmentTarget, args, useToml, tomlPath=None, searchPath=None):
+    def __init__(self, assessmentTarget: str, args: Optional[str], useToml: str, tomlPath: Optional[str] = None, searchPath: Optional[str] = None) -> None:
         # each check must be decorated with the @registry.register_check("cache_name") to be discovered during plugin loading.
         self.registry = CheckRegister()
         self.name = assessmentTarget
@@ -134,7 +135,7 @@ class EEAuditor(object):
         )
     
     # Called from eeauditor/controller.py print_checks() and run_auditor()
-    def load_plugins(self, auditorName=None):
+    def load_plugins(self, auditorName: Optional[str] = None) -> None:
         """
         Loads from pluginbase, works on a search path override as long as the checks have the registry class and decorator
         """
@@ -159,7 +160,7 @@ class EEAuditor(object):
                     raise e
 
     # Called within this class    
-    def check_service_endpoint_availability(self, endpointData, awsPartition, service, awsRegion):
+    def check_service_endpoint_availability(self, endpointData: Dict[str, Any], awsPartition: str, service: str, awsRegion: str) -> bool:
         """
         This function downloads the latest version of botocore's endpoints.json file from GitHub and checks if a provided
         service within a specific AWS Partition and Region is available
@@ -222,8 +223,21 @@ class EEAuditor(object):
 
         return serviceAvailable
     
+    @lru_cache(maxsize=1)
+    def _get_aws_endpoints_data(self) -> Dict[str, Any]:
+        """
+        Retrieve and cache AWS endpoints data
+        
+        Performance: Cached to avoid repeated HTTP requests
+        """
+        return json.loads(
+            get(
+                "https://raw.githubusercontent.com/boto/botocore/develop/botocore/data/endpoints.json"
+            ).text
+        )
+
     # Called from eeauditor/controller.py run_auditor()
-    def run_aws_checks(self, pluginName=None, delay=0):
+    def run_aws_checks(self, pluginName: Optional[str] = None, delay: int = 0) -> Generator[Dict[str, Any], None, None]:
         """
         Runs AWS Auditors across all TOML-specified Accounts and Regions in a specific Partition
         """
@@ -232,12 +246,8 @@ class EEAuditor(object):
         # "Global" Auditors that should only need to be ran once per Account
         globalAuditors = ["cloudfront", "globalaccelerator", "iam", "health", "support", "account", "s3"]
         
-        # Retrieve the endpoints.json data to prevent multiple outbound calls
-        endpointData = json.loads(
-            get(
-                "https://raw.githubusercontent.com/boto/botocore/develop/botocore/data/endpoints.json"
-            ).text
-        )
+        # Retrieve the endpoints.json data to prevent multiple outbound calls (cached)
+        endpointData = self._get_aws_endpoints_data()
 
         for account in self.awsAccountTargets:
             # This list will contain the "global" services so they're not run multiple times
@@ -280,7 +290,7 @@ class EEAuditor(object):
 
                     # For Support & Shield (Advanced) Auditors, check if the Account in question has the proper Support level and/or an active Shield Advanced Subscription
                     if serviceName == "support":
-                        if CloudConfig.get_aws_support_eligibility is False:
+                        if CloudConfig.get_aws_support_eligibility(session) is False:
                             logger.info(
                                 "%s cannot access Trusted Advisor Checks due to not having Business, Enterprise or Enterprise On-Ramp Support.",
                                 account
@@ -289,7 +299,7 @@ class EEAuditor(object):
                             continue
 
                     if serviceName == "shield":
-                        if CloudConfig.get_aws_shield_advanced_eligibility is False:
+                        if CloudConfig.get_aws_shield_advanced_eligibility(session) is False:
                             logger.info(
                                 "%s cannot access Shield Advanced Checks due to not having an active Subscription.",
                                 account    
@@ -342,7 +352,7 @@ class EEAuditor(object):
             sleep(delay)
 
     # Called from eeauditor/controller.py run_auditor()
-    def run_gcp_checks(self, pluginName=None, delay=0):
+    def run_gcp_checks(self, pluginName: Optional[str] = None, delay: int = 0) -> Generator[Dict[str, Any], None, None]:
         """
         Runs GCP Auditors across all TOML-specified Projects
         """
@@ -386,7 +396,7 @@ class EEAuditor(object):
                 sleep(delay)
 
     # Called from eeauditor/controller.py run_auditor()
-    def run_oci_checks(self, pluginName=None, delay=0):
+    def run_oci_checks(self, pluginName: Optional[str] = None, delay: int = 0) -> Generator[Dict[str, Any], None, None]:
         """
         Run OCI Auditors for all Compartments specified in the TOML for a Tenancy
         """
@@ -434,7 +444,7 @@ class EEAuditor(object):
             sleep(delay)
 
     # Called from eeauditor/controller.py run_auditor()
-    def run_azure_checks(self, pluginName=None, delay=0):
+    def run_azure_checks(self, pluginName: Optional[str] = None, delay: int = 0) -> Generator[Dict[str, Any], None, None]:
         """
         Runs Azure Auditors using Client Secret credentials from an Application Registration
         """
@@ -480,7 +490,7 @@ class EEAuditor(object):
             sleep(delay)
 
     # Called from eeauditor/controller.py run_auditor()
-    def run_m365_checks(self, pluginName=None, delay=0):
+    def run_m365_checks(self, pluginName: Optional[str] = None, delay: int = 0) -> Generator[Dict[str, Any], None, None]:
         """
         Runs M365 Auditors using Client Secret credentials from an Enterprise Application
         """
@@ -527,7 +537,7 @@ class EEAuditor(object):
             sleep(delay)
 
     # Called from eeauditor/controller.py run_auditor()
-    def run_salesforce_checks(self, pluginName=None, delay=0):
+    def run_salesforce_checks(self, pluginName: Optional[str] = None, delay: int = 0) -> Generator[Dict[str, Any], None, None]:
         """
         Runs Salesforce Auditors using Password-based OAuth flow with Username, Password along with a 
         Connected Application Client ID and Client Secret and a User Security Token
@@ -577,7 +587,7 @@ class EEAuditor(object):
             sleep(delay)
 
     # Called from eeauditor/controller.py run_auditor()
-    def run_snowflake_checks(self, pluginName=None, delay=0):
+    def run_snowflake_checks(self, pluginName: Optional[str] = None, delay: int = 0) -> Generator[Dict[str, Any], None, None]:
         """
         Runs Snowflake Auditors using Username and Password for a given Warehouse
         """
@@ -633,7 +643,7 @@ class EEAuditor(object):
             logger.warning("Failed to close Snowflake connection and/or cursor.")
 
     # Called from eeauditor/controller.py run_auditor()
-    def run_non_aws_checks(self, pluginName=None, delay=0):
+    def run_non_aws_checks(self, pluginName: Optional[str] = None, delay: int = 0) -> Generator[Dict[str, Any], None, None]:
         """
         Generic function to run Auditors, unless specialized logic is required, Assessment Target default to running here
         """
@@ -674,10 +684,17 @@ class EEAuditor(object):
             sleep(delay)
 
     # Called from eeauditor/controller.py print_checks()
-    def print_checks_md(self):
-        table = []
-        table.append("| Auditor Name | Check Name | Check Description |")
-        table.append("|---|---|---|")
+    def print_checks_md(self) -> None:
+        """
+        Print checks in Markdown table format
+        
+        Performance: Pre-allocate list with known header size
+        """
+        table = [
+            "| Auditor Name | Check Name | Check Description |",
+            "|---|---|---|"
+        ]
+        
         # Just use some built-in functions to get the function name (__name__) and the Description/docstring (__doc__)
         for serviceName, checkList in self.registry.checks.items():
             for checkName, check in checkList.items():
@@ -697,7 +714,10 @@ class EEAuditor(object):
         print("\n".join(table))
     
     # Called from eeauditor/controller.py print_checks()
-    def print_controls_json(self):
+    def print_controls_json(self) -> None:
+        """
+        Print controls in JSON format
+        """
         controlPrinter = []
 
         for serviceName, checkList in self.registry.checks.items():
@@ -710,6 +730,6 @@ class EEAuditor(object):
                 
                 controlPrinter.append(description)
 
-        print(json.dumps(controlPrinter,indent=4))
+        print(json.dumps(controlPrinter, indent=4))
         
 # EOF
