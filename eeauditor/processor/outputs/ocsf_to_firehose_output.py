@@ -89,8 +89,35 @@ with open(f"{here}/mapped_compliance_controls.json") as jsonfile:
 class OcsfFirehoseOutput(object):
     __provider__ = "ocsf_kdf"
 
+    # Class-level lookup dictionaries for O(1) access
+    SEVERITY_MAP = {
+        "INFORMATIONAL": (1, "Informational"),
+        "LOW": (2, "Low"),
+        "MEDIUM": (3, "Medium"),
+        "HIGH": (4, "High"),
+        "CRITICAL": (5, "Critical")
+    }
+    
+    PROVIDER_MAP = {
+        "AWS": (10, "AWS Account"),
+        "GCP": (11, "GCP Project"),
+        "Azure": (13, "Azure Subscription"),
+        "OCI": (12, "OCI Compartment"),
+        "ServiceNow": (16, "ServiceNow Instance"),
+        "M365": (17, "M365 Tenant"),
+        "Salesforce": (14, "Salesforce Account"),
+        "Google Workspace": (15, "Google Workspace"),
+        "Snowflake": (99, "Snowflake Account")
+    }
+    
+    COMPLIANCE_STATUS_MAP = {
+        "PASSED": (1, "Pass"),
+        "WARNING": (2, "Warning"),
+        "FAILED": (3, "Fail")
+    }
+
     def __init__(self):
-        print("Preparing to send OCSF V1.4.0 Compliance Findings to Amazon Kinesis Data Firehose.")
+        print("Preparing to send OCSF V1.7.0 Compliance Findings to Amazon Kinesis Data Firehose.")
 
         if environ["TOML_FILE_PATH"] == "None":
             # Get the absolute path of the current directory
@@ -105,11 +132,11 @@ class OcsfFirehoseOutput(object):
         with open(tomlFile, "rb") as f:
             data = tomli.load(f)
 
-        # Variable for the entire [outputs.amazon_sqs] section
-        sqsDetails = data["outputs"]["firehose"]
+        # Variable for the entire [outputs.firehose] section
+        firehoseDetails = data["outputs"]["firehose"]
 
-        deliveryStream = sqsDetails["kinesis_firehose_delivery_stream_name"]
-        awsRegion = sqsDetails["kinesis_firehose_region"]
+        deliveryStream = firehoseDetails["kinesis_firehose_delivery_stream_name"]
+        awsRegion = firehoseDetails["kinesis_firehose_region"]
         if awsRegion is None or awsRegion == "":
             awsRegion = boto3.Session().region_name
 
@@ -123,7 +150,7 @@ class OcsfFirehoseOutput(object):
         self.firehose = boto3.client("firehose", region_name=awsRegion)
 
     def write_findings(self, findings: list, **kwargs):
-        if len(findings) == 0:
+        if not findings:
             logger.error("There are not any findings to send to Kinesis Data Firehose!")
             sys.exit(0)
 
@@ -132,82 +159,92 @@ class OcsfFirehoseOutput(object):
             len(findings)
         )
 
-        """# Use another list comprehension to remove `ProductFields.AssetDetails` from non-Asset reporting outputs
-        newFindings = [
-            {**d, "ProductFields": {k: v for k, v in d["ProductFields"].items() if k != "AssetDetails"}} for d in findings
-        ]
+        # Decode and map controls in a single pass
+        decodedFindings = []
+        for finding in findings:
+            # Decode AssetDetails if present
+            if "AssetDetails" in finding["ProductFields"] and finding["ProductFields"]["AssetDetails"]:
+                finding["ProductFields"]["AssetDetails"] = json.loads(
+                    b64decode(finding["ProductFields"]["AssetDetails"]).decode("utf-8")
+                )
 
-        del findings"""
-
-        """
-        This list comprhension will base64 decode and convert a string to JSON for all instances of `ProductFields.AssetDetails`
-        except where it is a None type (this is done for placeholders in Checks where the Asset doesn't exist) and it will also
-        skip over areas in the event that `ProductFields` is missing any Cloud Asset Management required fields
-        """
-        decodedFindings = [
-            {**d, "ProductFields": {**d["ProductFields"],
-                "AssetDetails": json.loads(b64decode(d["ProductFields"]["AssetDetails"]).decode("utf-8"))
-                    if d["ProductFields"]["AssetDetails"] is not None
-                    else None
-            }} if "AssetDetails" in d["ProductFields"]
-            else d
-            for d in findings
-        ]
-
-        del findings
-
-        # Map in the new compliance controls
-        for finding in decodedFindings:
-            complianceRelatedRequirements = list(finding["Compliance"]["RelatedRequirements"])
-            newControls = []
-            nistCsfControls = [control for control in complianceRelatedRequirements if control.startswith("NIST CSF V1.1")]
-            for control in nistCsfControls:
-                crosswalkedControls = self.nist_csf_v_1_1_controls_crosswalk(control)
-                # Not every single NIST CSF Control maps across to other frameworks
-                if crosswalkedControls:
-                    for crosswalk in crosswalkedControls:
-                        if crosswalk not in newControls:
-                            newControls.append(crosswalk)
-                else:
-                    continue
-
-            complianceRelatedRequirements.extend(newControls)
+            # Map in the new compliance controls using set for O(1) lookups
+            complianceRelatedRequirements = finding["Compliance"]["RelatedRequirements"]
+            newControls = set()
             
-            del finding["Compliance"]["RelatedRequirements"]
-            finding["Compliance"]["RelatedRequirements"] = complianceRelatedRequirements
+            for control in complianceRelatedRequirements:
+                if control.startswith("NIST CSF V1.1"):
+                    crosswalkedControls = self.nist_csf_v_1_1_controls_crosswalk(control)
+                    if crosswalkedControls:
+                        newControls.update(crosswalkedControls)
+            
+            # Extend with new controls
+            if newControls:
+                finding["Compliance"]["RelatedRequirements"] = complianceRelatedRequirements + list(newControls)
+            
+            decodedFindings.append(finding)
 
         ocsfFindings = self.ocsf_compliance_finding_mapping(decodedFindings)
 
-        del decodedFindings
+        # Kinesis Data Firehose supports up to 500 records per batch (not 25!)
+        # Each record can be up to 1000 KB, batch can be up to 4 MB
+        # Using 500 records per batch for maximum throughput
+        BATCH_SIZE = 500
+        totalBatches = (len(ocsfFindings) + BATCH_SIZE - 1) // BATCH_SIZE
+        successCount = 0
+        failureCount = 0
 
-        firehose = self.firehose
+        logger.info(f"Sending {len(ocsfFindings)} findings in {totalBatches} batches to Firehose")
 
-        # TODO: Make this more performant, because woah dawg, this shit's stupid!
-        for i in range(0, len(ocsfFindings), 25):
-            encodedRecords = []
-            records = ocsfFindings[i : i + 25]
-            for record in records:
-                encodedRecords.append({"Data": json.dumps(record).encode("utf-8")})
-            del records
+        for batchNum in range(0, len(ocsfFindings), BATCH_SIZE):
+            batch = ocsfFindings[batchNum : batchNum + BATCH_SIZE]
+            
+            # Pre-encode all records in the batch
+            encodedRecords = [
+                {"Data": json.dumps(record, default=str).encode("utf-8")}
+                for record in batch
+            ]
 
             try:
-                response = firehose.put_record_batch(
+                response = self.firehose.put_record_batch(
                     DeliveryStreamName=self.deliveryStream,
                     Records=encodedRecords
                 )
+                
+                successCount += len(batch) - response["FailedPutCount"]
+                failureCount += response["FailedPutCount"]
+                
                 if response["FailedPutCount"] > 0:
                     logger.warning(
-                        "Failed to deliver %s records",
-                        response["FailedPutCount"]
+                        "Batch %s: Failed to deliver %s out of %s records",
+                        (batchNum // BATCH_SIZE) + 1,
+                        response["FailedPutCount"],
+                        len(batch)
                     )
+                    # Log specific failure reasons for debugging
+                    for idx, result in enumerate(response["RequestResponses"]):
+                        if "ErrorCode" in result:
+                            logger.warning(
+                                "Record %s failed: %s - %s",
+                                idx,
+                                result.get("ErrorCode"),
+                                result.get("ErrorMessage", "No error message")
+                            )
+                            
             except ClientError as e:
-                logger.warning(
-                    "Error with sending batch to Firehose due to: %s",
+                logger.error(
+                    "Batch %s: Error sending to Firehose: %s",
+                    (batchNum // BATCH_SIZE) + 1,
                     e.response["Error"]["Message"]
                 )
+                failureCount += len(batch)
                 continue
 
-        print("Finished write OCSF Compliance Findings to Kinesis Data Firehose.")
+        logger.info(
+            "Finished sending OCSF Compliance Findings to Kinesis Data Firehose. Success: %s, Failed: %s",
+            successCount,
+            failureCount
+        )
             
         return True
     
@@ -229,67 +266,22 @@ class OcsfFirehoseOutput(object):
         """
 
         # map Severity.Label -> base_event.severity_id, base_event.severity
-        if severityLabel == "INFORMATIONAL":
-            severityId = 1
-            severity = severityLabel.lower().capitalize()
-        if severityLabel == "LOW":
-            severityId = 2
-            severity = severityLabel.lower().capitalize()
-        if severityLabel == "MEDIUM":
-            severityId = 3
-            severity = severityLabel.lower().capitalize()
-        if severityLabel == "HIGH":
-            severityId = 4
-            severity = severityLabel.lower().capitalize()
-        if severityLabel == "CRITICAL":
-            severityId = 5
-            severity = severityLabel.lower().capitalize()
-        else:
-            severityId = 99
-            severity = severityLabel.lower().capitalize()
+        severityId, severity = self.SEVERITY_MAP.get(
+            severityLabel, 
+            (99, severityLabel.lower().capitalize())
+        )
 
         # map ProductFields.Provider -> cloud.account.type_id, cloud.account.type
-        if cloudProvider == "AWS":
-            acctTypeId = 10
-            acctType = "AWS Account"
-        elif cloudProvider == "GCP":
-            acctTypeId = 11
-            acctType = "GCP Project"
-        elif cloudProvider == "OCI":
-            acctTypeId = 12
-            acctType = "OCI Compartment"
-        elif cloudProvider == "Azure":
-            acctTypeId = 13
-            acctType = "Azure Subscription"
-        elif cloudProvider == "Salesforce":
-            acctTypeId = 14
-            acctType = "Salesforce Account"
-        elif cloudProvider == "Google Workspace":
-            acctTypeId = 15
-            acctType = "Google Workspace"
-        elif cloudProvider == "ServiceNow":
-            acctTypeId = 16
-            acctType = "ServiceNow Instance"
-        elif cloudProvider == "M365":
-            acctTypeId = 17
-            acctType = "M365 Tenant"
-        else:
-            acctTypeId = 99
-            acctType = cloudProvider
+        acctTypeId, acctType = self.PROVIDER_MAP.get(
+            cloudProvider,
+            (99, cloudProvider)
+        )
 
         # map Compliance.Status -> compliance.status_id, compliance.status
-        if complianceStatusLabel == "PASSED":
-            complianceStatusId = 1
-            complianceStatus = "Pass"
-        elif complianceStatusLabel == "WARNING":
-            complianceStatusId = 2
-            complianceStatus = "Warning"
-        elif complianceStatusLabel == "FAILED":
-            complianceStatusId = 3
-            complianceStatus = "Fail"
-        else:
-            complianceStatusId = 99
-            complianceStatus = complianceStatusLabel.lower().capitalize()
+        complianceStatusId, complianceStatus = self.COMPLIANCE_STATUS_MAP.get(
+            complianceStatusLabel,
+            (99, complianceStatusLabel.lower().capitalize())
+        )
 
         return SeverityAccountTypeComplianceMapping(
             severityId=severityId,
@@ -332,25 +324,29 @@ class OcsfFirehoseOutput(object):
 
     def ocsf_compliance_finding_mapping(self, findings: list) -> list:
         """
-        Takes ElectricEye ASFF and outputs to OCSF v1.1.0 Compliance Finding (2003), returns a list of new findings
+        Takes ElectricEye ASFF and outputs to OCSF v1.7.0 Compliance Finding (2003), returns a list of new findings
         """
-
-        ocsfFindings = []
 
         logger.info("Mapping ASFF to OCSF")
 
-        for finding in findings:
-            # Generate metadata.processed_time
-            timeNow = datetime.now().isoformat()
-            procssedTime = self.iso8061_to_epochseconds(timeNow)
+        # Pre-calculate processed time once
+        timeNow = datetime.now().isoformat()
+        processedTime = self.iso8061_to_epochseconds(timeNow)
 
-            # check if the compliance.requirements start with the control frameworks and append the unique ones into a list for compliance.stnadards
-            standard = []
+        # Pre-compile framework prefixes for faster matching
+        frameworkPrefixes = tuple(SUPPORTED_FRAMEWORKS)
+
+        ocsfFindings = []
+
+        for finding in findings:
+            # Extract standards efficiently using set comprehension
             requirements = finding["Compliance"]["RelatedRequirements"]
-            for control in requirements:
-                for framework in SUPPORTED_FRAMEWORKS:
-                    if str(control).startswith(framework) and framework not in standard:
-                        standard.append(framework)
+            standards = sorted({
+                framework
+                for control in requirements
+                for framework in frameworkPrefixes
+                if control.startswith(framework)
+            })
 
             asffToOcsf = self.compliance_finding_ocsf_normalization(
                 severityLabel=finding["Severity"]["Label"],
@@ -364,22 +360,20 @@ class OcsfFirehoseOutput(object):
             region = finding["ProductFields"]["AssetRegion"]
             accountId = finding["ProductFields"]["ProviderAccountId"]
 
+            # Normalize dummy values
             if provider != "AWS" or partition == "not-aws":
                 partition = None
 
-            if region == "us-placeholder-1":
+            if region in ("us-placeholder-1", None):
                 region = None
-
-            if region == "aws-global":
+            elif region == "aws-global":
                 region = "us-east-1"
 
             if accountId == "000000000000":
                 accountId = None
 
             eventTime = self.iso8061_to_epochseconds(finding["CreatedAt"])
-
-            recordState = finding["RecordState"]
-            recordStateMapping = self.record_state_to_status(recordState)
+            recordStateMapping = self.record_state_to_status(finding["RecordState"])
             
             ocsf = {
                 # Base Event data
@@ -405,8 +399,8 @@ class OcsfFirehoseOutput(object):
                     "log_provider": "ElectricEye",
                     "logged_time": eventTime,
                     "original_time": finding["CreatedAt"],
-                    "processed_time": procssedTime,
-                    "version":"1.4.0",
+                    "processed_time": processedTime,
+                    "version":"1.7.0",
                     "profiles":["cloud"],
                     "product": {
                         "name":"ElectricEye",
@@ -444,10 +438,10 @@ class OcsfFirehoseOutput(object):
                 # Compliance Finding Class Info
                 "compliance": {
                     "requirements": sorted(requirements),
-                    "control": str(finding["Title"]).split("] ")[0].replace("[",""),
-                    "standards": sorted(standard),
-                    "status": asffToOcsf[5],
-                    "status_id": asffToOcsf[4]
+                    "control": finding["Title"].split("] ")[0].replace("[",""),
+                    "standards": standards,
+                    "status": asffToOcsf.complianceStatus,
+                    "status_id": asffToOcsf.complianceStatusId
                 },
                 "finding_info": {
                     "created_time": eventTime,
