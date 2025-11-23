@@ -37,6 +37,7 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 - [Supported Services and Checks](#supported-services-and-checks)
 - [ElectricEye on Docker](#electriceye-on-docker)
 - [Outputs](./docs/outputs/OUTPUTS.md)
+- [Parallel Execution Guide](./docs/setup/Parallel_Execution.md)
 - [Contributing](#contributing)
 - [FAQ](#faq)
 - [Developer & Testing Guide](./docs/new_checks/DEVELOPER_GUIDE.md)
@@ -126,6 +127,8 @@ For more information see [here](#configuring-electricey), you can read the [FAQ 
 ## Configuring ElectricEye
 
 Refer to sub-headings for per-CSP or per-SaaS setup instructions. Go to [Outputs](./docs/outputs/OUTPUTS.md) to, well, learn about Outputs and examples.
+
+For information on running ElectricEye in parallel to speed up assessments of large environments, see the [Parallel Execution Guide](./docs/setup/Parallel_Execution.md).
 
 ### Public Cloud Service Providers
 
