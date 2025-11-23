@@ -57,7 +57,7 @@ ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, S
 
 - Multi-faceted Attack Surface Monitoring uses tools such as VirusTotal, Nmap, Shodan.io, Detect-Secrets, and CISA's KEV to locate assets indexed on the internet, find exposed services, locate exploitable vulnerabilities, and malicious packages in artifact repositories, respectively.
 
-- Outputs to [AWS Security Hub](https://aws.amazon.com/security-hub/), the [Open Cyber Security Framework (OCSF)](https://github.com/ocsf/) [V1.1.0](https://schema.ocsf.io/1.1.0/?extensions=) in JSON, [AWS DocumentDB](https://aws.amazon.com/documentdb/), JSON, CSV, HTML Reports, [MongoDB](https://www.mongodb.com/), [Amazon SQS](https://aws.amazon.com/sqs/), [PostgreSQL](https://www.postgresql.org/), [Slack](https://slack.com/) (via Slack App Bots), and [FireMon Cloud Defense](https://www.firemon.com/introducing-disruptops/).
+- Outputs to [AWS Security Hub](https://aws.amazon.com/security-hub/), the [Open Cyber Security Framework (OCSF)](https://github.com/ocsf/) [V1.7.0](https://schema.ocsf.io/1.7.0/?extensions=) in JSON and Apache Parquet formats, [AWS DocumentDB](https://aws.amazon.com/documentdb/), JSON, CSV, HTML Reports, [MongoDB](https://www.mongodb.com/), [Amazon SQS](https://aws.amazon.com/sqs/), [PostgreSQL](https://www.postgresql.org/), [Slack](https://slack.com/) (via Slack App Bots), and [Amazon Kinesis Data Firehose](https://aws.amazon.com/kinesis/data-firehose/).
 
 ElectricEye's core concept is the **Auditor** which are sets of Python scripts that run **Checks** per Service dedicated to a specific SaaS vendor or public cloud service provider called an **Assessment Target**.  You can run an entire Assessment Target, a specific Auditor, or a specific Check within an Auditor. After ElectricEye is done with evaluations, it supports over a dozen types of **Outputs** ranging from an HTML executive report to AWS DocumentDB clusters - you can run multiple Outputs as you see fit.
 
@@ -95,9 +95,9 @@ Options:
                                   specify multiple with additional arguments:
                                   -o csv -o postgresql -o slack  [default:
                                   ocsf_stdout]
-  -of, --output-file TEXT         For file outputs such as JSON and CSV, the
-                                  name of the file, DO NOT SPECIFY .file_type
-                                  [default: output]
+  -of, --output-file TEXT         For file outputs such as JSON, CSV, and
+                                  Parquet, the name of the file, DO NOT
+                                  SPECIFY .file_type  [default: output]
   -lo, --list-options             Lists all valid Output options
   -lch, --list-checks             Prints a table of Auditors, Checks, and
                                   Check descriptions to stdout - use this
@@ -112,6 +112,12 @@ Options:
                                   this value is not provided the default path
                                   of ElectricEye/eeauditor/external_providers.
                                   toml is used.
+  -ut, --use-toml BOOLEAN         Use TOML configuration for credentials and
+                                  settings. Set to False to use --args instead
+                                  [default: True]
+  --args TEXT                     EXPERIMENTAL: JSON string of arguments to
+                                  pass instead of using TOML configuration.
+                                  Only used when -ut/--use-toml is False
   --help                          Show this message and exit.
 ```
 
@@ -153,9 +159,10 @@ In total there are:
 
 - **4** Supported Public CSPs: `AWS`, `GCP`, `OCI`, and `Azure`
 - **4** Supported SaaS Providers: `ServiceNow`, `M365`, `Salesforce`, and `Snowflake`
-- **1196** ElectricEye Checks
-- **179** Supported CSP & SaaS Asset Components across all Services
-- **135** ElectricEye Auditors
+- **1196+** ElectricEye Checks
+- **179+** Supported CSP & SaaS Asset Components across all Services
+- **135+** ElectricEye Auditors
+- **20+** Output formats including OCSF V1.7.0 (JSON & Parquet), AWS Security Hub, PostgreSQL, MongoDB, and more
 
 The tables of supported Services and Checks have been migrated to the respective per-Provider setup documentation linked above in [Configuring ElectricEye](#configuring-electriceye).
 
