@@ -144,6 +144,12 @@ pip3 install --user -r requirements.txt
     python3 eeauditor/controller.py -t M365 -c m365_security_center_recommendations_security_controls_for_macos_check
     ```
 
+    - 4E. **EXPERIMENTAL** - Use command line arguments instead of TOML.
+
+    ```bash
+    python3 eeauditor/controller.py -t M365 -ut False --args '{"credentials_location": "CONFIG_FILE", "m365_ent_app_client_id_value": "12345678-1234-1234-1234-123456789012", "m365_ent_app_client_secret_id_value": "your-client-secret", "m365_ent_app_tenant_id_value": "87654321-4321-4321-4321-210987654321", "m365_tenant_location": "US"}'
+    ```
+
 ## M365 Checks & Services
 
 These are the following services and checks perform by each Auditor, there are currently **37 Checks** across **4 Auditors** that support the secure configuration of **4 services/components**

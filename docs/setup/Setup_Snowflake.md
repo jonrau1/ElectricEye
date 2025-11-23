@@ -134,6 +134,12 @@ pip3 install --user -r requirements.txt
     python3 eeauditor/controller.py -t Snowflake -c snowflake_account_password_policy_check
     ```
 
+- 4E. **EXPERIMENTAL** - Use command line arguments instead of TOML.
+
+    ```bash
+    python3 eeauditor/controller.py -t Snowflake -ut False --args '{"credentials_location": "CONFIG_FILE", "snowflake_username": "EXAMPLE", "snowflake_password_value": "EXAMPLE", "snowflake_account_id": "EXAMPLE", "snowflake_warehouse_name": "EXAMPLE", "snowflake_region": "EXAMPLE", "snowflake_service_account_usernames": ["EXAMPLE", "EXAMPLE"]}'
+    ```
+
 ## Snowflake Checks & Services
 
 These are the following services and checks performed by each Auditor, there are currently **21 Checks** across **2 Auditors** that support the secure configuration of **3 services/components**

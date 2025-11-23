@@ -160,6 +160,12 @@ pip3 install --user -r requirements.txt
     python3 eeauditor/controller.py -t Salesforce -c salesforce_active_user_mfa_check
     ```
 
+    - 4E. **EXPERIMENTAL** - Use command line arguments instead of TOML.
+
+    ```bash
+    python3 eeauditor/controller.py -t Salesforce -ut False --args '{"credentials_location": "CONFIG_FILE", "salesforce_connected_app_client_id_value": "your-client-id", "salesforce_connected_app_client_secret_value": "your-client-secret", "salesforce_api_enabled_username_value": "your-username", "salesforce_api_enabled_password_value": "your-password", "salesforce_api_enabled_security_token_value": "your-security-token", "salesforce_instance_location": "US", "salesforce_failed_login_breaching_rate": 10, "salesforce_api_version": "v58.0"}'
+    ```
+
 ## Salesforce Checks & Services
 
 These are the following services and checks perform by each Auditor, there are currently **18 Checks** across **3 Auditors** that support the secure configuration of **4 services/components**

@@ -104,6 +104,12 @@ pip3 install --user -r requirements.txt
     python3 eeauditor/controller.py -t Servicenow -c servicenow_sspm_user_session_allow_unsanitzed_messages_check
     ```
 
+    - 7E. **EXPERIMENTAL** - Use command line arguments instead of TOML.
+
+    ```bash
+    python3 eeauditor/controller.py -t Servicenow -ut False --args '{"credentials_location": "CONFIG_FILE", "servicenow_instance_name": "dev90210", "servicenow_instance_region": "us", "servicenow_sspm_username": "electriceye_sspm", "servicenow_sspm_password_value": "your-password", "servicenow_failed_login_breaching_rate": 5}'
+    ```
+
 ## Servicenow Checks & Services
 
 These are the following services and checks perform by each Auditor, there are currently **92 Checks** across **9 Auditors** that support the secure configuration of **3 services/components**

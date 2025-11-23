@@ -195,6 +195,12 @@ pip3 install --user -r requirements.txt
     python3 eeauditor/controller.py -t OCI -c oci_oke_cluster_public_api_endpoint_check
     ```
 
+    - 4E. **EXPERIMENTAL** - Use command line arguments instead of TOML.
+
+    ```bash
+    python3 eeauditor/controller.py -t OCI -ut False --args '{"credentials_location": "CONFIG_FILE", "oci_tenancy_ocid": "ocid1.tenancy.oc1..aaaaaaaa...", "oci_user_ocid": "ocid1.user.oc1..aaaaaaaa...", "oci_region_name": "us-ashburn-1", "oci_compartment_ocids": ["ocid1.compartment.oc1..aaaaaaaa..."], "oci_user_api_key_fingerprint_value": "aa:bb:cc:dd:ee:ff:00:11:22:33:44:55:66:77:88:99", "oci_user_api_key_private_key_pem_contents_value": "-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEA...\n-----END RSA PRIVATE KEY-----"}'
+    ```
+
 ## Configuring Security List & NSG Auditors
 
 The Auditors for Oracle Cloud Virtual Cloud Network (VCN) Security Lists and Network Security Groups are configured using JSON files ([for NSGs](../../eeauditor/auditors/oci/electriceye_oci_vcn_nsg_auditor_config.json) and [for Security Lists](../../eeauditor/auditors/oci/electriceye_oci_vcn_seclist_auditor_config.json)) which contains titles, check IDs, to-from IANA port numbers and protocols that map to high-danger services you should not leave open to the world such as SMB, Win NetBIOS, databases, caches, et al. While this is not the same as figuring out what your how your actual assets & services are configured (see the [EASM](#aws-external-attack-surface-reporting) section for that) this is a good hygeine check.
