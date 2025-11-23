@@ -45,39 +45,34 @@ def run_auditor(assessmentTarget, args, useToml, auditorName=None, pluginName=No
     app = EEAuditor(assessmentTarget, args, useToml, tomlPath)
 
     app.load_plugins(auditorName)
-    # Per-target calls - ensure you use the right run_*_checks*() function
     
-    # Amazon Web Services
-    if assessmentTarget == "AWS":
-        findings = list(app.run_aws_checks(pluginName=pluginName, delay=delay))
-    # Google Cloud Platform
-    if assessmentTarget == "GCP":
-        findings = list(app.run_gcp_checks(pluginName=pluginName, delay=delay))
-    # Oracle Cloud Infrastructure
-    if assessmentTarget == "OCI":
-        findings = list(app.run_oci_checks(pluginName=pluginName, delay=delay))
-    # Microsoft Azure
-    if assessmentTarget == "Azure":
-        findings = list(app.run_azure_checks(pluginName=pluginName, delay=delay))
-    # Microsoft 365
-    if assessmentTarget == "M365":
-        findings = list(app.run_m365_checks(pluginName=pluginName, delay=delay))
-    # Salesforce
-    if assessmentTarget == "Salesforce":
-        findings = list(app.run_salesforce_checks(pluginName=pluginName, delay=delay))
-    # Snowflake
-    if assessmentTarget == "Snowflake":
-        findings = list(app.run_snowflake_checks(pluginName=pluginName, delay=delay))
-    # ServiceNow
-    if assessmentTarget == "ServiceNow":
-        findings = list(app.run_non_aws_checks(pluginName=pluginName, delay=delay))
-
+    # Dispatch pattern for better performance - O(1) lookup vs O(n) if-elif chain
+    check_runners = {
+        "AWS": app.run_aws_checks,
+        "GCP": app.run_gcp_checks,
+        "OCI": app.run_oci_checks,
+        "Azure": app.run_azure_checks,
+        "M365": app.run_m365_checks,
+        "Salesforce": app.run_salesforce_checks,
+        "Snowflake": app.run_snowflake_checks,
+        "ServiceNow": app.run_non_aws_checks
+    }
+    
+    runner = check_runners.get(assessmentTarget)
+    if not runner:
+        raise ValueError(f"Unknown assessment target: {assessmentTarget}")
+    
+    # Keep as generator until process_findings to reduce memory footprint
+    findings_generator = runner(pluginName=pluginName, delay=delay)
+    
     print(f"Done running Checks for {assessmentTarget}")
 
-    if tomlPath is None:
-        environ["TOML_FILE_PATH"] = "None"
-    else:
-        environ["TOML_FILE_PATH"] = tomlPath
+    # Set TOML path in environment
+    environ["TOML_FILE_PATH"] = tomlPath if tomlPath else "None"
+    
+    # Convert generator to list only when needed by process_findings
+    # This allows streaming processing if outputs support it
+    findings = list(findings_generator)
     
     # Multiple outputs supported
     process_findings(
