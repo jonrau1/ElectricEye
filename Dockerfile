@@ -18,8 +18,8 @@
 #specific language governing permissions and limitations
 #under the License.
 
-# latest hash as of 13 FEB 2025 - Alpine 3.21.3
-# https://hub.docker.com/layers/library/alpine/3.20.2/images/sha256-a8560b36e8b8210634f77d9f7f9efd7ffa463e380b75e2e74aff4511df3ef88c?context=explore
+# latest hash as of October 2025 - Alpine 3.22.2
+# https://hub.docker.com/layers/library/alpine/3.22.2/images/sha256-4b7ce07002c69e8f3d704a9c5d6fd3053be500b7f1c69fc0d80990c2ad8dd412?context=explore
 # use as builder image to pull in required deps
 FROM alpine@sha256:4b7ce07002c69e8f3d704a9c5d6fd3053be500b7f1c69fc0d80990c2ad8dd412 AS builder
 
@@ -40,11 +40,12 @@ RUN \
     rm -rf /tmp/* && \
     rm -f /var/cache/apk/*
 
-# latest hash as of 13 FEB 2025 - Alpine 3.21.3
-# https://hub.docker.com/layers/library/alpine/3.20.2/images/sha256-a8560b36e8b8210634f77d9f7f9efd7ffa463e380b75e2e74aff4511df3ef88c?context=explore
+# latest hash as of October 2025 - Alpine 3.22.2
+# https://hub.docker.com/layers/library/alpine/3.22.2/images/sha256-4b7ce07002c69e8f3d704a9c5d6fd3053be500b7f1c69fc0d80990c2ad8dd412?context=explore
 FROM alpine@sha256:4b7ce07002c69e8f3d704a9c5d6fd3053be500b7f1c69fc0d80990c2ad8dd412 as electriceye
 
 COPY --from=builder /usr /usr
+COPY --from=builder /opt/venv /opt/venv
 
 LABEL \
     org.opencontainers.image.title="ElectricEye" \
@@ -63,7 +64,7 @@ LABEL \
 COPY ./eeauditor /eeauditor
 
 RUN \
-    apk add --no-cache bash nmap py3-pandas py3-matplotlib && \
+    apk add --no-cache bash nmap py3-pandas py3-matplotlib py3-pyarrow && \
     rm -f /var/cache/apk/*
 
 # Create a System Group and User for ElectricEye so we don't run as root
