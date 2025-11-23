@@ -294,35 +294,6 @@ Refer to the [Developer Guide](./docs/new_checks/DEVELOPER_GUIDE.md) for instruc
 
 Feel free to open PRs and Issues where syntax, grammatic, and implementation errors are encountered in the code base.
 
-### ElectricEye is for sale
-
-Hit me up at opensource@electriceye.cloud (I don't actually have a SaaS tool) and I'll gladly sell the rights to this repo and take it down and give you all of the domains and even the AWS Accounts that I use behind the scenes.
-
-### Early Contributors
-
-Quick shout-outs to the folks who answered the call early to test out ElectricEye and make it not-a-shit-sandwich.
-
-##### Alpha Testing:
-
-- [Mark Yancey](https://www.linkedin.com/in/mark-yancey-jr-aspiring-cloud-security-professional-a52bb9126/)
-
-##### Beta Testing:
-
-- [Martin Klie](https://www.linkedin.com/in/martin-klie-0600845/)
-- [Joel Castillo](https://www.linkedin.com/in/joelbcastillo/)
-- [Juhi Gupta](https://www.linkedin.com/in/juhi-gupta-09/)
-- [Bulent Yidliz](https://www.linkedin.com/in/bulent-yildiz/)
-- [Guillermo Ojeda](https://www.linkedin.com/in/guillermoojeda/)
-- [Dhilip Anand Shivaji](https://www.linkedin.com/in/dhilipanand/)
-- [Arek Bar](https://www.linkedin.com/in/arkadiuszbar/)
-- [Ryan Russel](https://www.linkedin.com/in/pioneerrussell/)
-- [Jonathan Nguyen](https://www.linkedin.com/in/jonanguyen/)
-- [Jody Brazil](https://www.linkedin.com/in/jodybrazil/)
-- [Dylan Shields](https://www.linkedin.com/in/dylan-shields-6802b1168/)
-- [Manuel Leos Rivas](https://www.linkedin.com/in/manuel-lr/)
-- [Andrew Alaniz](https://www.linkedin.com/in/andrewdalaniz/)
-- [Christopher Childers](https://www.linkedin.com/in/christopher-childers-28950537/)
-
 ## FAQ
 
 This is done Amazonian-style, which is to say, none of these questions are frequently asked and are supposed to help Product Managers figure out if their ideas are good...
