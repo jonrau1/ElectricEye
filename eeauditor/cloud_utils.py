@@ -923,6 +923,293 @@ class CloudConfig(object):
 
             self.electricEyeRoleName = electricEyeRoleName
 
+        # GCP
+        if assessmentTarget == "GCP":
+            try:
+                self.gcpProjectIds = list(args.get("gcp_project_ids"))
+                gcpServiceAccountJsonPayloadValue = str(args.get("gcp_service_account_json_payload_value"))
+            except KeyError as ke:
+                logger.error(
+                    "One of the required GCP arguments was not provided: %s", ke
+                )
+                sys.exit(2)
+
+            # Retrieve value for GCP Service Account JSON from the config, AWS SSM or AWS Secrets Manager
+            if self.credentialsLocation == "CONFIG_FILE":
+                self.gcpServiceAccountJsonPayloadValue = gcpServiceAccountJsonPayloadValue
+            elif self.credentialsLocation == "AWS_SSM":
+                self.gcpServiceAccountJsonPayloadValue = self.get_credential_from_aws_ssm(
+                    gcpServiceAccountJsonPayloadValue,
+                    "gcp_service_account_json_payload_value"
+                )
+            elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
+                self.gcpServiceAccountJsonPayloadValue = self.get_credential_from_aws_secrets_manager(
+                    gcpServiceAccountJsonPayloadValue,
+                    "gcp_service_account_json_payload_value"
+                )
+            
+            self.gcpCredentials = self.setup_gcp_credentials(self.gcpServiceAccountJsonPayloadValue)
+
+        # OCI
+        if assessmentTarget == "OCI":
+            try:
+                self.ociTenancyId = str(args.get("oci_tenancy_ocid"))
+                self.ociUserId = str(args.get("oci_user_ocid"))
+                self.ociRegionName = str(args.get("oci_region_name"))
+                self.ociCompartments = list(args.get("oci_compartment_ocids"))
+                ociUserApiKeyFingerprint = str(args.get("oci_user_api_key_fingerprint_value"))
+                ociUserApiKeyPemValue = str(args.get("oci_user_api_key_private_key_pem_contents_value"))
+            except KeyError as ke:
+                logger.error(
+                    "One of the required OCI arguments was not provided: %s", ke
+                )
+                sys.exit(2)
+
+            # Retrieve value for OCI API Key Fingerprint from the config, AWS SSM or AWS Secrets Manager
+            if self.credentialsLocation == "CONFIG_FILE":
+                self.ociUserApiKeyFingerprint = ociUserApiKeyFingerprint
+            elif self.credentialsLocation == "AWS_SSM":
+                self.ociUserApiKeyFingerprint = self.get_credential_from_aws_ssm(
+                    ociUserApiKeyFingerprint,
+                    "oci_user_api_key_fingerprint_value"
+                )
+            elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
+                self.ociUserApiKeyFingerprint = self.get_credential_from_aws_secrets_manager(
+                    ociUserApiKeyFingerprint,
+                    "oci_user_api_key_fingerprint_value"
+                )
+
+            # Retrieve value for OCI API Key PEM from the config, AWS SSM or AWS Secrets Manager
+            if self.credentialsLocation == "CONFIG_FILE":
+                ociUserApiKeyPemLocation = ociUserApiKeyPemValue
+            elif self.credentialsLocation == "AWS_SSM":
+                ociUserApiKeyPemLocation = self.get_credential_from_aws_ssm(
+                    ociUserApiKeyPemValue,
+                    "oci_user_api_key_private_key_pem_contents_value"
+                )
+            elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
+                ociUserApiKeyPemLocation = self.get_credential_from_aws_secrets_manager(
+                    ociUserApiKeyPemValue,
+                    "oci_user_api_key_private_key_pem_contents_value"
+                )
+
+            # Create the PEM file and save the location of it to environ
+            self.setup_oci_credentials(ociUserApiKeyPemLocation)
+
+        # Azure
+        if assessmentTarget == "Azure":
+            try:
+                azureClientId = str(args.get("azure_ent_app_client_id_value"))
+                azureSecretId = str(args.get("azure_ent_app_client_secret_id_value"))
+                azureTenantId = str(args.get("azure_ent_app_tenant_id_value"))
+                azureSubscriptions = list(args.get("azure_subscription_ids"))
+            except KeyError as ke:
+                logger.error(
+                    "One of the required Azure arguments was not provided: %s", ke
+                )
+                sys.exit(2)
+
+            # Retrieve the values for the Azure Enterprise Application Client ID, Secret Value & Tenant ID
+            if self.credentialsLocation == "CONFIG_FILE":
+                azureClientId = azureClientId
+                azureSecretId = azureSecretId
+                azureTenantId = azureTenantId
+            elif self.credentialsLocation == "AWS_SSM":
+                azureClientId = self.get_credential_from_aws_ssm(
+                    azureClientId,
+                    "azure_ent_app_client_id_value"
+                )
+                azureSecretId = self.get_credential_from_aws_ssm(
+                    azureSecretId,
+                    "azure_ent_app_client_secret_id_value"
+                )
+                azureTenantId = self.get_credential_from_aws_ssm(
+                    azureTenantId,
+                    "azure_ent_app_tenant_id_value"
+                )
+            elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
+                azureClientId = self.get_credential_from_aws_secrets_manager(
+                    azureClientId,
+                    "azure_ent_app_client_id_value"
+                )
+                azureSecretId = self.get_credential_from_aws_secrets_manager(
+                    azureSecretId,
+                    "azure_ent_app_client_secret_id_value"
+                )
+                azureTenantId = self.get_credential_from_aws_secrets_manager(
+                    azureTenantId,
+                    "azure_ent_app_tenant_id_value"
+                )
+
+            # Create Azure Identity credentials from Client ID/Secret Value/Tenant ID
+            azureCredentials = self.create_azure_identity_credentials_from_client_secret(
+                clientId=azureClientId,
+                clientSecret=azureSecretId,
+                tenantId=azureTenantId
+            )
+
+            # If subscriptions aren't supplied, attempt to find which ones you have access to
+            if not azureSubscriptions:
+                logger.warning(
+                    "No values provided for azure_subscription_ids - attempting to retrieve subscription IDs your Service Principal has access to..."
+                )
+                azureSubscriptions = self.retrieve_azure_subscriptions_for_service_principal(
+                    azureCredentials=azureCredentials
+                )
+
+            self.azureSubscriptions = azureSubscriptions
+            self.azureCredentials = azureCredentials
+
+        # M365
+        if assessmentTarget == "M365":
+            try:
+                m365ClientId = str(args.get("m365_ent_app_client_id_value"))
+                m365SecretId = str(args.get("m365_ent_app_client_secret_id_value"))
+                m365TenantId = str(args.get("m365_ent_app_tenant_id_value"))
+                self.m365TenantLocation = str(args.get("m365_tenant_location"))
+            except KeyError as ke:
+                logger.error(
+                    "One of the required M365 arguments was not provided: %s", ke
+                )
+                sys.exit(2)
+
+            # Retrieve the values for the M365 Enterprise Application Client ID, Secret Value & Tenant ID
+            if self.credentialsLocation == "CONFIG_FILE":
+                self.m365ClientId = m365ClientId
+                self.m365SecretId = m365SecretId
+                self.m365TenantId = m365TenantId
+            elif self.credentialsLocation == "AWS_SSM":
+                self.m365ClientId = self.get_credential_from_aws_ssm(
+                    m365ClientId,
+                    "m365_ent_app_client_id_value"
+                )
+                self.m365SecretId = self.get_credential_from_aws_ssm(
+                    m365SecretId,
+                    "m365_ent_app_client_secret_id_value"
+                )
+                self.m365TenantId = self.get_credential_from_aws_ssm(
+                    m365TenantId,
+                    "m365_ent_app_tenant_id_value"
+                )
+            elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
+                self.m365ClientId = self.get_credential_from_aws_secrets_manager(
+                    m365ClientId,
+                    "m365_ent_app_client_id_value"
+                )
+                self.m365SecretId = self.get_credential_from_aws_secrets_manager(
+                    m365SecretId,
+                    "m365_ent_app_client_secret_id_value"
+                )
+                self.m365TenantId = self.get_credential_from_aws_secrets_manager(
+                    m365TenantId,
+                    "m365_ent_app_tenant_id_value"
+                )
+
+        # Servicenow
+        if assessmentTarget == "Servicenow":
+            try:
+                snowInstanceName = str(args.get("servicenow_instance_name"))
+                snowInstanceRegion = str(args.get("servicenow_instance_region"))
+                snowUserName = str(args.get("servicenow_sspm_username"))
+                snowUserLoginBreachRate = str(args.get("servicenow_failed_login_breaching_rate"))
+                serviceNowPwVal = str(args.get("servicenow_sspm_password_value"))
+            except KeyError as ke:
+                logger.error(
+                    "One of the required ServiceNow arguments was not provided: %s", ke
+                )
+                sys.exit(2)
+
+            # Retrieve ServiceNow ElectricEye user password
+            if self.credentialsLocation == "CONFIG_FILE":
+                environ["SNOW_SSPM_PASSWORD"] = serviceNowPwVal
+            elif self.credentialsLocation == "AWS_SSM":
+                environ["SNOW_SSPM_PASSWORD"] = self.get_credential_from_aws_ssm(
+                    serviceNowPwVal,
+                    "servicenow_sspm_password_value"
+                )
+            elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
+                environ["SNOW_SSPM_PASSWORD"] = self.get_credential_from_aws_secrets_manager(
+                    serviceNowPwVal,
+                    "servicenow_sspm_password_value"
+                )
+
+            # All other ServiceNow Values are written as environment variables
+            environ["SNOW_INSTANCE_NAME"] = snowInstanceName
+            environ["SNOW_INSTANCE_REGION"] = snowInstanceRegion
+            environ["SNOW_SSPM_USERNAME"] = snowUserName
+            environ["SNOW_FAILED_LOGIN_BREACHING_RATE"] = snowUserLoginBreachRate
+
+        # Salesforce
+        if assessmentTarget == "Salesforce":
+            try:
+                salesforceAppClientId = str(args.get("salesforce_connected_app_client_id_value"))
+                salesforceAppClientSecret = str(args.get("salesforce_connected_app_client_secret_value"))
+                salesforceApiUsername = str(args.get("salesforce_api_enabled_username_value"))
+                salesforceApiPassword = str(args.get("salesforce_api_enabled_password_value"))
+                salesforceUserSecurityToken = str(args.get("salesforce_api_enabled_security_token_value"))
+                self.salesforceInstanceLocation = str(args.get("salesforce_instance_location"))
+                salesforceFailedLoginBreachingRate = str(args.get("salesforce_failed_login_breaching_rate"))
+                salesforceApiVersion = str(args.get("salesforce_api_version"))
+            except KeyError as ke:
+                logger.error(
+                    "One of the required Salesforce arguments was not provided: %s", ke
+                )
+                sys.exit(2)
+
+            # The failed login breaching rate and API Version will be in plaintext/env vars
+            environ["SALESFORCE_FAILED_LOGIN_BREACHING_RATE"] = salesforceFailedLoginBreachingRate
+            environ["SFDC_API_VERSION"] = salesforceApiVersion
+
+            # Retrieve the values for the Salesforce Client ID, Client Secret, Username, Password, and Security Token
+            if self.credentialsLocation == "CONFIG_FILE":
+                self.salesforceAppClientId = salesforceAppClientId
+                self.salesforceAppClientSecret = salesforceAppClientSecret
+                self.salesforceApiUsername = salesforceApiUsername
+                self.salesforceApiPassword = salesforceApiPassword
+                self.salesforceUserSecurityToken = salesforceUserSecurityToken
+            elif self.credentialsLocation == "AWS_SSM":
+                self.salesforceAppClientId = self.get_credential_from_aws_ssm(
+                    salesforceAppClientId,
+                    "salesforce_connected_app_client_id_value"
+                )
+                self.salesforceAppClientSecret = self.get_credential_from_aws_ssm(
+                    salesforceAppClientSecret,
+                    "salesforce_connected_app_client_secret_value"
+                )
+                self.salesforceApiUsername = self.get_credential_from_aws_ssm(
+                    salesforceApiUsername,
+                    "salesforce_api_enabled_username_value"
+                )
+                self.salesforceApiPassword = self.get_credential_from_aws_ssm(
+                    salesforceApiPassword,
+                    "salesforce_api_enabled_password_value"
+                )
+                self.salesforceUserSecurityToken = self.get_credential_from_aws_ssm(
+                    salesforceUserSecurityToken,
+                    "salesforce_api_enabled_security_token_value"
+                )
+            elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
+                self.salesforceAppClientId = self.get_credential_from_aws_secrets_manager(
+                    salesforceAppClientId,
+                    "salesforce_connected_app_client_id_value"
+                )
+                self.salesforceAppClientSecret = self.get_credential_from_aws_secrets_manager(
+                    salesforceAppClientSecret,
+                    "salesforce_connected_app_client_secret_value"
+                )
+                self.salesforceApiUsername = self.get_credential_from_aws_secrets_manager(
+                    salesforceApiUsername,
+                    "salesforce_api_enabled_username_value"
+                )
+                self.salesforceApiPassword = self.get_credential_from_aws_secrets_manager(
+                    salesforceApiPassword,
+                    "salesforce_api_enabled_password_value"
+                )
+                self.salesforceUserSecurityToken = self.get_credential_from_aws_secrets_manager(
+                    salesforceUserSecurityToken,
+                    "salesforce_api_enabled_security_token_value"
+                )
+
         # Snowflake
         if assessmentTarget == "Snowflake":
             try:
