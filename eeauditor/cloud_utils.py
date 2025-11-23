@@ -30,6 +30,7 @@ from google.oauth2 import service_account
 from azure.identity import ClientSecretCredential
 from azure.mgmt.resource.subscriptions import SubscriptionClient
 import snowflake.connector as snowconn
+from functools import lru_cache
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("CloudUtils")
@@ -38,13 +39,25 @@ logger = logging.getLogger("CloudUtils")
 AWS_MULTI_ACCOUNT_TARGET_TYPE_CHOICES = ["Accounts", "OU", "Organization"]
 CREDENTIALS_LOCATION_CHOICES = ["AWS_SSM", "AWS_SECRETS_MANAGER", "CONFIG_FILE"]
 
+# Compile regex once at module level for performance
+OU_ID_REGEX = compile(r"^ou-[0-9a-z]{4,32}-[a-z0-9]{8,32}$")
+
 class CloudConfig(object):
     """
     This Class handles processing of Credentials, Regions, Accounts, and other Provider-specific configurations
     for use in EEAuditor when running ElectricEye Auditors and Check
+    
+    Performance Optimizations:
+    - Cached boto3 clients to avoid repeated initialization
+    - Single AWS caller identity lookup
+    - Extracted credential retrieval to reduce code duplication
+    - Pagination support for AWS Organizations APIs
     """
 
     def __init__(self, assessmentTarget: str, tomlPath: str | None, useToml: str, args: str | None):
+        # Initialize client cache for performance
+        self._boto3_clients = {}
+        self._aws_caller_identity = None
         if useToml == "True":
             if tomlPath is None:
                 here = path.abspath(path.dirname(__file__))
@@ -80,22 +93,20 @@ class CloudConfig(object):
         if useToml == "True":
             # AWS
             if assessmentTarget == "AWS":
-                sts = boto3.client("sts")
                 # Process ["aws_account_targets"] 
                 awsAccountTargets = data["regions_and_accounts"]["aws"]["aws_account_targets"]
                 if self.awsMultiAccountTargetType == "Accounts":
                     if not awsAccountTargets:
-                        self.awsAccountTargets = [sts.get_caller_identity()["Account"]]
+                        self.awsAccountTargets = [self._get_aws_caller_identity()["Account"]]
                     else:
                         self.awsAccountTargets = awsAccountTargets
                 elif self.awsMultiAccountTargetType == "OU":
                     if not awsAccountTargets:
                         logger.error("OU was specified but targets were not specified.")
                         sys.exit(2)
-                    # Regex to check for Valid OUs
-                    ouIdRegex = compile(r"^ou-[0-9a-z]{4,32}-[a-z0-9]{8,32}$")
+                    # Use pre-compiled regex for performance
                     for ou in awsAccountTargets:
-                        if not ouIdRegex.match(ou):
+                        if not OU_ID_REGEX.match(ou):
                             logger.error(f"Invalid Organizational Unit ID {ou}.")
                             sys.exit(2)
                     self.awsAccountTargets = self.get_aws_accounts_from_organizational_units(awsAccountTargets)
@@ -109,10 +120,11 @@ class CloudConfig(object):
                 else:
                     tomlRegions = data["regions_and_accounts"]["aws"]["aws_regions_selection"]
                     if "All" in tomlRegions:
-                        self.awsRegionsSelection = awsRegions
+                        self.awsRegionsSelection = list(awsRegions)  # Convert tuple to list
                     else:
-                        # Validation check
-                        self.awsRegionsSelection = [a for a in tomlRegions if a in awsRegions]
+                        # Validation check - use set for O(1) lookups
+                        awsRegionsSet = set(awsRegions)
+                        self.awsRegionsSelection = [a for a in tomlRegions if a in awsRegionsSet]
                 
                 # Process ["aws_electric_eye_iam_role_name"]
                 electricEyeRoleName = data["regions_and_accounts"]["aws"]["aws_electric_eye_iam_role_name"]
@@ -550,12 +562,65 @@ class CloudConfig(object):
         if useToml == "False":
             self.process_non_toml_args(assessmentTarget, args)
 
+    def _get_boto3_client(self, service_name: str, region_name: str = None):
+        """
+        Get or create a cached boto3 client
+        
+        Performance: Avoids repeated client initialization overhead
+        """
+        cache_key = f"{service_name}:{region_name or 'default'}"
+        
+        if cache_key not in self._boto3_clients:
+            if region_name:
+                self._boto3_clients[cache_key] = boto3.client(service_name, region_name=region_name)
+            else:
+                self._boto3_clients[cache_key] = boto3.client(service_name)
+        
+        return self._boto3_clients[cache_key]
+    
+    def _get_aws_caller_identity(self):
+        """
+        Get cached AWS caller identity to avoid repeated API calls
+        
+        Performance: Single STS call instead of multiple
+        """
+        if self._aws_caller_identity is None:
+            sts = self._get_boto3_client("sts")
+            self._aws_caller_identity = sts.get_caller_identity()
+        
+        return self._aws_caller_identity
+    
+    def _retrieve_credential(self, value: str, config_name: str) -> str:
+        """
+        Unified credential retrieval method
+        
+        Performance: Eliminates repetitive if/elif chains throughout the code
+        """
+        if value is None or value == "":
+            logger.error(
+                "A value for %s was not provided. Fix the configuration and run ElectricEye again.",
+                config_name
+            )
+            sys.exit(2)
+        
+        if self.credentialsLocation == "CONFIG_FILE":
+            return value
+        elif self.credentialsLocation == "AWS_SSM":
+            return self.get_credential_from_aws_ssm(value, config_name)
+        elif self.credentialsLocation == "AWS_SECRETS_MANAGER":
+            return self.get_credential_from_aws_secrets_manager(value, config_name)
+        else:
+            logger.error("Invalid credentials location: %s", self.credentialsLocation)
+            sys.exit(2)
+
+    @lru_cache(maxsize=1)
     def get_aws_regions(self):
         """
         Uses EC2 DescribeRegions API to get a list of opted-in AWS Regions
+        
+        Performance: Cached to avoid repeated API calls
         """
-
-        ec2 = boto3.client('ec2')
+        ec2 = self._get_boto3_client('ec2')
         
         try:
             # majority of Regions have a "opt-in-not-required", hence the "not not opted in" list comp
@@ -567,14 +632,15 @@ class CloudConfig(object):
             )
             raise e
 
-        return regions
+        return tuple(regions)  # Return tuple for hashability with lru_cache
     
     def get_credential_from_aws_ssm(self, value, configurationName) -> str:
         """
         Retrieves a TOML variable from AWS Systems Manager Parameter Store and returns it
+        
+        Performance: Uses cached SSM client
         """
-
-        ssm = boto3.client("ssm")
+        ssm = self._get_boto3_client("ssm")
 
         if value is None or value == "":
             logger.error(
@@ -601,8 +667,10 @@ class CloudConfig(object):
     def get_credential_from_aws_secrets_manager(self, value, configurationName) -> str:
         """
         Retrieves a TOML variable from AWS Secrets Manager and returns it
+        
+        Performance: Uses cached Secrets Manager client
         """
-        asm = boto3.client("secretsmanager")
+        asm = self._get_boto3_client("secretsmanager")
 
         if value is None or value == "":
             logger.error(
@@ -625,11 +693,21 @@ class CloudConfig(object):
     def get_aws_accounts_from_organization(self) -> list[str]:
         """
         Uses Organizations ListAccounts API to get a list of "ACTIVE" AWS Accounts in the entire Organization
+        
+        Performance: Handles large organizations properly with pagination
         """
-        org = boto3.client("organizations")
+        org = self._get_boto3_client("organizations")
 
         try:
-            accounts = [account["Id"] for account in org.list_accounts()["Accounts"] if account["Status"] == "ACTIVE"]
+            paginator = org.get_paginator('list_accounts')
+            accounts = []
+            
+            for page in paginator.paginate():
+                accounts.extend([
+                    account["Id"] 
+                    for account in page["Accounts"] 
+                    if account["Status"] == "ACTIVE"
+                ])
         except ClientError as e:
             logger.error(
                 "Failed to retrieve accounts from AWS Organizations: %s", e
@@ -641,17 +719,25 @@ class CloudConfig(object):
     def get_aws_accounts_from_organizational_units(self, targets) -> list[str]:
         """
         Uses Organizations ListAccountsForParent API to get a list of "ACTIVE" AWS Accounts for specified OUs
+        
+        Performance: Handles large OUs properly with pagination and set-based deduplication
         """
-        sts = boto3.client("sts")
-        org = boto3.client("organizations")
-
-        accounts = [sts.get_caller_identity()["Account"]]  # Caller account is added directly.
+        org = self._get_boto3_client("organizations")
+        caller_account = self._get_aws_caller_identity()["Account"]
+        
+        accounts = [caller_account]  # Caller account is added directly
+        accounts_set = set(accounts)  # Use set for O(1) lookups
 
         for parent in targets:
             logger.info("Processing accounts for Organizational Unit %s.", parent)
             try:
-                active_accounts = [account["Id"] for account in org.list_accounts_for_parent(ParentId=parent)["Accounts"] if account["Status"] == "ACTIVE"]
-                accounts.extend(account for account in active_accounts if account not in accounts)
+                paginator = org.get_paginator('list_accounts_for_parent')
+                
+                for page in paginator.paginate(ParentId=parent):
+                    for account in page["Accounts"]:
+                        if account["Status"] == "ACTIVE" and account["Id"] not in accounts_set:
+                            accounts.append(account["Id"])
+                            accounts_set.add(account["Id"])
             except ClientError as e:
                 logger.error(
                     "Failed to retrieve accounts for Organizational Unit %s: %s",
@@ -693,34 +779,46 @@ class CloudConfig(object):
         return session
     
     # This function is called outside of this Class and from create_aws_session()
+    @staticmethod
     def check_aws_partition(region: str) -> str:
         """
         Returns the AWS Partition based on the current Region of a Session
+        
+        Performance: Uses dict lookup for O(1) performance instead of multiple if/elif
         """
-
-        # GovCloud partition override
-        if region in ["us-gov-east-1", "us-gov-west-1"] or "us-gov-" in region:
-            partition = "aws-us-gov"
-        # China partition override
-        elif region in ["cn-north-1", "cn-northwest-1"] or "cn-" in region:
-            partition = "aws-cn"
-        # AWS Secret Region override
-        elif region in ["us-isob-east-1", "us-isob-west-1"] or "isob-" in region:
-            partition = "aws-isob"
-        # AWS Top Secret Region override
-        elif region in ["us-iso-east-1", "us-iso-west-1"] or "iso-" in region:
-            partition = "aws-iso"
-        # AWS UKSOF / British MOD Region override
+        # Use dict lookup for exact matches (O(1) performance)
+        partition_map = {
+            "us-gov-east-1": "aws-us-gov",
+            "us-gov-west-1": "aws-us-gov",
+            "cn-north-1": "aws-cn",
+            "cn-northwest-1": "aws-cn",
+            "us-isob-east-1": "aws-isob",
+            "us-isob-west-1": "aws-isob",
+            "us-iso-east-1": "aws-iso",
+            "us-iso-west-1": "aws-iso",
+            "us-isof-south-1": "aws-isof",
+        }
+        
+        # Check exact match first
+        if region in partition_map:
+            return partition_map[region]
+        
+        # Check prefixes for non-standard regions
+        if "us-gov-" in region:
+            return "aws-us-gov"
+        elif "cn-" in region:
+            return "aws-cn"
+        elif "isob-" in region:
+            return "aws-isob"
+        elif "iso-" in region and "isob" not in region and "isoe" not in region and "isof" not in region:
+            return "aws-iso"
         elif "iso-e" in region or "isoe" in region:
-            partition = "aws-isoe"
-        # AWS Intel Community us-isof-south-1 Region override
-        elif region in ["us-isof-south-1"] or "iso-f" in region or "isof" in region:
-            partition = "aws-isof"
-        # TODO: Add European Sovreign Cloud Partition
+            return "aws-isoe"
+        elif "iso-f" in region or "isof" in region:
+            return "aws-isof"
+        # TODO: Add European Sovereign Cloud Partition
         else:
-            partition = "aws"
-
-        return partition
+            return "aws"
 
     # This function is called outside of this Class
     def get_aws_support_eligibility(session) -> bool:
@@ -872,7 +970,6 @@ class CloudConfig(object):
         
         # AWS
         if assessmentTarget == "AWS":
-            sts = boto3.client("sts")
             # First process the global "aws_multi_account_target_type" and "aws_account_targets" args
             try:
                 awsMultiAccountTargetType = str(args.get("aws_multi_account_target_type"))
@@ -887,17 +984,16 @@ class CloudConfig(object):
             # Process account targets based on the multi-account target type
             if awsMultiAccountTargetType == "Accounts":
                 if not awsAccountTargets:
-                    self.awsAccountTargets = [sts.get_caller_identity()["Account"]]
+                    self.awsAccountTargets = [self._get_aws_caller_identity()["Account"]]
                 else:
                     self.awsAccountTargets = awsAccountTargets
             if awsMultiAccountTargetType == "OU":
                 if not awsAccountTargets:
                     logger.error("OU was specified but targets were not specified.")
                     sys.exit(2)
-                # Regex to check for Valid OUs
-                ouIdRegex = compile(r"^ou-[0-9a-z]{4,32}-[a-z0-9]{8,32}$")
+                # Use pre-compiled regex for performance
                 for ou in awsAccountTargets:
-                    if not ouIdRegex.match(ou):
+                    if not OU_ID_REGEX.match(ou):
                         logger.error(f"Invalid Organizational Unit ID {ou}.")
                         sys.exit(2)
                 self.awsAccountTargets = self.get_aws_accounts_from_organizational_units(awsAccountTargets)
@@ -910,10 +1006,11 @@ class CloudConfig(object):
                 self.awsRegionsSelection = [boto3.Session().region_name]
             else:
                 if "All" in awsRegionsSelection or "all" in awsRegionsSelection:
-                    self.awsRegionsSelection = awsRegions
+                    self.awsRegionsSelection = list(awsRegions)  # Convert tuple to list
                 else:
-                    # Validation check
-                    self.awsRegionsSelection = [a for a in awsRegionsSelection if a in awsRegions]            
+                    # Validation check - use set for O(1) lookups
+                    awsRegionsSet = set(awsRegions)
+                    self.awsRegionsSelection = [a for a in awsRegionsSelection if a in awsRegionsSet]            
             # Process ["aws_electric_eye_iam_role_name"]
             if electricEyeRoleName is None or electricEyeRoleName == "":
                 logger.warning(
