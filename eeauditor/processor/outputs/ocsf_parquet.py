@@ -129,18 +129,21 @@ class OcsfParquetOutput(object):
         parquetFile = f"{output_file}_ocsf_v1-7-0_events.parquet"
         logger.info(f"Output file named: {parquetFile}")
         
-        # Create DataFrame directly from OCSF findings - Parquet supports nested structures
-        df = pd.DataFrame(ocsfFindings)
+        # DF -> PA Table
+        import pyarrow as pa
         
-        # Write to Parquet with compression, preserving nested structures
-        df.to_parquet(
+        df = pd.DataFrame(ocsfFindings)
+        table = pa.Table.from_pandas(df, preserve_index=False)
+        
+        # one day i'll toggle snappy and zstd...
+        import pyarrow.parquet as pq
+        pq.write_table(
+            table,
             parquetFile,
-            engine='pyarrow',
-            compression='snappy',
-            index=False
+            compression='snappy'
         )
         
-        logger.info(f"Successfully wrote {len(ocsfFindings)} OCSF events to Parquet file with nested structures preserved")
+        logger.info(f"Successfully wrote {len(ocsfFindings)} OCSF events to Parquet")
             
         return True
     
